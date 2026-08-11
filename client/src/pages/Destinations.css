@@ -1,0 +1,528 @@
+/* ==============================
+   CONTENEUR PRINCIPAL
+================================ */
+
+.destination-container{
+
+    padding:25px;
+
+    width:100%;
+
+}
+
+
+
+/* ==============================
+   HEADER
+================================ */
+
+
+.destination-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.destination-header h1{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:28px;
+
+    color:#1e293b;
+
+}
+
+
+
+.destination-header p{
+
+    color:#64748b;
+
+}
+
+
+
+
+
+/* ==============================
+   BOUTON AJOUT
+================================ */
+
+
+.btn-add{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+
+.btn-add:hover{
+
+    background:#1d4ed8;
+
+}
+
+
+
+
+
+/* ==============================
+   RECHERCHE
+================================ */
+
+
+.search-box{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    background:white;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+
+}
+
+
+
+.search-box input{
+
+    border:none;
+
+    outline:none;
+
+    width:100%;
+
+    font-size:15px;
+
+}
+
+
+
+
+
+
+
+/* ==============================
+   TABLEAU
+================================ */
+
+
+.table-container{
+
+    background:white;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+
+}
+
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+thead th{
+
+
+    background:#2563eb;
+
+    color:white;
+
+    padding:14px;
+
+    text-align:center;
+
+    font-size:15px;
+
+}
+
+
+
+tbody td{
+
+    padding:12px;
+
+    text-align:center;
+
+    border-bottom:1px solid #eee;
+
+    color:#334155;
+
+}
+
+
+
+
+
+tbody tr:hover{
+
+    background:#f8fafc;
+
+}
+
+
+
+
+
+
+
+/* ==============================
+   IMAGE DESTINATION
+================================ */
+
+
+.destination-image{
+
+
+    width:80px;
+
+
+    height:60px;
+
+
+    object-fit:cover;
+
+
+    border-radius:8px;
+
+
+    border:1px solid #ddd;
+
+
+}
+
+
+
+
+
+
+/* ==============================
+   MENU ACTION
+================================ */
+
+
+.menu-action{
+
+    position:relative;
+
+    display:inline-block;
+
+}
+
+
+
+
+
+.btn-menu{
+
+
+    width:35px;
+
+    height:35px;
+
+
+    border:none;
+
+
+    border-radius:50%;
+
+
+    background:#e2e8f0;
+
+
+    cursor:pointer;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+}
+
+
+
+.btn-menu:hover{
+
+
+    background:#cbd5e1;
+
+
+}
+
+
+
+
+
+
+.menu-content{
+
+
+    position:absolute;
+
+
+    right:0;
+
+
+    top:40px;
+
+
+    width:160px;
+
+
+    background:white;
+
+
+    border-radius:10px;
+
+
+    overflow:hidden;
+
+
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+
+
+    z-index:100;
+
+
+}
+
+
+
+
+.menu-content button{
+
+
+    width:100%;
+
+
+    padding:12px;
+
+
+    border:none;
+
+
+    background:white;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:10px;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+
+.menu-content button:hover{
+
+
+    background:#f1f5f9;
+
+
+}
+
+
+
+
+
+
+
+/* ==============================
+   PAGINATION
+================================ */
+
+
+.pagination{
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    gap:8px;
+
+
+    margin-top:25px;
+
+
+}
+
+
+
+.pagination button{
+
+
+    width:35px;
+
+
+    height:35px;
+
+
+    border:none;
+
+
+    border-radius:6px;
+
+
+    cursor:pointer;
+
+
+    background:#e2e8f0;
+
+
+}
+
+
+
+.pagination button:hover{
+
+
+    background:#cbd5e1;
+
+
+}
+
+
+
+
+.pagination .active-page{
+
+
+    background:#2563eb;
+
+
+    color:white;
+
+
+}
+
+
+
+
+.pagination button:disabled{
+
+
+    opacity:0.5;
+
+
+    cursor:not-allowed;
+
+
+}
+
+
+
+
+
+
+/* ==============================
+   RESPONSIVE
+================================ */
+
+
+@media(max-width:900px){
+
+
+.table-container{
+
+
+    overflow-x:auto;
+
+
+}
+
+
+
+table{
+
+
+    min-width:900px;
+
+
+}
+
+
+
+.destination-header{
+
+
+    flex-direction:column;
+
+
+    align-items:flex-start;
+
+
+    gap:15px;
+
+
+}
+
+
+}

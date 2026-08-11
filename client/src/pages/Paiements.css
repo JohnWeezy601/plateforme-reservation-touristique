@@ -1,0 +1,884 @@
+/* =====================================
+   PAGE PAIEMENTS
+===================================== */
+
+.dashboard-content{
+
+    padding:30px;
+
+    background:#f8fafc;
+
+    min-height:100vh;
+
+}
+
+
+/* =====================================
+   HEADER
+===================================== */
+
+.paiement-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.paiement-header h1{
+
+    color:#2563eb;
+
+    font-size:32px;
+
+    margin-bottom:8px;
+
+}
+
+.paiement-header p{
+
+    color:#64748b;
+
+}
+
+
+/* =====================================
+   RECHERCHE
+===================================== */
+
+.recherche-paiement{
+
+    margin-bottom:30px;
+
+}
+
+.recherche-paiement input{
+
+    width:320px;
+
+    padding:12px 15px;
+
+    border:1px solid #cbd5e1;
+
+    border-radius:12px;
+
+    font-size:14px;
+
+    outline:none;
+
+    transition:.3s;
+
+}
+
+
+
+
+.recherche-paiement input:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 8px rgba(37,99,235,.2);
+
+}
+
+
+/* =====================================
+   LISTE
+===================================== */
+
+.paiements-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+
+    gap:25px;
+
+}
+
+
+/* =====================================
+   CARTE
+===================================== */
+
+.paiement-card{
+
+    position:relative;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+}
+
+.paiement-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.paiement-body h3{
+
+    color:#2563eb;
+
+    margin-bottom:18px;
+
+}
+
+.paiement-body p{
+
+    color:#475569;
+
+    margin:10px 0;
+
+    line-height:1.5;
+
+}
+
+
+/* =====================================
+   BADGES
+===================================== */
+
+.statut{
+
+    display:inline-block;
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    font-size:13px;
+
+}
+
+.statut.enattente{
+
+    background:#fef3c7;
+
+    color:#b45309;
+
+}
+
+.statut.paye{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+}
+
+.statut.echoue{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
+/* =====================================
+   MENU ACTIONS TROIS POINTS
+===================================== */
+
+.menu-actions{
+
+    position:absolute;
+
+    right:0;
+
+    top:40px;
+
+    width:190px;
+
+    background:white;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.2);
+
+    z-index:9999;
+
+}
+
+
+
+/* Texte des actions */
+
+.menu-actions button{
+
+    width:100%;
+
+    background:white;
+
+    border:none;
+
+    padding:13px 15px;
+
+    cursor:pointer;
+
+    text-align:left;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:#1e293b;   /* couleur visible */
+
+    transition:.3s;
+
+}
+
+
+
+.menu-actions button:hover{
+
+    background:#eff6ff;
+
+    color:#2563eb;
+
+}
+
+
+
+/* Couleurs spécifiques */
+
+.menu-actions button:nth-child(2){
+
+    color:#16a34a; /* Valider */
+
+}
+
+
+
+.menu-actions button:nth-child(3){
+
+    color:#dc2626; /* Refuser */
+
+}
+
+
+
+.menu-actions button:nth-child(4){
+
+    color:#475569; /* Supprimer */
+
+}
+
+
+
+/* Hover spécifique */
+
+.menu-actions button:nth-child(2):hover{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+}
+
+
+
+.menu-actions button:nth-child(3):hover{
+
+    background:#fee2e2;
+
+    color:#b91c1c;
+
+}
+
+
+
+.menu-actions button:nth-child(4):hover{
+
+    background:#e2e8f0;
+
+    color:#1e293b;
+
+}
+
+/* =====================================
+   MODALE DETAILS PAIEMENT AMELIOREE
+===================================== */
+
+.modal-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(15,23,42,.65);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+    padding:20px;
+
+}
+
+
+
+.modal-paiement{
+
+    width:900px;
+
+    max-width:95%;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    background:white;
+
+    border-radius:25px;
+
+    padding:35px;
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,.3);
+
+    animation:ouvrir .3s ease;
+
+}
+
+
+
+
+
+@keyframes ouvrir{
+
+from{
+
+opacity:0;
+
+transform:translateY(-40px) scale(.95);
+
+}
+
+
+to{
+
+opacity:1;
+
+transform:translateY(0) scale(1);
+
+}
+
+}
+
+
+
+
+
+/* HEADER MODALE */
+
+.modal-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-bottom:1px solid #e2e8f0;
+
+    padding-bottom:20px;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.modal-header h2{
+
+    color:#2563eb;
+
+    font-size:26px;
+
+}
+
+
+
+
+
+.close-modal{
+
+    width:40px;
+
+    height:40px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#ef4444;
+
+    color:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+}
+
+
+
+.close-modal:hover{
+
+    background:#dc2626;
+
+}
+
+
+
+
+
+/* =====================================
+   DETAILS
+===================================== */
+
+
+.detail-grid{
+
+
+display:block;
+
+
+}
+
+
+
+.detail-grid h3{
+
+
+margin-top:25px;
+
+
+margin-bottom:15px;
+
+
+padding:12px 15px;
+
+
+background:#eff6ff;
+
+
+border-left:5px solid #2563eb;
+
+
+border-radius:10px;
+
+
+color:#1e40af;
+
+
+font-size:18px;
+
+
+}
+
+
+
+
+
+.detail-grid p{
+
+
+display:flex;
+
+
+justify-content:space-between;
+
+
+align-items:center;
+
+
+background:#f8fafc;
+
+
+padding:13px 18px;
+
+
+border-radius:12px;
+
+
+margin-bottom:10px;
+
+
+color:#475569;
+
+
+font-size:15px;
+
+
+}
+
+
+
+
+.detail-grid strong{
+
+
+color:#1e293b;
+
+
+}
+
+
+
+
+
+.detail-grid hr{
+
+
+border:none;
+
+
+border-top:1px solid #e2e8f0;
+
+
+margin:25px 0;
+
+
+}
+
+
+
+
+
+/* IMAGE OFFRE SI AJOUTEE PLUS TARD */
+
+.detail-image{
+
+
+width:180px;
+
+
+height:120px;
+
+
+object-fit:cover;
+
+
+border-radius:15px;
+
+
+margin:15px 0;
+
+
+}
+
+
+
+
+
+/* =====================================
+   PREUVE PAIEMENT
+===================================== */
+
+
+.preuve-paiement{
+
+
+margin-top:30px;
+
+
+padding:20px;
+
+
+background:#f8fafc;
+
+
+border-radius:20px;
+
+
+text-align:center;
+
+
+}
+
+
+
+.preuve-paiement h3{
+
+
+color:#2563eb;
+
+
+margin-bottom:20px;
+
+
+}
+
+
+
+.preuve-paiement img{
+
+
+width:100%;
+
+
+max-height:400px;
+
+
+object-fit:contain;
+
+
+border-radius:15px;
+
+
+background:white;
+
+
+padding:10px;
+
+
+}
+
+
+
+
+
+/* =====================================
+   ACTIONS MODALE
+===================================== */
+
+
+.modal-actions{
+
+
+display:flex;
+
+
+gap:15px;
+
+
+margin-top:30px;
+
+
+padding-top:20px;
+
+
+border-top:1px solid #e2e8f0;
+
+
+}
+
+
+
+.modal-actions button{
+
+
+flex:1;
+
+
+padding:14px;
+
+
+border:none;
+
+
+border-radius:12px;
+
+
+font-size:16px;
+
+
+font-weight:bold;
+
+
+cursor:pointer;
+
+
+color:white;
+
+
+transition:.3s;
+
+
+}
+
+
+
+.btn-valider{
+
+
+background:#16a34a;
+
+
+}
+
+
+
+.btn-valider:hover{
+
+
+background:#15803d;
+
+
+transform:translateY(-2px);
+
+
+}
+
+
+
+.btn-refuser{
+
+
+background:#dc2626;
+
+
+}
+
+
+
+.btn-refuser:hover{
+
+
+background:#b91c1c;
+
+
+transform:translateY(-2px);
+
+
+}
+
+
+
+.btn-close{
+
+
+background:#475569;
+
+
+}
+
+
+
+.btn-close:hover{
+
+
+background:#334155;
+
+
+}
+
+
+
+
+
+
+/* =====================================
+ RESPONSIVE
+===================================== */
+
+
+@media(max-width:768px){
+
+
+.modal-paiement{
+
+
+padding:20px;
+
+
+}
+
+
+
+.detail-grid p{
+
+
+display:block;
+
+
+}
+
+
+
+.detail-grid strong{
+
+
+display:block;
+
+
+margin-bottom:5px;
+
+
+}
+
+
+
+.modal-actions{
+
+
+flex-direction:column;
+
+
+}
+
+
+}
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media(max-width:768px){
+
+.paiement-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+}
+
+.paiements-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+.detail-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+.modal-actions{
+
+    flex-direction:column;
+
+}
+
+.modal-paiement{
+
+    width:95%;
+
+    padding:20px;
+
+}
+
+}

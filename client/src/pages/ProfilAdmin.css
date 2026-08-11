@@ -1,0 +1,431 @@
+/* ==========================
+   CONTENEUR PROFIL ADMIN
+========================== */
+
+.profile-container{
+
+    margin-left:260px;
+
+    padding:40px;
+
+    min-height:100vh;
+
+    background:#f5f7fb;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+}
+
+
+/* ==========================
+   CARTE PROFIL
+========================== */
+
+.profile-card{
+
+    width:650px;
+
+    background:white;
+
+    border-radius:25px;
+
+    padding:40px;
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.12);
+
+    transition:.3s;
+
+}
+
+
+.profile-card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:
+    0 20px 45px rgba(0,0,0,.15);
+
+}
+
+
+
+/* ==========================
+   HEADER PROFIL
+========================== */
+
+
+.profile-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:25px;
+
+    margin-bottom:35px;
+
+}
+
+
+/* CONTENEUR IMAGE */
+
+.profile-photo-container{
+
+    position:relative;
+
+    width:120px;
+
+    height:120px;
+
+}
+
+
+
+/* ancienne icône */
+
+.profile-avatar{
+
+    width:120px;
+
+    height:120px;
+
+    color:#2563eb;
+
+}
+
+
+
+/* Image admin */
+
+.profile-image{
+
+    width:120px;
+
+    height:120px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:5px solid #2563eb;
+
+    box-shadow:
+
+    0 10px 25px rgba(37,99,235,.25);
+
+}
+
+
+
+/* ==========================
+   BOUTON CHANGER PHOTO
+========================== */
+
+
+.btn-photo{
+
+
+    position:absolute;
+
+
+    bottom:0;
+
+
+    right:0;
+
+
+    width:40px;
+
+
+    height:40px;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    background:#2563eb;
+
+
+    color:white;
+
+
+    border-radius:50%;
+
+
+    cursor:pointer;
+
+
+    font-size:18px;
+
+
+    border:3px solid white;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+.btn-photo:hover{
+
+    background:#1d4ed8;
+
+    transform:scale(1.1);
+
+}
+
+
+
+/* ==========================
+   NOM ADMIN
+========================== */
+
+
+.profile-header h2{
+
+    margin:0;
+
+    font-size:30px;
+
+    color:#1e293b;
+
+}
+
+
+
+.profile-header span{
+
+    display:inline-block;
+
+    margin-top:10px;
+
+    background:#dbeafe;
+
+    color:#2563eb;
+
+    padding:7px 18px;
+
+    border-radius:25px;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+}
+
+
+
+/* ==========================
+   INFORMATIONS
+========================== */
+
+
+.profile-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:22px;
+
+    border-top:1px solid #e5e7eb;
+
+    padding-top:25px;
+
+}
+
+
+
+.info-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    transition:.3s;
+
+}
+
+
+
+.info-item:hover{
+
+    background:#eff6ff;
+
+}
+
+
+
+.info-item svg{
+
+    color:#2563eb;
+
+    font-size:24px;
+
+}
+
+
+
+.info-item label{
+
+    display:block;
+
+    color:#64748b;
+
+    font-size:13px;
+
+    margin-bottom:3px;
+
+}
+
+
+
+.info-item p{
+
+    margin:0;
+
+    font-weight:600;
+
+    color:#1e293b;
+
+}
+
+
+
+/* ==========================
+   BOUTON MODIFICATION
+========================== */
+
+
+.btn-profile-edit{
+
+
+    margin-top:35px;
+
+
+    width:200px;
+
+
+    padding:13px 25px;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    gap:10px;
+
+
+    background:#2563eb;
+
+
+    color:white;
+
+
+    border-radius:12px;
+
+
+    font-size:15px;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+.btn-profile-edit:hover{
+
+    background:#1d4ed8;
+
+    transform:translateY(-2px);
+
+}
+
+
+
+/* ==========================
+   CHARGEMENT
+========================== */
+
+
+.profile-loading{
+
+
+    margin-left:260px;
+
+
+    padding:50px;
+
+
+    font-size:20px;
+
+
+    color:#64748b;
+
+
+}
+
+
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+
+@media(max-width:900px){
+
+
+.profile-container{
+
+    margin-left:0;
+
+    padding:20px;
+
+}
+
+
+
+.profile-card{
+
+    width:100%;
+
+}
+
+
+
+.profile-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+}
+
+
+}

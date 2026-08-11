@@ -1,0 +1,280 @@
+.contact-page{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:50px;
+
+    background:linear-gradient(
+        135deg,
+        #eff6ff,
+        #dbeafe
+    );
+
+}
+
+
+
+
+.contact-container{
+
+    width:1000px;
+
+    display:flex;
+
+    gap:40px;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:25px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.15);
+
+}
+
+
+
+
+
+
+/* ==========================
+   PARTIE INFORMATIONS
+========================== */
+
+
+.contact-info{
+
+    flex:1;
+
+    padding:20px;
+
+}
+
+
+
+.contact-info h1{
+
+    color:#2563eb;
+
+    font-size:32px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.contact-info p{
+
+    color:#555;
+
+    line-height:1.6;
+
+}
+
+
+
+.contact-info h3{
+
+    margin-top:30px;
+
+    color:#1d4ed8;
+
+}
+
+
+
+
+
+.info-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-top:20px;
+
+    color:#444;
+
+}
+
+
+
+.info-item svg{
+
+    color:#2563eb;
+
+    font-size:20px;
+
+}
+
+
+
+
+
+
+
+/* ==========================
+   FORMULAIRE
+========================== */
+
+
+.contact-box{
+
+    flex:1;
+
+    padding:20px;
+
+}
+
+
+
+
+.contact-box h1{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:15px;
+
+    color:#2563eb;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.contact-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+
+
+
+.input-group{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+
+.input-group svg{
+
+    color:#2563eb;
+
+}
+
+
+
+
+
+.contact-form input,
+.contact-form textarea{
+
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    border:1px solid #cbd5e1;
+
+    font-size:15px;
+
+}
+
+
+
+.contact-form input:focus,
+.contact-form textarea:focus{
+
+    outline:none;
+
+    border-color:#2563eb;
+
+}
+
+
+
+
+
+.contact-submit{
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:14px;
+
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+}
+
+
+
+.contact-submit:hover{
+
+    background:#1d4ed8;
+
+}
+
+
+
+
+
+@media(max-width:800px){
+
+
+.contact-container{
+
+    flex-direction:column;
+
+    width:90%;
+
+}
+
+
+}

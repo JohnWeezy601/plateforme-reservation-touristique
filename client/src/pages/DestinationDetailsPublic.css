@@ -1,0 +1,876 @@
+/* =====================================
+   PAGE DETAIL DESTINATION
+===================================== */
+
+
+.destination-detail-page{
+
+
+    display:grid;
+
+    grid-template-columns: 70% 30%;
+
+    gap:30px;
+
+    padding:40px 60px;
+
+    background:#f8fafc;
+
+    min-height:100vh;
+
+
+}
+
+
+
+
+
+
+/* =====================================
+   PARTIE PRINCIPALE GAUCHE
+===================================== */
+
+
+.destination-detail-main{
+
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+
+
+}
+
+
+
+
+
+/* GRANDE IMAGE */
+
+
+.detail-main-image{
+
+
+    width:100%;
+
+    height:450px;
+
+    object-fit:cover;
+
+    border-radius:20px;
+
+    margin-bottom:25px;
+
+
+}
+
+
+
+
+
+
+.destination-detail-main h1{
+
+
+    font-size:38px;
+
+    color:#0f172a;
+
+    margin-bottom:15px;
+
+
+}
+
+
+
+
+
+
+/* LOCALISATION */
+
+
+.detail-info-location{
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:#2563eb;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+
+
+/* DESCRIPTION */
+
+
+.detail-description{
+
+
+    color:#475569;
+
+    font-size:17px;
+
+    line-height:1.8;
+
+    margin-bottom:30px;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   CARTE
+===================================== */
+
+
+.detail-map{
+
+
+    width:100%;
+
+    height:350px;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    margin-bottom:30px;
+
+
+}
+
+
+
+
+
+.detail-map .leaflet-container{
+
+
+    width:100%;
+
+    height:100%;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   BOUTON RESERVATION
+===================================== */
+
+
+.reservation-btn{
+
+
+    width:100%;
+
+    padding:15px;
+
+
+    border:none;
+
+
+    border-radius:12px;
+
+
+    background:#2563eb;
+
+
+    color:white;
+
+
+    font-size:18px;
+
+
+    font-weight:600;
+
+
+    cursor:pointer;
+
+
+    transition:0.3s;
+
+
+}
+
+
+
+
+.reservation-btn:hover{
+
+
+    background:#1d4ed8;
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+   AUTRES DESTINATIONS DROITE
+===================================== */
+
+
+.other-destinations{
+
+
+    background:white;
+
+
+    padding:20px;
+
+
+    border-radius:20px;
+
+
+    height:max-content;
+
+
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+
+
+}
+
+
+
+
+
+.other-destinations h2{
+
+
+    font-size:24px;
+
+    color:#0f172a;
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+
+
+
+
+/* PETITE CARTE DESTINATION */
+
+
+.small-destination-card{
+
+    display:flex;
+
+    gap:15px;
+
+    padding:12px;
+
+    margin-bottom:15px;
+
+    border-radius:15px;
+
+    cursor:pointer;
+
+    border:1px solid #e2e8f0;
+
+    transition:.3s;
+
+}
+
+
+.small-destination-card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,0.15);
+
+    border-color:#2563eb;
+
+}
+
+
+
+
+
+
+
+
+.small-destination-card img{
+
+
+    width:90px;
+
+
+    height:75px;
+
+
+    object-fit:cover;
+
+
+    border-radius:12px;
+
+
+}
+
+
+
+
+
+
+
+.small-destination-card h3{
+
+
+    margin:0;
+
+
+    font-size:16px;
+
+
+    color:#0f172a;
+
+
+}
+
+
+
+
+
+.small-destination-card p{
+
+
+    margin-top:8px;
+
+
+    color:#64748b;
+
+
+    font-size:14px;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   CHARGEMENT
+===================================== */
+
+
+.loading-detail{
+
+
+    text-align:center;
+
+
+    margin-top:100px;
+
+
+    color:#2563eb;
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+   TABLETTE
+===================================== */
+
+
+@media(max-width:1000px){
+
+
+
+.destination-detail-page{
+
+
+    grid-template-columns:1fr;
+
+
+    padding:30px;
+
+
+}
+
+
+
+
+
+.other-destinations{
+
+
+    display:grid;
+
+
+    grid-template-columns:repeat(2,1fr);
+
+
+    gap:15px;
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+   TELEPHONE
+===================================== */
+
+
+@media(max-width:600px){
+
+
+
+.destination-detail-page{
+
+
+    padding:20px;
+
+
+}
+
+
+
+.destination-detail-main{
+
+
+    padding:20px;
+
+
+}
+
+
+
+.detail-main-image{
+
+
+    height:250px;
+
+
+}
+
+
+
+.destination-detail-main h1{
+
+
+    font-size:28px;
+
+
+}
+
+
+
+.detail-map{
+
+
+    height:250px;
+
+
+}
+
+
+
+.other-destinations{
+
+
+    display:block;
+
+
+}
+
+
+
+.small-destination-card img{
+
+
+    width:80px;
+
+
+    height:70px;
+
+
+}
+
+
+
+}
+/* =====================================
+   SECTION OFFRES DISPONIBLES
+===================================== */
+
+.offers-section{
+
+    margin-top:50px;
+
+}
+
+
+
+.offers-section h2{
+
+    text-align:center;
+
+    color:#2563eb;
+
+    font-size:30px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+/* =====================================
+   CONTENEUR SCROLL HORIZONTAL
+===================================== */
+
+
+.offers-section > div{
+
+    display:flex;
+
+    gap:25px;
+
+    overflow-x:auto;
+
+    scroll-behavior:smooth;
+
+    padding:20px 10px 30px;
+
+}
+
+
+
+/* Barre scroll */
+
+.offers-section > div::-webkit-scrollbar{
+
+    height:10px;
+
+}
+
+
+.offers-section > div::-webkit-scrollbar-track{
+
+    background:#e5e7eb;
+
+    border-radius:20px;
+
+}
+
+
+.offers-section > div::-webkit-scrollbar-thumb{
+
+    background:#2563eb;
+
+    border-radius:20px;
+
+}
+
+
+
+/* =====================================
+   CARTE OFFRE
+===================================== */
+
+
+.offer-card{
+
+
+    flex:0 0 330px;
+
+
+    background:white;
+
+
+    border-radius:20px;
+
+
+    overflow:hidden;
+
+
+    box-shadow:
+
+    0 10px 25px rgba(0,0,0,0.12);
+
+
+    transition:.3s;
+
+
+}
+
+
+
+.offer-card:hover{
+
+
+    transform:translateY(-5px);
+
+
+}
+
+
+
+
+
+/* =====================================
+   IMAGE
+===================================== */
+
+
+.offer-card img{
+
+
+    width:100%;
+
+
+    height:220px;
+
+
+    object-fit:cover;
+
+
+}
+
+
+
+
+
+/* =====================================
+   CONTENU
+===================================== */
+
+
+.offer-content{
+
+
+    padding:20px;
+
+
+}
+
+
+
+.offer-content h3{
+
+
+    color:#2563eb;
+
+
+    font-size:22px;
+
+
+    margin-bottom:15px;
+
+
+}
+
+
+
+.offer-content p{
+
+
+    color:#475569;
+
+
+    line-height:1.5;
+
+
+}
+
+
+
+
+
+.offer-details{
+
+
+    display:block;
+
+    margin-top:15px;
+
+
+}
+
+
+
+.offer-details p{
+
+
+    margin-bottom:8px;
+
+
+}
+
+
+
+.offer-details strong{
+
+
+    color:#2563eb;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   PRIX
+===================================== */
+
+
+.offer-price{
+
+
+    color:#16a34a !important;
+
+
+    font-size:25px !important;
+
+
+    margin:15px 0;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   BOUTON RESERVER
+===================================== */
+
+
+.offer-content button{
+
+
+    width:100%;
+
+
+    padding:13px;
+
+
+    border:none;
+
+
+    border-radius:10px;
+
+
+    background:#2563eb;
+
+
+    color:white;
+
+
+    font-size:16px;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+.offer-content button:hover{
+
+
+    background:#1d4ed8;
+
+
+}
+
+
+
+
+
+/* =====================================
+   MOBILE
+===================================== */
+
+
+@media(max-width:600px){
+
+
+.offer-card{
+
+
+    flex:0 0 280px;
+
+
+}
+
+
+
+.offer-card img{
+
+
+    height:190px;
+
+
+}
+
+
+}

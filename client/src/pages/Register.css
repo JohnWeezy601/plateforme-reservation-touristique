@@ -1,0 +1,443 @@
+/* ==========================
+   PAGE INSCRIPTION
+========================== */
+
+
+.register-container{
+
+
+    min-height:100vh;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    padding:20px;
+
+
+    background:
+
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
+
+
+    background-size:cover;
+
+
+    background-position:center;
+
+
+}
+
+
+
+
+
+/* ==========================
+   CARTE REGISTER
+========================== */
+
+
+.register-card{
+
+
+    width:380px;
+
+
+    padding:30px;
+
+
+    background:white;
+
+
+    border-radius:20px;
+
+
+    box-shadow:
+
+    0 15px 35px rgba(0,0,0,0.3);
+
+
+}
+
+
+
+
+
+
+.register-card h1{
+
+
+    text-align:center;
+
+
+    color:#0088cc;
+
+
+    font-size:25px;
+
+
+    margin-bottom:5px;
+
+
+}
+
+
+
+
+
+.register-subtitle{
+
+
+    text-align:center;
+
+
+    color:#666;
+
+
+    font-size:14px;
+
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+
+
+
+/* ==========================
+   FORMULAIRE
+========================== */
+
+
+.register-form{
+
+
+    width:100%;
+
+
+}
+
+
+
+
+
+
+
+.form-group{
+
+
+    margin-bottom:15px;
+
+
+}
+
+
+
+
+
+.form-group label{
+
+
+    display:block;
+
+
+    margin-bottom:6px;
+
+
+    font-size:14px;
+
+
+    font-weight:bold;
+
+
+    color:#333;
+
+
+}
+
+
+
+
+
+
+
+.form-group input,
+.form-group select{
+
+
+    width:100%;
+
+
+    box-sizing:border-box;
+
+
+    padding:11px;
+
+
+    border-radius:10px;
+
+
+    border:1px solid #ddd;
+
+
+    font-size:14px;
+
+
+}
+
+
+
+
+
+
+
+.form-group input:focus,
+.form-group select:focus{
+
+
+    outline:none;
+
+
+    border-color:#0088cc;
+
+
+    box-shadow:
+
+    0 0 5px rgba(0,136,204,.3);
+
+
+}
+
+
+
+
+
+
+/* ==========================
+   MOT DE PASSE
+========================== */
+
+
+.password-field{
+
+
+    position:relative;
+
+
+    width:100%;
+
+
+}
+
+
+
+
+.password-field input{
+
+
+    width:100%;
+
+
+    padding-right:40px;
+
+
+    box-sizing:border-box;
+
+
+}
+
+
+
+
+
+
+.password-eye{
+
+
+    position:absolute;
+
+
+    right:12px;
+
+
+    top:50%;
+
+
+    transform:translateY(-50%);
+
+
+    cursor:pointer;
+
+
+    color:#777;
+
+
+    font-size:17px;
+
+
+}
+
+
+
+
+.password-eye:hover{
+
+
+    color:#0088cc;
+
+
+}
+
+
+
+
+
+
+/* ==========================
+   BOUTON
+========================== */
+
+
+.register-card button{
+
+
+    width:100%;
+
+
+    padding:12px;
+
+
+    margin-top:10px;
+
+
+    border:none;
+
+
+    border-radius:10px;
+
+
+    background:#0088cc;
+
+
+    color:white;
+
+
+    font-size:15px;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+
+
+.register-card button:hover{
+
+
+    background:#006699;
+
+
+}
+
+
+
+
+
+
+
+/* ==========================
+   LIEN CONNEXION
+========================== */
+
+
+.register-link{
+
+
+    text-align:center;
+
+
+    margin-top:18px;
+
+
+}
+
+
+
+
+
+.register-link p{
+
+
+    font-size:14px;
+
+
+    color:#555;
+
+
+}
+
+
+
+
+
+.register-link a{
+
+
+    color:#0d6efd;
+
+
+    text-decoration:none;
+
+
+    font-weight:bold;
+
+
+    margin-left:5px;
+
+
+}
+
+
+
+
+
+
+/* ==========================
+   MOBILE
+========================== */
+
+
+@media(max-width:500px){
+
+
+    .register-card{
+
+
+        width:90%;
+
+
+        padding:20px;
+
+
+    }
+
+
+}

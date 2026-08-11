@@ -1,0 +1,449 @@
+/* =====================================
+   PAGE REÇU
+===================================== */
+
+.recu-container{
+
+    min-height:100vh;
+
+    background:#f3f6f9;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:30px;
+
+    font-family:Arial, sans-serif;
+
+}
+
+
+
+/* =====================================
+   CARTE
+===================================== */
+
+.recu-card{
+
+    background:white;
+
+    width:700px;
+
+    padding:40px;
+
+    border-radius:15px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,0.15);
+
+}
+
+
+
+/* =====================================
+   HEADER
+===================================== */
+
+.recu-header{
+
+    text-align:center;
+
+}
+
+.recu-header h1{
+
+    color:#1677c8;
+
+    font-size:28px;
+
+    margin-bottom:10px;
+
+}
+
+.recu-header h2{
+
+    color:#333;
+
+    font-size:22px;
+
+    margin-bottom:8px;
+
+}
+
+.date-recu{
+
+    color:#777;
+
+    font-size:14px;
+
+}
+
+
+
+/* =====================================
+   LIGNE
+===================================== */
+
+.ligne{
+
+    height:1px;
+
+    background:#ddd;
+
+    margin:25px 0;
+
+}
+
+
+
+/* =====================================
+   SECTION
+===================================== */
+
+.recu-card section{
+
+    margin-bottom:30px;
+
+}
+
+.recu-card section h3{
+
+    color:#1677c8;
+
+    border-bottom:2px solid #1677c8;
+
+    padding-bottom:8px;
+
+    font-size:18px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+/* =====================================
+   INFORMATIONS
+===================================== */
+
+.info{
+
+    line-height:1.9;
+
+    font-size:15px;
+
+    color:#444;
+
+}
+
+
+
+/* =====================================
+   PAIEMENT
+===================================== */
+
+.paiement-box{
+
+    background:#f8fafc;
+
+    padding:20px;
+
+    border-radius:10px;
+
+}
+
+.montant{
+
+    color:#159447;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    margin-left:10px;
+
+}
+
+.statut{
+
+    background:#159447;
+
+    color:white;
+
+    padding:5px 15px;
+
+    border-radius:20px;
+
+    margin-left:10px;
+
+}
+
+
+
+/* =====================================
+   MESSAGE
+===================================== */
+
+.message{
+
+    text-align:center;
+
+    font-style:italic;
+
+    margin:30px 0;
+
+    color:#555;
+
+}
+
+
+
+/* =====================================
+   ACTIONS
+===================================== */
+
+.actions{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:15px;
+
+    flex-wrap:wrap;
+
+}
+
+
+
+/* =====================================
+   BOUTONS
+===================================== */
+
+.recu-card button{
+
+    border:none;
+
+    padding:12px 22px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+
+
+/* Impression */
+
+.btn-print{
+
+    background:#1677c8;
+
+    color:white;
+
+}
+
+.btn-print:hover{
+
+    background:#0e5fa5;
+
+}
+
+
+
+/* Retour */
+
+.btn-retour{
+
+    background:#6c757d;
+
+    color:white;
+
+    text-decoration:none;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding:13px 28px;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+    box-shadow:0 4px 10px rgba(0,0,0,.15);
+
+}
+
+.btn-retour:hover{
+
+    background:#495057;
+
+    transform:translateY(-3px);
+
+    box-shadow:0 8px 15px rgba(0,0,0,.20);
+
+}
+
+
+
+/* =====================================
+   CHARGEMENT
+===================================== */
+
+.chargement{
+
+    text-align:center;
+
+    margin-top:100px;
+
+    font-family:Arial,sans-serif;
+
+    font-size:20px;
+
+}
+
+
+
+/* =====================================
+   IMPRESSION
+===================================== */
+
+@media print{
+
+    .recu-container{
+
+        background:white;
+
+        padding:0;
+
+    }
+
+    .actions{
+
+        display:none;
+
+    }
+
+    .recu-card{
+
+        width:100%;
+
+        box-shadow:none;
+
+        border:none;
+
+        border-radius:0;
+
+    }
+
+}
+
+
+.photo-client{
+
+width:100px;
+
+height:100px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+margin-bottom:15px;
+
+}
+
+
+
+/* ================================
+   CARTE IDENTITE CLIENT
+================================ */
+
+
+.carte-identite{
+
+display:flex;
+
+align-items:center;
+
+gap:25px;
+
+background:#f8fafc;
+
+padding:20px;
+
+border-radius:15px;
+
+border:1px solid #ddd;
+
+}
+
+
+
+.photo-zone{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+}
+
+
+
+.photo-client{
+
+width:120px;
+
+height:120px;
+
+border-radius:10px;
+
+object-fit:cover;
+
+border:3px solid #1677c8;
+
+}
+
+
+
+.infos-client h2{
+
+margin:0 0 15px 0;
+
+color:#1677c8;
+
+font-size:22px;
+
+}
+
+
+
+.infos-client p{
+
+margin:8px 0;
+
+font-size:15px;
+
+color:#444;
+
+}

@@ -1,0 +1,724 @@
+.categories-admin{
+
+    padding:30px;
+
+    background:#f8fafc;
+
+    min-height:100vh;
+
+}
+
+
+
+/* ==========================
+ HEADER
+========================== */
+
+
+.categories-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+
+.categories-header h1{
+
+    color:#1e293b;
+
+    font-size:32px;
+
+    margin:0;
+
+}
+
+
+.categories-header p{
+
+    color:#64748b;
+
+    margin-top:8px;
+
+}
+
+
+
+
+
+
+/* Barre de recherche + bouton */
+
+.categorie-toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.categorie-search-input{
+
+    width:350px;
+
+    padding:12px 18px;
+
+    border:1px solid #cbd5e1;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+}
+
+
+
+.btn-add-categorie{
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 22px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    transition:.3s;
+
+}
+
+
+
+.btn-add-categorie:hover{
+
+    background:#1d4ed8;
+
+}
+
+
+
+
+
+
+
+/* ==========================
+ TABLEAU
+========================== */
+
+
+.categorie-table-card{
+
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+
+}
+
+
+
+.categorie-table-card h2{
+
+
+    color:#1e293b;
+
+    margin-bottom:20px;
+
+}
+
+
+
+
+table{
+
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+thead{
+
+
+    background:#2563eb;
+
+    color:white;
+
+}
+
+
+
+th{
+
+
+    padding:15px;
+
+    text-align:left;
+
+    font-size:15px;
+
+}
+
+
+
+td{
+
+
+    padding:15px;
+
+    border-bottom:1px solid #e2e8f0;
+
+    color:#334155;
+
+}
+
+
+
+tbody tr:hover{
+
+
+    background:#f8fafc;
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+ MENU TROIS POINTS
+========================== */
+
+.menu-categorie{
+
+position:relative;
+
+}
+
+
+
+.btn-menu-categorie{
+
+background:transparent;
+
+border:none;
+
+font-size:28px;
+
+cursor:pointer;
+
+color:#334155;
+
+}
+
+
+
+
+
+.menu-actions-categorie{
+
+
+position:absolute;
+
+right:0;
+
+top:35px;
+
+background:white;
+
+width:160px;
+
+border-radius:10px;
+
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+
+overflow:hidden;
+
+z-index:100;
+
+
+}
+
+
+
+
+.menu-actions-categorie button{
+
+
+display:block;
+
+width:100%;
+
+padding:12px 15px;
+
+border:none;
+
+background:white;
+
+cursor:pointer;
+
+text-align:left;
+
+font-size:15px;
+
+
+}
+
+
+
+
+.menu-actions-categorie button:hover{
+
+
+background:#f1f5f9;
+
+
+}
+
+
+
+
+.btn-modifier{
+
+color:#2563eb;
+
+}
+
+
+
+
+.btn-supprimer{
+
+color:#dc2626;
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+ MODAL AJOUT / MODIFICATION
+========================== */
+
+
+.modal-overlay{
+
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+    background:rgba(0,0,0,0.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:100;
+
+}
+
+
+
+
+
+.modal-categorie{
+
+
+    background:white;
+
+    width:450px;
+
+    padding:35px;
+
+    border-radius:20px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+
+    position:relative;
+
+}
+
+
+
+.modal-categorie h2{
+
+
+    color:#1e293b;
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+.close-modal{
+
+
+    position:absolute;
+
+    top:15px;
+
+    right:15px;
+
+    border:none;
+
+    background:transparent;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    color:#64748b;
+
+}
+
+
+
+.close-modal:hover{
+
+
+    color:#dc2626;
+
+}
+
+
+
+
+
+
+
+.modal-categorie input,
+
+.modal-categorie textarea{
+
+
+    width:100%;
+
+    padding:14px;
+
+    margin-bottom:18px;
+
+    border:1px solid #cbd5e1;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+}
+
+
+
+.modal-categorie textarea{
+
+
+    height:120px;
+
+    resize:none;
+
+}
+
+
+
+
+
+
+.btn-save-categorie{
+
+
+    width:100%;
+
+    background:#16a34a;
+
+    color:white;
+
+    border:none;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+}
+
+
+
+.btn-save-categorie:hover{
+
+
+    background:#15803d;
+
+}
+
+
+
+
+
+
+
+
+
+
+/* ==========================
+ MODAL SUPPRESSION
+========================== */
+
+
+.modal-delete{
+
+
+    background:white;
+
+    width:350px;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    text-align:center;
+
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+
+}
+
+
+
+.modal-delete h3{
+
+
+    color:#1e293b;
+
+    margin-bottom:10px;
+
+}
+
+
+
+.modal-delete p{
+
+
+    color:#64748b;
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+.btn-delete{
+
+
+    background:#dc2626;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    margin-right:10px;
+
+}
+
+
+
+.btn-delete:hover{
+
+
+    background:#b91c1c;
+
+}
+
+
+
+
+
+.btn-cancel{
+
+
+    background:#64748b;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+}
+
+
+
+.btn-cancel:hover{
+
+
+    background:#475569;
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+ PAGINATION
+========================== */
+
+
+.pagination{
+
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:25px;
+
+}
+
+
+
+.pagination button{
+
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#e2e8f0;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+}
+
+
+
+.pagination button:hover{
+
+
+    background:#cbd5e1;
+
+}
+
+
+
+.pagination .active-page{
+
+
+    background:#2563eb;
+
+    color:white;
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+ RESPONSIVE
+========================== */
+
+
+@media(max-width:768px){
+
+
+.categories-header{
+
+
+    flex-direction:column;
+
+    gap:20px;
+
+    align-items:flex-start;
+
+}
+
+
+
+.categorie-table-card{
+
+
+    overflow-x:auto;
+
+}
+
+
+
+.modal-categorie{
+
+
+    width:90%;
+
+}
+
+
+}

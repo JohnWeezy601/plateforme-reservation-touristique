@@ -1,0 +1,304 @@
+.home-page{
+
+    background:#f8fafc;
+
+}
+
+
+
+.hero{
+
+
+    height:450px;
+
+    background:
+
+    linear-gradient(
+    rgba(15,23,42,.6),
+    rgba(15,23,42,.6)
+    ),
+
+    url("/tourisme.jpg");
+
+
+    background-size:cover;
+
+    background-position:center;
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+}
+
+
+
+
+.hero h1{
+
+
+    font-size:45px;
+
+    max-width:700px;
+
+}
+
+
+
+
+.hero p{
+
+
+    font-size:20px;
+
+    margin:20px;
+
+}
+
+
+
+.hero button{
+
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:15px 30px;
+
+    border-radius:12px;
+
+    font-size:16px;
+
+}
+
+
+
+
+
+.home-info{
+
+
+    padding:50px;
+
+    text-align:center;
+
+}
+
+
+
+.cards{
+
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+
+    margin-top:40px;
+
+}
+
+
+
+.cards div{
+
+
+    background:white;
+
+    padding:30px;
+
+    width:250px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,.1);
+
+}
+
+
+.cards div{
+
+
+    background:white;
+
+    padding:30px;
+
+    width:250px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,.1);
+
+}
+
+
+
+/* ==========================
+   SECTION CONTACT PUBLIC
+========================== */
+
+
+.home-contact{
+
+
+    margin:60px auto;
+
+    max-width:900px;
+
+    text-align:center;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:25px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.1);
+
+}
+
+
+
+
+.home-contact h2{
+
+
+    color:#2563eb;
+
+    font-size:32px;
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+.home-contact p{
+
+
+    color:#475569;
+
+    font-size:18px;
+
+    line-height:1.6;
+
+    margin-bottom:30px;
+
+
+}
+
+
+
+
+
+.contact-button{
+
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:15px 35px;
+
+    border-radius:12px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+
+}
+
+
+
+
+
+.contact-button:hover{
+
+
+    background:#1d4ed8;
+
+    transform:translateY(-3px);
+
+
+}
+
+
+
+
+/* ==========================
+   RESPONSIVE MOBILE
+========================== */
+
+
+@media(max-width:768px){
+
+
+
+.cards{
+
+
+    flex-direction:column;
+
+    align-items:center;
+
+
+}
+
+
+
+.cards div{
+
+
+    width:80%;
+
+
+}
+
+
+
+
+.hero h1{
+
+
+    font-size:32px;
+
+
+}
+
+
+
+.home-contact{
+
+
+    margin:30px 20px;
+
+    padding:30px;
+
+
+}
+
+
+
+}

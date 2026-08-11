@@ -1,0 +1,99 @@
+/* =====================================
+   STRUCTURE ADMIN
+===================================== */
+
+.admin-layout{
+
+    min-height:100vh;
+
+    background:#f1f5f9;
+
+}
+
+
+
+/* =====================================
+   CONTENEUR PRINCIPAL
+===================================== */
+
+
+.main-container{
+
+    margin-left:250px;
+
+    width:calc(100% - 250px);
+
+    min-height:100vh;
+
+}
+
+
+
+
+
+/* =====================================
+   CONTENU DES PAGES
+===================================== */
+
+
+.dashboard-content{
+
+    margin:0;
+
+    padding:85px 15px 15px 15px;
+
+    width:100%;
+
+    box-sizing:border-box;
+
+}
+
+
+
+
+
+/* Supprimer les marges automatiques */
+
+.dashboard-content > *{
+
+    margin-left:0;
+
+    margin-right:0;
+
+}
+
+
+
+
+
+@media(max-width:900px){
+
+
+.main-container{
+
+    margin-left:220px;
+
+    width:calc(100% - 220px);
+
+}
+
+
+}
+
+
+
+
+
+@media(max-width:700px){
+
+
+.main-container{
+
+    margin-left:0;
+
+    width:100%;
+
+}
+
+
+}

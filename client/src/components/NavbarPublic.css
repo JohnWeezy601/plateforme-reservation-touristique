@@ -1,0 +1,537 @@
+.navbar-public{
+
+
+    height:80px;
+
+    background:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 50px;
+
+    box-shadow:
+    0 5px 20px rgba(0,0,0,.1);
+
+}
+
+
+
+
+.logo-public{
+
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:#2563eb;
+
+}
+
+
+
+.logo-public span{
+
+    margin-right:10px;
+
+}
+
+
+
+
+.navbar-public ul{
+
+
+    display:flex;
+
+    list-style:none;
+
+    gap:25px;
+
+}
+
+
+
+.navbar-public a{
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    text-decoration:none;
+
+    color:#334155;
+
+    font-size:15px;
+
+}
+
+
+
+.navbar-public a:hover{
+
+
+    color:#2563eb;
+
+}
+
+
+
+
+.btn-login-client{
+
+
+    background:#2563eb;
+
+    color:white!important;
+
+    padding:12px 20px;
+
+    border-radius:12px;
+
+}
+
+
+
+.btn-login-client:hover{
+
+
+    background:#1d4ed8;
+
+}
+
+
+
+
+
+.logo-public{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+
+/* CONTENEUR CLOCHE */
+
+.notification-container{
+
+    position:relative;
+
+    margin-left:20px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:35px;
+
+    height:35px;
+
+}
+
+
+
+/* ICON CLOCHE */
+
+.notification-bell{
+
+    font-size:23px;
+
+    color:#1877f2;
+
+    transition:0.3s;
+
+}
+
+
+
+
+
+.notification-bell:hover{
+
+    color:#ffd700;
+
+    transform:scale(1.15);
+
+}
+
+
+
+
+
+/* PETIT NOMBRE ROUGE */
+
+.notification-badge{
+
+
+    position:absolute;
+
+
+    top:-5px;
+
+
+    right:-5px;
+
+
+
+    background:red;
+
+
+    color:white;
+
+
+    font-size:11px;
+
+
+    font-weight:bold;
+
+
+
+    width:18px;
+
+
+    height:18px;
+
+
+
+    border-radius:50%;
+
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+
+}
+
+
+/* ===========================
+   PROFIL UTILISATEUR
+=========================== */
+
+
+.profil-container{
+
+position:relative;
+
+}
+
+
+
+.profil-button{
+
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+background:white;
+
+border:none;
+
+cursor:pointer;
+
+font-size:15px;
+
+font-weight:600;
+
+color:#334155;
+
+
+}
+
+
+
+.profil-photo{
+
+
+width:40px;
+
+height:40px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:2px solid #2563eb;
+
+
+}
+
+
+
+/* ===========================
+   CONTENEUR DU PROFIL
+=========================== */
+
+.profil-container {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
+/* ===========================
+   MENU PROFIL SANS BACKGROUND
+=========================== */
+
+.profil-menu {
+
+    position: absolute;
+
+    right: 0;
+
+    top: 55px;
+
+    width: 230px;
+
+    background: transparent;
+
+    border-radius: 0;
+
+    box-shadow: none;
+
+    overflow: visible;
+
+    z-index: 1000;
+
+}
+
+
+/* ===========================
+   BOUTONS DU MENU
+=========================== */
+
+.profil-menu button {
+
+    width: 100%;
+
+    padding: 12px 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    color: #334155;
+
+    background: transparent;
+
+    border: none;
+
+    text-align: left;
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+}
+
+
+/* ===========================
+   HOVER
+=========================== */
+
+.profil-menu button:hover {
+
+    background: rgba(37, 99, 235, 0.08);
+
+}
+
+
+/* ===========================
+   ICONES
+=========================== */
+
+.profil-menu button svg {
+
+    color: #2563eb;
+
+}
+
+
+/* ===========================
+   DECONNEXION
+=========================== */
+
+.profil-menu button.logout {
+
+    color: #dc2626;
+
+}
+
+
+.profil-menu button.logout svg {
+
+    color: #dc2626;
+
+}
+
+
+.profil-menu button.logout:hover {
+
+    background: rgba(220, 38, 38, 0.08);
+
+}
+
+
+
+
+.modal-photo{
+
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+background:rgba(0,0,0,.5);
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+z-index:2000;
+
+
+}
+
+
+
+.modal-photo-content{
+
+
+background:white;
+
+padding:30px;
+
+border-radius:15px;
+
+width:350px;
+
+text-align:center;
+
+
+}
+
+
+
+.modal-photo-content input{
+
+
+margin:20px 0;
+
+
+}
+
+
+
+.modal-actions{
+
+
+display:flex;
+
+justify-content:center;
+
+gap:15px;
+
+
+}
+
+
+
+.btn-save-photo{
+
+
+background:#2563eb;
+
+color:white;
+
+padding:10px 20px;
+
+border-radius:8px;
+
+border:none;
+
+cursor:pointer;
+
+
+}
+
+
+
+.btn-cancel-photo{
+
+
+background:#dc2626;
+
+color:white;
+
+padding:10px 20px;
+
+border-radius:8px;
+
+border:none;
+
+cursor:pointer;
+
+
+}
+
+
+.navbar-link-ia {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+.navbar-link-ia svg {
+    font-size: 16px;
+}
+
+.navbar-link-ia:hover {
+    color: #4338ca;
+}
+
+.navbar-link-ia.active {
+    color: #4338ca;
+}

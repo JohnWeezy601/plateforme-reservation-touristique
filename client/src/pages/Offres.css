@@ -1,0 +1,1012 @@
+.offres-admin{
+
+padding:30px;
+
+background:#f8fafc;
+
+min-height:100vh;
+
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+
+.offres-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:30px;
+
+}
+
+
+
+.offres-header h1{
+
+font-size:32px;
+
+color:#1e293b;
+
+}
+
+
+
+.offres-header p{
+
+color:#64748b;
+
+}
+
+
+
+
+
+.btn-add-offre{
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:14px 25px;
+
+border-radius:12px;
+
+font-size:16px;
+
+cursor:pointer;
+
+}
+
+
+
+.btn-add-offre:hover{
+
+background:#1d4ed8;
+
+}
+
+
+
+/* =========================
+   STATISTIQUES
+========================= */
+
+
+.offres-stats{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:25px;
+
+margin-bottom:30px;
+
+}
+
+
+
+.stat-card{
+
+background:white;
+
+padding:25px;
+
+border-radius:18px;
+
+box-shadow:
+0 8px 20px rgba(0,0,0,0.08);
+
+}
+
+
+
+.stat-card h2{
+
+font-size:35px;
+
+color:#2563eb;
+
+margin:0;
+
+}
+
+
+
+.stat-card p{
+
+color:#64748b;
+
+}
+
+
+
+
+
+/* =========================
+   FORMULAIRE
+========================= */
+
+
+.offre-form-card{
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+box-shadow:
+0 10px 25px rgba(0,0,0,0.08);
+
+margin-bottom:30px;
+
+}
+
+
+
+.offre-form-card h2{
+
+margin-bottom:25px;
+
+color:#1e293b;
+
+}
+
+
+
+
+.form-grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:20px;
+
+}
+
+
+
+.form-grid input,
+.form-grid select,
+textarea{
+
+
+padding:14px;
+
+border:1px solid #cbd5e1;
+
+border-radius:10px;
+
+font-size:15px;
+
+}
+
+
+
+textarea{
+
+width:100%;
+
+margin-top:20px;
+
+}
+
+
+
+
+.upload-zone{
+
+margin-top:20px;
+
+padding:30px;
+
+border:2px dashed #94a3b8;
+
+border-radius:15px;
+
+text-align:center;
+
+color:#64748b;
+
+}
+
+
+
+
+.upload-zone input{
+
+margin-top:10px;
+
+}
+
+
+
+
+.btn-save{
+
+margin-top:25px;
+
+background:#16a34a;
+
+color:white;
+
+border:none;
+
+padding:14px 30px;
+
+border-radius:12px;
+
+font-size:16px;
+
+cursor:pointer;
+
+}
+
+
+
+.btn-save:hover{
+
+background:#15803d;
+
+}
+
+
+
+
+
+/* =========================
+   LISTE DES OFFRES
+========================= */
+
+
+.offres-list-card{
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+box-shadow:
+0 10px 25px rgba(0,0,0,0.08);
+
+}
+
+
+
+
+
+.offres-admin-list{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(280px,1fr));
+
+gap:25px;
+
+margin-top:30px;
+
+}
+
+
+
+
+
+.offre-admin-card{
+
+position:relative;
+
+background:white;
+
+border-radius:15px;
+
+overflow:hidden;
+
+box-shadow:
+0 5px 15px rgba(0,0,0,0.1);
+
+}
+
+
+
+
+
+.offre-admin-card img{
+
+width:100%;
+
+height:180px;
+
+object-fit:cover;
+
+display:block;
+
+}
+
+
+
+
+
+.offre-admin-card .info-offre{
+
+padding:20px;
+
+}
+
+
+
+
+/* ============================
+   MENU TROIS POINTS SUR IMAGE
+============================ */
+
+
+.offre-admin-card{
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+
+
+
+
+/* bouton trois points sur image */
+
+.menu-offre{
+
+position:absolute;
+
+top:15px;
+
+right:15px;
+
+z-index:20;
+
+}
+
+
+/* bouton */
+
+.btn-menu-offre{
+
+background:transparent;
+
+border:none;
+
+color:white;
+
+font-size:32px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+padding:0;
+
+text-shadow:
+0 2px 6px rgba(0,0,0,0.9);
+
+}
+
+
+
+/* menu */
+
+.menu-actions{
+
+
+position:absolute;
+
+top:35px;
+
+right:0;
+
+
+width:140px;
+
+
+background:rgba(0,0,0,0.65);
+
+
+border-radius:8px;
+
+
+padding:5px;
+
+
+}
+
+
+
+.menu-actions button{
+
+
+display:block;
+
+
+width:100%;
+
+
+background:transparent;
+
+
+border:none;
+
+
+color:white;
+
+
+padding:10px;
+
+
+cursor:pointer;
+
+
+text-align:left;
+
+
+font-size:14px;
+
+
+}
+
+
+
+
+.menu-actions button:hover{
+
+
+background:rgba(255,255,255,0.2);
+
+
+}
+
+
+
+
+.menu-actions button:last-child{
+
+
+color:#ff7777;
+
+
+}
+
+/* =========================
+   MODALE OFFRE
+========================= */
+
+
+.modal-overlay{
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+
+    background:rgba(0,0,0,0.55);
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    z-index:9999;
+
+
+    backdrop-filter:blur(3px);
+
+
+}
+
+
+
+
+
+.modal-offre{
+
+
+    width:700px;
+
+
+    max-height:90vh;
+
+
+    overflow-y:auto;
+
+
+    background:white;
+
+
+    border-radius:20px;
+
+
+    padding:30px;
+
+
+    box-shadow:
+
+    0 20px 50px rgba(0,0,0,0.3);
+
+
+    animation:
+
+    modalAnimation .3s ease;
+
+
+}
+
+
+
+
+@keyframes modalAnimation{
+
+
+from{
+
+    opacity:0;
+
+    transform:translateY(-40px);
+
+}
+
+
+to{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+}
+
+
+}
+
+
+
+
+
+
+/* =========================
+   HEADER MODAL
+========================= */
+
+
+.modal-header{
+
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+
+}
+
+
+
+.modal-header h2{
+
+
+    color:#2563eb;
+
+    margin:0;
+
+    font-size:25px;
+
+
+}
+
+
+
+
+
+.close-modal{
+
+
+    width:35px;
+
+    height:35px;
+
+
+    border:none;
+
+
+    border-radius:50%;
+
+
+    background:#ef4444;
+
+
+    color:white;
+
+
+    font-size:20px;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+.close-modal:hover{
+
+
+    background:#dc2626;
+
+
+}
+
+
+
+
+
+
+/* =========================
+   FORMULAIRE MODAL
+========================= */
+
+
+.modal-offre .form-grid{
+
+
+    display:grid;
+
+
+    grid-template-columns:repeat(2,1fr);
+
+
+    gap:15px;
+
+
+}
+
+
+
+
+.modal-offre input,
+.modal-offre select,
+.modal-offre textarea{
+
+
+    width:100%;
+
+
+    box-sizing:border-box;
+
+
+    padding:13px;
+
+
+    border-radius:10px;
+
+
+    border:1px solid #cbd5e1;
+
+
+    font-size:15px;
+
+
+}
+
+
+
+
+.modal-offre input:focus,
+.modal-offre select:focus,
+.modal-offre textarea:focus{
+
+
+    outline:none;
+
+
+    border-color:#2563eb;
+
+
+    box-shadow:
+
+    0 0 5px rgba(37,99,235,.3);
+
+
+}
+
+
+
+
+
+
+.modal-offre textarea{
+
+
+    margin-top:20px;
+
+
+    resize:none;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   ZONE IMAGE
+========================= */
+
+
+.modal-offre .upload-zone{
+
+
+    margin-top:20px;
+
+
+    padding:25px;
+
+
+    border:2px dashed #2563eb;
+
+
+    border-radius:15px;
+
+
+    text-align:center;
+
+
+    color:#64748b;
+
+
+}
+
+
+
+
+
+.modal-offre .upload-zone label{
+
+
+    display:block;
+
+
+    font-size:18px;
+
+
+    color:#2563eb;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   BOUTON ENREGISTRER
+========================= */
+
+
+.modal-offre .btn-save{
+
+
+    width:100%;
+
+
+    margin-top:25px;
+
+
+    padding:14px;
+
+
+    border:none;
+
+
+    border-radius:12px;
+
+
+    background:#16a34a;
+
+
+    color:white;
+
+
+    font-size:16px;
+
+
+    font-weight:bold;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+
+.modal-offre .btn-save:hover{
+
+
+    background:#15803d;
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   INFORMATIONS CARTE OFFRE
+========================= */
+
+
+.offre-admin-card > div:not(.menu-offre){
+
+
+    padding:20px;
+
+
+}
+
+
+
+.offre-admin-card h3{
+
+
+    color:#2563eb;
+
+
+    margin-bottom:12px;
+
+
+}
+
+
+
+
+.offre-admin-card p{
+
+
+    color:#475569;
+
+
+    margin:8px 0;
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   SCROLL MODAL
+========================= */
+
+
+.modal-offre::-webkit-scrollbar{
+
+
+    width:8px;
+
+
+}
+
+
+
+.modal-offre::-webkit-scrollbar-thumb{
+
+
+    background:#2563eb;
+
+
+    border-radius:10px;
+
+
+}
+
+
+
+
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+
+@media(max-width:700px){
+
+
+
+.offres-header{
+
+
+    flex-direction:column;
+
+
+    gap:20px;
+
+
+}
+
+
+
+.offres-stats{
+
+
+    grid-template-columns:1fr;
+
+
+}
+
+
+
+
+.modal-offre{
+
+
+    width:90%;
+
+
+    padding:20px;
+
+
+}
+
+
+
+
+.modal-offre .form-grid{
+
+
+    grid-template-columns:1fr;
+
+
+}
+
+
+
+}
