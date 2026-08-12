@@ -535,3 +535,167 @@ cursor:pointer;
 .navbar-link-ia.active {
     color: #4338ca;
 }
+
+
+/* =====================================
+   CONTENEUR PLUS
+===================================== */
+
+.plus-menu-container {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    height: 100%;
+}
+
+
+/* =====================================
+   BOUTON PLUS
+===================================== */
+
+.plus-button {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    height: 100%;
+
+    padding: 0;
+
+    margin: 0;
+
+    background: transparent;
+
+    border: none;
+
+    color: #334155;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.plus-button:hover {
+    color: #2563eb;
+}
+
+
+/* =====================================
+   FLECHE
+===================================== */
+
+.plus-arrow {
+    font-size: 11px;
+
+    transition: transform 0.25s ease;
+}
+
+.plus-arrow.rotate {
+    transform: rotate(180deg);
+}
+
+
+/* =====================================
+   MENU PLUS
+===================================== */
+
+.plus-menu {
+    position: absolute;
+
+    top: calc(100% + 5px);
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 190px;
+
+    margin: 0;
+
+    padding: 0;
+
+    background: transparent;
+
+    z-index: 1000;
+
+    animation: plusMenuDown 0.2s ease;
+}
+
+
+/* =====================================
+   ELEMENTS DU MENU
+===================================== */
+
+.plus-menu a {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px 15px;
+
+    background: white;
+
+    color: #334155;
+
+    text-decoration: none;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+
+    margin-bottom: 5px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+    white-space: nowrap;
+
+    transition: 0.2s ease;
+}
+
+.plus-menu a:hover {
+    background: #eff6ff;
+
+    color: #2563eb;
+}
+
+
+/* =====================================
+   ANIMATION
+===================================== */
+
+@keyframes plusMenuDown {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(0);
+    }
+
+}

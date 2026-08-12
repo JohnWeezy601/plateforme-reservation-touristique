@@ -1,30 +1,21 @@
 import NavbarPublic from "./NavbarPublic";
 import Footer from "./Footer";
+import AssistantTouristique from "./AssistantTouristique";
 
+function PublicLayout({ children }) {
 
-function PublicLayout({children}){
+    return (
+        <>
+            <NavbarPublic />
 
+            {children}
 
-return (
+            {/* 🤖 Assistant touristique IA */}
+            <AssistantTouristique />
 
-    <>
-
-        <NavbarPublic/>
-
-
-        {children}
-
-
-        <Footer/>
-
-
-    </>
-
-
-);
-
-
+            <Footer />
+        </>
+    );
 }
-
 
 export default PublicLayout;

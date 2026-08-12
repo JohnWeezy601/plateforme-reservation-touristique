@@ -64,6 +64,9 @@ require("./routes/dashboardRoutes");
 const recuRoutes =
 require("./routes/recuRoutes");
 
+const assistantRoutes =
+ require("./routes/assistantRoutes");
+
 
 
 const app = express();
@@ -247,7 +250,10 @@ app.use(
 );
 
 
-
+app.use(
+    "/api/assistant-touristique",
+    assistantRoutes
+);
 
 // =============================
 // Test API

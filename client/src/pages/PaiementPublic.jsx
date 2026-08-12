@@ -431,6 +431,7 @@ alert(
 "Paiement envoyé. En attente de validation."
 
 );
+navigate("/mes-reservations");
 
 
 
@@ -572,7 +573,6 @@ Résumé réservation
 
 
 }
-
 
 
 
@@ -1322,19 +1322,35 @@ setPreuve(e.target.files[0])
 
 
 
-
 {
+    preuve && (
+        <div className="preuve-selectionnee">
 
-preuve &&
+            <div className="preuve-header">
 
-<p>
+                <FaCheckCircle />
 
-<FaCheckCircle/>
+                <span>
+                    Preuve sélectionnée : {preuve.name}
+                </span>
 
-{preuve.name}
+            </div>
 
-</p>
+            {preuve.type.startsWith("image/") && (
 
+                <div className="preuve-preview">
+
+                    <img
+                        src={URL.createObjectURL(preuve)}
+                        alt="Aperçu de la preuve de paiement"
+                    />
+
+                </div>
+
+            )}
+
+        </div>
+    )
 }
 
 

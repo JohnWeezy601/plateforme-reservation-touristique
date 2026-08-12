@@ -1,0 +1,997 @@
+
+/* =====================================================
+   BOUTON FLOTTANT
+===================================================== */
+
+.assistant-floating-button {
+
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: 60px;
+    height: 60px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(37, 99, 235, 0.35);
+
+    z-index: 9999;
+
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.assistant-floating-button:hover {
+
+    background: #1d4ed8;
+
+    transform: scale(1.08);
+
+    box-shadow:
+        0 10px 30px rgba(37, 99, 235, 0.45);
+}
+
+
+/* =====================================================
+   FENETRE PRINCIPALE
+===================================================== */
+
+.assistant-touristique {
+
+    position: fixed;
+
+    right: 25px;
+    bottom: 95px;
+
+    width: 390px;
+    height: 590px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow:
+        0 15px 50px rgba(0, 0, 0, 0.18);
+
+    border: 1px solid #e2e8f0;
+
+    z-index: 9998;
+
+    animation:
+        assistantOpen 0.25s ease;
+}
+
+
+/* =====================================================
+   ANIMATION OUVERTURE
+===================================================== */
+
+@keyframes assistantOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(20px)
+            scale(0.95);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.assistant-header {
+
+    min-height: 75px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 12px 15px;
+
+    gap: 12px;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   ICONE ROBOT HEADER
+===================================================== */
+
+.assistant-header-icon {
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.18);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   TEXTE HEADER
+===================================================== */
+
+.assistant-header-text {
+
+    display: flex;
+
+    flex-direction: column;
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+.assistant-header-text strong {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+.assistant-header-text span {
+
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    opacity: 0.85;
+}
+
+
+/* =====================================================
+   BOUTON FERMER
+===================================================== */
+
+.assistant-close {
+
+    width: 35px;
+    height: 35px;
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    font-size: 17px;
+
+    transition:
+        background 0.2s ease;
+}
+
+.assistant-close:hover {
+
+    background:
+        rgba(255, 255, 255, 0.18);
+}
+
+
+/* =====================================================
+   PREFERENCES
+===================================================== */
+
+.assistant-preferences {
+
+    padding: 8px 12px;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    border-bottom:
+        1px solid #e2e8f0;
+
+    background: #f8fafc;
+
+    max-height: 75px;
+
+    overflow-y: auto;
+
+    flex-shrink: 0;
+}
+
+.assistant-preferences:empty {
+
+    display: none;
+}
+
+.assistant-preferences span {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 5px 8px;
+
+    border-radius: 20px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+.assistant-preferences span svg {
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   ZONE DES MESSAGES
+===================================================== */
+
+.assistant-messages {
+
+    flex: 1;
+
+    padding: 15px;
+
+    overflow-y: auto;
+
+    background: #f8fafc;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    scroll-behavior: smooth;
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+.assistant-messages::-webkit-scrollbar {
+
+    width: 5px;
+}
+
+.assistant-messages::-webkit-scrollbar-track {
+
+    background: transparent;
+}
+
+.assistant-messages::-webkit-scrollbar-thumb {
+
+    background: #cbd5e1;
+
+    border-radius: 10px;
+}
+
+.assistant-messages::-webkit-scrollbar-thumb:hover {
+
+    background: #94a3b8;
+}
+
+
+/* =====================================================
+   MESSAGE GENERAL
+===================================================== */
+
+.assistant-message {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 7px;
+
+    max-width: 92%;
+
+    animation:
+        messageAppear 0.2s ease;
+}
+
+@keyframes messageAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(5px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* =====================================================
+   MESSAGE ASSISTANT
+===================================================== */
+
+.bot-message {
+
+    align-self: flex-start;
+}
+
+
+/* =====================================================
+   MESSAGE UTILISATEUR
+===================================================== */
+
+.user-message {
+
+    align-self: flex-end;
+
+    justify-content: flex-end;
+}
+
+
+/* =====================================================
+   AVATAR ROBOT
+===================================================== */
+
+.message-avatar {
+
+    width: 30px;
+    height: 30px;
+
+    min-width: 30px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   CONTENU MESSAGE
+===================================================== */
+
+.message-content {
+
+    padding: 10px 13px;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    white-space: normal;
+
+    word-break: break-word;
+
+    min-width: 0;
+}
+
+
+/* =====================================================
+   MESSAGE BOT
+===================================================== */
+
+.bot-message .message-content {
+
+    background: white;
+
+    color: #334155;
+
+    border:
+        1px solid #e2e8f0;
+
+    border-bottom-left-radius: 4px;
+
+    box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =====================================================
+   MESSAGE UTILISATEUR
+===================================================== */
+
+.user-message .message-content {
+
+    background: #2563eb;
+
+    color: white;
+
+    border-bottom-right-radius: 4px;
+
+    box-shadow:
+        0 2px 5px rgba(37, 99, 235, 0.15);
+}
+
+
+/* =====================================================
+   CARTES DES OFFRES
+===================================================== */
+
+.assistant-offers {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 10px;
+
+    width: 100%;
+}
+
+
+/* =====================================================
+   CARTE OFFRE
+===================================================== */
+
+.assistant-offer-card {
+
+    width: 100%;
+
+    background: white;
+
+    border:
+        1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.06);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.assistant-offer-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =====================================================
+   IMAGE OFFRE
+===================================================== */
+
+.assistant-offer-card img {
+
+    display: block;
+
+    width: 100%;
+
+    height: 120px;
+
+    object-fit: cover;
+
+    background: #e2e8f0;
+}
+
+
+/* =====================================================
+   CONTENU CARTE
+===================================================== */
+
+.assistant-offer-content {
+
+    padding: 11px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+/* =====================================================
+   TITRE OFFRE
+===================================================== */
+
+.assistant-offer-content strong {
+
+    display: block;
+
+    color: #1e293b;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+
+/* =====================================================
+   INFORMATIONS OFFRE
+===================================================== */
+
+.assistant-offer-content > span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+    line-height: 1.3;
+}
+
+.assistant-offer-content > span svg {
+
+    color: #2563eb;
+
+    font-size: 11px;
+
+    min-width: 11px;
+}
+
+
+/* =====================================================
+   BOUTON VOIR L'OFFRE
+===================================================== */
+
+.assistant-offer-button {
+
+    margin-top: 5px;
+
+    width: 100%;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 8px 10px;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.assistant-offer-button:hover {
+
+    background: #1d4ed8;
+
+    transform:
+        translateY(-1px);
+}
+
+.assistant-offer-button svg {
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   ANIMATION CHARGEMENT
+===================================================== */
+
+.assistant-typing {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    min-width: 50px;
+
+    min-height: 20px;
+}
+
+.assistant-typing span {
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #94a3b8;
+
+    animation:
+        assistantTyping
+        1.2s infinite ease-in-out;
+}
+
+.assistant-typing span:nth-child(2) {
+
+    animation-delay:
+        0.15s;
+}
+
+.assistant-typing span:nth-child(3) {
+
+    animation-delay:
+        0.3s;
+}
+
+@keyframes assistantTyping {
+
+    0%,
+    60%,
+    100% {
+
+        transform:
+            translateY(0);
+
+        opacity: 0.4;
+    }
+
+    30% {
+
+        transform:
+            translateY(-4px);
+
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
+   ZONE DE SAISIE
+===================================================== */
+
+.assistant-input-container {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 8px;
+
+    padding: 10px;
+
+    background: white;
+
+    border-top:
+        1px solid #e2e8f0;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   TEXTAREA
+===================================================== */
+
+.assistant-input-container textarea {
+
+    flex: 1;
+
+    min-height: 40px;
+
+    max-height: 90px;
+
+    resize: none;
+
+    border:
+        1px solid #cbd5e1;
+
+    border-radius: 12px;
+
+    padding: 10px 12px;
+
+    outline: none;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    color: #334155;
+
+    background: #f8fafc;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    box-sizing: border-box;
+}
+
+.assistant-input-container textarea:focus {
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.1);
+
+    background: white;
+}
+
+.assistant-input-container textarea::placeholder {
+
+    color: #94a3b8;
+}
+
+
+/* =====================================================
+   BOUTON ENVOYER
+===================================================== */
+
+.assistant-send-button {
+
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.assistant-send-button:hover:not(:disabled) {
+
+    background: #1d4ed8;
+
+    transform:
+        translateY(-1px);
+}
+
+.assistant-send-button:disabled {
+
+    background: #cbd5e1;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.assistant-footer {
+
+    text-align: center;
+
+    padding: 6px;
+
+    background: white;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    border-top:
+        1px solid #f1f5f9;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   RESPONSIVE TABLETTE / MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .assistant-touristique {
+
+        right: 15px;
+
+        bottom: 85px;
+
+        width:
+            calc(100vw - 30px);
+
+        height:
+            min(
+                590px,
+                calc(100vh - 110px)
+            );
+
+        border-radius: 16px;
+    }
+
+
+    .assistant-floating-button {
+
+        right: 15px;
+
+        bottom: 15px;
+
+        width: 55px;
+
+        height: 55px;
+
+        font-size: 22px;
+    }
+
+
+    .assistant-message {
+
+        max-width: 94%;
+    }
+
+
+    .assistant-offer-card img {
+
+        height: 110px;
+    }
+}
+
+
+/* =====================================================
+   PETIT ECRAN
+===================================================== */
+
+@media (max-width: 400px) {
+
+    .assistant-touristique {
+
+        right: 10px;
+
+        bottom: 80px;
+
+        width:
+            calc(100vw - 20px);
+
+        height:
+            calc(100vh - 100px);
+    }
+
+
+    .assistant-header {
+
+        min-height: 68px;
+    }
+
+
+    .assistant-message {
+
+        max-width: 95%;
+    }
+
+
+    .assistant-input-container {
+
+        padding: 8px;
+    }
+
+
+    .assistant-offer-content {
+
+        padding: 9px;
+    }
+
+
+    .assistant-offer-card img {
+
+        height: 100px;
+    }
+}
+
