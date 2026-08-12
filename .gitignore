@@ -88,3 +88,10 @@ server/uploads/
 # OS
 .DS_Store
 Thumbs.db
+
+
+
+# Tests IA locaux
+server/testGeminiService.js
+server/testIA.js
+server/testIAService.js
