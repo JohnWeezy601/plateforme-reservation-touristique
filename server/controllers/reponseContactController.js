@@ -2,12 +2,16 @@ const db = require("../db");
 
 const envoyerEmailClient = require("../services/emailService");
 
-
+console.log("🔥 reponseContactController.js CHARGE");
 // =============================
 // ENVOYER UNE REPONSE CLIENT
 // =============================
 
 exports.envoyerReponse = async(req,res)=>{
+  console.log("====================================");
+    console.log("🚨 POST /api/reponses REÇU");
+    console.log("BODY :", req.body);
+    console.log("====================================");
 
 
     const {
@@ -15,6 +19,7 @@ exports.envoyerReponse = async(req,res)=>{
         message
     } = req.body;
 
+    
 
 
     try{

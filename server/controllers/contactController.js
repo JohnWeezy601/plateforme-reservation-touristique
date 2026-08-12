@@ -104,54 +104,62 @@ exports.createContact = async(req,res)=>{
 };
 
 
-
 // =============================
-// AFFICHER CONTACTS
+// AFFICHER CONTACTS AVEC PROFIL
 // =============================
 
-exports.getContacts = async(req,res)=>{
+exports.getContacts = async (req, res) => {
 
-
-    try{
-
+    try {
 
         const [contacts] = await db.query(
 
             `
-            SELECT * FROM contact
-            ORDER BY date_envoi DESC
+            SELECT
+                c.id_contact,
+                c.nom,
+                c.email,
+                c.sujet,
+                c.message,
+                c.date_envoi,
+                c.statut,
+
+                u.id_utilisateur,
+                u.prenom AS utilisateur_prenom,
+                u.nom AS utilisateur_nom,
+                u.photo AS photo_profil,
+                u.role
+
+            FROM contact c
+
+            LEFT JOIN utilisateur u
+                ON LOWER(TRIM(c.email)) = LOWER(TRIM(u.email))
+
+            ORDER BY c.date_envoi DESC
             `
 
         );
 
-
-
         res.json(contacts);
 
-
-
     }
-    catch(error){
 
+    catch (error) {
 
         console.log(
             "Erreur récupération contacts :",
             error
         );
 
-
         res.status(500).json({
 
-            message:"Erreur récupération contacts"
+            message: "Erreur récupération contacts"
 
         });
 
-
     }
 
-
 };
-
 
 
 
