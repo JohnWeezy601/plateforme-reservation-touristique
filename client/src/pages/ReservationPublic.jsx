@@ -1,592 +1,1234 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
+import {
+    FaArrowLeft,
+    FaCheckCircle,
+    FaCalendarAlt,
+    FaUsers,
+    FaMapMarkerAlt,
+    FaMoneyBillWave,
+    FaClipboardList,
+    FaClock,
+    FaHome,
+    FaExclamationCircle
+} from "react-icons/fa";
+
 import api from "../api/api";
+
 import "./ReservationPublic.css";
 
 
-function ReservationPublic(){
+function ReservationPublic() {
 
+    const { id } = useParams();
 
-const {id}=useParams();
+    const navigate = useNavigate();
 
-const navigate = useNavigate();
 
+    // =====================================================
+    // ÉTATS
+    // =====================================================
 
+    const [offre, setOffre] = useState(null);
 
-const [offre,setOffre]=useState(null);
+    const [nombrePersonnes, setNombrePersonnes] =
+        useState(1);
 
-const [nombrePersonnes,setNombrePersonnes]=useState(1);
+    const [dateDebut, setDateDebut] =
+        useState("");
 
-const [dateDebut,setDateDebut]=useState("");
+    const [dateFin, setDateFin] =
+        useState("");
 
-const [dateFin,setDateFin]=useState("");
+    const [loading, setLoading] =
+        useState(false);
 
-const [loading,setLoading]=useState(false);
+    const [reservationEffectuee, setReservationEffectuee] =
+        useState(false);
 
+    const [erreur, setErreur] =
+        useState("");
 
 
+    // =====================================================
+    // UTILISATEUR CONNECTÉ
+    // =====================================================
 
-// ===============================
-// Vérification utilisateur connecté
-// ===============================
+    const getUtilisateurConnecte = () => {
 
+        const userStorage =
+            localStorage.getItem("utilisateur");
 
-const getUtilisateurConnecte = ()=>{
 
+        if (!userStorage) {
+            return null;
+        }
 
-const user = localStorage.getItem("utilisateur");
 
+        try {
 
-if(!user){
+            const data =
+                JSON.parse(userStorage);
 
-return null;
 
-}
+            return data?.utilisateur
+                ? data.utilisateur
+                : data;
 
+        }
+        catch (error) {
 
-try{
+            console.log(
+                "Erreur lecture utilisateur :",
+                error
+            );
 
-return JSON.parse(user);
+            localStorage.removeItem(
+                "utilisateur"
+            );
 
+            return null;
+        }
 
-}
-catch(error){
+    };
 
-localStorage.removeItem("utilisateur");
 
-return null;
+    // =====================================================
+    // CHARGER L'OFFRE
+    // =====================================================
 
-}
+    useEffect(() => {
 
+        const chargerOffre = async () => {
 
-};
+            try {
 
+                const response =
+                    await api.get(
+                        `/offres/${id}`
+                    );
 
 
+                console.log(
+                    "Offre chargée :",
+                    response.data
+                );
 
 
-// ===============================
-// Charger offre
-// ===============================
+                setOffre(
+                    response.data
+                );
 
+            }
+            catch (error) {
 
-useEffect(()=>{
+                console.log(
+                    "Erreur chargement offre :",
+                    error
+                );
 
+                setErreur(
+                    "Impossible de charger cette offre."
+                );
 
-const chargerOffre = async()=>{
+            }
 
+        };
 
-try{
 
+        chargerOffre();
 
-const res = await api.get(
+    }, [id]);
 
-`/offres/${id}`
 
-);
+    // =====================================================
+    // RETOUR
+    // =====================================================
 
+    const retour = () => {
 
-setOffre(res.data);
+        navigate(-1);
 
+    };
 
 
-}
+    // =====================================================
+    // RETOUR AUX OFFRES
+    // =====================================================
 
-catch(error){
+    const retourAuxOffres = () => {
 
-console.log(
-"Erreur chargement offre",
-error
-);
+        navigate(
+            "/offres-public"
+        );
 
+    };
 
-}
 
+    // =====================================================
+    // MES RÉSERVATIONS
+    // =====================================================
 
-};
+    const allerMesReservations = () => {
 
+        navigate(
+            "/mes-reservations"
+        );
 
-chargerOffre();
+    };
 
 
+    // =====================================================
+    // FORMATAGE PRIX EURO
+    // =====================================================
 
-},[id]);
+    const formaterPrix = (prix) => {
 
+        return Number(
+            prix || 0
+        ).toLocaleString(
+            "fr-FR",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
 
+    };
 
 
+    // =====================================================
+    // DATE MINIMUM
+    // =====================================================
 
+    const obtenirDateAujourdhui = () => {
 
+        const date =
+            new Date();
 
-// ===============================
-// Réserver
-// ===============================
 
+        const annee =
+            date.getFullYear();
 
-const reserver = async()=>{
 
+        const mois =
+            String(
+                date.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
 
-const user = getUtilisateurConnecte();
 
+        const jour =
+            String(
+                date.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
 
 
-console.log(
-"USER AVANT RESERVATION :",
-user
-);
+        return `${annee}-${mois}-${jour}`;
 
+    };
 
 
+    // =====================================================
+    // RÉSERVATION
+    // =====================================================
 
-// ===============================
-// Pas connecté
-// ===============================
+    const reserver = async () => {
 
-if(!user){
+        const user =
+            getUtilisateurConnecte();
 
 
-const retour = `/reservation-public/${id}`;
+        console.log(
+            "Utilisateur avant réservation :",
+            user
+        );
 
 
-sessionStorage.setItem(
-"retourApresLogin",
-retour
-);
+        // =================================================
+        // UTILISATEUR NON CONNECTÉ
+        // =================================================
 
+        if (!user) {
 
+            const retourApresLogin =
+                `/reservation-public/${id}`;
 
-console.log(
-"TEST SESSION APRES SET :",
-sessionStorage.getItem("retourApresLogin")
-);
 
+            sessionStorage.setItem(
+                "retourApresLogin",
+                retourApresLogin
+            );
 
 
-setTimeout(()=>{
+            navigate(
+                "/login-client"
+            );
 
-navigate("/login-client");
 
-},100);
+            return;
 
+        }
 
 
-return;
+        // =================================================
+        // VÉRIFICATION UTILISATEUR
+        // =================================================
 
+        if (!user.id_utilisateur) {
 
-}
+            alert(
+                "Impossible d'identifier votre compte. Veuillez vous reconnecter."
+            );
 
+            return;
 
+        }
 
 
+        // =================================================
+        // VÉRIFICATION DATES
+        // =================================================
 
-// ===============================
-// Vérification dates
-// ===============================
+        if (
+            !dateDebut ||
+            !dateFin
+        ) {
 
+            alert(
+                "Veuillez sélectionner les dates du séjour."
+            );
 
-if(!dateDebut || !dateFin){
+            return;
 
+        }
 
-alert(
-"Veuillez sélectionner les dates du séjour"
-);
 
+        // =================================================
+        // VÉRIFICATION ORDRE DES DATES
+        // =================================================
 
-return;
+        if (
+            new Date(dateFin) <=
+            new Date(dateDebut)
+        ) {
 
+            alert(
+                "La date de fin doit être postérieure à la date de début."
+            );
 
-}
+            return;
 
+        }
 
 
+        // =================================================
+        // VÉRIFICATION NOMBRE PERSONNES
+        // =================================================
 
+        const nombre =
+            Number(
+                nombrePersonnes
+            );
 
 
-try{
+        if (
+            !nombre ||
+            nombre < 1
+        ) {
 
+            alert(
+                "Le nombre de personnes doit être supérieur à 0."
+            );
 
-setLoading(true);
+            return;
 
+        }
 
 
-const montant =
+        if (
+            offre.capacite &&
+            nombre > Number(offre.capacite)
+        ) {
 
-Number(offre.prix)
+            alert(
+                `Le nombre maximum de personnes pour cette offre est de ${offre.capacite}.`
+            );
 
-*
+            return;
 
-Number(nombrePersonnes);
+        }
 
 
+        try {
 
+            setLoading(true);
 
+            setErreur("");
 
 
-const response = await api.post(
+            // =================================================
+            // CALCUL MONTANT
+            // =================================================
+            //
+            // Le prix est déjà en EURO.
+            // Aucune conversion Ar -> Euro.
+            //
 
-"/reservations",
+            const montant =
+                Number(offre.prix || 0) *
+                nombre;
 
-{
 
+            // =================================================
+            // CRÉER RÉSERVATION
+            // =================================================
 
-id_utilisateur:
+            const response =
+                await api.post(
+                    "/reservations",
+                    {
 
-user.id_utilisateur,
+                        id_utilisateur:
+                            user.id_utilisateur,
 
+                        id_offre:
+                            offre.id_offre,
 
+                        date_debut_sejour:
+                            dateDebut,
 
-id_offre:
+                        date_fin_sejour:
+                            dateFin,
 
-offre.id_offre,
+                        nombre_personnes:
+                            nombre,
 
+                        montant_total:
+                            montant
 
+                    }
+                );
 
-date_debut_sejour:
 
-dateDebut,
+            console.log(
+                "Réponse réservation :",
+                response.data
+            );
 
 
+            // La réservation reste en attente
+            // de validation par l'administrateur.
 
-date_fin_sejour:
+            setReservationEffectuee(
+                true
+            );
 
-dateFin,
+        }
+        catch (error) {
 
+            console.log(
+                "Erreur réservation :",
+                error
+            );
 
 
-nombre_personnes:
+            const message =
+                error.response?.data?.message;
 
-Number(nombrePersonnes),
 
+            setErreur(
+                message ||
+                "Une erreur est survenue lors de l'enregistrement de votre réservation."
+            );
 
+        }
+        finally {
 
-montant_total:
+            setLoading(false);
 
-montant
+        }
 
+    };
 
-}
 
-);
+    // =====================================================
+    // CHARGEMENT OFFRE
+    // =====================================================
 
+    if (!offre) {
 
+        return (
 
+            <div className="reservation-page-loading">
 
-console.log(
-"REPONSE RESERVATION :",
-response.data
-);
+                <div className="reservation-loading-card">
 
+                    <div className="loading-spinner"></div>
 
+                    <h2>
+                        Chargement de l'offre...
+                    </h2>
 
+                    <p>
+                        Veuillez patienter quelques instants.
+                    </p>
 
-alert(
-    "Votre réservation a été envoyée avec succès. Veuillez attendre la validation de l'administrateur."
-);
+                </div>
 
+            </div>
 
+        );
 
-}
+    }
 
-catch(error){
 
+    // =====================================================
+    // ÉCRAN APRÈS RÉSERVATION
+    // =====================================================
 
-console.log(
-"Erreur réservation",
-error
-);
+    if (reservationEffectuee) {
 
+        const montantReservation =
+            Number(offre.prix || 0) *
+            Number(nombrePersonnes || 1);
 
-alert(
-"Erreur lors de la réservation"
-);
 
+        return (
 
+            <div className="reservation-public-page">
 
-}
+                <div className="reservation-success-container">
 
-finally{
 
+                    <div className="success-icon-container">
 
-setLoading(false);
+                        <FaCheckCircle />
 
+                    </div>
 
-}
 
+                    <h1>
+                        Réservation envoyée !
+                    </h1>
 
 
-};
+                    <p className="success-introduction">
 
+                        Votre demande de réservation a bien été
+                        enregistrée.
 
+                    </p>
 
 
+                    <div className="pending-status">
 
+                        <div className="pending-status-icon">
 
+                            <FaClock />
 
-if(!offre){
+                        </div>
 
 
-return(
+                        <div>
 
-<div className="loading">
+                            <strong>
+                                En attente de validation
+                            </strong>
 
-<h2>
-Chargement de l'offre...
-</h2>
+                            <p>
 
-</div>
+                                Votre réservation doit maintenant
+                                être traitée par l'administrateur.
 
-);
+                            </p>
 
+                        </div>
 
-}
+                    </div>
 
 
+                    <div className="success-information">
 
 
+                        <div className="success-info-item">
 
+                            <FaClipboardList />
 
+                            <div>
 
-return(
+                                <span>
+                                    Réservation
+                                </span>
 
+                                <strong>
+                                    Demande enregistrée
+                                </strong>
 
-<div className="reservation-public">
+                            </div>
 
+                        </div>
 
-<div className="reservation-card">
 
+                        <div className="success-info-item">
 
-<h1>
-Réserver cette offre
-</h1>
+                            <FaCalendarAlt />
 
+                            <div>
 
+                                <span>
+                                    Séjour
+                                </span>
 
-<div className="offre-reservation">
+                                <strong>
 
+                                    {dateDebut}
+                                    {" "}
+                                    →
+                                    {" "}
+                                    {dateFin}
 
-<img
+                                </strong>
 
-src={
+                            </div>
 
-offre.image
+                        </div>
 
-?
 
-`http://localhost:8081/uploads/${offre.image}`
+                        <div className="success-info-item">
 
-:
+                            <FaUsers />
 
-"/image-default.jpg"
+                            <div>
 
-}
+                                <span>
+                                    Participants
+                                </span>
 
-alt={offre.titre}
+                                <strong>
 
-/>
+                                    {nombrePersonnes}
+                                    {" "}
+                                    personne
+                                    {Number(nombrePersonnes) > 1 ? "s" : ""}
 
+                                </strong>
 
+                            </div>
 
-<div>
+                        </div>
 
 
-<h2>
+                        <div className="success-info-item">
 
-{offre.titre}
+                            <FaMoneyBillWave />
 
-</h2>
+                            <div>
 
+                                <span>
+                                    Montant
+                                </span>
 
+                                <strong>
 
-<p>
+                                    {formaterPrix(
+                                        montantReservation
+                                    )}
+                                    {" "}€
 
-{offre.description}
+                                </strong>
 
-</p>
+                            </div>
 
+                        </div>
 
+                    </div>
 
-<p>
 
-📍 {offre.destination}
+                    <div className="success-notice">
 
-</p>
+                        <FaExclamationCircle />
 
+                        <p>
 
+                            <strong>
+                                Que se passe-t-il maintenant ?
+                            </strong>
 
+                            <br />
 
-<h3>
+                            L'administrateur va examiner votre
+                            demande. Vous recevrez une notification
+                            dès que votre réservation sera
+                            confirmée ou rejetée.
 
-Prix :
+                            <br />
 
-{
+                            <span>
+                                Le paiement sera disponible
+                                uniquement après confirmation
+                                de votre réservation.
+                            </span>
 
-Number(offre.prix)
+                        </p>
 
-.toLocaleString("fr-FR")
+                    </div>
 
-}
 
-Ar / personne
+                    <div className="success-actions">
 
+                        <button
+                            type="button"
+                            className="success-primary-button"
+                            onClick={allerMesReservations}
+                        >
 
-</h3>
+                            <FaClipboardList />
 
+                            Voir mes réservations
 
-</div>
+                        </button>
 
 
+                        <button
+                            type="button"
+                            className="success-secondary-button"
+                            onClick={retourAuxOffres}
+                        >
 
-</div>
+                            <FaHome />
 
+                            Retour aux offres
 
+                        </button>
 
+                    </div>
 
+                </div>
 
+            </div>
 
-<div className="reservation-form">
+        );
 
+    }
 
-<label>
 
-Date début séjour
+    // =====================================================
+    // FORMULAIRE DE RÉSERVATION
+    // =====================================================
 
-</label>
+    const montantTotal =
+        Number(offre.prix || 0) *
+        Number(nombrePersonnes || 1);
 
 
+    return (
 
-<input
+        <div className="reservation-public-page">
 
-type="date"
+            <div className="reservation-container">
 
-value={dateDebut}
 
-onChange={(e)=>setDateDebut(e.target.value)}
+                {/* =================================================
+                    BOUTON RETOUR
+                ================================================= */}
 
-/>
+                <button
+                    type="button"
+                    className="reservation-back-button"
+                    onClick={retour}
+                >
 
+                    <FaArrowLeft />
 
+                    Retour
 
+                </button>
 
 
-<label>
+                {/* =================================================
+                    HEADER
+                ================================================= */}
 
-Date fin séjour
+                <div className="reservation-header">
 
-</label>
+                    <div>
 
+                        <span className="reservation-eyebrow">
+                            Réservation
+                        </span>
 
+                        <h1>
+                            Réserver cette offre
+                        </h1>
 
-<input
+                        <p>
+                            Complétez les informations ci-dessous
+                            pour envoyer votre demande de réservation.
+                        </p>
 
-type="date"
+                    </div>
 
-value={dateFin}
+                </div>
 
-onChange={(e)=>setDateFin(e.target.value)}
 
-/>
+                {/* =================================================
+                    ERREUR
+                ================================================= */}
 
+                {erreur && (
 
+                    <div className="reservation-error">
 
+                        <FaExclamationCircle />
 
+                        <span>
+                            {erreur}
+                        </span>
 
+                        <button
+                            type="button"
+                            onClick={() => setErreur("")}
+                        >
+                            ×
+                        </button>
 
-<label>
+                    </div>
 
-Nombre de personnes
+                )}
 
-</label>
 
+                {/* =================================================
+                    CONTENU
+                ================================================= */}
 
+                <div className="reservation-layout">
 
-<input
 
-type="number"
+                    {/* =================================================
+                        OFFRE
+                    ================================================= */}
 
-min="1"
+                    <div className="reservation-offer-card">
 
-max={offre.capacite}
 
-value={nombrePersonnes}
+                        <div className="reservation-offer-image">
 
-onChange={(e)=>setNombrePersonnes(e.target.value)}
+                            <img
+                                src={
+                                    offre.image
+                                        ? `http://localhost:8081/uploads/${offre.image}`
+                                        : "/image-default.jpg"
+                                }
+                                alt={
+                                    offre.titre ||
+                                    "Offre touristique"
+                                }
+                            />
 
-/>
 
+                            <div className="offer-price-badge">
 
+                                {formaterPrix(offre.prix)}
 
+                                <span>
+                                    € / personne
+                                </span>
 
+                            </div>
 
-<h3>
+                        </div>
 
-Total :
 
-{
+                        <div className="reservation-offer-content">
 
-(
+                            <span className="offer-label">
+                                Offre sélectionnée
+                            </span>
 
-Number(offre.prix)
 
-*
+                            <h2>
+                                {offre.titre}
+                            </h2>
 
-Number(nombrePersonnes)
 
-)
+                            {offre.destination && (
 
-.toLocaleString("fr-FR")
+                                <div className="offer-location">
 
-}
+                                    <FaMapMarkerAlt />
 
-Ar
+                                    <span>
+                                        {offre.destination}
+                                    </span>
 
-</h3>
+                                </div>
 
+                            )}
 
 
+                            <p className="offer-description">
 
-<button
+                                {offre.description ||
+                                    "Découvrez cette offre touristique et profitez d'une expérience inoubliable."
+                                }
 
-onClick={reserver}
+                            </p>
 
-disabled={loading}
 
->
+                            <div className="offer-details">
 
 
-{
+                                <div className="offer-detail">
 
-loading
+                                    <FaMoneyBillWave />
 
-?
+                                    <div>
 
-"Traitement..."
+                                        <span>
+                                            Prix
+                                        </span>
 
-:
+                                        <strong>
 
-"Confirmer ma réservation"
+                                            {formaterPrix(
+                                                offre.prix
+                                            )}
+                                            {" "}€
 
-}
+                                        </strong>
 
+                                    </div>
 
-</button>
+                                </div>
 
 
+                                {offre.capacite && (
 
+                                    <div className="offer-detail">
 
-</div>
+                                        <FaUsers />
 
+                                        <div>
 
+                                            <span>
+                                                Capacité
+                                            </span>
 
-</div>
+                                            <strong>
 
+                                                {offre.capacite}
+                                                {" "}
+                                                personnes
 
+                                            </strong>
 
-</div>
+                                        </div>
 
+                                    </div>
 
-);
+                                )}
 
+                            </div>
 
+                        </div>
+
+                    </div>
+
+
+                    {/* =================================================
+                        FORMULAIRE
+                    ================================================= */}
+
+                    <div className="reservation-form-card">
+
+                        <div className="form-card-header">
+
+                            <div className="form-header-icon">
+
+                                <FaClipboardList />
+
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Informations du séjour
+                                </h2>
+
+                                <p>
+                                    Indiquez vos dates et le nombre
+                                    de participants.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="reservation-form">
+
+
+                            {/* DATE DÉBUT */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="dateDebut">
+
+                                    <FaCalendarAlt />
+
+                                    Date de début
+
+                                </label>
+
+
+                                <input
+                                    id="dateDebut"
+                                    type="date"
+                                    min={
+                                        obtenirDateAujourdhui()
+                                    }
+                                    value={dateDebut}
+                                    onChange={(e) => {
+
+                                        setDateDebut(
+                                            e.target.value
+                                        );
+
+                                        if (
+                                            dateFin &&
+                                            e.target.value >= dateFin
+                                        ) {
+
+                                            setDateFin("");
+
+                                        }
+
+                                    }}
+                                />
+
+                            </div>
+
+
+                            {/* DATE FIN */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="dateFin">
+
+                                    <FaCalendarAlt />
+
+                                    Date de fin
+
+                                </label>
+
+
+                                <input
+                                    id="dateFin"
+                                    type="date"
+                                    min={
+                                        dateDebut ||
+                                        obtenirDateAujourdhui()
+                                    }
+                                    value={dateFin}
+                                    onChange={(e) =>
+                                        setDateFin(
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                            </div>
+
+
+                            {/* NOMBRE PERSONNES */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="nombrePersonnes">
+
+                                    <FaUsers />
+
+                                    Nombre de personnes
+
+                                </label>
+
+
+                                <input
+                                    id="nombrePersonnes"
+                                    type="number"
+                                    min="1"
+                                    max={
+                                        offre.capacite ||
+                                        undefined
+                                    }
+                                    value={nombrePersonnes}
+                                    onChange={(e) =>
+                                        setNombrePersonnes(
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+
+                                {offre.capacite && (
+
+                                    <small>
+
+                                        Maximum :
+                                        {" "}
+                                        {offre.capacite}
+                                        {" "}
+                                        personnes
+
+                                    </small>
+
+                                )}
+
+                            </div>
+
+
+                            {/* =================================================
+                                TOTAL
+                            ================================================= */}
+
+                            <div className="reservation-total">
+
+
+                                <div>
+
+                                    <span>
+                                        Prix par personne
+                                    </span>
+
+                                    <strong>
+
+                                        {formaterPrix(
+                                            offre.prix
+                                        )}
+                                        {" "}€
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Nombre de personnes
+                                    </span>
+
+                                    <strong>
+                                        × {nombrePersonnes}
+                                    </strong>
+
+                                </div>
+
+
+                                <div className="total-final">
+
+                                    <span>
+                                        Total
+                                    </span>
+
+                                    <strong>
+
+                                        {formaterPrix(
+                                            montantTotal
+                                        )}
+                                        {" "}€
+
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                                INFORMATION
+                            ================================================= */}
+
+                            <div className="form-information">
+
+                                <FaClock />
+
+                                <p>
+
+                                    Après l'envoi de votre
+                                    réservation, celle-ci sera
+                                    <strong>
+                                        {" "}en attente de validation
+                                    </strong>
+                                    {" "}par l'administrateur.
+
+                                </p>
+
+                            </div>
+
+
+                            {/* =================================================
+                                BOUTON
+                            ================================================= */}
+
+                            <button
+                                type="button"
+                                className="reservation-submit-button"
+                                onClick={reserver}
+                                disabled={loading}
+                            >
+
+                                {loading ? (
+
+                                    <>
+
+                                        <span className="button-spinner"></span>
+
+                                        Enregistrement...
+
+                                    </>
+
+                                ) : (
+
+                                    <>
+
+                                        <FaCheckCircle />
+
+                                        Confirmer ma réservation
+
+                                    </>
+
+                                )}
+
+                            </button>
+
+
+                            <p className="form-security-text">
+
+                                Votre demande sera enregistrée
+                                de manière sécurisée.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    );
 
 }
 

@@ -27,7 +27,7 @@ const [detailPaiement,setDetailPaiement] = useState(null);
 
 const [page,setPage] = useState(1);
 
-const paiementsParPage = 6;
+const paiementsParPage = 4;
 
 
 

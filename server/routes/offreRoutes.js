@@ -2,14 +2,18 @@ const express = require("express");
 
 const router = express.Router();
 
-const offreController = require("../controllers/offreController");
+const offreController =
+    require("../controllers/offreController");
 
-const upload = require("../middleware/upload");
+const offrePhotoController =
+    require("../controllers/offrePhotoController");
 
+const upload =
+    require("../middleware/upload");
 
 
 // =====================================
-// Ajouter une offre avec image
+// AJOUTER UNE OFFRE AVEC IMAGE PRINCIPALE
 // POST /api/offres
 // =====================================
 
@@ -21,9 +25,8 @@ router.post(
 
 
 
-
 // =====================================
-// Afficher toutes les offres
+// AFFICHER TOUTES LES OFFRES
 // GET /api/offres
 // =====================================
 
@@ -34,9 +37,45 @@ router.get(
 
 
 
+// =====================================
+// AJOUTER PLUSIEURS PHOTOS À UNE OFFRE
+// POST /api/offres/:id/photos
+// =====================================
+
+router.post(
+    "/:id/photos",
+    upload.array("photos", 10),
+    offrePhotoController.ajouterPhotos
+);
+
+
 
 // =====================================
-// Afficher une offre par ID
+// RÉCUPÉRER LES PHOTOS D'UNE OFFRE
+// GET /api/offres/:id/photos
+// =====================================
+
+router.get(
+    "/:id/photos",
+    offrePhotoController.getPhotos
+);
+
+
+
+// =====================================
+// SUPPRIMER UNE PHOTO
+// DELETE /api/offres/photos/:idPhoto
+// =====================================
+
+router.delete(
+    "/photos/:idPhoto",
+    offrePhotoController.supprimerPhoto
+);
+
+
+
+// =====================================
+// AFFICHER UNE OFFRE PAR ID
 // GET /api/offres/:id
 // =====================================
 
@@ -47,9 +86,8 @@ router.get(
 
 
 
-
 // =====================================
-// Modifier une offre
+// MODIFIER UNE OFFRE
 // PUT /api/offres/:id
 // =====================================
 
@@ -61,9 +99,8 @@ router.put(
 
 
 
-
 // =====================================
-// Supprimer une offre
+// SUPPRIMER UNE OFFRE
 // DELETE /api/offres/:id
 // =====================================
 

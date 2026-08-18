@@ -2,1194 +2,2189 @@ import { useEffect, useState } from "react";
 import api from "../api/api";
 import "./Offres.css";
 
+function Offres() {
+
+    // =========================================================
+    // DONNEES
+    // =========================================================
+
+    const [offres, setOffres] = useState([]);
+    const [destinations, setDestinations] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [prestataires, setPrestataires] = useState([]);
 
-function Offres(){
+    // =========================================================
+    // MODALE
+    // =========================================================
 
+    const [modal, setModal] = useState(false);
+    const [menuOuvert, setMenuOuvert] = useState(null);
 
-const [offres,setOffres]=useState([]);
+    const [modeModification, setModeModification] = useState(false);
+    const [idModification, setIdModification] = useState(null);
 
-const [destinations,setDestinations]=useState([]);
+    // =========================================================
+    // IMAGES
+    // =========================================================
 
-const [categories,setCategories]=useState([]);
+    const [image, setImage] = useState(null);
+    const [photosDetails, setPhotosDetails] = useState([]);
+    const [photosExistantes, setPhotosExistantes] = useState([]);
 
-const [prestataires,setPrestataires]=useState([]);
+    // =========================================================
+    // RECHERCHE
+    // =========================================================
 
+    const [recherche, setRecherche] = useState("");
 
-const [modal,setModal]=useState(false);
+    // =========================================================
+    // PAGINATION
+    // =========================================================
 
-const [menuOuvert,setMenuOuvert]=useState(null);
+    const [pageActuelle, setPageActuelle] = useState(1);
+    const offresParPage = 6;
 
+    // =========================================================
+    // CHARGEMENT
+    // =========================================================
 
-const [modeModification,setModeModification]=useState(false);
+    const [chargement, setChargement] = useState(false);
 
-const [idModification,setIdModification]=useState(null);
+    // =========================================================
+    // FORMULAIRE
+    // =========================================================
 
+    const [offre, setOffre] = useState({
+        id_prestataire: "",
+        id_destination: "",
+        id_categorie: "",
+        titre: "",
+        description: "",
+        prix: "",
+        capacite: "",
+        disponibilite: "",
+        date_debut: "",
+        date_fin: ""
+    });
 
+    // =========================================================
+    // ERREURS
+    // =========================================================
 
-const [image,setImage]=useState(null);
+    const [erreurs, setErreurs] = useState({});
 
+    // =========================================================
+    // CHARGER LES DONNEES
+    // =========================================================
 
+    const chargerDonnees = async () => {
 
-const [offre,setOffre]=useState({
+        try {
 
-id_prestataire:"",
-id_destination:"",
-id_categorie:"",
-titre:"",
-description:"",
-prix:"",
-capacite:"",
-disponibilite:"",
-date_debut:"",
-date_fin:""
+            console.log("🔄 Chargement des données...");
 
-});
+            const [
+                offresRes,
+                destinationsRes,
+                categoriesRes,
+                prestatairesRes
+            ] = await Promise.all([
+                api.get("/offres"),
+                api.get("/destinations"),
+                api.get("/categories"),
+                api.get("/prestataires")
+            ]);
 
+            setOffres(offresRes.data || []);
+            setDestinations(destinationsRes.data || []);
+            setCategories(categoriesRes.data || []);
+            setPrestataires(prestatairesRes.data || []);
 
+            console.log("✅ Données chargées");
 
+        }
+        catch (error) {
 
+            console.error(
+                "❌ Erreur chargement données :",
+                error
+            );
 
-// =================================
-// CHARGEMENT DONNEES
-// =================================
+        }
 
+    };
 
-const chargerDonnees=async()=>{
+    useEffect(() => {
 
+        chargerDonnees();
 
-try{
+    }, []);
 
+    // =========================================================
+    // CHANGEMENT INPUT
+    // =========================================================
 
-const [
-offresRes,
-destinationsRes,
-categoriesRes,
-prestatairesRes
+    const handleChange = (e) => {
 
-]=await Promise.all([
+        const { name, value } = e.target;
 
+        setOffre((ancienne) => ({
+            ...ancienne,
+            [name]: value
+        }));
 
-api.get("/offres"),
+        if (erreurs[name]) {
 
-api.get("/destinations"),
+            setErreurs((ancienne) => ({
+                ...ancienne,
+                [name]: ""
+            }));
 
-api.get("/categories"),
+        }
 
-api.get("/prestataires")
+    };
 
+    // =========================================================
+    // IMAGE PRINCIPALE
+    // =========================================================
 
-]);
+    const handleImage = (e) => {
 
+        const fichier = e.target.files?.[0];
 
+        if (!fichier) {
 
-setOffres(offresRes.data);
+            setImage(null);
+            return;
 
-setDestinations(destinationsRes.data);
+        }
 
-setCategories(categoriesRes.data);
+        const formatsAutorises = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/webp"
+        ];
 
-setPrestataires(prestatairesRes.data);
+        if (!formatsAutorises.includes(fichier.type)) {
 
+            alert(
+                "Format d'image non autorisé. Utilisez JPG, JPEG, PNG ou WEBP."
+            );
 
+            e.target.value = "";
+            setImage(null);
 
-}
+            return;
 
-catch(error){
+        }
 
+        if (fichier.size > 5 * 1024 * 1024) {
 
-console.log(
-"Erreur chargement :",
-error
-);
+            alert(
+                "L'image ne doit pas dépasser 5 Mo."
+            );
 
+            e.target.value = "";
+            setImage(null);
 
-}
+            return;
 
+        }
 
+        setImage(fichier);
 
-};
+    };
 
+    // =========================================================
+    // PHOTOS DETAILLEES
+    // =========================================================
 
+    const handlePhotosDetails = (e) => {
 
+        const fichiers = Array.from(
+            e.target.files || []
+        );
 
+        if (fichiers.length === 0) {
+            return;
+        }
 
-useEffect(()=>{
+        const formatsAutorises = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/webp"
+        ];
 
+        const fichiersValides = [];
 
-chargerDonnees();
+        for (const fichier of fichiers) {
 
+            if (!formatsAutorises.includes(fichier.type)) {
 
-},[]);
+                alert(
+                    `Le fichier "${fichier.name}" n'est pas une image autorisée.`
+                );
 
+                continue;
 
+            }
 
+            if (fichier.size > 5 * 1024 * 1024) {
 
+                alert(
+                    `Le fichier "${fichier.name}" dépasse 5 Mo.`
+                );
 
+                continue;
 
+            }
 
-// =================================
-// CHANGEMENT INPUT
-// =================================
+            fichiersValides.push(fichier);
 
+        }
 
-const handleChange=(e)=>{
+        const nombreDisponible =
+            10 - photosDetails.length;
 
+        if (nombreDisponible <= 0) {
 
-setOffre({
+            alert(
+                "Vous avez déjà sélectionné 10 photos."
+            );
 
-...offre,
+            e.target.value = "";
+            return;
 
-[e.target.name]:e.target.value
+        }
 
+        setPhotosDetails((anciennes) => [
+            ...anciennes,
+            ...fichiersValides.slice(
+                0,
+                nombreDisponible
+            )
+        ]);
 
-});
+        if (
+            fichiersValides.length >
+            nombreDisponible
+        ) {
 
+            alert(
+                "Maximum 10 photos détaillées."
+            );
 
-};
+        }
 
+        e.target.value = "";
 
+    };
 
+    // =========================================================
+    // SUPPRIMER PHOTO SELECTIONNEE
+    // =========================================================
 
+    const supprimerPhotoSelectionnee = (index) => {
 
+        setPhotosDetails((anciennes) =>
+            anciennes.filter(
+                (_, i) => i !== index
+            )
+        );
 
+    };
 
+    // =========================================================
+    // SUPPRIMER PHOTO EXISTANTE
+    // =========================================================
 
-// =================================
-// IMAGE
-// =================================
+    const supprimerPhotoExistante = async (idPhoto) => {
 
+        if (
+            !window.confirm(
+                "Voulez-vous vraiment supprimer cette photo ?"
+            )
+        ) {
+            return;
+        }
 
-const handleImage=(e)=>{
+        try {
 
+            await api.delete(
+                `/offres/photos/${idPhoto}`
+            );
 
-setImage(e.target.files[0]);
+            setPhotosExistantes((anciennes) =>
+                anciennes.filter(
+                    (photo) =>
+                        photo.id_photo !== idPhoto
+                )
+            );
 
+            alert(
+                "Photo supprimée avec succès."
+            );
 
-};
+        }
+        catch (error) {
 
+            console.error(
+                "❌ Erreur suppression photo :",
+                error
+            );
 
+            alert(
+                error.response?.data?.message ||
+                "Erreur lors de la suppression de la photo."
+            );
 
+        }
 
+    };
 
+    // =========================================================
+    // VALIDATION
+    // =========================================================
 
+    const validerFormulaire = () => {
 
+        const nouvellesErreurs = {};
 
+        // TITRE
+        if (!offre.titre.trim()) {
 
-// =================================
-// RESET FORMULAIRE
-// =================================
+            nouvellesErreurs.titre =
+                "Le titre est obligatoire.";
 
+        }
+        else if (
+            offre.titre.trim().length < 3
+        ) {
 
-const resetForm=()=>{
+            nouvellesErreurs.titre =
+                "Le titre doit contenir au moins 3 caractères.";
 
+        }
 
-setOffre({
+        // PRESTATAIRE
+        if (!offre.id_prestataire) {
 
-id_prestataire:"",
-id_destination:"",
-id_categorie:"",
-titre:"",
-description:"",
-prix:"",
-capacite:"",
-disponibilite:"",
-date_debut:"",
-date_fin:""
+            nouvellesErreurs.id_prestataire =
+                "Veuillez choisir un prestataire.";
 
-});
+        }
 
+        // DESTINATION
+        if (!offre.id_destination) {
 
-setImage(null);
+            nouvellesErreurs.id_destination =
+                "Veuillez choisir une destination.";
 
-setModeModification(false);
+        }
 
-setIdModification(null);
+        // CATEGORIE
+        if (!offre.id_categorie) {
 
+            nouvellesErreurs.id_categorie =
+                "Veuillez choisir une catégorie.";
 
-};
+        }
 
+        // DESCRIPTION
+        if (!offre.description.trim()) {
 
+            nouvellesErreurs.description =
+                "La description est obligatoire.";
 
+        }
+        else if (
+            offre.description.trim().length < 10
+        ) {
 
+            nouvellesErreurs.description =
+                "La description doit contenir au moins 10 caractères.";
 
+        }
 
+        // PRIX
+        const prix = Number(offre.prix);
 
+        if (offre.prix === "") {
 
+            nouvellesErreurs.prix =
+                "Le prix est obligatoire.";
 
-// =================================
-// OUVRIR AJOUT
-// =================================
+        }
+        else if (
+            isNaN(prix) ||
+            prix <= 0
+        ) {
 
+            nouvellesErreurs.prix =
+                "Le prix doit être supérieur à 0.";
 
-const ouvrirAjout=()=>{
+        }
 
+        // CAPACITE
+        const capacite =
+            Number(offre.capacite);
 
-resetForm();
+        if (offre.capacite === "") {
 
-setModal(true);
+            nouvellesErreurs.capacite =
+                "La capacité est obligatoire.";
 
+        }
+        else if (
+            isNaN(capacite) ||
+            capacite <= 0 ||
+            !Number.isInteger(capacite)
+        ) {
 
-};
+            nouvellesErreurs.capacite =
+                "La capacité doit être un entier supérieur à 0.";
 
+        }
 
+        // DISPONIBILITE
+        const disponibilite =
+            Number(offre.disponibilite);
 
+        if (offre.disponibilite === "") {
 
+            nouvellesErreurs.disponibilite =
+                "La disponibilité est obligatoire.";
 
+        }
+        else if (
+            isNaN(disponibilite) ||
+            disponibilite < 0 ||
+            !Number.isInteger(disponibilite)
+        ) {
 
+            nouvellesErreurs.disponibilite =
+                "La disponibilité doit être un entier positif ou égal à 0.";
 
+        }
+        else if (
+            capacite > 0 &&
+            disponibilite > capacite
+        ) {
 
+            nouvellesErreurs.disponibilite =
+                "La disponibilité ne peut pas dépasser la capacité.";
 
-// =================================
-// ENREGISTRER
-// =================================
+        }
 
+        // DATE DEBUT
+        if (!offre.date_debut) {
 
-const enregistrerOffre=async()=>{
+            nouvellesErreurs.date_debut =
+                "La date de début est obligatoire.";
 
+        }
 
-try{
+        // DATE FIN
+        if (!offre.date_fin) {
 
+            nouvellesErreurs.date_fin =
+                "La date de fin est obligatoire.";
 
-const formData=new FormData();
+        }
 
+        // DATES
+        if (
+            offre.date_debut &&
+            offre.date_fin &&
+            offre.date_fin < offre.date_debut
+        ) {
 
+            nouvellesErreurs.date_fin =
+                "La date de fin doit être après ou égale à la date de début.";
 
-Object.keys(offre).forEach((key)=>{
+        }
 
+        setErreurs(nouvellesErreurs);
 
-formData.append(
+        console.log(
+            "🔎 Erreurs formulaire :",
+            nouvellesErreurs
+        );
 
-key,
+        const valide =
+            Object.keys(nouvellesErreurs).length === 0;
 
-offre[key]
+        console.log(
+            "🔎 Formulaire valide :",
+            valide
+        );
 
-);
+        return valide;
 
+    };
 
-});
+    // =========================================================
+    // RESET
+    // =========================================================
 
+    const resetForm = () => {
 
+        setOffre({
+            id_prestataire: "",
+            id_destination: "",
+            id_categorie: "",
+            titre: "",
+            description: "",
+            prix: "",
+            capacite: "",
+            disponibilite: "",
+            date_debut: "",
+            date_fin: ""
+        });
 
+        setImage(null);
+        setPhotosDetails([]);
+        setPhotosExistantes([]);
 
-if(image){
+        setModeModification(false);
+        setIdModification(null);
 
-formData.append(
-"image",
-image
-);
+        setErreurs({});
 
-}
+    };
 
+    // =========================================================
+    // OUVRIR AJOUT
+    // =========================================================
 
+    const ouvrirAjout = () => {
 
+        resetForm();
+        setModal(true);
 
+    };
 
-if(modeModification){
+    // =========================================================
+    // ENVOYER PHOTOS
+    // =========================================================
 
+    const envoyerPhotosDetails = async (idOffre) => {
 
+        console.log(
+            "🖼️ Envoi photos détaillées :",
+            idOffre
+        );
 
-await api.put(
+        if (
+            !photosDetails ||
+            photosDetails.length === 0
+        ) {
 
-`/offres/${idModification}`,
+            console.log(
+                "ℹ️ Aucune photo détaillée."
+            );
 
-formData,
+            return;
 
-{
+        }
 
-headers:{
+        const formDataPhotos =
+            new FormData();
 
-"Content-Type":"multipart/form-data"
+        photosDetails.forEach((photo) => {
 
-}
+            formDataPhotos.append(
+                "photos",
+                photo
+            );
 
-}
+        });
 
-);
+        const response = await api.post(
 
+            `/offres/${idOffre}/photos`,
 
+            formDataPhotos,
 
-alert(
-"Offre modifiée avec succès"
-);
+            {
+                headers: {
+                    "Content-Type":
+                        "multipart/form-data"
+                }
+            }
 
+        );
 
+        console.log(
+            "✅ Photos ajoutées :",
+            response.data
+        );
 
-}
+    };
 
-else{
+    // =========================================================
+    // ENREGISTRER
+    // =========================================================
 
+    const enregistrerOffre = async (e) => {
 
+        if (e) {
+            e.preventDefault();
+        }
 
-await api.post(
+        console.log(
+            "======================================"
+        );
 
-"/offres",
+        console.log(
+            "🟢 BOUTON PUBLIER CLIQUÉ"
+        );
 
-formData,
+        console.log(
+            "======================================"
+        );
 
-{
+        console.log(
+            "Mode modification :",
+            modeModification
+        );
 
-headers:{
+        console.log(
+            "Offre :",
+            offre
+        );
 
-"Content-Type":"multipart/form-data"
+        console.log(
+            "Image :",
+            image
+        );
 
-}
+        console.log(
+            "Photos :",
+            photosDetails
+        );
 
-}
+        // =====================================================
+        // VALIDATION
+        // =====================================================
 
-);
+        const valide =
+            validerFormulaire();
 
+        if (!valide) {
 
+            console.log(
+                "❌ Validation échouée."
+            );
 
-alert(
-"Offre ajoutée avec succès"
-);
+            return;
 
+        }
 
+        console.log(
+            "✅ Validation réussie."
+        );
 
-}
+        try {
 
+            setChargement(true);
 
+            const formData =
+                new FormData();
 
+            Object.keys(offre).forEach((key) => {
 
+                formData.append(
+                    key,
+                    offre[key]
+                );
 
+            });
 
-// ACTUALISATION AUTOMATIQUE
+            // IMAGE
+            if (image) {
 
-await chargerDonnees();
+                formData.append(
+                    "image",
+                    image
+                );
 
+            }
 
+            console.log(
+                "📦 FormData créé."
+            );
 
-resetForm();
+            for (
+                const [key, value]
+                of formData.entries()
+            ) {
 
-setModal(false);
+                console.log(
+                    "FormData :",
+                    key,
+                    value
+                );
 
+            }
 
+            // =================================================
+            // MODIFICATION
+            // =================================================
 
-}
+            if (modeModification) {
 
-catch(error){
+                console.log(
+                    "✏️ Modification offre :",
+                    idModification
+                );
 
+                const response =
+                    await api.put(
 
-console.log(
+                        `/offres/${idModification}`,
 
-"Erreur enregistrement :",
+                        formData,
 
-error.response?.data || error
+                        {
+                            headers: {
+                                "Content-Type":
+                                    "multipart/form-data"
+                            }
+                        }
 
-);
+                    );
 
+                console.log(
+                    "✅ Réponse modification :",
+                    response.data
+                );
 
+                if (
+                    photosDetails.length > 0
+                ) {
 
-alert(
-"Erreur lors de l'enregistrement"
-);
+                    await envoyerPhotosDetails(
+                        idModification
+                    );
 
+                }
 
-}
+                alert(
+                    "Offre modifiée avec succès."
+                );
 
+            }
 
+            // =================================================
+            // AJOUT
+            // =================================================
 
-};
+            else {
 
+                console.log(
+                    "🚀 Ajout nouvelle offre..."
+                );
 
+                const response =
+                    await api.post(
 
+                        "/offres",
 
+                        formData,
 
+                        {
+                            headers: {
+                                "Content-Type":
+                                    "multipart/form-data"
+                            }
+                        }
 
+                    );
 
+                console.log(
+                    "✅ Réponse serveur :",
+                    response.data
+                );
 
+                const nouvelId =
+                    response.data.id_offre;
 
-// =================================
-// MODIFICATION
-// =================================
+                console.log(
+                    "🆔 ID nouvelle offre :",
+                    nouvelId
+                );
 
+                if (
+                    nouvelId &&
+                    photosDetails.length > 0
+                ) {
 
-const modifierOffre=(item)=>{
+                    await envoyerPhotosDetails(
+                        nouvelId
+                    );
 
+                }
 
-setOffre({
+                alert(
+                    "Offre ajoutée avec succès."
+                );
 
+            }
 
-id_prestataire:item.id_prestataire,
+            // =================================================
+            // RECHARGEMENT
+            // =================================================
 
-id_destination:item.id_destination,
+            await chargerDonnees();
 
-id_categorie:item.id_categorie,
+            resetForm();
 
-titre:item.titre,
+            setModal(false);
 
-description:item.description,
+            setPageActuelle(1);
 
-prix:item.prix,
+        }
+        catch (error) {
 
-capacite:item.capacite,
+            console.error(
+                "❌ ERREUR ENREGISTREMENT :",
+                error
+            );
 
-disponibilite:item.disponibilite,
+            console.error(
+                "Réponse serveur :",
+                error.response?.data
+            );
 
-date_debut:item.date_debut?.substring(0,10),
+            console.error(
+                "Status :",
+                error.response?.status
+            );
 
-date_fin:item.date_fin?.substring(0,10)
+            alert(
+                error.response?.data?.message ||
+                "Erreur lors de l'enregistrement."
+            );
 
+        }
+        finally {
 
-});
+            setChargement(false);
 
+        }
 
+    };
 
-setIdModification(
-item.id_offre
-);
+    // =========================================================
+    // MODIFIER
+    // =========================================================
 
+    const modifierOffre = async (item) => {
 
+        try {
 
-setModeModification(true);
+            setChargement(true);
 
+            const response =
+                await api.get(
+                    `/offres/${item.id_offre}`
+                );
 
-setModal(true);
+            const offreComplete =
+                response.data;
 
+            setOffre({
 
+                id_prestataire:
+                    offreComplete.id_prestataire || "",
 
-};
+                id_destination:
+                    offreComplete.id_destination || "",
 
+                id_categorie:
+                    offreComplete.id_categorie || "",
 
+                titre:
+                    offreComplete.titre || "",
 
+                description:
+                    offreComplete.description || "",
 
+                prix:
+                    offreComplete.prix ?? "",
 
+                capacite:
+                    offreComplete.capacite ?? "",
 
+                disponibilite:
+                    offreComplete.disponibilite ?? "",
 
+                date_debut:
+                    offreComplete.date_debut
+                        ? String(
+                            offreComplete.date_debut
+                        ).substring(0, 10)
+                        : "",
 
-// =================================
-// SUPPRESSION
-// =================================
+                date_fin:
+                    offreComplete.date_fin
+                        ? String(
+                            offreComplete.date_fin
+                        ).substring(0, 10)
+                        : ""
 
+            });
 
-const supprimerOffre=async(id)=>{
+            setPhotosExistantes(
+                offreComplete.photos || []
+            );
 
+            setPhotosDetails([]);
+            setImage(null);
+            setErreurs({});
 
-if(!window.confirm(
-"Supprimer cette offre ?"
-))
+            setIdModification(
+                item.id_offre
+            );
 
-return;
+            setModeModification(true);
+            setMenuOuvert(null);
+            setModal(true);
 
+        }
+        catch (error) {
 
+            console.error(
+                "❌ Erreur récupération offre :",
+                error
+            );
 
-try{
+            alert(
+                "Impossible de récupérer les détails de cette offre."
+            );
 
+        }
+        finally {
 
-await api.delete(
+            setChargement(false);
 
-`/offres/${id}`
+        }
 
-);
+    };
 
+    // =========================================================
+    // SUPPRIMER
+    // =========================================================
 
+    const supprimerOffre = async (id) => {
 
-alert(
-"Offre supprimée"
-);
+        if (
+            !window.confirm(
+                "Voulez-vous vraiment supprimer cette offre ?"
+            )
+        ) {
 
+            return;
 
+        }
 
-await chargerDonnees();
+        try {
 
+            await api.delete(
+                `/offres/${id}`
+            );
 
+            alert(
+                "Offre supprimée avec succès."
+            );
 
-}
+            await chargerDonnees();
 
+            setMenuOuvert(null);
 
-catch(error){
+        }
+        catch (error) {
 
+            console.error(
+                "❌ Erreur suppression :",
+                error
+            );
 
-console.log(error);
+            alert(
+                error.response?.data?.message ||
+                "Erreur lors de la suppression."
+            );
 
+        }
 
-alert(
-"Erreur suppression"
-);
+    };
 
+    // =========================================================
+    // RECHERCHE
+    // =========================================================
 
-}
+    const offresFiltrees =
+        offres.filter((item) => {
 
+            const texte =
+                recherche
+                    .toLowerCase()
+                    .trim();
 
-};
+            if (!texte) {
+                return true;
+            }
 
+            return (
 
+                String(item.titre || "")
+                    .toLowerCase()
+                    .includes(texte)
 
+                ||
 
+                String(item.destination || "")
+                    .toLowerCase()
+                    .includes(texte)
 
+                ||
 
+                String(item.categorie || "")
+                    .toLowerCase()
+                    .includes(texte)
 
-return (
+                ||
 
-<div className="offres-admin">
+                String(item.prestataire || "")
+                    .toLowerCase()
+                    .includes(texte)
 
+            );
 
-<div className="offres-header">
+        });
 
+    // =========================================================
+    // PAGINATION
+    // =========================================================
 
-<div>
+    const totalPages =
+        Math.ceil(
+            offresFiltrees.length /
+            offresParPage
+        );
 
-<h1>
-🎒 Gestion des offres
-</h1>
+    const pageSure =
+        totalPages > 0
+            ? Math.min(pageActuelle, totalPages)
+            : 1;
 
+    const indexPremiereOffre =
+        (pageSure - 1) *
+        offresParPage;
 
-<p>
-Gérez vos séjours touristiques
-</p>
+    const offresPage =
+        offresFiltrees.slice(
+            indexPremiereOffre,
+            indexPremiereOffre +
+            offresParPage
+        );
 
+    const changerPage = (page) => {
 
-</div>
+        if (
+            page >= 1 &&
+            page <= totalPages
+        ) {
 
+            setPageActuelle(page);
 
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
 
+        }
 
-<button
+    };
 
-className="btn-add-offre"
+    // =========================================================
+    // PRIX
+    // =========================================================
 
-onClick={ouvrirAjout}
+    const formatPrix = (prix) => {
 
->
+        return Number(
+            prix || 0
+        ).toLocaleString(
+            "fr-FR"
+        );
 
-+ Nouvelle offre
+    };
 
-</button>
 
+    // =========================================================
+    // DISPONIBILITE
+    // =========================================================
 
-</div>
+    const afficherDisponibilite = (nombre) => {
 
+        const valeur =
+            Number(nombre || 0);
 
+        if (valeur <= 0) {
 
+            return (
+                <span className="disponibilite complet">
+                    🔴 Complet
+                </span>
+            );
 
+        }
 
+        if (valeur === 1) {
 
-<div className="offres-list-card">
+            return (
+                <span className="disponibilite faible">
+                    🟠 1 place disponible
+                </span>
+            );
 
+        }
 
-<h2>
-Liste des offres publiées
-</h2>
+        return (
+            <span className="disponibilite disponible">
+                🟢 {valeur} places disponibles
+            </span>
+        );
 
+    };
 
+    // =========================================================
+    // RENDU
+    // =========================================================
 
-<div className="offres-admin-list">
+    return (
 
+        <div className="offres-admin">
 
-{
+            {/* HEADER */}
 
-offres.map((item)=>(
+            <div className="offres-header">
 
+                <div>
+                    <h1>🎒 Gestion des offres</h1>
 
-<div
-className="offre-admin-card"
-key={item.id_offre}
->
+                    <p>
+                        Gérez vos séjours touristiques
+                    </p>
+                </div>
 
+                <button
+                    type="button"
+                    className="btn-add-offre"
+                    onClick={ouvrirAjout}
+                >
+                    + Nouvelle offre
+                </button>
 
-<img
+            </div>
 
-src={
-item.image
-?
-`http://localhost:8081/uploads/${item.image}`
-:
-"/image-default.jpg"
-}
+            {/* LISTE */}
 
+            <div className="offres-list-card">
+
+                <div className="liste-header">
+
+                    <div>
+                        <h2>
+                            Liste des offres
+                        </h2>
+
+                        <span className="nombre-resultats">
+                            {offresFiltrees.length}{" "}
+                            {offresFiltrees.length > 1
+                                ? "offres"
+                                : "offre"}
+                        </span>
+                    </div>
+
+                    <div className="recherche-offres">
+
+                        <span>🔎</span>
+
+                        <input
+                            type="text"
+                            placeholder="Rechercher une offre..."
+                            value={recherche}
+                            onChange={(e) => {
+
+                                setRecherche(
+                                    e.target.value
+                                );
+
+                                setPageActuelle(1);
+
+                            }}
+                        />
+
+                        {recherche && (
+
+                            <button
+                                type="button"
+                                className="btn-clear-search"
+                                onClick={() => {
+
+                                    setRecherche("");
+                                    setPageActuelle(1);
+
+                                }}
+                            >
+                                ✕
+                            </button>
+
+                        )}
+
+                    </div>
+
+                </div>
+
+                {/* LISTE DES OFFRES */}
+
+                {offresPage.length === 0 ? (
+
+                    <div className="aucune-offre">
+
+                        <div className="aucune-offre-icon">
+                            🔎
+                        </div>
+
+                        <h3>
+                            Aucune offre trouvée
+                        </h3>
+
+                        <p>
+                            {recherche
+                                ? "Aucune offre ne correspond à votre recherche."
+                                : "Aucune offre n'est disponible pour le moment."
+                            }
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="offres-admin-list">
+
+                        {offresPage.map((item) => (
+
+                            <div
+                                className="offre-admin-card"
+                                key={item.id_offre}
+                            >
+
+                                <div className="offre-image-container">
+
+                                    <img
+                                        src={
+                                            item.image
+                                                ? `http://localhost:8081/uploads/${item.image}`
+                                                : "/image-default.jpg"
+                                        }
+                                        alt={item.titre}
+                                    />
+
+                                    <div className="menu-offre">
+
+                                        <button
+                                            type="button"
+                                            className="btn-menu-offre"
+                                            onClick={() =>
+                                                setMenuOuvert(
+                                                    menuOuvert ===
+                                                    item.id_offre
+                                                        ? null
+                                                        : item.id_offre
+                                                )
+                                            }
+                                        >
+                                            ⋮
+                                        </button>
+
+                                        {menuOuvert === item.id_offre && (
+
+                                            <div className="menu-actions">
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        modifierOffre(item)
+                                                    }
+                                                >
+                                                    ✏️ Modifier
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="delete-action"
+                                                    onClick={() =>
+                                                        supprimerOffre(
+                                                            item.id_offre
+                                                        )
+                                                    }
+                                                >
+                                                    🗑️ Supprimer
+                                                </button>
+
+                                            </div>
+
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                                <div className="info-offre">
+
+                                    <h3>
+                                        {item.titre}
+                                    </h3>
+
+                                    <p>
+                                        📍{" "}
+                                        {item.destination ||
+                                            "Destination inconnue"}
+                                    </p>
+
+                                    <p>
+                                        🏷️{" "}
+                                        {item.categorie ||
+                                            "Catégorie non précisée"}
+                                    </p>
+
+                                    <p>
+                                        🏢{" "}
+                                        {item.prestataire ||
+                                            "Prestataire non précisé"}
+                                    </p>
+
+                                    <p className="prix-offre">
+                                      💰 {formatPrix(item.prix)} €
+                                    </p>
+
+                                    <div className="card-disponibilite">
+                                        {afficherDisponibilite(
+                                            item.disponibilite
+                                        )}
+                                    </div>
+
+                                    <div className="card-dates">
+
+                                        <span>
+                                            📅 Début :{" "}
+                                            {item.date_debut
+                                                ? new Date(
+                                                    item.date_debut
+                                                ).toLocaleDateString(
+                                                    "fr-FR"
+                                                )
+                                                : "-"
+                                            }
+                                        </span>
+
+                                        <span>
+                                            📅 Fin :{" "}
+                                            {item.date_fin
+                                                ? new Date(
+                                                    item.date_fin
+                                                ).toLocaleDateString(
+                                                    "fr-FR"
+                                                )
+                                                : "-"
+                                            }
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                )}
+
+                {/* PAGINATION */}
+
+                {totalPages > 1 && (
+
+                    <div className="pagination-offres">
+
+                        <button
+                            type="button"
+                            className="pagination-btn"
+                            disabled={pageSure === 1}
+                            onClick={() =>
+                                changerPage(
+                                    pageSure - 1
+                                )
+                            }
+                        >
+                            ← Précédent
+                        </button>
+
+                        <div className="pagination-numeros">
+
+                            {Array.from(
+                                {
+                                    length: totalPages
+                                },
+                                (_, index) =>
+                                    index + 1
+                            ).map((page) => (
+
+                                <button
+                                    type="button"
+                                    key={page}
+                                    className={
+                                        pageSure === page
+                                            ? "page-number active"
+                                            : "page-number"
+                                    }
+                                    onClick={() =>
+                                        changerPage(page)
+                                    }
+                                >
+                                    {page}
+                                </button>
+
+                            ))}
+
+                        </div>
+
+                        <button
+                            type="button"
+                            className="pagination-btn"
+                            disabled={
+                                pageSure === totalPages
+                            }
+                            onClick={() =>
+                                changerPage(
+                                    pageSure + 1
+                                )
+                            }
+                        >
+                            Suivant →
+                        </button>
+
+                    </div>
+
+                )}
+
+            </div>
+
+            {/* =================================================
+                MODALE
+            ================================================= */}
+
+            {modal && (
+
+                <div className="modal-overlay">
+
+                    <div className="modal-offre">
+
+                        <div className="modal-header">
+
+                            <div>
+
+                                <h2>
+                                    {modeModification
+                                        ? "✏️ Modifier l'offre"
+                                        : "➕ Nouvelle offre"
+                                    }
+                                </h2>
+
+                                <p>
+                                    Remplissez les informations de l'offre
+                                </p>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                className="close-modal"
+                                onClick={() => {
+
+                                    setModal(false);
+                                    resetForm();
+
+                                }}
+                            >
+                                ✕
+                            </button>
+
+                        </div>
+
+                        {/* FORMULAIRE */}
+
+                        <div className="form-grid">
+
+                            {/* TITRE */}
+
+                            <div className="form-group">
+
+                                <label>
+                                    Titre de l'offre *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="titre"
+                                    placeholder="Ex : Séjour à Nosy Be"
+                                    value={offre.titre}
+                                    onChange={handleChange}
+                                    className={
+                                        erreurs.titre
+                                            ? "input-error"
+                                            : ""
+                                    }
+                                />
+
+                                {erreurs.titre && (
+                                    <small className="error-message">
+                                        {erreurs.titre}
+                                    </small>
+                                )}
+
+                            </div>
+
+                            {/* PRESTATAIRE */}
+
+                            <div className="form-group">
+
+                                <label>
+                                    Prestataire *
+                                </label>
+
+                                <select
+                                    name="id_prestataire"
+                                    value={offre.id_prestataire}
+                                    onChange={handleChange}
+                                    className={
+                                        erreurs.id_prestataire
+                                            ? "input-error"
+                                            : ""
+                                    }
+                                >
+
+                                    <option value="">
+                                        Choisir un prestataire
+                                    </option>
+
+                                    {prestataires.map((p) => (
+
+                                        <option
+                                            key={
+                                                p.id_prestataire
+                                            }
+                                            value={
+                                                p.id_prestataire
+                                            }
+                                        >
+                                            {p.nom_entreprise}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                                {erreurs.id_prestataire && (
+                                    <small className="error-message">
+                                        {erreurs.id_prestataire}
+                                    </small>
+                                )}
+
+                            </div>
+
+                            {/* DESTINATION */}
+
+                            <div className="form-group">
+
+                                <label>
+                                    Destination *
+                                </label>
+
+                                <select
+                                    name="id_destination"
+                                    value={offre.id_destination}
+                                    onChange={handleChange}
+                                    className={
+                                        erreurs.id_destination
+                                            ? "input-error"
+                                            : ""
+                                    }
+                                >
+
+                                    <option value="">
+                                        Choisir une destination
+                                    </option>
+
+                                    {destinations.map((d) => (
+
+                                        <option
+                                            key={
+                                                d.id_destination
+                                            }
+                                            value={
+                                                d.id_destination
+                                            }
+                                        >
+                                            {d.nom}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                                {erreurs.id_destination && (
+                                    <small className="error-message">
+                                        {erreurs.id_destination}
+                                    </small>
+                                )}
+
+                            </div>
+
+                            {/* CATEGORIE */}
+
+                            <div className="form-group">
+
+                                <label>
+                                    Catégorie *
+                                </label>
+
+                                <select
+                                    name="id_categorie"
+                                    value={offre.id_categorie}
+                                    onChange={handleChange}
+                                    className={
+                                        erreurs.id_categorie
+                                            ? "input-error"
+                                            : ""
+                                    }
+                                >
+
+                                    <option value="">
+                                        Choisir une catégorie
+                                    </option>
+
+                                    {categories.map((c) => (
+
+                                        <option
+                                            key={
+                                                c.id_categorie
+                                            }
+                                            value={
+                                                c.id_categorie
+                                            }
+                                        >
+                                            {c.nom}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                                {erreurs.id_categorie && (
+                                    <small className="error-message">
+                                        {erreurs.id_categorie}
+                                    </small>
+                                )}
+
+                            </div>
+
+                            {/* PRIX */}
+
+                            <div className="form-group">
+
+                                <label>
+                                    Prix *
+                                </label>
+
+                                <div className="input-suffix">
+
+                                   <input
+    type="number"
+    name="prix"
+    min="0.01"
+    step="0.01"
+    placeholder="Ex : 250.00"
+    value={offre.prix}
+    onChange={handleChange}
+    className={
+        erreurs.prix
+            ? "input-error"
+            : ""
+    }
 />
 
+<span>€</span>
 
+                                </div>
 
-{/* MENU SUR IMAGE */}
+                                {erreurs.prix && (
+                                    <small className="error-message">
+                                        {erreurs.prix}
+                                    </small>
+                                )}
 
-<div className="menu-offre">
+                            </div>
 
+                            {/* CAPACITE */}
 
-<button
+                            <div className="form-group">
 
-className="btn-menu-offre"
+                                <label>
+                                    Capacité *
+                                </label>
 
-onClick={()=>setMenuOuvert(
+                                <div className="input-suffix">
 
-menuOuvert === item.id_offre
+                                    <input
+                                        type="number"
+                                        name="capacite"
+                                        min="1"
+                                        step="1"
+                                        placeholder="Ex : 20"
+                                        value={offre.capacite}
+                                        onChange={handleChange}
+                                        className={
+                                            erreurs.capacite
+                                                ? "input-error"
+                                                : ""
+                                        }
+                                    />
 
-?
+                                    <span>
+                                        personnes
+                                    </span>
 
-null
+                                </div>
 
-:
+                                {erreurs.capacite && (
+                                    <small className="error-message">
+                                        {erreurs.capacite}
+                                    </small>
+                                )}
 
-item.id_offre
+                            </div>
 
-)}
+                            {/* DISPONIBILITE */}
 
->
+                            <div className="form-group">
 
-⋮
+                                <label>
+                                    Disponibilité *
+                                </label>
 
-</button>
+                                <div className="input-suffix">
 
+                                    <input
+                                        type="number"
+                                        name="disponibilite"
+                                        min="0"
+                                        step="1"
+                                        max={
+                                            offre.capacite ||
+                                            undefined
+                                        }
+                                        placeholder="Ex : 15"
+                                        value={offre.disponibilite}
+                                        onChange={handleChange}
+                                        className={
+                                            erreurs.disponibilite
+                                                ? "input-error"
+                                                : ""
+                                        }
+                                    />
 
+                                    <span>
+                                        places
+                                    </span>
 
+                                </div>
 
-{
+                                <small className="field-help">
+                                    Nombre de places encore disponibles.
+                                </small>
 
-menuOuvert === item.id_offre &&
+                                {erreurs.disponibilite && (
+                                    <small className="error-message">
+                                        {erreurs.disponibilite}
+                                    </small>
+                                )}
 
-<div className="menu-actions">
+                            </div>
 
+                            {/* DATE DEBUT */}
 
-<button
-onClick={()=>modifierOffre(item)}
->
-✏ Modifier
-</button>
+                            <div className="form-group">
 
+                                <label>
+                                    📅 Date de début *
+                                </label>
 
+                                <input
+                                    type="date"
+                                    name="date_debut"
+                                    value={offre.date_debut}
+                                    onChange={handleChange}
+                                    className={
+                                        erreurs.date_debut
+                                            ? "input-error"
+                                            : ""
+                                    }
+                                />
 
-<button
-onClick={()=>supprimerOffre(item.id_offre)}
->
-🗑 Supprimer
-</button>
+                                {erreurs.date_debut && (
+                                    <small className="error-message">
+                                        {erreurs.date_debut}
+                                    </small>
+                                )}
 
+                            </div>
 
-</div>
+                            {/* DATE FIN */}
 
+                            <div className="form-group">
+
+                                <label>
+                                    📅 Date de fin *
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="date_fin"
+                                    min={
+                                        offre.date_debut ||
+                                        undefined
+                                    }
+                                    value={offre.date_fin}
+                                    onChange={handleChange}
+                                    className={
+                                        erreurs.date_fin
+                                            ? "input-error"
+                                            : ""
+                                    }
+                                />
+
+                                {erreurs.date_fin && (
+                                    <small className="error-message">
+                                        {erreurs.date_fin}
+                                    </small>
+                                )}
+
+                            </div>
+
+                        </div>
+
+                        {/* DESCRIPTION */}
+
+                        <div className="form-group description-group">
+
+                            <label>
+                                Description *
+                            </label>
+
+                            <textarea
+                                name="description"
+                                rows="5"
+                                placeholder="Décrivez cette offre touristique..."
+                                value={offre.description}
+                                onChange={handleChange}
+                                className={
+                                    erreurs.description
+                                        ? "input-error"
+                                        : ""
+                                }
+                            />
+
+                            {erreurs.description && (
+                                <small className="error-message">
+                                    {erreurs.description}
+                                </small>
+                            )}
+
+                        </div>
+
+                        {/* IMAGE PRINCIPALE */}
+
+                        <div className="upload-zone">
+
+                            <div className="upload-title">
+
+                                <span className="upload-icon">
+                                    📷
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        Image principale
+                                    </strong>
+
+                                    <small>
+                                        JPG, JPEG, PNG ou WEBP — 5 Mo maximum
+                                    </small>
+                                </div>
+
+                            </div>
+
+                            <input
+                                type="file"
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                onChange={handleImage}
+                            />
+
+                            {image && (
+
+                                <div className="selected-image">
+
+                                    <span>
+                                        🖼️ {image.name}
+                                    </span>
+
+                                    <span>
+                                        {(
+                                            image.size /
+                                            1024 /
+                                            1024
+                                        ).toFixed(2)}{" "}
+                                        Mo
+                                    </span>
+
+                                </div>
+
+                            )}
+
+                            {modeModification &&
+                                !image && (
+                                    <small className="field-help">
+                                        Laissez vide pour conserver
+                                        l'image actuelle.
+                                    </small>
+                                )}
+
+                        </div>
+
+                        {/* PHOTOS DETAILLEES */}
+
+                        <div className="upload-zone">
+
+                            <div className="upload-title">
+
+                                <span className="upload-icon">
+                                    🖼️
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Photos détaillées
+                                    </strong>
+
+                                    <small>
+                                        Jusqu'à 10 photos — 5 Mo maximum par photo
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                            <input
+                                type="file"
+                                multiple
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                onChange={handlePhotosDetails}
+                            />
+
+                            {/* EXISTANTES */}
+
+                            {modeModification &&
+                                photosExistantes.length > 0 && (
+
+                                    <div className="photos-existantes">
+
+                                        <strong>
+                                            Photos déjà enregistrées
+                                        </strong>
+
+                                        <div className="photos-details-grid">
+
+                                            {photosExistantes.map(
+                                                (photo) => (
+
+                                                    <div
+                                                        className="photo-detail-item"
+                                                        key={
+                                                            photo.id_photo
+                                                        }
+                                                    >
+
+                                                        <img
+                                                            src={
+                                                                `http://localhost:8081/uploads/${photo.chemin_photo}`
+                                                            }
+                                                            alt="Photo détail"
+                                                        />
+
+                                                        <button
+                                                            type="button"
+                                                            className="delete-photo-detail"
+                                                            onClick={() =>
+                                                                supprimerPhotoExistante(
+                                                                    photo.id_photo
+                                                                )
+                                                            }
+                                                        >
+                                                            ✕
+                                                        </button>
+
+                                                    </div>
+
+                                                )
+                                            )}
+
+                                        </div>
+
+                                    </div>
+
+                                )}
+
+                            {/* NOUVELLES */}
+
+                            {photosDetails.length > 0 && (
+
+                                <div className="photos-selectionnees">
+
+                                    <strong>
+                                        Nouvelles photos
+                                    </strong>
+
+                                    <div className="photos-details-grid">
+
+                                        {photosDetails.map(
+                                            (photo, index) => (
+
+                                                <div
+                                                    className="photo-detail-item"
+                                                    key={
+                                                        `${photo.name}-${index}`
+                                                    }
+                                                >
+
+                                                    <img
+                                                        src={
+                                                            URL.createObjectURL(
+                                                                photo
+                                                            )
+                                                        }
+                                                        alt={
+                                                            photo.name
+                                                        }
+                                                    />
+
+                                                    <button
+                                                        type="button"
+                                                        className="delete-photo-detail"
+                                                        onClick={() =>
+                                                            supprimerPhotoSelectionnee(
+                                                                index
+                                                            )
+                                                        }
+                                                    >
+                                                        ✕
+                                                    </button>
+
+                                                </div>
+
+                                            )
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            )}
+
+                            <small className="field-help">
+                                {photosDetails.length} nouvelle(s)
+                                photo(s) sélectionnée(s).
+                            </small>
+
+                        </div>
+
+                        {/* ACTIONS */}
+
+                        <div className="modal-actions">
+
+                            <button
+                                type="button"
+                                className="btn-cancel"
+                                disabled={chargement}
+                                onClick={() => {
+
+                                    setModal(false);
+                                    resetForm();
+
+                                }}
+                            >
+                                Annuler
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn-save"
+                                disabled={chargement}
+                                onClick={(e) => {
+
+                                    console.log(
+                                        "🟢 CLICK SUR PUBLIER"
+                                    );
+
+                                    enregistrerOffre(e);
+
+                                }}
+                            >
+
+                                {chargement
+
+                                    ? "⏳ Enregistrement..."
+
+                                    : modeModification
+
+                                        ? "💾 Enregistrer les modifications"
+
+                                        : "🚀 Publier l'offre"
+
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            )}
+
+        </div>
+
+    );
 
 }
-
-
-</div>
-
-
-
-
-
-<div className="info-offre">
-
-
-<h3>
-{item.titre}
-</h3>
-
-
-<p>
-📍 {item.destination}
-</p>
-
-
-<p>
-🏷️ {item.categorie}
-</p>
-
-
-<p>
-🏢 {item.prestataire}
-</p>
-
-
-<p>
-💰 {item.prix} Ar
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-))
-
-
-}
-
-
-</div>
-
-
-{/* ==========================
-    MODALE AJOUT / MODIFICATION
-========================== */}
-
-
-{
-
-modal &&
-
-
-<div className="modal-overlay">
-
-
-<div className="modal-offre">
-
-
-
-<div className="modal-header">
-
-
-<h2>
-
-{
-
-modeModification
-
-?
-
-"✏️ Modifier l'offre"
-
-:
-
-"➕ Nouvelle offre"
-
-}
-
-</h2>
-
-
-
-<button
-
-className="close-modal"
-
-onClick={()=>{
-
-setModal(false);
-
-resetForm();
-
-}}
-
->
-
-✕
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div className="form-grid">
-
-
-
-<input
-
-type="text"
-
-name="titre"
-
-placeholder="Titre de l'offre"
-
-value={offre.titre}
-
-onChange={handleChange}
-
-/>
-
-
-
-
-
-
-
-
-<select
-
-name="id_prestataire"
-
-value={offre.id_prestataire}
-
-onChange={handleChange}
-
->
-
-
-<option value="">
-
-Choisir un prestataire
-
-</option>
-
-
-
-{
-
-prestataires.map((p)=>(
-
-
-<option
-
-key={p.id_prestataire}
-
-value={p.id_prestataire}
-
->
-
-
-{p.nom_entreprise}
-
-
-</option>
-
-
-))
-
-
-}
-
-
-</select>
-
-
-
-
-
-
-
-
-
-
-<select
-
-name="id_destination"
-
-value={offre.id_destination}
-
-onChange={handleChange}
-
->
-
-
-<option value="">
-
-Choisir une destination
-
-</option>
-
-
-
-{
-
-destinations.map((d)=>(
-
-
-<option
-
-key={d.id_destination}
-
-value={d.id_destination}
-
->
-
-{d.nom}
-
-</option>
-
-
-))
-
-
-}
-
-
-
-</select>
-
-
-
-
-
-
-
-
-
-
-<select
-
-name="id_categorie"
-
-value={offre.id_categorie}
-
-onChange={handleChange}
-
->
-
-
-<option value="">
-
-Choisir une catégorie
-
-</option>
-
-
-
-{
-
-categories.map((c)=>(
-
-
-<option
-
-key={c.id_categorie}
-
-value={c.id_categorie}
-
->
-
-{c.nom}
-
-</option>
-
-
-))
-
-
-}
-
-
-
-</select>
-
-
-
-
-
-
-
-
-
-
-<input
-
-type="number"
-
-name="prix"
-
-placeholder="Prix (Ar)"
-
-value={offre.prix}
-
-onChange={handleChange}
-
-/>
-
-
-
-
-
-
-
-<input
-
-type="number"
-
-name="capacite"
-
-placeholder="Capacité"
-
-value={offre.capacite}
-
-onChange={handleChange}
-
-/>
-
-
-
-
-
-
-
-
-<input
-
-type="number"
-
-name="disponibilite"
-
-placeholder="Disponibilité"
-
-value={offre.disponibilite}
-
-onChange={handleChange}
-
-/>
-
-
-
-
-
-
-
-
-<input
-
-type="date"
-
-name="date_debut"
-
-value={offre.date_debut}
-
-onChange={handleChange}
-
-/>
-
-
-
-
-
-
-
-<input
-
-type="date"
-
-name="date_fin"
-
-value={offre.date_fin}
-
-onChange={handleChange}
-
-/>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-<textarea
-
-name="description"
-
-placeholder="Description de l'offre"
-
-value={offre.description}
-
-onChange={handleChange}
-
-rows="5"
-
-/>
-
-
-
-
-
-
-
-
-<div className="upload-zone">
-
-
-<label>
-
-📷 Image de l'offre
-
-</label>
-
-
-
-<input
-
-type="file"
-
-accept="image/*"
-
-onChange={handleImage}
-
-/>
-
-
-
-{
-
-image &&
-
-<p>
-
-{image.name}
-
-</p>
-
-}
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<button
-
-className="btn-save"
-
-onClick={enregistrerOffre}
-
->
-
-
-{
-
-modeModification
-
-?
-
-"Enregistrer les modifications"
-
-:
-
-"Publier l'offre"
-
-}
-
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-}
-
-
-
-</div>
-
-</div>
-);
-
-}
-
-
 
 export default Offres;
-

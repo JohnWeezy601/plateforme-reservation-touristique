@@ -1,6 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import {
+    useState,
+    useRef,
+    useEffect
+} from "react";
 
 import {
+
     FaRobot,
     FaTimes,
     FaPaperPlane,
@@ -14,10 +19,17 @@ import {
     FaGlobe,
     FaList,
     FaClipboardList,
-    FaHome
+    FaHome,
+    FaCreditCard,
+    FaBell,
+    FaStar
+
 } from "react-icons/fa";
 
-import { useNavigate } from "react-router-dom";
+import {
+    useNavigate,
+    useLocation
+} from "react-router-dom";
 
 import api from "../api/api";
 
@@ -26,73 +38,98 @@ import "./AssistantTouristique.css";
 
 function AssistantTouristique() {
 
+
     // =====================================================
     // NAVIGATION
     // =====================================================
 
-    const navigate = useNavigate();
+    const navigate =
+        useNavigate();
+
+    const location =
+        useLocation();
 
 
     // =====================================================
     // REFERENCES
     // =====================================================
 
-    const messagesRef = useRef(null);
+    const messagesRef =
+        useRef(null);
 
 
     // =====================================================
     // ETATS
     // =====================================================
 
-    const [ouvert, setOuvert] = useState(false);
+    const [ouvert, setOuvert] =
+        useState(false);
 
-    const [message, setMessage] = useState("");
+    const [message, setMessage] =
+        useState("");
 
-    const [chargement, setChargement] = useState(false);
-
-
-    const [messages, setMessages] = useState([
-
-        {
-            id: 1,
-
-            type: "assistant",
-
-            texte:
-                "Bonjour 👋 Je suis votre assistant touristique intelligent. Je peux vous aider à trouver une offre adaptée à votre voyage.",
-
-            navigation: [],
-
-            offres: []
-
-        },
-
-        {
-            id: 2,
-
-            type: "assistant",
-
-            texte:
-                "Dites-moi simplement ce que vous recherchez. Par exemple : « Je veux visiter Madagascar pendant 5 jours avec un budget de 1 000 000 Ar pour 2 personnes. »",
-
-            navigation: [],
-
-            offres: []
-
-        }
-
-    ]);
+    const [chargement, setChargement] =
+        useState(false);
 
 
-    const [preferences, setPreferences] = useState({
+    // =====================================================
+    // MESSAGES
+    // =====================================================
 
-        destination: "",
-        budget: null,
-        personnes: null,
-        duree: null,
-        typeVoyage: ""
+    const [messages, setMessages] =
+        useState([
 
-    });
+            {
+
+                id: 1,
+
+                type: "assistant",
+
+                texte:
+                    "Bonjour 👋 Je suis votre assistant touristique intelligent. Je peux vous aider à trouver une offre, préparer votre voyage ou vous expliquer comment utiliser la plateforme.",
+
+                navigation: [],
+
+                offres: []
+
+            },
+
+            {
+
+                id: 2,
+
+                type: "assistant",
+
+                texte:
+                    "Vous pouvez par exemple demander : « Je cherche une randonnée à Madagascar pour 2 personnes pendant 5 jours avec un budget de 500 000 Ar. »",
+
+                navigation: [],
+
+                offres: []
+
+            }
+
+        ]);
+
+
+    // =====================================================
+    // PREFERENCES
+    // =====================================================
+
+    const [preferences, setPreferences] =
+        useState({
+
+            destination: "",
+
+            budget: null,
+
+            personnes: null,
+
+            duree: null,
+
+            typeVoyage: ""
+
+        });
 
 
     // =====================================================
@@ -101,821 +138,1132 @@ function AssistantTouristique() {
 
     useEffect(() => {
 
-        if (messagesRef.current) {
+        if (
+            messagesRef.current
+        ) {
 
             messagesRef.current.scrollTop =
                 messagesRef.current.scrollHeight;
 
         }
 
-    }, [messages, chargement]);
+    }, [
+        messages,
+        chargement
+    ]);
 
 
     // =====================================================
-    // AJOUTER UN MESSAGE
+// OUVERTURE DEPUIS UN AUTRE COMPOSANT
+// =====================================================
+
+useEffect(() => {
+
+    const ouvrirChatbot = () => {
+
+        setOuvert(true);
+
+    };
+
+    window.addEventListener(
+        "open-chatbot",
+        ouvrirChatbot
+    );
+
+    return () => {
+
+        window.removeEventListener(
+            "open-chatbot",
+            ouvrirChatbot
+        );
+
+    };
+
+}, []);
+
+
+    // =====================================================
+    // AJOUTER MESSAGE
     // =====================================================
 
     const ajouterMessage = (
+
         type,
+
         texte,
+
         offres = [],
+
         navigation = []
+
     ) => {
 
-        setMessages((anciensMessages) => [
+        setMessages(
+            anciensMessages => [
 
-            ...anciensMessages,
+                ...anciensMessages,
 
-            {
+                {
 
-                id:
-                    Date.now() +
-                    Math.random(),
+                    id:
+                        Date.now() +
+                        Math.random(),
 
-                type,
+                    type,
 
-                texte,
+                    texte,
 
-                offres,
+                    offres:
+                        Array.isArray(offres)
+                            ? offres
+                            : [],
 
-                navigation
+                    navigation:
+                        Array.isArray(navigation)
+                            ? navigation
+                            : []
 
-            }
+                }
 
-        ]);
+            ]
+        );
 
     };
 
 
     // =====================================================
-    // ANALYSER LES PREFERENCES POUR L'AFFICHAGE
+    // ANALYSER LES PREFERENCES LOCALEMENT
     // =====================================================
 
-    const analyserPreferencesLocalement = (texte) => {
-
-        const texteNormalise =
-            texte
-                .toLowerCase()
-                .replace(/\s+/g, " ")
-                .trim();
+    const analyserPreferencesLocalement =
+        (texte) => {
 
 
-        const nouvellePreference = {
-            ...preferences
+            const texteNormalise =
+                String(texte || "")
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(
+                        /[\u0300-\u036f]/g,
+                        ""
+                    )
+                    .replace(
+                        /\s+/g,
+                        " "
+                    )
+                    .trim();
+
+
+            const nouvellePreference = {
+
+                ...preferences
+
+            };
+
+
+            // =================================================
+            // DESTINATION
+            // =================================================
+
+            const destinationsConnues = [
+
+                "madagascar",
+                "antananarivo",
+                "antsiranana",
+                "diego",
+                "nosy be",
+                "nosy-bé",
+                "toamasina",
+                "tamatave",
+                "mahajanga",
+                "morondava",
+                "fianarantsoa",
+                "ranomafana",
+                "sainte marie",
+                "sainte-marie",
+                "toliara",
+                "tulear",
+                "fort dauphin",
+                "taolagnaro",
+                "isalo"
+
+            ];
+
+
+            const destinationTrouvee =
+                destinationsConnues.find(
+
+                    destination =>
+
+                        texteNormalise.includes(
+                            destination
+                        )
+
+                );
+
+
+            if (
+                destinationTrouvee
+            ) {
+
+                nouvellePreference.destination =
+                    destinationTrouvee;
+
+            }
+
+
+            // =================================================
+            // BUDGET
+            // =================================================
+
+            const budgetMatch =
+                texteNormalise.match(
+
+                    /(\d[\d\s.]*)\s*(ar|ariary|€|eur|euros|euro)?/
+
+                );
+
+
+            if (
+                budgetMatch
+            ) {
+
+                const budgetTexte =
+                    budgetMatch[1]
+                        .replace(/\s/g, "")
+                        .replace(/\./g, "");
+
+
+                const budget =
+                    Number(
+                        budgetTexte
+                    );
+
+
+                if (
+                    Number.isFinite(budget) &&
+                    budget > 0
+                ) {
+
+                    nouvellePreference.budget =
+                        budget;
+
+                }
+
+            }
+
+
+            // =================================================
+            // PERSONNES
+            // =================================================
+
+            const personnesMatch =
+                texteNormalise.match(
+
+                    /(\d+)\s*(personne|personnes|voyageur|voyageurs)/
+
+                );
+
+
+            if (
+                personnesMatch
+            ) {
+
+                nouvellePreference.personnes =
+                    Number(
+                        personnesMatch[1]
+                    );
+
+            }
+
+
+            // =================================================
+            // DUREE
+            // =================================================
+
+            const dureeMatch =
+                texteNormalise.match(
+
+                    /(\d+)\s*(jour|jours|semaine|semaines)/
+
+                );
+
+
+            if (
+                dureeMatch
+            ) {
+
+                let duree =
+                    Number(
+                        dureeMatch[1]
+                    );
+
+
+                if (
+
+                    dureeMatch[2] === "semaine" ||
+
+                    dureeMatch[2] === "semaines"
+
+                ) {
+
+                    duree *= 7;
+
+                }
+
+
+                nouvellePreference.duree =
+                    duree;
+
+            }
+
+
+            // =================================================
+            // TYPE VOYAGE
+            // =================================================
+
+            const typesVoyage = [
+
+                "plage",
+                "aventure",
+                "famille",
+                "romantique",
+                "culture",
+                "culturel",
+                "nature",
+                "luxe",
+                "detente",
+                "randonnée",
+                "randonnee",
+                "affaires"
+
+            ];
+
+
+            const typeTrouve =
+                typesVoyage.find(
+
+                    type =>
+                        texteNormalise.includes(
+                            type
+                        )
+
+                );
+
+
+            if (
+                typeTrouve
+            ) {
+
+                nouvellePreference.typeVoyage =
+                    typeTrouve;
+
+            }
+
+
+            setPreferences(
+                nouvellePreference
+            );
+
+
+            return nouvellePreference;
+
         };
 
 
-        // =================================================
-        // DESTINATION
-        // =================================================
+    // =====================================================
+    // NOM NAVIGATION
+    // =====================================================
 
-        const destinationsConnues = [
-
-            "madagascar",
-            "antananarivo",
-            "antsiranana",
-            "diego",
-            "nosy be",
-            "nosy-bé",
-            "toamasina",
-            "tamatave",
-            "mahajanga",
-            "morondava",
-            "fianarantsoa",
-            "ranomafana",
-            "sainte marie",
-            "sainte-marie",
-            "toliara",
-            "tuléar",
-            "fort-dauphin",
-            "taolagnaro",
-            "isalo"
-
-        ];
-
-
-        const destinationTrouvee =
-            destinationsConnues.find(
-                destination =>
-                    texteNormalise.includes(
-                        destination
-                    )
-            );
-
-
-        if (destinationTrouvee) {
-
-            nouvellePreference.destination =
-                destinationTrouvee;
-
-        }
-
-
-        // =================================================
-        // BUDGET
-        // =================================================
-
-        const budgetMatch =
-            texteNormalise.match(
-                /(\d[\d\s.]*)\s*(ar|ariary|€|eur|euros|euro)?/
-            );
-
-
-        if (budgetMatch) {
-
-            const budgetTexte =
-                budgetMatch[1]
-                    .replace(/\s/g, "")
-                    .replace(/\./g, "");
-
-
-            const budget =
-                Number(budgetTexte);
+    const obtenirNomNavigation =
+        (route) => {
 
 
             if (
-                !isNaN(budget) &&
-                budget > 0
+                route === "/"
             ) {
 
-                nouvellePreference.budget =
-                    budget;
-
-            }
-
-        }
-
-
-        // =================================================
-        // PERSONNES
-        // =================================================
-
-        const personnesMatch =
-            texteNormalise.match(
-                /(\d+)\s*(personne|personnes|voyageur|voyageurs)/
-            );
-
-
-        if (personnesMatch) {
-
-            nouvellePreference.personnes =
-                Number(
-                    personnesMatch[1]
-                );
-
-        }
-
-
-        // =================================================
-        // DUREE
-        // =================================================
-
-        const dureeMatch =
-            texteNormalise.match(
-                /(\d+)\s*(jour|jours|semaine|semaines)/
-            );
-
-
-        if (dureeMatch) {
-
-            let duree =
-                Number(
-                    dureeMatch[1]
-                );
-
-
-            if (
-                dureeMatch[2] === "semaine" ||
-                dureeMatch[2] === "semaines"
-            ) {
-
-                duree *= 7;
+                return "Accueil";
 
             }
 
 
-            nouvellePreference.duree =
-                duree;
+            if (
+                route === "/login-client"
+            ) {
 
-        }
+                return "Se connecter";
 
-
-        // =================================================
-        // TYPE DE VOYAGE
-        // =================================================
-
-        const typesVoyage = [
-
-            "plage",
-            "aventure",
-            "famille",
-            "romantique",
-            "culture",
-            "culturel",
-            "nature",
-            "luxe",
-            "detente",
-            "détente",
-            "randonnée",
-            "affaires"
-
-        ];
+            }
 
 
-        const typeTrouve =
-            typesVoyage.find(
-                type =>
-                    texteNormalise.includes(
-                        type
-                    )
-            );
+            if (
+                route === "/destinations-public"
+            ) {
+
+                return "Voir les destinations";
+
+            }
 
 
-        if (typeTrouve) {
+            if (
+                route === "/offres-public"
+            ) {
 
-            nouvellePreference.typeVoyage =
-                typeTrouve;
+                return "Voir les offres";
 
-        }
-
-
-        setPreferences(
-            nouvellePreference
-        );
+            }
 
 
-        return nouvellePreference;
+            if (
+                route === "/mes-reservations"
+            ) {
 
-    };
+                return "Mes réservations";
 
-
-    // =====================================================
-    // NOM DE LA ROUTE
-    // =====================================================
-
-    const obtenirNomNavigation = (route) => {
-
-        if (route === "/Accueil") {
-
-            return "Accueil";
-
-        }
+            }
 
 
-        if (route === "/login-client") {
+            if (
+                route === "/notifications"
+            ) {
 
-            return "Se connecter";
+                return "Voir les notifications";
 
-        }
-
-
-        if (route === "/destinations-public") {
-
-            return "Voir les destinations";
-
-        }
+            }
 
 
-        if (route === "/offres-public") {
+            if (
+                route === "/paiements"
+            ) {
 
-            return "Voir les offres";
+                return "Voir les paiements";
 
-        }
-
-
-        if (route === "/mes-reservations") {
-
-            return "Mes réservations";
-
-        }
+            }
 
 
-        if (
-            route.startsWith(
-                "/detail-offre/"
-            )
-        ) {
+            if (
+                route.startsWith(
+                    "/detail-offre/"
+                )
+            ) {
 
-            return "Voir le détail de l'offre";
+                return "Voir le détail de l'offre";
 
-        }
-
-
-        if (
-            route.startsWith(
-                "/reservation-public/"
-            )
-        ) {
-
-            return "Réserver cette offre";
-
-        }
+            }
 
 
-        return "Ouvrir la page";
+            if (
+                route.startsWith(
+                    "/reservation-public/"
+                )
+            ) {
 
-    };
+                return "Réserver cette offre";
+
+            }
+
+
+            return "Ouvrir la page";
+
+        };
 
 
     // =====================================================
-    // ICONE DE NAVIGATION
+    // ICONE NAVIGATION
     // =====================================================
 
-    const obtenirIconeNavigation = (route) => {
-
-        if (route === "/Accueil") {
-
-            return <FaHome />;
-
-        }
+    const obtenirIconeNavigation =
+        (route) => {
 
 
-        if (route === "/login-client") {
+            if (
+                route === "/"
+            ) {
 
-            return <FaSignInAlt />;
+                return <FaHome />;
 
-        }
-
-
-        if (
-            route === "/destinations-public"
-        ) {
-
-            return <FaMapMarkerAlt />;
-
-        }
+            }
 
 
-        if (
-            route === "/offres-public"
-        ) {
+            if (
+                route === "/login-client"
+            ) {
 
-            return <FaList />;
+                return <FaSignInAlt />;
 
-        }
-
-
-        if (
-            route === "/mes-reservations"
-        ) {
-
-            return <FaClipboardList />;
-
-        }
+            }
 
 
-        if (
-            route.startsWith(
-                "/detail-offre/"
-            )
-        ) {
+            if (
+                route === "/destinations-public"
+            ) {
 
-            return <FaExternalLinkAlt />;
+                return <FaMapMarkerAlt />;
 
-        }
+            }
 
 
-        if (
-            route.startsWith(
-                "/reservation-public/"
-            )
-        ) {
+            if (
+                route === "/offres-public"
+            ) {
 
-            return <FaClipboardList />;
+                return <FaList />;
 
-        }
+            }
 
 
-        return <FaGlobe />;
+            if (
+                route === "/mes-reservations"
+            ) {
 
-    };
+                return <FaClipboardList />;
+
+            }
+
+
+            if (
+                route === "/notifications"
+            ) {
+
+                return <FaBell />;
+
+            }
+
+
+            if (
+                route === "/paiements"
+            ) {
+
+                return <FaCreditCard />;
+
+            }
+
+
+            if (
+                route.startsWith(
+                    "/detail-offre/"
+                )
+            ) {
+
+                return <FaExternalLinkAlt />;
+
+            }
+
+
+            if (
+                route.startsWith(
+                    "/reservation-public/"
+                )
+            ) {
+
+                return <FaClipboardList />;
+
+            }
+
+
+            return <FaGlobe />;
+
+        };
 
 
     // =====================================================
-    // VERIFIER ROUTE AUTORISEE
+    // ROUTE AUTORISEE
     // =====================================================
 
-    const routeAutorisee = (route) => {
+    const routeAutorisee =
+        (route) => {
 
-        if (
-            typeof route !== "string"
-        ) {
+
+            if (
+                typeof route !==
+                "string"
+            ) {
+
+                return false;
+
+            }
+
+
+            const routesFixes = [
+
+                "/",
+
+                "/destinations-public",
+
+                "/offres-public",
+
+                "/login-client",
+
+                "/mes-reservations",
+
+                "/notifications",
+
+                "/paiements"
+
+            ];
+
+
+            if (
+                routesFixes.includes(
+                    route
+                )
+            ) {
+
+                return true;
+
+            }
+
+
+            if (
+                /^\/detail-offre\/\d+$/
+                    .test(route)
+            ) {
+
+                return true;
+
+            }
+
+
+            if (
+                /^\/reservation-public\/\d+$/
+                    .test(route)
+            ) {
+
+                return true;
+
+            }
+
 
             return false;
 
-        }
-
-
-        const routesFixes = [
-
-            "/Accueil",
-            "/destinations-public",
-            "/offres-public",
-            "/login-client",
-            "/mes-reservations"
-
-        ];
-
-
-        if (
-            routesFixes.includes(route)
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            /^\/detail-offre\/\d+$/.test(
-                route
-            )
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            /^\/reservation-public\/\d+$/.test(
-                route
-            )
-        ) {
-
-            return true;
-
-        }
-
-
-        return false;
-
-    };
+        };
 
 
     // =====================================================
-    // NAVIGATION CLIQUABLE
+    // AFFICHER NAVIGATION
     // =====================================================
 
-    const afficherNavigation = (navigation) => {
+    const afficherNavigation =
+        (navigation) => {
 
-        if (
-            !Array.isArray(navigation) ||
-            navigation.length === 0
-        ) {
-
-            return null;
-
-        }
-
-
-        const routes =
-            navigation.filter(
-                route =>
-                    routeAutorisee(route)
-            );
-
-
-        if (routes.length === 0) {
-
-            return null;
-
-        }
-
-
-        return (
-
-            <div className="assistant-navigation">
-
-                {
-                    routes.map(
-                        (
-                            route,
-                            index
-                        ) => (
-
-                            <button
-                                key={
-                                    `${route}-${index}`
-                                }
-                                type="button"
-                                className="assistant-navigation-button"
-                                onClick={() =>
-                                    navigate(route)
-                                }
-                            >
-
-                                <span className="assistant-navigation-icon">
-
-                                    {
-                                        obtenirIconeNavigation(
-                                            route
-                                        )
-                                    }
-
-                                </span>
-
-
-                                <span>
-
-                                    {
-                                        obtenirNomNavigation(
-                                            route
-                                        )
-                                    }
-
-                                </span>
-
-                            </button>
-
-                        )
-                    )
-                }
-
-            </div>
-
-        );
-
-    };
-
-
-    // =====================================================
-    // ENVOYER LA DEMANDE AU BACKEND
-    // =====================================================
-
-    const rechercherAvecAssistant = async (texte) => {
-
-        try {
-
-            setChargement(true);
-
-
-            const res =
-                await api.post(
-                    "/assistant-touristique",
-                    {
-                        message: texte
-                    }
-                );
-
-
-            console.log(
-                "Réponse assistant touristique :",
-                res.data
-            );
-
-
-            const donnees =
-                res.data || {};
-
-
-            // =================================================
-            // METTRE A JOUR LES PREFERENCES
-            // =================================================
 
             if (
-                donnees.analyse
+                !Array.isArray(navigation) ||
+                navigation.length === 0
             ) {
 
-                setPreferences(
-                    anciennes => ({
+                return null;
 
-                        ...anciennes,
+            }
 
-                        budget:
-                            donnees.analyse.budget ??
-                            anciennes.budget,
 
-                        personnes:
-                            donnees.analyse.nombrePersonnes ??
-                            anciennes.personnes,
+            const routes =
+                navigation
 
-                        duree:
-                            donnees.analyse.duree ??
-                            anciennes.duree
+                    .filter(
+                        route =>
+                            routeAutorisee(
+                                route
+                            )
+                    )
+
+                    .filter(
+                        (
+                            route,
+                            index,
+                            tableau
+                        ) =>
+                            tableau.indexOf(
+                                route
+                            ) === index
+                    );
+
+
+            if (
+                routes.length === 0
+            ) {
+
+                return null;
+
+            }
+
+
+            return (
+
+                <div className="assistant-navigation">
+
+                    {
+                        routes.map(
+                            (
+                                route,
+                                index
+                            ) => (
+
+                                <button
+                                    key={
+                                        `${route}-${index}`
+                                    }
+                                    type="button"
+                                    className="assistant-navigation-button"
+                                    onClick={() =>
+                                        navigate(
+                                            route
+                                        )
+                                    }
+                                >
+
+                                    <span className="assistant-navigation-icon">
+
+                                        {
+                                            obtenirIconeNavigation(
+                                                route
+                                            )
+                                        }
+
+                                    </span>
+
+
+                                    <span>
+
+                                        {
+                                            obtenirNomNavigation(
+                                                route
+                                            )
+                                        }
+
+                                    </span>
+
+                                </button>
+
+                            )
+                        )
+                    }
+
+                </div>
+
+            );
+
+        };
+
+
+    // =====================================================
+    // HISTORIQUE GEMINI
+    // =====================================================
+
+    const obtenirHistorique =
+        () => {
+
+
+            return messages
+
+                .slice(-10)
+
+                .map(
+                    msg => ({
+
+                        role:
+                            msg.type ===
+                            "user"
+
+                                ? "utilisateur"
+
+                                : "assistant",
+
+                        message:
+                            msg.texte ||
+                            "",
+
+                        offres:
+                            Array.isArray(
+                                msg.offres
+                            )
+
+                                ? msg.offres.map(
+                                    offre => ({
+
+                                        id_offre:
+                                            offre.id_offre,
+
+                                        titre:
+                                            offre.titre,
+
+                                        destination:
+                                            offre.destination,
+
+                                        prix:
+                                            offre.prix
+
+                                    })
+                                )
+
+                                : []
 
                     })
                 );
 
-            }
+        };
 
 
-            // =================================================
-            // NAVIGATION
-            // =================================================
+    // =====================================================
+    // ENVOYER AU BACKEND
+    // =====================================================
 
-            const navigation =
-                Array.isArray(
-                    donnees.navigation
-                )
-                    ? donnees.navigation
-                    : [];
+    const rechercherAvecAssistant =
+        async (
 
+            texte,
 
-            // =================================================
-            // MESSAGE DE L'ASSISTANT
-            // =================================================
+            preferencesActuelles
 
-            ajouterMessage(
-
-                "assistant",
-
-                donnees.message ||
-                "Je n'ai pas pu générer une réponse.",
-
-                [],
-
-                navigation
-
-            );
+        ) => {
 
 
-            // =================================================
-            // RECOMMANDATIONS
-            // =================================================
+            try {
 
-            if (
-                Array.isArray(
-                    donnees.recommandations
-                ) &&
-                donnees.recommandations.length > 0
-            ) {
+                setChargement(true);
+
+
+                const res =
+                    await api.post(
+
+                        "/assistant-touristique",
+
+                        {
+
+                            message:
+                                texte,
+
+                            historique:
+                                obtenirHistorique(),
+
+                            pageActuelle:
+                                location.pathname,
+
+                            preferences:
+                                preferencesActuelles
+
+                        }
+
+                    );
+
+
+                console.log(
+                    "Réponse assistant touristique :",
+                    res.data
+                );
+
+
+                const donnees =
+                    res.data || {};
+
+
+                // =================================================
+                // PREFERENCES
+                // =================================================
+
+                if (
+                    donnees.analyse
+                ) {
+
+                    setPreferences(
+                        anciennes => ({
+
+                            ...anciennes,
+
+                            destination:
+                                donnees.analyse.destination ||
+                                anciennes.destination,
+
+                            budget:
+                                donnees.analyse.budget ??
+                                anciennes.budget,
+
+                            personnes:
+                                donnees.analyse.nombrePersonnes ??
+                                anciennes.personnes,
+
+                            duree:
+                                donnees.analyse.duree ??
+                                anciennes.duree,
+
+                            typeVoyage:
+                                donnees.analyse.typeVoyage ||
+                                anciennes.typeVoyage
+
+                        })
+                    );
+
+                }
+
+
+                // =================================================
+                // NAVIGATION
+                // =================================================
+
+                const navigation =
+                    Array.isArray(
+                        donnees.navigation
+                    )
+
+                        ? donnees.navigation
+
+                        : [];
+
+
+                // =================================================
+                // RECOMMANDATIONS
+                // =================================================
+
+                const recommandations =
+                    Array.isArray(
+                        donnees.recommandations
+                    )
+
+                        ? donnees.recommandations
+
+                        : [];
+
+
+                // =================================================
+                // MESSAGE
+                // =================================================
 
                 ajouterMessage(
 
                     "assistant",
 
-                    "",
+                    donnees.message ||
+                    "Je n'ai pas pu générer une réponse.",
 
-                    donnees.recommandations,
+                    recommandations,
 
-                    []
+                    navigation
 
                 );
 
             }
+            catch (error) {
+
+                console.error(
+                    "Erreur assistant touristique :",
+                    error.response?.data ||
+                    error.message
+                );
 
 
-        }
+                ajouterMessage(
 
-        catch (error) {
+                    "assistant",
 
-            console.error(
-                "Erreur assistant touristique :",
-                error.response?.data ||
-                error.message
-            );
+                    "Je ne peux pas traiter votre demande pour le moment. Vous pouvez toutefois consulter les offres et les destinations disponibles.",
 
+                    [],
 
-            // =================================================
-            // MESSAGE D'ERREUR
-            // =================================================
+                    [
 
-            ajouterMessage(
+                        "/destinations-public",
 
-                "assistant",
+                        "/offres-public"
 
-                "Je ne peux pas traiter votre demande pour le moment. Veuillez réessayer dans quelques instants."
+                    ]
 
-            );
+                );
 
-        }
+            }
+            finally {
 
-        finally {
+                setChargement(false);
 
-            setChargement(false);
+            }
 
-        }
-
-    };
+        };
 
 
     // =====================================================
     // ENVOYER MESSAGE
     // =====================================================
 
-    const envoyerMessage = async () => {
-
-        const texte =
-            message.trim();
+    const envoyerMessage =
+        async () => {
 
 
-        if (
-            !texte ||
-            chargement
-        ) {
-
-            return;
-
-        }
+            const texte =
+                message.trim();
 
 
-        // =================================================
-        // MESSAGE DU TOURISTE
-        // =================================================
+            if (
+                !texte ||
+                chargement
+            ) {
 
-        ajouterMessage(
-            "user",
-            texte
-        );
+                return;
 
-
-        setMessage("");
+            }
 
 
-        // =================================================
-        // ANALYSE LOCALE POUR AFFICHAGE
-        // =================================================
+            // =================================================
+            // MESSAGE UTILISATEUR
+            // =================================================
 
-        analyserPreferencesLocalement(
-            texte
-        );
+            ajouterMessage(
+
+                "user",
+
+                texte
+
+            );
 
 
-        // =================================================
-        // BACKEND
-        // =================================================
+            setMessage("");
 
-        await rechercherAvecAssistant(
-            texte
-        );
 
-    };
+            // =================================================
+            // PREFERENCES
+            // =================================================
+
+            const nouvellesPreferences =
+                analyserPreferencesLocalement(
+                    texte
+                );
+
+
+            // =================================================
+            // BACKEND
+            // =================================================
+
+            await rechercherAvecAssistant(
+
+                texte,
+
+                nouvellesPreferences
+
+            );
+
+        };
 
 
     // =====================================================
     // TOUCHE ENTREE
     // =====================================================
 
-    const gererToucheClavier = (e) => {
+    const gererToucheClavier =
+        (e) => {
 
-        if (
-            e.key === "Enter" &&
-            !e.shiftKey
-        ) {
 
-            e.preventDefault();
+            if (
 
-            envoyerMessage();
+                e.key === "Enter" &&
 
-        }
+                !e.shiftKey
 
-    };
+            ) {
+
+                e.preventDefault();
+
+                envoyerMessage();
+
+            }
+
+        };
 
 
     // =====================================================
     // OUVRIR / FERMER
     // =====================================================
 
-    const basculerAssistant = () => {
+    const basculerAssistant =
+        () => {
 
-        setOuvert(
-            ancien =>
-                !ancien
-        );
+            setOuvert(
+                ancien =>
+                    !ancien
+            );
 
-    };
+        };
 
 
     // =====================================================
     // FORMAT MESSAGE
     // =====================================================
 
-    const formaterMessage = (texte) => {
-
-        if (!texte) {
-
-            return null;
-
-        }
+    const formaterMessage =
+        (texte) => {
 
 
-        const lignes =
-            texte.split("\n");
+            if (
+                !texte
+            ) {
+
+                return null;
+
+            }
 
 
-        return lignes.map(
-            (
-                ligne,
-                index
-            ) => (
+            const lignes =
+                String(
+                    texte
+                ).split(
+                    "\n"
+                );
 
-                <span key={index}>
 
-                    {ligne}
+            return lignes.map(
+                (
+                    ligne,
+                    index
+                ) => (
 
-                    {
-                        index <
-                        lignes.length - 1 &&
-                        <br />
-                    }
+                    <span
+                        key={index}
+                    >
 
-                </span>
+                        {ligne}
 
-            )
-        );
+                        {
+                            index <
+                            lignes.length - 1 &&
+                            <br />
+                        }
 
-    };
+                    </span>
+
+                )
+            );
+
+        };
+
+
+    // =====================================================
+    // URL IMAGE
+    // =====================================================
+
+    const obtenirUrlImage =
+        (image) => {
+
+
+            if (
+                !image
+            ) {
+
+                return null;
+
+            }
+
+
+            if (
+                String(image)
+                    .startsWith("http")
+            ) {
+
+                return image;
+
+            }
+
+
+            return `http://localhost:8081/uploads/${image}`;
+
+        };
 
 
     // =====================================================
@@ -931,17 +1279,25 @@ function AssistantTouristique() {
             ================================================= */}
 
             <button
+
                 className="assistant-floating-button"
-                onClick={basculerAssistant}
+
+                onClick={
+                    basculerAssistant
+                }
+
                 aria-label="Ouvrir l'assistant touristique"
+
             >
 
                 {
+
                     ouvert
-                        ?
-                        <FaTimes />
-                        :
-                        <FaRobot />
+
+                        ? <FaTimes />
+
+                        : <FaRobot />
+
                 }
 
             </button>
@@ -952,436 +1308,668 @@ function AssistantTouristique() {
             ================================================= */}
 
             {
-                ouvert &&
 
-                <div className="assistant-touristique">
+                ouvert && (
+
+                    <div className="assistant-touristique">
 
 
-                    {/* =================================================
-                        HEADER
-                    ================================================= */}
+                        {/* =================================================
+                            HEADER
+                        ================================================= */}
 
-                    <div className="assistant-header">
+                        <div className="assistant-header">
 
-                        <div className="assistant-header-icon">
+                            <div className="assistant-header-icon">
 
-                            <FaRobot />
+                                <FaRobot />
+
+                            </div>
+
+
+                            <div className="assistant-header-text">
+
+                                <strong>
+
+                                    Assistant touristique
+
+                                </strong>
+
+
+                                <span>
+
+                                    Votre assistant de voyage
+
+                                </span>
+
+                            </div>
+
+
+                            <button
+
+                                className="assistant-close"
+
+                                type="button"
+
+                                onClick={() =>
+                                    setOuvert(false)
+                                }
+
+                            >
+
+                                <FaTimes />
+
+                            </button>
 
                         </div>
 
 
-                        <div className="assistant-header-text">
-
-                            <strong>
-                                Assistant touristique
-                            </strong>
-
-                            <span>
-                                Recommandations de voyages
-                            </span>
-
-                        </div>
-
-
-                        <button
-                            className="assistant-close"
-                            onClick={() =>
-                                setOuvert(false)
-                            }
-                        >
-
-                            <FaTimes />
-
-                        </button>
-
-                    </div>
-
-
-                    {/* =================================================
-                        PREFERENCES
-                    ================================================= */}
-
-                    {
-                        (
-                            preferences.destination ||
-                            preferences.budget ||
-                            preferences.personnes ||
-                            preferences.duree ||
-                            preferences.typeVoyage
-                        ) &&
-
-                        <div className="assistant-preferences">
-
-                            {
-                                preferences.destination &&
-
-                                <span>
-
-                                    <FaMapMarkerAlt />
-
-                                    {
-                                        preferences.destination
-                                    }
-
-                                </span>
-
-                            }
-
-
-                            {
-                                preferences.budget &&
-
-                                <span>
-
-                                    <FaMoneyBillWave />
-
-                                    {
-                                        preferences.budget
-                                            .toLocaleString(
-                                                "fr-FR"
-                                            )
-                                    }{" "}
-                                    Ar
-
-                                </span>
-
-                            }
-
-
-                            {
-                                preferences.personnes &&
-
-                                <span>
-
-                                    <FaUsers />
-
-                                    {
-                                        preferences.personnes
-                                    }{" "}
-                                    personne(s)
-
-                                </span>
-
-                            }
-
-
-                            {
-                                preferences.duree &&
-
-                                <span>
-
-                                    <FaCalendarAlt />
-
-                                    {
-                                        preferences.duree
-                                    }{" "}
-                                    jour(s)
-
-                                </span>
-
-                            }
-
-
-                            {
-                                preferences.typeVoyage &&
-
-                                <span>
-
-                                    <FaSuitcase />
-
-                                    {
-                                        preferences.typeVoyage
-                                    }
-
-                                </span>
-
-                            }
-
-                        </div>
-
-                    }
-
-
-                    {/* =================================================
-                        MESSAGES
-                    ================================================= */}
-
-                    <div
-                        className="assistant-messages"
-                        ref={messagesRef}
-                    >
+                        {/* =================================================
+                            PREFERENCES
+                        ================================================= */}
 
                         {
-                            messages.map(
-                                (msg) => (
 
-                                    <div
-                                        key={msg.id}
-                                        className={
-                                            msg.type === "user"
-                                                ?
-                                                "assistant-message user-message"
-                                                :
-                                                "assistant-message bot-message"
-                                        }
-                                    >
+                            (
+
+                                preferences.destination ||
+
+                                preferences.budget ||
+
+                                preferences.personnes ||
+
+                                preferences.duree ||
+
+                                preferences.typeVoyage
+
+                            ) && (
+
+                                <div className="assistant-preferences">
 
 
-                                        {
-                                            msg.type === "assistant" &&
+                                    {
+                                        preferences.destination && (
 
-                                            <div className="message-avatar">
+                                            <span>
 
-                                                <FaRobot />
+                                                <FaMapMarkerAlt />
+
+                                                {
+                                                    preferences.destination
+                                                }
+
+                                            </span>
+
+                                        )
+                                    }
+
+
+                                    {
+                                        preferences.budget && (
+
+                                            <span>
+
+                                                <FaMoneyBillWave />
+
+                                                {
+
+                                                    Number(
+                                                        preferences.budget
+                                                    ).toLocaleString(
+                                                        "fr-FR"
+                                                    )
+
+                                                }{" "}
+                                                Ar
+
+                                            </span>
+
+                                        )
+                                    }
+
+
+                                    {
+                                        preferences.personnes && (
+
+                                            <span>
+
+                                                <FaUsers />
+
+                                                {
+                                                    preferences.personnes
+                                                }{" "}
+                                                personne(s)
+
+                                            </span>
+
+                                        )
+                                    }
+
+
+                                    {
+                                        preferences.duree && (
+
+                                            <span>
+
+                                                <FaCalendarAlt />
+
+                                                {
+                                                    preferences.duree
+                                                }{" "}
+                                                jour(s)
+
+                                            </span>
+
+                                        )
+                                    }
+
+
+                                    {
+                                        preferences.typeVoyage && (
+
+                                            <span>
+
+                                                <FaSuitcase />
+
+                                                {
+                                                    preferences.typeVoyage
+                                                }
+
+                                            </span>
+
+                                        )
+                                    }
+
+                                </div>
+
+                            )
+                        }
+
+
+                        {/* =================================================
+                            MESSAGES
+                        ================================================= */}
+
+                        <div
+
+                            className="assistant-messages"
+
+                            ref={
+                                messagesRef
+                            }
+
+                        >
+
+                            {
+
+                                messages.map(
+                                    msg => (
+
+                                        <div
+
+                                            key={
+                                                msg.id
+                                            }
+
+                                            className={
+
+                                                msg.type ===
+                                                "user"
+
+                                                    ? "assistant-message user-message"
+
+                                                    : "assistant-message bot-message"
+
+                                            }
+
+                                        >
+
+                                            {
+
+                                                msg.type ===
+                                                "assistant" && (
+
+                                                    <div className="message-avatar">
+
+                                                        <FaRobot />
+
+                                                    </div>
+
+                                                )
+
+                                            }
+
+
+                                            <div className="message-content">
+
+
+                                                {/* ==========================================
+                                                    TEXTE
+                                                ========================================== */}
+
+                                                {
+
+                                                    formaterMessage(
+                                                        msg.texte
+                                                    )
+
+                                                }
+
+
+                                                {/* ==========================================
+                                                    NAVIGATION
+                                                ========================================== */}
+
+                                                {
+
+                                                    msg.type ===
+                                                    "assistant" &&
+
+                                                    afficherNavigation(
+                                                        msg.navigation
+                                                    )
+
+                                                }
+
+
+                                                {/* ==========================================
+                                                    OFFRES
+                                                ========================================== */}
+
+                                                {
+
+                                                    Array.isArray(
+                                                        msg.offres
+                                                    ) &&
+
+                                                    msg.offres.length >
+                                                    0 && (
+
+                                                        <div className="assistant-offers">
+
+                                                            {
+
+                                                                msg.offres.map(
+                                                                    offre => (
+
+                                                                        <div
+
+                                                                            className="assistant-offer-card"
+
+                                                                            key={
+                                                                                offre.id_offre
+                                                                            }
+
+                                                                        >
+
+
+                                                                            {/* ==========================
+                                                                                IMAGE
+                                                                            ========================== */}
+
+                                                                            {
+
+                                                                                obtenirUrlImage(
+                                                                                    offre.image
+                                                                                ) && (
+
+                                                                                    <img
+
+                                                                                        src={
+                                                                                            obtenirUrlImage(
+                                                                                                offre.image
+                                                                                            )
+                                                                                        }
+
+                                                                                        alt={
+                                                                                            offre.titre ||
+                                                                                            "Offre touristique"
+                                                                                        }
+
+                                                                                    />
+
+                                                                                )
+
+                                                                            }
+
+
+                                                                            <div className="assistant-offer-content">
+
+
+                                                                                {/* ==========================
+                                                                                    TITRE
+                                                                                ========================== */}
+
+                                                                                <strong>
+
+                                                                                    {
+                                                                                        offre.titre ||
+                                                                                        "Offre touristique"
+                                                                                    }
+
+                                                                                </strong>
+
+
+                                                                                {/* ==========================
+                                                                                    DESTINATION
+                                                                                ========================== */}
+
+                                                                                <span>
+
+                                                                                    <FaMapMarkerAlt />
+
+                                                                                    {
+                                                                                        offre.destination ||
+                                                                                        "Destination inconnue"
+                                                                                    }
+
+                                                                                </span>
+
+
+                                                                                {/* ==========================
+                                                                                    REGION / PAYS
+                                                                                ========================== */}
+
+                                                                                {
+
+                                                                                    (
+                                                                                        offre.region ||
+                                                                                        offre.pays
+                                                                                    ) && (
+
+                                                                                        <span>
+
+                                                                                            <FaGlobe />
+
+                                                                                            {
+
+                                                                                                [
+                                                                                                    offre.region,
+                                                                                                    offre.pays
+                                                                                                ]
+                                                                                                    .filter(Boolean)
+                                                                                                    .join(
+                                                                                                        " - "
+                                                                                                    )
+
+                                                                                            }
+
+                                                                                        </span>
+
+                                                                                    )
+
+                                                                                }
+
+
+                                                                                {/* ==========================
+                                                                                    CATEGORIE
+                                                                                ========================== */}
+
+                                                                                {
+
+                                                                                    offre.categorie && (
+
+                                                                                        <span>
+
+                                                                                            <FaSuitcase />
+
+                                                                                            {
+                                                                                                offre.categorie
+                                                                                            }
+
+                                                                                        </span>
+
+                                                                                    )
+
+                                                                                }
+
+
+                                                                                {/* ==========================
+                                                                                    PRIX
+                                                                                ========================== */}
+
+                                                                                <span>
+
+                                                                                    <FaMoneyBillWave />
+
+                                                                                    {
+
+                                                                                        Number(
+                                                                                            offre.prix ||
+                                                                                            0
+                                                                                        ).toLocaleString(
+                                                                                            "fr-FR"
+                                                                                        )
+
+                                                                                    }{" "}
+                                                                                    Ar
+
+                                                                                </span>
+
+
+                                                                                {/* ==========================
+                                                                                    CAPACITE
+                                                                                ========================== */}
+
+                                                                                {
+
+                                                                                    offre.capacite && (
+
+                                                                                        <span>
+
+                                                                                            <FaUsers />
+
+                                                                                            Capacité :
+                                                                                            {" "}
+
+                                                                                            {
+                                                                                                offre.capacite
+                                                                                            }
+
+                                                                                        </span>
+
+                                                                                    )
+
+                                                                                }
+
+
+                                                                                {/* ==========================
+                                                                                    BOUTONS
+                                                                                ========================== */}
+
+                                                                                <div className="assistant-offer-actions">
+
+
+                                                                                    {/* ======================
+                                                                                        VOIR
+                                                                                    ====================== */}
+
+                                                                                    <button
+
+                                                                                        type="button"
+
+                                                                                        className="assistant-offer-button"
+
+                                                                                        onClick={() =>
+                                                                                            navigate(
+                                                                                                `/detail-offre/${offre.id_offre}`
+                                                                                            )
+                                                                                        }
+
+                                                                                    >
+
+                                                                                        Voir l'offre
+
+                                                                                        <FaExternalLinkAlt />
+
+                                                                                    </button>
+
+
+                                                                                    {/* ======================
+                                                                                        RESERVER
+                                                                                    ====================== */}
+
+                                                                                    <button
+
+                                                                                        type="button"
+
+                                                                                        className="assistant-offer-button"
+
+                                                                                        onClick={() =>
+                                                                                            navigate(
+                                                                                                `/reservation-public/${offre.id_offre}`
+                                                                                            )
+                                                                                        }
+
+                                                                                    >
+
+                                                                                        Réserver
+
+                                                                                        <FaClipboardList />
+
+                                                                                    </button>
+
+                                                                                </div>
+
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                    )
+
+                                                                )
+
+                                                            }
+
+                                                        </div>
+
+                                                    )
+
+                                                }
 
                                             </div>
 
-                                        }
+                                        </div>
+
+                                    )
+
+                                )
+
+                            }
 
 
-                                        <div className="message-content">
+                            {/* =================================================
+                                CHARGEMENT
+                            ================================================= */}
 
-                                            {
-                                                formaterMessage(
-                                                    msg.texte
-                                                )
-                                            }
+                            {
 
+                                chargement && (
 
-                                            {/* =================================================
-                                                NAVIGATION
-                                            ================================================= */}
+                                    <div className="assistant-message bot-message">
 
-                                            {
-                                                msg.type === "assistant" &&
+                                        <div className="message-avatar">
 
-                                                afficherNavigation(
-                                                    msg.navigation
-                                                )
-                                            }
+                                            <FaRobot />
+
+                                        </div>
 
 
-                                            {/* =================================================
-                                                CARTES DES OFFRES
-                                            ================================================= */}
+                                        <div className="message-content assistant-typing">
 
-                                            {
-                                                msg.offres &&
-                                                msg.offres.length > 0 &&
+                                            <span></span>
 
-                                                <div className="assistant-offers">
+                                            <span></span>
 
-                                                    {
-                                                        msg.offres.map(
-                                                            (offre) => (
-
-                                                                <div
-                                                                    className="assistant-offer-card"
-                                                                    key={
-                                                                        offre.id_offre
-                                                                    }
-                                                                >
-
-                                                                    {
-                                                                        offre.image &&
-
-                                                                        <img
-                                                                            src={
-                                                                                offre.image.startsWith(
-                                                                                    "http"
-                                                                                )
-                                                                                    ?
-                                                                                    offre.image
-                                                                                    :
-                                                                                    `http://localhost:8081/uploads/${offre.image}`
-                                                                            }
-                                                                            alt={
-                                                                                offre.titre ||
-                                                                                "Offre touristique"
-                                                                            }
-                                                                        />
-
-                                                                    }
-
-
-                                                                    <div className="assistant-offer-content">
-
-                                                                        <strong>
-
-                                                                            {
-                                                                                offre.titre ||
-                                                                                "Offre touristique"
-                                                                            }
-
-                                                                        </strong>
-
-
-                                                                        <span>
-
-                                                                            <FaMapMarkerAlt />
-
-                                                                            {
-                                                                                offre.destination ||
-                                                                                "Destination inconnue"
-                                                                            }
-
-                                                                        </span>
-
-
-                                                                        <span>
-
-                                                                            <FaMoneyBillWave />
-
-                                                                            {
-                                                                                Number(
-                                                                                    offre.prix ||
-                                                                                    0
-                                                                                ).toLocaleString(
-                                                                                    "fr-FR"
-                                                                                )
-                                                                            }{" "}
-                                                                            Ar
-
-                                                                        </span>
-
-
-                                                                        {
-                                                                            offre.capacite &&
-
-                                                                            <span>
-
-                                                                                <FaUsers />
-
-                                                                                Capacité :
-                                                                                {" "}
-                                                                                {
-                                                                                    offre.capacite
-                                                                                }
-
-                                                                            </span>
-
-                                                                        }
-
-
-                                                                        <button
-                                                                            className="assistant-offer-button"
-                                                                            onClick={() =>
-                                                                                navigate(
-                                                                                    `/detail-offre/${offre.id_offre}`
-                                                                                )
-                                                                            }
-                                                                        >
-
-                                                                            Voir l'offre
-
-                                                                            <FaExternalLinkAlt />
-
-                                                                        </button>
-
-                                                                    </div>
-
-                                                                </div>
-
-                                                            )
-                                                        )
-                                                    }
-
-                                                </div>
-
-                                            }
+                                            <span></span>
 
                                         </div>
 
                                     </div>
 
                                 )
-                            )
-                        }
+
+                            }
+
+                        </div>
 
 
                         {/* =================================================
-                            CHARGEMENT
+                            SAISIE
                         ================================================= */}
 
-                        {
-                            chargement &&
+                        <div className="assistant-input-container">
 
-                            <div className="assistant-message bot-message">
+                            <textarea
 
-                                <div className="message-avatar">
+                                value={
+                                    message
+                                }
 
-                                    <FaRobot />
+                                onChange={
+                                    e =>
+                                        setMessage(
+                                            e.target.value
+                                        )
+                                }
 
-                                </div>
+                                onKeyDown={
+                                    gererToucheClavier
+                                }
 
+                                placeholder="Ex : Je cherche une randonnée à Madagascar pour 2 personnes..."
 
-                                <div className="message-content assistant-typing">
+                                rows={1}
 
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
+                                disabled={
+                                    chargement
+                                }
 
-                                </div>
-
-                            </div>
-
-                        }
-
-                    </div>
-
-
-                    {/* =================================================
-                        SAISIE
-                    ================================================= */}
-
-                    <div className="assistant-input-container">
-
-                        <textarea
-                            value={message}
-                            onChange={(e) =>
-                                setMessage(
-                                    e.target.value
-                                )
-                            }
-                            onKeyDown={
-                                gererToucheClavier
-                            }
-                            placeholder="Ex : Madagascar, 5 jours, 1 000 000 Ar..."
-                            rows={1}
-                            disabled={chargement}
-                        />
+                            />
 
 
-                        <button
-                            className="assistant-send-button"
-                            onClick={
-                                envoyerMessage
-                            }
-                            disabled={
-                                !message.trim() ||
-                                chargement
-                            }
-                        >
+                            <button
 
-                            <FaPaperPlane />
+                                type="button"
 
-                        </button>
+                                className="assistant-send-button"
 
-                    </div>
+                                onClick={
+                                    envoyerMessage
+                                }
+
+                                disabled={
+
+                                    !message.trim() ||
+
+                                    chargement
+
+                                }
+
+                                aria-label="Envoyer"
+
+                            >
+
+                                <FaPaperPlane />
+
+                            </button>
+
+                        </div>
 
 
-                    {/* =================================================
-                        FOOTER
-                    ================================================= */}
+                        {/* =================================================
+                            FOOTER
+                        ================================================= */}
 
-                    <div className="assistant-footer">
+                        <div className="assistant-footer">
 
-                        🤖 Assistant touristique intelligent
+                            🤖 Assistant touristique intelligent
+
+                        </div>
 
                     </div>
 
-
-                </div>
+                )
 
             }
 

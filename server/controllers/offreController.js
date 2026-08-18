@@ -1,623 +1,1029 @@
 const db = require("../db");
 
 
-
-// =====================================
+// ============================================================
 // AJOUTER UNE OFFRE
-// =====================================
+// ============================================================
 
-exports.createOffre = async(req,res)=>{
+exports.createOffre = async (req, res) => {
 
+    try {
 
-try{
+        console.log("======================================");
+        console.log("REQUÊTE AJOUT OFFRE");
+        console.log("======================================");
 
-
-const {
-
-id_prestataire,
-id_destination,
-id_categorie,
-titre,
-description,
-prix,
-capacite,
-disponibilite,
-date_debut,
-date_fin
-
-}=req.body;
+        console.log("Body :", req.body);
+        console.log("Fichier image :", req.file);
 
 
-
-const image = req.file
-? req.file.filename
-: null;
-
-
-
-const sql = `
-
-INSERT INTO offre
-
-(
-id_prestataire,
-id_destination,
-id_categorie,
-titre,
-description,
-prix,
-capacite,
-disponibilite,
-date_debut,
-date_fin,
-image
-)
-
-VALUES (?,?,?,?,?,?,?,?,?,?,?)
-
-`;
+        const {
+            id_prestataire,
+            id_destination,
+            id_categorie,
+            titre,
+            description,
+            prix,
+            capacite,
+            disponibilite,
+            date_debut,
+            date_fin
+        } = req.body;
 
 
+        // ====================================================
+        // VALIDATION
+        // ====================================================
 
-const [result] = await db.query(
+        if (
+            !id_prestataire ||
+            !id_destination ||
+            !id_categorie ||
+            !titre ||
+            !description ||
+            prix === undefined ||
+            prix === "" ||
+            capacite === undefined ||
+            capacite === "" ||
+            disponibilite === undefined ||
+            disponibilite === "" ||
+            !date_debut ||
+            !date_fin
+        ) {
 
-sql,
+            return res.status(400).json({
 
-[
+                message: "Tous les champs obligatoires doivent être remplis."
 
-id_prestataire,
-id_destination,
-id_categorie,
-titre,
-description,
-prix,
-capacite,
-disponibilite,
-date_debut,
-date_fin,
-image
+            });
 
-]
-
-
-);
-
-
-
-res.status(201).json({
-
-message:"Offre ajoutée avec succès",
-
-id_offre:result.insertId,
-
-image:image
-
-});
+        }
 
 
+        // ====================================================
+        // CONVERSION DES VALEURS NUMERIQUES
+        // ====================================================
 
-}
-
-catch(error){
-
-
-console.log(
-"Erreur ajout offre :",
-error
-);
+        const prixNombre = Number(prix);
+        const capaciteNombre = Number(capacite);
+        const disponibiliteNombre = Number(disponibilite);
 
 
-res.status(500).json({
+        if (
+            isNaN(prixNombre) ||
+            prixNombre <= 0
+        ) {
 
-message:"Erreur ajout offre",
+            return res.status(400).json({
 
-error:error.message
+                message: "Le prix doit être supérieur à 0."
 
-});
+            });
+
+        }
 
 
-}
+        if (
+            isNaN(capaciteNombre) ||
+            capaciteNombre <= 0 ||
+            !Number.isInteger(capaciteNombre)
+        ) {
 
+            return res.status(400).json({
+
+                message: "La capacité doit être un entier supérieur à 0."
+
+            });
+
+        }
+
+
+        if (
+            isNaN(disponibiliteNombre) ||
+            disponibiliteNombre < 0 ||
+            !Number.isInteger(disponibiliteNombre)
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "La disponibilité doit être un entier positif ou égal à 0."
+
+            });
+
+        }
+
+
+        if (
+            disponibiliteNombre >
+            capaciteNombre
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "La disponibilité ne peut pas dépasser la capacité."
+
+            });
+
+        }
+
+
+        // ====================================================
+        // VALIDATION DES DATES
+        // ====================================================
+
+        if (
+            new Date(date_fin) <
+            new Date(date_debut)
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "La date de fin doit être après ou égale à la date de début."
+
+            });
+
+        }
+
+
+        // ====================================================
+        // IMAGE PRINCIPALE
+        // ====================================================
+
+        const image = req.file
+            ? req.file.filename
+            : null;
+
+
+        console.log(
+            "Image principale :",
+            image
+        );
+
+
+        // ====================================================
+        // VERIFIER PRESTATAIRE
+        // ====================================================
+
+        const [prestataires] = await db.query(
+
+            `
+            SELECT id_prestataire
+            FROM prestataire
+            WHERE id_prestataire = ?
+            `,
+
+            [id_prestataire]
+
+        );
+
+
+        if (prestataires.length === 0) {
+
+            return res.status(400).json({
+
+                message: "Prestataire introuvable."
+
+            });
+
+        }
+
+
+        // ====================================================
+        // VERIFIER DESTINATION
+        // ====================================================
+
+        const [destinations] = await db.query(
+
+            `
+            SELECT id_destination
+            FROM destination
+            WHERE id_destination = ?
+            `,
+
+            [id_destination]
+
+        );
+
+
+        if (destinations.length === 0) {
+
+            return res.status(400).json({
+
+                message: "Destination introuvable."
+
+            });
+
+        }
+
+
+        // ====================================================
+        // VERIFIER CATEGORIE
+        // ====================================================
+
+        const [categories] = await db.query(
+
+            `
+            SELECT id_categorie
+            FROM categorie
+            WHERE id_categorie = ?
+            `,
+
+            [id_categorie]
+
+        );
+
+
+        if (categories.length === 0) {
+
+            return res.status(400).json({
+
+                message: "Catégorie introuvable."
+
+            });
+
+        }
+
+
+        // ====================================================
+        // INSERTION OFFRE
+        // ====================================================
+
+        const sql = `
+
+            INSERT INTO offre
+
+            (
+                id_prestataire,
+                id_destination,
+                id_categorie,
+                titre,
+                description,
+                prix,
+                capacite,
+                disponibilite,
+                date_debut,
+                date_fin,
+                image
+            )
+
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+        `;
+
+
+        const [result] = await db.query(
+
+            sql,
+
+            [
+
+                id_prestataire,
+                id_destination,
+                id_categorie,
+                titre.trim(),
+                description.trim(),
+                prixNombre,
+                capaciteNombre,
+                disponibiliteNombre,
+                date_debut,
+                date_fin,
+                image
+
+            ]
+
+        );
+
+
+        console.log(
+            "Offre créée avec ID :",
+            result.insertId
+        );
+
+
+        // ====================================================
+        // REPONSE
+        // ====================================================
+
+        return res.status(201).json({
+
+            message: "Offre ajoutée avec succès",
+
+            id_offre: result.insertId,
+
+            image: image
+
+        });
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Erreur ajout offre :",
+            error
+        );
+
+
+        return res.status(500).json({
+
+            message: "Erreur ajout offre",
+
+            error: error.message
+
+        });
+
+    }
 
 };
 
 
 
-
-
-
-
-
-// =====================================
+// ============================================================
 // MODIFIER UNE OFFRE
-// =====================================
+// ============================================================
 
-exports.updateOffre = async(req,res)=>{
+exports.updateOffre = async (req, res) => {
 
+    try {
 
-try{
+        console.log("======================================");
+        console.log("REQUÊTE MODIFICATION OFFRE");
+        console.log("======================================");
 
+        console.log("ID :", req.params.id);
+        console.log("Body :", req.body);
+        console.log("Fichier :", req.file);
 
-const id=req.params.id;
 
+        const id = req.params.id;
 
 
-const {
+        const {
+            id_prestataire,
+            id_destination,
+            id_categorie,
+            titre,
+            description,
+            prix,
+            capacite,
+            disponibilite,
+            date_debut,
+            date_fin
+        } = req.body;
 
-id_prestataire,
-id_destination,
-id_categorie,
-titre,
-description,
-prix,
-capacite,
-disponibilite,
-date_debut,
-date_fin
 
-}=req.body;
+        // ====================================================
+        // VERIFIER OFFRE
+        // ====================================================
 
+        const [offres] = await db.query(
 
+            `
+            SELECT *
+            FROM offre
+            WHERE id_offre = ?
+            `,
 
-const image = req.file
+            [id]
 
-?
+        );
 
-req.file.filename
 
-:
+        if (offres.length === 0) {
 
-req.body.image;
+            return res.status(404).json({
 
+                message: "Offre introuvable"
 
+            });
 
-const sql=`
+        }
 
-UPDATE offre
 
-SET
+        const ancienneOffre = offres[0];
 
-id_prestataire=?,
 
-id_destination=?,
+        // ====================================================
+        // VALIDATION
+        // ====================================================
 
-id_categorie=?,
+        if (
+            !id_prestataire ||
+            !id_destination ||
+            !id_categorie ||
+            !titre ||
+            !description ||
+            prix === undefined ||
+            prix === "" ||
+            capacite === undefined ||
+            capacite === "" ||
+            disponibilite === undefined ||
+            disponibilite === "" ||
+            !date_debut ||
+            !date_fin
+        ) {
 
-titre=?,
+            return res.status(400).json({
 
-description=?,
+                message:
+                    "Tous les champs obligatoires doivent être remplis."
 
-prix=?,
+            });
 
-capacite=?,
+        }
 
-disponibilite=?,
 
-date_debut=?,
+        const prixNombre = Number(prix);
+        const capaciteNombre = Number(capacite);
+        const disponibiliteNombre = Number(disponibilite);
 
-date_fin=?,
 
-image=?
+        if (
+            isNaN(prixNombre) ||
+            prixNombre <= 0
+        ) {
 
-WHERE id_offre=?
+            return res.status(400).json({
 
-`;
+                message:
+                    "Le prix doit être supérieur à 0."
 
+            });
 
+        }
 
 
-const [result]=await db.query(
+        if (
+            isNaN(capaciteNombre) ||
+            capaciteNombre <= 0 ||
+            !Number.isInteger(capaciteNombre)
+        ) {
 
-sql,
+            return res.status(400).json({
 
-[
+                message:
+                    "La capacité doit être un entier supérieur à 0."
 
-id_prestataire,
+            });
 
-id_destination,
+        }
 
-id_categorie,
 
-titre,
+        if (
+            isNaN(disponibiliteNombre) ||
+            disponibiliteNombre < 0 ||
+            !Number.isInteger(disponibiliteNombre)
+        ) {
 
-description,
+            return res.status(400).json({
 
-prix,
+                message:
+                    "La disponibilité doit être un entier positif ou égal à 0."
 
-capacite,
+            });
 
-disponibilite,
+        }
 
-date_debut,
 
-date_fin,
+        if (
+            disponibiliteNombre >
+            capaciteNombre
+        ) {
 
-image,
+            return res.status(400).json({
 
-id
+                message:
+                    "La disponibilité ne peut pas dépasser la capacité."
 
-]
+            });
 
+        }
 
-);
 
+        // ====================================================
+        // VALIDATION DATES
+        // ====================================================
 
+        if (
+            new Date(date_fin) <
+            new Date(date_debut)
+        ) {
 
+            return res.status(400).json({
 
-if(result.affectedRows===0){
+                message:
+                    "La date de fin doit être après ou égale à la date de début."
 
+            });
 
-return res.status(404).json({
+        }
 
-message:"Offre introuvable"
 
-});
+        // ====================================================
+        // IMAGE
+        // ====================================================
 
+        let image = ancienneOffre.image;
 
-}
 
+        if (req.file) {
 
+            image = req.file.filename;
 
+        }
 
 
-res.json({
+        console.log(
+            "Image conservée/nouvelle :",
+            image
+        );
 
-message:"Offre modifiée avec succès"
 
-});
+        // ====================================================
+        // UPDATE
+        // ====================================================
 
+        const sql = `
 
+            UPDATE offre
 
+            SET
 
-}
+                id_prestataire = ?,
 
-catch(error){
+                id_destination = ?,
 
+                id_categorie = ?,
 
-console.log(
+                titre = ?,
 
-"Erreur modification offre :",
+                description = ?,
 
-error
+                prix = ?,
 
-);
+                capacite = ?,
 
+                disponibilite = ?,
 
+                date_debut = ?,
 
-res.status(500).json({
+                date_fin = ?,
 
-message:"Erreur modification offre",
+                image = ?
 
-error:error.message
+            WHERE id_offre = ?
 
-});
+        `;
 
 
-}
+        const [result] = await db.query(
 
+            sql,
 
+            [
+
+                id_prestataire,
+                id_destination,
+                id_categorie,
+                titre.trim(),
+                description.trim(),
+                prixNombre,
+                capaciteNombre,
+                disponibiliteNombre,
+                date_debut,
+                date_fin,
+                image,
+                id
+
+            ]
+
+        );
+
+
+        if (
+            result.affectedRows === 0
+        ) {
+
+            return res.status(404).json({
+
+                message:
+                    "Aucune modification effectuée."
+
+            });
+
+        }
+
+
+        console.log(
+            "Offre modifiée :",
+            id
+        );
+
+
+        return res.json({
+
+            message:
+                "Offre modifiée avec succès",
+
+            id_offre:
+                id,
+
+            image:
+                image
+
+        });
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+
+            "Erreur modification offre :",
+
+            error
+
+        );
+
+
+        return res.status(500).json({
+
+            message:
+                "Erreur modification offre",
+
+            error:
+                error.message
+
+        });
+
+    }
 
 };
 
 
 
-
-
-
-
-
-
-// =====================================
+// ============================================================
 // SUPPRIMER UNE OFFRE
-// =====================================
+// ============================================================
 
-exports.deleteOffre = async(req,res)=>{
+exports.deleteOffre = async (req, res) => {
 
+    try {
 
-try{
-
-
-const id=req.params.id;
+        const id = req.params.id;
 
 
-
-const [result]=await db.query(
-
-`
-
-DELETE FROM offre
-
-WHERE id_offre=?
-
-`,
-
-[id]
-
-);
+        console.log(
+            "Suppression offre :",
+            id
+        );
 
 
+        // ====================================================
+        // VERIFIER OFFRE
+        // ====================================================
+
+        const [offres] = await db.query(
+
+            `
+            SELECT id_offre
+            FROM offre
+            WHERE id_offre = ?
+            `,
+
+            [id]
+
+        );
 
 
+        if (offres.length === 0) {
 
-if(result.affectedRows===0){
+            return res.status(404).json({
 
+                message:
+                    "Offre introuvable"
 
-return res.status(404).json({
+            });
 
-message:"Offre introuvable"
-
-});
-
-
-}
+        }
 
 
+        // ====================================================
+        // SUPPRIMER PHOTOS DETAILS
+        // ====================================================
+
+        await db.query(
+
+            `
+            DELETE FROM offre_photo
+            WHERE id_offre = ?
+            `,
+
+            [id]
+
+        );
 
 
-res.json({
+        // ====================================================
+        // SUPPRIMER OFFRE
+        // ====================================================
 
-message:"Offre supprimée avec succès"
+        const [result] = await db.query(
 
-});
+            `
+            DELETE FROM offre
+            WHERE id_offre = ?
+            `,
 
+            [id]
 
-
-}
-
-
-catch(error){
-
-
-console.log(
-
-"Erreur suppression offre :",
-
-error
-
-);
+        );
 
 
+        if (
+            result.affectedRows === 0
+        ) {
 
-res.status(500).json({
+            return res.status(404).json({
 
-message:"Erreur suppression offre",
+                message:
+                    "Offre introuvable"
 
-error:error.message
+            });
 
-});
+        }
 
 
-}
+        return res.json({
 
+            message:
+                "Offre supprimée avec succès"
+
+        });
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+
+            "Erreur suppression offre :",
+
+            error
+
+        );
+
+
+        return res.status(500).json({
+
+            message:
+                "Erreur suppression offre",
+
+            error:
+                error.message
+
+        });
+
+    }
 
 };
 
 
 
-
-
-
-
-
-
-// =====================================
+// ============================================================
 // AFFICHER TOUTES LES OFFRES
-// =====================================
+// ============================================================
+
+exports.getOffres = async (req, res) => {
+
+    try {
+
+        const [offres] = await db.query(
+
+            `
+
+            SELECT
+
+                o.*,
+
+                d.nom AS destination,
+
+                c.nom AS categorie,
+
+                p.nom_entreprise AS prestataire
+
+            FROM offre o
+
+            LEFT JOIN destination d
+
+                ON o.id_destination =
+                   d.id_destination
+
+            LEFT JOIN categorie c
+
+                ON o.id_categorie =
+                   c.id_categorie
+
+            LEFT JOIN prestataire p
+
+                ON o.id_prestataire =
+                   p.id_prestataire
+
+            ORDER BY
+                o.id_offre DESC
+
+            `
+
+        );
 
 
-exports.getOffres = async(req,res)=>{
+        return res.json(offres);
+
+    }
+
+    catch (error) {
+
+        console.error(
+
+            "Erreur récupération offres :",
+
+            error
+
+        );
 
 
-try{
+        return res.status(500).json({
 
+            message:
+                "Erreur récupération offres",
 
-const [offres]=await db.query(
+            error:
+                error.message
 
-`
+        });
 
-SELECT
-
-o.*,
-
-
-d.nom AS destination,
-
-
-c.nom AS categorie,
-
-
-p.nom_entreprise AS prestataire
-
-
-
-FROM offre o
-
-
-
-LEFT JOIN destination d
-
-ON o.id_destination=d.id_destination
-
-
-
-LEFT JOIN categorie c
-
-ON o.id_categorie=c.id_categorie
-
-
-
-LEFT JOIN prestataire p
-
-ON o.id_prestataire=p.id_prestataire
-
-
-
-ORDER BY o.id_offre DESC
-
-
-`
-
-);
-
-
-
-res.json(offres);
-
-
-
-}
-
-catch(error){
-
-
-console.log(
-
-"Erreur récupération offres :",
-
-error
-
-);
-
-
-
-res.status(500).json({
-
-message:"Erreur récupération offres",
-
-error:error.message
-
-});
-
-
-}
-
+    }
 
 };
 
 
 
-
-
-
-
-
-
-// =====================================
+// ============================================================
 // AFFICHER UNE OFFRE PAR ID
-// =====================================
+// AVEC SES PHOTOS DETAILLEES
+// ============================================================
 
+exports.getOffreById = async (req, res) => {
 
-exports.getOffreById = async(req,res)=>{
+    try {
 
+        const id = req.params.id;
 
-try{
 
+        // ====================================================
+        // OFFRE
+        // ====================================================
 
-const id=req.params.id;
+        const [offres] = await db.query(
 
+            `
 
+            SELECT
 
-const [offres]=await db.query(
+                o.*,
 
-`
+                d.nom AS destination,
 
-SELECT
+                c.nom AS categorie,
 
+                p.nom_entreprise AS prestataire
 
-o.*,
+            FROM offre o
 
+            LEFT JOIN destination d
 
-d.nom AS destination,
+                ON o.id_destination =
+                   d.id_destination
 
+            LEFT JOIN categorie c
 
-c.nom AS categorie,
+                ON o.id_categorie =
+                   c.id_categorie
 
+            LEFT JOIN prestataire p
 
-p.nom_entreprise AS prestataire
+                ON o.id_prestataire =
+                   p.id_prestataire
 
+            WHERE o.id_offre = ?
 
+            `,
 
-FROM offre o
+            [id]
 
+        );
 
 
-LEFT JOIN destination d
+        // ====================================================
+        // OFFRE INTROUVABLE
+        // ====================================================
 
-ON o.id_destination=d.id_destination
+        if (
+            offres.length === 0
+        ) {
 
+            return res.status(404).json({
 
+                message:
+                    "Offre introuvable"
 
-LEFT JOIN categorie c
+            });
 
-ON o.id_categorie=c.id_categorie
+        }
 
 
+        const offre = offres[0];
 
-LEFT JOIN prestataire p
 
-ON o.id_prestataire=p.id_prestataire
+        // ====================================================
+        // PHOTOS DETAILLEES
+        // ====================================================
 
+        const [photos] = await db.query(
 
+            `
 
-WHERE o.id_offre=?
+            SELECT
 
+                id_photo,
 
-`,
+                id_offre,
 
-[id]
+                chemin_photo,
 
-);
+                type_photo,
 
+                ordre_affichage
 
+            FROM offre_photo
 
+            WHERE id_offre = ?
 
+            ORDER BY
 
-if(offres.length===0){
+                ordre_affichage ASC,
 
+                id_photo ASC
 
-return res.status(404).json({
+            `,
 
-message:"Offre introuvable"
+            [id]
 
-});
+        );
 
 
-}
+        // ====================================================
+        // AJOUTER PHOTOS À L'OBJET OFFRE
+        // ====================================================
 
+        offre.photos = photos;
 
 
+        // ====================================================
+        // REPONSE
+        // ====================================================
 
+        return res.json(offre);
 
-res.json(offres[0]);
+    }
 
+    catch (error) {
 
+        console.error(
 
-}
+            "Erreur détail offre :",
 
+            error
 
-catch(error){
+        );
 
 
-console.log(
+        return res.status(500).json({
 
-"Erreur détail offre :",
+            message:
+                "Erreur récupération offre",
 
-error
+            error:
+                error.message
 
-);
+        });
 
-
-
-res.status(500).json({
-
-message:"Erreur récupération offre",
-
-error:error.message
-
-});
-
-
-}
-
+    }
 
 };

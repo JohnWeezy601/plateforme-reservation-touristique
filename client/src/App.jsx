@@ -581,7 +581,11 @@ element={
 
 <Route
 path="/mes-reservations"
-element={<MesReservations />}
+  element={
+        <PublicLayout>
+            <MesReservations/>
+        </PublicLayout>
+    }
 />
 
 

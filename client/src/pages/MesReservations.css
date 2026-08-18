@@ -1,154 +1,1382 @@
-.mes-reservations{
+/* =========================================================
+   PAGE MES RÉSERVATIONS
+========================================================= */
 
-padding:40px;
+.mes-reservations {
+    width: 100%;
+    min-height: 100vh;
 
-background:#f8fafc;
+    padding: 50px 30px 80px;
 
-min-height:100vh;
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8fafc 0%,
+            #f1f5f9 100%
+        );
+
+    color: #1e293b;
+}
+
+
+/* =========================================================
+   TITRE PRINCIPAL
+========================================================= */
+
+.mes-reservations h1 {
+    max-width: 1200px;
+
+    margin: 0 auto 8px;
+
+    color: #0f172a;
+
+    font-size: 36px;
+    line-height: 1.2;
+
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+}
+
+
+.subtitle {
+    max-width: 1200px;
+
+    margin: 0 auto 38px;
+
+    color: #64748b;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.reservations-section,
+.paiements-section {
+    max-width: 1200px;
+
+    margin: 0 auto 45px;
+}
+
+
+.reservations-section h2,
+.paiements-section h2 {
+    margin: 0 0 20px;
+
+    color: #0f172a;
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    letter-spacing: -0.2px;
+}
+
+
+/* =========================================================
+   LISTES
+========================================================= */
+
+.reservations-list,
+.paiements-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   CARTE RÉSERVATION
+========================================================= */
+
+.reservation-client-card {
+    width: 100%;
+    min-height: 245px;
+
+    display: grid;
+
+    grid-template-columns: 290px minmax(0, 1fr);
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 15px rgba(15, 23, 42, 0.05);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+
+.reservation-client-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #cbd5e1;
+
+    box-shadow:
+        0 14px 35px rgba(15, 23, 42, 0.10);
+}
+
+
+/* =========================================================
+   IMAGE RÉSERVATION
+========================================================= */
+
+.reservation-image {
+    width: 290px;
+    height: 100%;
+
+    min-height: 245px;
+
+    overflow: hidden;
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e2e8f0,
+            #cbd5e1
+        );
+}
+
+
+.reservation-image::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.02),
+            rgba(0, 0, 0, 0.10)
+        );
+}
+
+
+.reservation-image img {
+    width: 100%;
+    height: 100%;
+
+    min-height: 245px;
+
+    display: block;
+
+    object-fit: cover;
+
+    object-position: center;
+
+    transition:
+        transform 0.45s ease;
+}
+
+
+.reservation-client-card:hover
+.reservation-image img {
+    transform: scale(1.045);
+}
+
+
+/* =========================================================
+   PAS D'IMAGE
+========================================================= */
+
+.reservation-no-image {
+    width: 100%;
+    height: 100%;
+
+    min-height: 245px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 50px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e2e8f0,
+            #f1f5f9
+        );
+}
+
+
+/* =========================================================
+   INFORMATIONS RÉSERVATION
+========================================================= */
+
+.reservation-info {
+    min-width: 0;
+
+    padding: 27px 30px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+
+.reservation-info h2 {
+    margin: 0 0 17px;
+
+    color: #0f172a;
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    line-height: 1.3;
+
+    word-break: break-word;
+}
+
+
+.reservation-info p {
+    margin: 6px 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+.reservation-info p strong {
+    color: #0f172a;
+
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   STATUT RÉSERVATION
+========================================================= */
+
+.statut {
+    width: fit-content;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 12px;
+
+    padding: 7px 13px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    line-height: 1;
+
+    font-weight: 750;
+
+    border: 1px solid transparent;
+}
+
+
+/* EN ATTENTE */
+
+.statut.attente {
+    background: #fff7ed;
+
+    color: #c2410c;
+
+    border-color: #fed7aa;
+}
+
+
+/* CONFIRMÉE */
+
+.statut.confirmee {
+    background: #ecfdf5;
+
+    color: #15803d;
+
+    border-color: #bbf7d0;
+}
+
+
+/* ANNULÉE */
+
+.statut.annulee {
+    background: #fef2f2;
+
+    color: #dc2626;
+
+    border-color: #fecaca;
+}
+
+
+/* REJETÉE */
+
+.statut.rejetee {
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    border-color: #fecaca;
+}
+
+
+/* =========================================================
+   ACTIONS RÉSERVATION
+========================================================= */
+
+.reservation-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 19px;
+
+    padding-top: 17px;
+
+    border-top: 1px solid #f1f5f9;
+}
+
+
+/* =========================================================
+   BOUTON VOIR PLUS
+   Compatible avec ton JSX actuel
+========================================================= */
+
+.voir-plus-button,
+.btn-voir-plus {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 16px;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 13px;
+
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.voir-plus-button:hover,
+.btn-voir-plus:hover {
+    background: #2563eb;
+
+    color: #ffffff;
+
+    border-color: #2563eb;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 14px rgba(37, 99, 235, 0.20);
+}
+
+
+/* =========================================================
+   BOUTON SUPPRIMER
+========================================================= */
+
+.supprimer-button,
+.btn-supprimer {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 16px;
+
+    border: 1px solid #fee2e2;
+
+    border-radius: 9px;
+
+    background: #fff7f7;
+
+    color: #dc2626;
+
+    font-size: 13px;
+
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.supprimer-button:hover,
+.btn-supprimer:hover {
+    background: #dc2626;
+
+    color: #ffffff;
+
+    border-color: #dc2626;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 14px rgba(220, 38, 38, 0.20);
+}
+
+
+/* =========================================================
+   SECTION PAIEMENTS
+========================================================= */
+
+.paiements-section {
+    margin-top: 50px;
+
+    padding-top: 30px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+
+/* =========================================================
+   CARTE PAIEMENT
+========================================================= */
+
+.paiement-client-card {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 22px 25px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+
+    border-left: 4px solid #f59e0b;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.05);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.paiement-client-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 28px rgba(15, 23, 42, 0.09);
+}
+
+
+.paiement-info {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+}
+
+
+.paiement-info h3 {
+    margin: 0 0 13px;
+
+    color: #0f172a;
+
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+
+.paiement-info p {
+    margin: 5px 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+.paiement-info p strong {
+    color: #0f172a;
+}
+
+
+/* =========================================================
+   STATUT PAIEMENT
+========================================================= */
+
+.paiement-statut {
+    width: fit-content;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 10px;
+
+    padding: 7px 12px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    font-weight: 750;
+
+    border: 1px solid transparent;
+}
+
+
+/* EN ATTENTE */
+
+.paiement-statut.paiement-attente {
+    background: #fff7ed;
+
+    color: #c2410c;
+
+    border-color: #fed7aa;
+}
+
+
+/* NON VALIDÉ */
+
+.paiement-statut.paiement-non-valide {
+    background: #fef2f2;
+
+    color: #dc2626;
+
+    border-color: #fecaca;
+}
+
+
+/* ÉCHOUÉ */
+
+.paiement-statut.paiement-echoue {
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    border-color: #fecaca;
+}
+
+
+/* VALIDÉ */
+
+.paiement-statut.paiement-valide {
+    background: #ecfdf5;
+
+    color: #15803d;
+
+    border-color: #bbf7d0;
+}
+
+
+/* =========================================================
+   ACTIONS PAIEMENT
+========================================================= */
+
+.paiement-actions {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 17px;
+
+    padding-top: 15px;
+
+    width: 100%;
+
+    border-top: 1px solid #f1f5f9;
+}
+
+
+/* =========================================================
+   ÉTAT VIDE
+========================================================= */
+
+.empty {
+    width: 100%;
+
+    min-height: 170px;
+
+    box-sizing: border-box;
+
+    margin: 15px auto 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border: 1px dashed #cbd5e1;
+
+    border-radius: 16px;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+========================================================= */
+
+.reservation-modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(15, 23, 42, 0.70);
+
+    backdrop-filter: blur(6px);
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.reservation-modal {
+    width: 100%;
+
+    max-width: 650px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.28);
+
+    animation:
+        modalAppear 0.25s ease;
+}
+
+
+@keyframes modalAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(20px)
+            scale(0.97);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
 
 }
 
 
+/* =========================================================
+   HEADER MODAL
+========================================================= */
 
-.mes-reservations h1{
+.reservation-modal-header {
+    display: flex;
 
-font-size:35px;
+    align-items: center;
+    justify-content: space-between;
 
-color:#1e3a8a;
+    gap: 15px;
+
+    padding: 20px 24px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+
+.reservation-modal-header h2 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   BOUTON FERMETURE MODAL
+========================================================= */
+
+.reservation-modal-close,
+.modal-close {
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+    cursor: pointer;
+
+    font-size: 20px;
+
+    line-height: 1;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.reservation-modal-close:hover,
+.modal-close:hover {
+    background: #fee2e2;
+
+    color: #dc2626;
+
+    transform: rotate(90deg);
+}
+
+
+/* =========================================================
+   IMAGE MODAL
+========================================================= */
+
+.reservation-modal-image {
+    width: calc(100% - 40px);
+
+    height: 230px;
+
+    margin: 20px;
+
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    background: #e2e8f0;
+}
+
+
+.reservation-modal-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   CONTENU MODAL
+========================================================= */
+
+.reservation-details,
+.reservation-modal-content {
+    padding: 5px 25px 25px;
+}
+
+
+.reservation-details p {
+    margin: 0;
+
+    padding: 13px 0;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+.reservation-details p:last-child {
+    border-bottom: none;
+}
+
+
+.reservation-details strong {
+    color: #475569;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DETAIL ROW - COMPATIBILITÉ
+========================================================= */
+
+.detail-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    font-size: 14px;
+}
+
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+
+.detail-label {
+    color: #64748b;
+
+    font-weight: 500;
+}
+
+
+.detail-value {
+    color: #0f172a;
+
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   FOOTER MODAL
+========================================================= */
+
+.reservation-modal-footer {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 17px 24px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+
+/* =========================================================
+   BOUTON FERMER
+========================================================= */
+
+.fermer-modal-button,
+.btn-fermer {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 18px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+    font-size: 13px;
+
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.fermer-modal-button:hover,
+.btn-fermer:hover {
+    background: #e2e8f0;
+
+    color: #0f172a;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   SCROLLBAR MODAL
+========================================================= */
+
+.reservation-modal::-webkit-scrollbar {
+    width: 7px;
+}
+
+
+.reservation-modal::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+
+.reservation-modal::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+
+    border-radius: 10px;
+}
+
+
+.reservation-modal::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+
+/* =========================================================
+   RESPONSIVE TABLETTE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .mes-reservations {
+        padding: 40px 20px 70px;
+    }
+
+
+    .reservation-client-card {
+        grid-template-columns: 230px minmax(0, 1fr);
+    }
+
+
+    .reservation-image {
+        width: 230px;
+
+        min-height: 235px;
+    }
+
+
+    .reservation-image img {
+        min-height: 235px;
+    }
+
+
+    .reservation-info {
+        padding: 23px;
+    }
 
 }
 
 
+/* =========================================================
+   RESPONSIVE MOBILE
+========================================================= */
 
-.subtitle{
+@media (max-width: 700px) {
 
-color:#64748b;
+    .mes-reservations {
+        padding: 30px 15px 60px;
+    }
 
-margin-bottom:30px;
+
+    .mes-reservations h1 {
+        font-size: 29px;
+    }
+
+
+    .subtitle {
+        margin-bottom: 30px;
+
+        font-size: 14px;
+    }
+
+
+    .reservations-section h2,
+    .paiements-section h2 {
+        font-size: 20px;
+    }
+
+
+    .reservation-client-card {
+        grid-template-columns: 1fr;
+
+        min-height: auto;
+
+        border-radius: 16px;
+    }
+
+
+    .reservation-image {
+        width: 100%;
+
+        height: 215px;
+
+        min-height: 215px;
+    }
+
+
+    .reservation-image img {
+        width: 100%;
+
+        height: 215px;
+
+        min-height: 215px;
+    }
+
+
+    .reservation-no-image {
+        min-height: 215px;
+    }
+
+
+    .reservation-info {
+        padding: 20px;
+    }
+
+
+    .reservation-info h2 {
+        font-size: 19px;
+
+        margin-bottom: 14px;
+    }
+
+
+    .reservation-info p {
+        font-size: 13px;
+    }
+
+
+    .reservation-actions {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .voir-plus-button,
+    .btn-voir-plus,
+    .supprimer-button,
+    .btn-supprimer {
+        width: 100%;
+    }
+
+
+    .paiement-client-card {
+        padding: 20px;
+    }
+
+
+    .paiement-actions {
+        flex-direction: column;
+    }
+
+
+    .paiement-actions .supprimer-button {
+        width: 100%;
+    }
+
+
+    .reservation-modal {
+        max-height: 92vh;
+
+        border-radius: 16px;
+    }
+
+
+    .reservation-modal-header {
+        padding: 18px 20px;
+    }
+
+
+    .reservation-modal-header h2 {
+        font-size: 18px;
+    }
+
+
+    .reservation-modal-image {
+        width: calc(100% - 30px);
+
+        height: 185px;
+
+        margin: 15px;
+    }
+
+
+    .reservation-details,
+    .reservation-modal-content {
+        padding: 5px 20px 20px;
+    }
+
+
+    .reservation-details p {
+        flex-direction: column;
+
+        gap: 5px;
+    }
+
+
+    .detail-row {
+        flex-direction: column;
+
+        gap: 5px;
+    }
+
+
+    .detail-value {
+        text-align: left;
+    }
+
+
+    .reservation-modal-footer {
+        flex-direction: column;
+
+        padding: 15px 20px;
+    }
+
+
+    .fermer-modal-button,
+    .btn-fermer {
+        width: 100%;
+    }
 
 }
 
 
+/* =========================================================
+   PETITS ÉCRANS
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .mes-reservations {
+        padding: 25px 12px 50px;
+    }
 
 
+    .mes-reservations h1 {
+        font-size: 26px;
+    }
 
 
-.reservation-client-card{
+    .reservation-image,
+    .reservation-image img {
+        height: 180px;
 
-background:white;
-
-border-radius:20px;
-
-padding:20px;
-
-display:flex;
-
-gap:25px;
-
-margin-bottom:25px;
-
-box-shadow:
-0 10px 25px rgba(0,0,0,.08);
-
-}
+        min-height: 180px;
+    }
 
 
+    .reservation-no-image {
+        min-height: 180px;
+    }
 
 
-.reservation-image img{
-
-width:220px;
-
-height:150px;
-
-object-fit:cover;
-
-border-radius:15px;
-
-}
+    .reservation-info {
+        padding: 17px;
+    }
 
 
+    .reservation-info h2 {
+        font-size: 18px;
+    }
 
 
-
-.reservation-info h2{
-
-color:#2563eb;
-
-}
+    .reservation-info p {
+        font-size: 13px;
+    }
 
 
+    .statut,
+    .paiement-statut {
+        font-size: 11px;
+    }
 
 
-.reservation-info p{
-
-color:#475569;
-
-}
-
-
-
-
-
-.statut{
-
-padding:8px 18px;
-
-border-radius:20px;
-
-font-weight:bold;
-
-display:inline-block;
-
-margin-top:10px;
+    .paiement-client-card {
+        padding: 17px;
+    }
 
 }
 
 
+/* =====================================================
+   BOUTON RETOUR
+===================================================== */
 
-.attente{
+.retour-page-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 
-background:#fef3c7;
+    margin-bottom: 20px;
+    padding: 10px 18px;
 
-color:#92400e;
+    border: none;
+    border-radius: 8px;
 
+    background: #f1f5f9;
+    color: #334155;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.retour-page-button:hover {
+    background: #e2e8f0;
+    transform: translateX(-2px);
 }
 
 
+/* =====================================================
+   PAGINATION
+===================================================== */
 
-.confirmee{
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
 
-background:#dcfce7;
-
-color:#166534;
-
+    margin-top: 25px;
+    margin-bottom: 10px;
 }
 
+.pagination button {
+    min-width: 40px;
+    height: 40px;
 
+    padding: 0 12px;
 
-.annulee{
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
 
-background:#fee2e2;
+    background: white;
+    color: #334155;
 
-color:#991b1b;
+    font-size: 14px;
+    font-weight: 600;
 
+    cursor: pointer;
+
+    transition: 0.2s ease;
 }
 
+.pagination button:hover:not(:disabled) {
+    background: #f1f5f9;
+}
 
+.pagination button.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
 
-
-.empty{
-
-background:white;
-
-padding:40px;
-
-border-radius:15px;
-
-text-align:center;
-
-color:#64748b;
-
-font-size:18px;
-
+.pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }

@@ -1,292 +1,486 @@
-.navbar-public{
+/* =========================================================
+   NAVBAR PUBLIC
+========================================================= */
 
+.navbar-public {
 
-    height:80px;
+    height: 80px;
 
-    background:white;
+    background: #355C7D;
 
-    display:flex;
+    display: flex;
 
-    align-items:center;
+    align-items: center;
 
-    justify-content:space-between;
+    justify-content: space-between;
 
-    padding:0 50px;
+    padding: 0 50px;
 
     box-shadow:
-    0 5px 20px rgba(0,0,0,.1);
+        0 5px 20px rgba(0, 0, 0, .15);
+
+    position: relative;
+
+    z-index: 1000;
 
 }
 
 
+/* =========================================================
+   LOGO
+========================================================= */
 
+.logo-public {
 
-.logo-public{
+    display: flex;
 
+    align-items: center;
 
-    font-size:22px;
+    gap: 10px;
 
-    font-weight:bold;
+    color: white;
 
-    color:#2563eb;
+    font-size: 22px;
 
-}
+    font-weight: bold;
 
-
-
-.logo-public span{
-
-    margin-right:10px;
-
-}
-
-
-
-
-.navbar-public ul{
-
-
-    display:flex;
-
-    list-style:none;
-
-    gap:25px;
+    white-space: nowrap;
 
 }
 
 
+.logo-icon {
 
-.navbar-public a{
-
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    text-decoration:none;
-
-    color:#334155;
-
-    font-size:15px;
+    font-size: 25px;
 
 }
 
 
+.logo-text {
 
-.navbar-public a:hover{
-
-
-    color:#2563eb;
+    color: white;
 
 }
 
 
+/* =========================================================
+   NAVIGATION NON CONNECTÉ
+========================================================= */
 
+.navbar-navigation {
 
-.btn-login-client{
+    display: flex;
 
+    align-items: center;
 
-    background:#2563eb;
+    gap: 25px;
 
-    color:white!important;
+    list-style: none;
 
-    padding:12px 20px;
+    margin: 0;
 
-    border-radius:12px;
-
-}
-
-
-
-.btn-login-client:hover{
-
-
-    background:#1d4ed8;
+    padding: 0;
 
 }
 
 
+.navbar-navigation li {
 
-
-
-.logo-public{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
+    list-style: none;
 
 }
 
 
+.navbar-navigation a {
 
-/* CONTENEUR CLOCHE */
+    display: flex;
 
-.notification-container{
+    align-items: center;
 
-    position:relative;
+    gap: 8px;
 
-    margin-left:20px;
+    text-decoration: none;
 
-    cursor:pointer;
+    color: white;
 
-    display:flex;
+    font-size: 15px;
 
-    align-items:center;
-
-    justify-content:center;
-
-    width:35px;
-
-    height:35px;
+    transition: .2s ease;
 
 }
 
 
+.navbar-navigation a:hover {
 
-/* ICON CLOCHE */
-
-.notification-bell{
-
-    font-size:23px;
-
-    color:#1877f2;
-
-    transition:0.3s;
+    color: #D6E4F0;
 
 }
 
 
+/* =========================================================
+   BOUTON CONNEXION
+========================================================= */
 
+.btn-login-client {
 
+    background: #294A63;
 
-.notification-bell:hover{
+    color: white !important;
 
-    color:#ffd700;
+    padding: 12px 20px;
 
-    transform:scale(1.15);
+    border-radius: 12px;
 
-}
+    border: 1px solid
+        rgba(255,255,255,.25);
 
+    text-decoration: none;
 
+    transition: .2s ease;
 
-
-
-/* PETIT NOMBRE ROUGE */
-
-.notification-badge{
-
-
-    position:absolute;
-
-
-    top:-5px;
-
-
-    right:-5px;
-
-
-
-    background:red;
-
-
-    color:white;
-
-
-    font-size:11px;
-
-
-    font-weight:bold;
-
-
-
-    width:18px;
-
-
-    height:18px;
-
-
-
-    border-radius:50%;
-
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    justify-content:center;
-
-
+    white-space: nowrap;
 
 }
 
 
-/* ===========================
-   PROFIL UTILISATEUR
-=========================== */
+.btn-login-client:hover {
 
-
-.profil-container{
-
-position:relative;
+    background: #223E54;
 
 }
 
 
+/* =========================================================
+   ACTIONS CLIENT CONNECTÉ
+========================================================= */
 
-.profil-button{
+.client-actions {
 
+    display: flex;
 
-display:flex;
+    align-items: center;
 
-align-items:center;
-
-gap:10px;
-
-background:white;
-
-border:none;
-
-cursor:pointer;
-
-font-size:15px;
-
-font-weight:600;
-
-color:#334155;
-
+    gap: 18px;
 
 }
 
 
+/* =========================================================
+   MENU PRINCIPAL
+========================================================= */
 
-.profil-photo{
+.menu-principal-container {
 
+    position: relative;
 
-width:40px;
+    display: flex;
 
-height:40px;
-
-border-radius:50%;
-
-object-fit:cover;
-
-border:2px solid #2563eb;
-
+    align-items: center;
 
 }
 
 
+/*
+   IMPORTANT :
+   Le bouton reste toujours ☰
+   Il ne devient jamais X.
+*/
 
-/* ===========================
-   CONTENEUR DU PROFIL
-=========================== */
+.menu-principal-button {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: transparent;
+
+    border: none;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    padding: 8px 4px;
+
+    white-space: nowrap;
+
+    transition: .2s ease;
+
+}
+
+
+.menu-principal-button svg {
+
+    font-size: 21px;
+
+}
+
+
+.menu-principal-button:hover {
+
+    color: #D6E4F0;
+
+}
+
+
+/* =========================================================
+   MENU DÉROULANT
+========================================================= */
+
+.menu-principal {
+
+    position: absolute;
+
+    top: calc(100% + 12px);
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 215px;
+
+    padding: 5px;
+
+    background: transparent;
+
+    z-index: 3000;
+
+    animation:
+        menuPrincipalDown .2s ease;
+
+}
+
+
+/*
+   Pas de gros background.
+   Chaque élément reste bien visible.
+*/
+
+.menu-principal a {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px 15px;
+
+    margin-bottom: 5px;
+
+    background: white;
+
+    color: #355C7D;
+
+    border: 1px solid #dbe4ec;
+
+    border-radius: 9px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.12);
+
+    transition: .2s ease;
+
+}
+
+
+.menu-principal a:last-child {
+
+    margin-bottom: 0;
+
+}
+
+
+.menu-principal a svg {
+
+    color: #355C7D;
+
+    font-size: 16px;
+
+    flex-shrink: 0;
+
+}
+
+
+.menu-principal a:hover {
+
+    background: #eef5fa;
+
+    color: #294A63;
+
+    transform: translateX(2px);
+
+}
+
+
+.menu-principal a:hover svg {
+
+    color: #294A63;
+
+}
+
+
+.menu-principal a.active {
+
+    background: #e5eff6;
+
+    color: #294A63;
+
+}
+
+
+/* =========================================================
+   ANIMATION MENU
+========================================================= */
+
+@keyframes menuPrincipalDown {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(-8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(0);
+
+    }
+
+}
+
+
+/* =========================================================
+   BOUTONS ICÔNES
+========================================================= */
+
+.navbar-icon-button {
+
+    position: relative;
+
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: transparent;
+
+    border: none;
+
+    color: white;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+
+    font-size: 20px;
+
+    transition: .2s ease;
+
+}
+
+
+/*
+   Un peu plus d'espace entre Menu et Notification.
+*/
+
+.notification-button {
+
+    margin-left: 8px;
+
+}
+
+
+.navbar-icon-button:hover {
+
+    color: #D6E4F0;
+
+    background:
+        rgba(255,255,255,.08);
+
+}
+
+
+.history-button {
+
+    margin-left: 0;
+
+}
+
+
+/* =========================================================
+   BADGE NOTIFICATION
+========================================================= */
+
+.notification-badge {
+
+    position: absolute;
+
+    top: -2px;
+
+    right: -2px;
+
+    min-width: 17px;
+
+    height: 17px;
+
+    padding: 0 4px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #dc2626;
+
+    color: white;
+
+    border-radius: 50%;
+
+    font-size: 10px;
+
+    font-weight: bold;
+
+    border: 2px solid #355C7D;
+
+}
+
+
+/* =========================================================
+   PROFIL
+========================================================= */
 
 .profil-container {
 
@@ -299,93 +493,147 @@ border:2px solid #2563eb;
 }
 
 
-/* ===========================
-   MENU PROFIL SANS BACKGROUND
-=========================== */
+.profil-button {
 
-.profil-menu {
+    width: 40px;
 
-    position: absolute;
-
-    right: 0;
-
-    top: 55px;
-
-    width: 230px;
-
-    background: transparent;
-
-    border-radius: 0;
-
-    box-shadow: none;
-
-    overflow: visible;
-
-    z-index: 1000;
-
-}
-
-
-/* ===========================
-   BOUTONS DU MENU
-=========================== */
-
-.profil-menu button {
-
-    width: 100%;
-
-    padding: 12px 15px;
+    height: 40px;
 
     display: flex;
 
     align-items: center;
 
-    gap: 12px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    color: #334155;
+    justify-content: center;
 
     background: transparent;
 
     border: none;
 
-    text-align: left;
+    color: white;
 
-    border-radius: 8px;
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    font-size: 20px;
+
+}
+
+
+.profil-button:hover {
+
+    background:
+        rgba(255,255,255,.08);
+
+}
+
+
+.profil-photo {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid white;
+
+}
+
+
+/* =========================================================
+   MENU PROFIL
+========================================================= */
+
+.profil-menu {
+
+    position: absolute;
+
+    top: 52px;
+
+    right: 0;
+
+    width: 210px;
+
+    padding: 5px;
+
+    background: transparent;
+
+    z-index: 3000;
+
+}
+
+
+.profil-menu button {
+
+    width: 100%;
 
     box-sizing: border-box;
 
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 12px 14px;
+
+    margin-bottom: 5px;
+
+    background: white;
+
+    color: #355C7D;
+
+    border: 1px solid #dbe4ec;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    font-size: 14px;
+
+    font-family: inherit;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.12);
+
+    transition: .2s ease;
+
 }
 
 
-/* ===========================
-   HOVER
-=========================== */
+.profil-menu button:last-child {
 
-.profil-menu button:hover {
-
-    background: rgba(37, 99, 235, 0.08);
+    margin-bottom: 0;
 
 }
 
-
-/* ===========================
-   ICONES
-=========================== */
 
 .profil-menu button svg {
 
-    color: #2563eb;
+    color: #355C7D;
+
+    flex-shrink: 0;
 
 }
 
 
-/* ===========================
-   DECONNEXION
-=========================== */
+.profil-menu button:hover {
+
+    background: #eef5fa;
+
+}
+
+
+/* =========================================================
+   DÉCONNEXION
+========================================================= */
 
 .profil-menu button.logout {
 
@@ -403,299 +651,661 @@ border:2px solid #2563eb;
 
 .profil-menu button.logout:hover {
 
-    background: rgba(220, 38, 38, 0.08);
+    background:
+        rgba(220,38,38,.08);
 
 }
 
 
+/* =========================================================
+   MODALE PHOTO
+========================================================= */
 
+.modal-photo {
 
-.modal-photo{
+    position: fixed;
 
+    inset: 0;
 
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-height:100%;
-
-background:rgba(0,0,0,.5);
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-z-index:2000;
-
-
-}
-
-
-
-.modal-photo-content{
-
-
-background:white;
-
-padding:30px;
-
-border-radius:15px;
-
-width:350px;
-
-text-align:center;
-
-
-}
-
-
-
-.modal-photo-content input{
-
-
-margin:20px 0;
-
-
-}
-
-
-
-.modal-actions{
-
-
-display:flex;
-
-justify-content:center;
-
-gap:15px;
-
-
-}
-
-
-
-.btn-save-photo{
-
-
-background:#2563eb;
-
-color:white;
-
-padding:10px 20px;
-
-border-radius:8px;
-
-border:none;
-
-cursor:pointer;
-
-
-}
-
-
-
-.btn-cancel-photo{
-
-
-background:#dc2626;
-
-color:white;
-
-padding:10px 20px;
-
-border-radius:8px;
-
-border:none;
-
-cursor:pointer;
-
-
-}
-
-
-.navbar-link-ia {
-    color: #4f46e5;
-    font-weight: 600;
-}
-
-.navbar-link-ia svg {
-    font-size: 16px;
-}
-
-.navbar-link-ia:hover {
-    color: #4338ca;
-}
-
-.navbar-link-ia.active {
-    color: #4338ca;
-}
-
-
-/* =====================================
-   CONTENEUR PLUS
-===================================== */
-
-.plus-menu-container {
-    position: relative;
-
-    display: flex;
-    align-items: center;
+    width: 100%;
 
     height: 100%;
-}
 
+    background:
+        rgba(0,0,0,.55);
 
-/* =====================================
-   BOUTON PLUS
-===================================== */
-
-.plus-button {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
-    gap: 8px;
+    z-index: 5000;
 
-    height: 100%;
+    padding: 20px;
 
-    padding: 0;
+    box-sizing: border-box;
 
-    margin: 0;
-
-    background: transparent;
-
-    border: none;
-
-    color: #334155;
-
-    font-family: inherit;
-
-    font-size: 15px;
-
-    font-weight: 500;
-
-    cursor: pointer;
-
-    white-space: nowrap;
-}
-
-.plus-button:hover {
-    color: #2563eb;
 }
 
 
-/* =====================================
-   FLECHE
-===================================== */
+.modal-photo-content {
 
-.plus-arrow {
-    font-size: 11px;
+    width: 350px;
 
-    transition: transform 0.25s ease;
-}
-
-.plus-arrow.rotate {
-    transform: rotate(180deg);
-}
-
-
-/* =====================================
-   MENU PLUS
-===================================== */
-
-.plus-menu {
-    position: absolute;
-
-    top: calc(100% + 5px);
-
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    display: flex;
-
-    flex-direction: column;
-
-    min-width: 190px;
-
-    margin: 0;
-
-    padding: 0;
-
-    background: transparent;
-
-    z-index: 1000;
-
-    animation: plusMenuDown 0.2s ease;
-}
-
-
-/* =====================================
-   ELEMENTS DU MENU
-===================================== */
-
-.plus-menu a {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 11px 15px;
+    max-width: 100%;
 
     background: white;
 
+    padding: 30px;
+
+    border-radius: 15px;
+
+    text-align: center;
+
+    box-sizing: border-box;
+
+}
+
+
+.modal-photo-content h3 {
+
+    margin-top: 0;
+
     color: #334155;
 
-    text-decoration: none;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 10px;
-
-    margin-bottom: 5px;
-
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-
-    white-space: nowrap;
-
-    transition: 0.2s ease;
-}
-
-.plus-menu a:hover {
-    background: #eff6ff;
-
-    color: #2563eb;
 }
 
 
-/* =====================================
-   ANIMATION
-===================================== */
+.modal-photo-content input {
 
-@keyframes plusMenuDown {
+    width: 100%;
 
-    from {
-        opacity: 0;
+    margin: 20px 0;
 
-        transform:
-            translateX(-50%)
-            translateY(-8px);
+    box-sizing: border-box;
+
+}
+
+
+.modal-actions {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 15px;
+
+}
+
+
+.btn-save-photo {
+
+    background: #355C7D;
+
+    color: white;
+
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    border: none;
+
+    cursor: pointer;
+
+}
+
+
+.btn-save-photo:hover {
+
+    background: #294A63;
+
+}
+
+
+.btn-cancel-photo {
+
+    background: #dc2626;
+
+    color: white;
+
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    border: none;
+
+    cursor: pointer;
+
+}
+
+
+.btn-cancel-photo:hover {
+
+    background: #b91c1c;
+
+}
+
+
+/* =========================================================
+   NAVBAR TRANSPARENTE SUR ACCUEIL
+========================================================= */
+
+.navbar-public.navbar-home {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    width: 100%;
+
+    background: transparent;
+
+    box-shadow: none;
+
+    z-index: 10000;
+
+}
+
+
+.navbar-public.navbar-home
+.logo-public {
+
+    color: white;
+
+}
+
+
+.navbar-public.navbar-home
+.navbar-navigation a {
+
+    color: white;
+
+}
+
+
+.navbar-public.navbar-home
+.navbar-navigation a:hover {
+
+    color: #D6E4F0;
+
+}
+
+
+.navbar-public.navbar-home
+.menu-principal-button {
+
+    color: white;
+
+}
+
+
+.navbar-public.navbar-home
+.menu-principal-button:hover {
+
+    color: #D6E4F0;
+
+}
+
+
+.navbar-public.navbar-home
+.navbar-icon-button {
+
+    color: white;
+
+}
+
+
+.navbar-public.navbar-home
+.navbar-icon-button:hover {
+
+    color: #facc15;
+
+}
+
+
+.navbar-public.navbar-home
+.profil-button {
+
+    color: white;
+
+}
+
+
+.navbar-public.navbar-home
+.btn-login-client {
+
+    background:
+        rgba(37,99,235,.90);
+
+    color: white !important;
+
+    border:
+        1px solid rgba(255,255,255,.35);
+
+    backdrop-filter:
+        blur(8px);
+
+}
+
+
+/* =========================================================
+   TABLETTE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .navbar-public {
+
+        padding: 0 25px;
+
     }
 
-    to {
-        opacity: 1;
 
-        transform:
-            translateX(-50%)
-            translateY(0);
+    .navbar-navigation {
+
+        gap: 15px;
+
+    }
+
+
+    .navbar-navigation a {
+
+        font-size: 14px;
+
+    }
+
+
+    .logo-public {
+
+        font-size: 19px;
+
+    }
+
+
+    .client-actions {
+
+        gap: 14px;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .navbar-public {
+
+        min-height: 65px;
+
+        height: auto;
+
+        padding: 10px 15px;
+
+    }
+
+
+    /* LOGO */
+
+    .logo-public {
+
+        font-size: 17px;
+
+        gap: 7px;
+
+    }
+
+
+    .logo-icon {
+
+        font-size: 21px;
+
+    }
+
+
+    /* =====================================================
+       CLIENT CONNECTÉ
+    ===================================================== */
+
+    .client-actions {
+
+        gap: 5px;
+
+    }
+
+
+    .menu-principal-button {
+
+        font-size: 0;
+
+        padding: 8px;
+
+    }
+
+
+    .menu-principal-button svg {
+
+        font-size: 21px;
+
+    }
+
+
+    /*
+       Espace supplémentaire entre menu et notification.
+    */
+
+    .notification-button {
+
+        margin-left: 10px;
+
+    }
+
+
+    .navbar-icon-button {
+
+        width: 36px;
+
+        height: 36px;
+
+        font-size: 18px;
+
+    }
+
+
+    .profil-button {
+
+        width: 36px;
+
+        height: 36px;
+
+    }
+
+
+    .profil-photo {
+
+        width: 36px;
+
+        height: 36px;
+
+    }
+
+
+    /* =====================================================
+       MENU PRINCIPAL MOBILE
+    ===================================================== */
+
+    .menu-principal {
+
+        position: fixed;
+
+        top: 65px;
+
+        left: 15px;
+
+        right: 15px;
+
+        width: auto;
+
+        transform: none;
+
+        padding: 5px;
+
+        max-width: none;
+
+    }
+
+
+    .menu-principal a {
+
+        padding: 13px 15px;
+
+        font-size: 14px;
+
+    }
+
+
+    /* =====================================================
+       MENU PROFIL MOBILE
+    ===================================================== */
+
+    .profil-menu {
+
+        position: fixed;
+
+        top: 65px;
+
+        right: 10px;
+
+        width: 210px;
+
+    }
+
+
+    /* =====================================================
+       NAVIGATION NON CONNECTÉE
+    ===================================================== */
+
+    .navbar-navigation {
+
+        display: none;
+
+    }
+
+
+    .btn-login-client {
+
+        padding: 9px 13px;
+
+        font-size: 12px;
+
+        border-radius: 8px;
+
+    }
+
+
+    /* =====================================================
+       MODALE
+    ===================================================== */
+
+    .modal-photo-content {
+
+        width: 100%;
+
+        max-width: 350px;
+
+    }
+
+}
+
+
+/* =========================================================
+   PETIT TÉLÉPHONE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .navbar-public {
+
+        padding: 8px 10px;
+
+    }
+
+
+    .logo-public {
+
+        font-size: 15px;
+
+    }
+
+
+    .logo-icon {
+
+        font-size: 19px;
+
+    }
+
+
+    /*
+       On garde seulement le logo + icônes
+       pour éviter que la navbar soit trop longue.
+    */
+
+    .client-actions {
+
+        gap: 2px;
+
+    }
+
+
+    .notification-button {
+
+        margin-left: 9px;
+
+    }
+
+
+    .navbar-icon-button {
+
+        width: 34px;
+
+        height: 34px;
+
+        font-size: 17px;
+
+    }
+
+
+    .menu-principal-button {
+
+        padding: 7px;
+
+    }
+
+
+    .menu-principal-button svg {
+
+        font-size: 20px;
+
+    }
+
+
+    .profil-button {
+
+        width: 34px;
+
+        height: 34px;
+
+    }
+
+
+    .profil-photo {
+
+        width: 34px;
+
+        height: 34px;
+
+    }
+
+
+    .notification-badge {
+
+        min-width: 15px;
+
+        height: 15px;
+
+        font-size: 9px;
+
+    }
+
+
+    .menu-principal {
+
+        top: 60px;
+
+        left: 10px;
+
+        right: 10px;
+
+    }
+
+
+    .profil-menu {
+
+        top: 60px;
+
+        right: 8px;
+
+    }
+
+}
+
+
+/* =========================================================
+   TRÈS PETIT ÉCRAN
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .logo-text {
+
+        font-size: 14px;
+
+    }
+
+
+    .logo-icon {
+
+        font-size: 18px;
+
+    }
+
+
+    .client-actions {
+
+        gap: 0;
+
+    }
+
+
+    .notification-button {
+
+        margin-left: 7px;
+
+    }
+
+
+    .navbar-icon-button {
+
+        width: 31px;
+
+        height: 31px;
+
+    }
+
+
+    .profil-button {
+
+        width: 31px;
+
+        height: 31px;
+
+    }
+
+
+    .profil-photo {
+
+        width: 31px;
+
+        height: 31px;
+
     }
 
 }

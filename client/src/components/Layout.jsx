@@ -1,52 +1,89 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import Loading from "./Loading";
 
 import "./Layout.css";
 
 
-function Layout({children}){
+function Layout({ children }) {
+
+    const [sidebarMode, setSidebarMode] = useState("menu");
+
+    const [loading, setLoading] = useState(false);
+
+    const location = useLocation();
 
 
-const [sidebarMode,setSidebarMode]=useState("menu");
+    useEffect(() => {
+
+        // Démarrer le loading
+        setLoading(true);
 
 
+        // Petit délai pour afficher l'animation
+        const timer = setTimeout(() => {
 
-return (
+            setLoading(false);
 
-<div className="admin-layout">
-
-
-<Sidebar 
-mode={sidebarMode}
-/>
+        }, 700);
 
 
+        return () => clearTimeout(timer);
 
-<div className="main-container">
-
-
-<Navbar
-setSidebarMode={setSidebarMode}
-/>
+    }, [location.pathname]);
 
 
+    return (
 
-<div className="dashboard-content">
-
-{children}
-
-</div>
+        <div className="admin-layout">
 
 
-</div>
+            {/* SIDEBAR */}
+
+            <Sidebar
+                mode={sidebarMode}
+            />
 
 
-</div>
+            <div className="main-container">
 
-);
 
+                {/* NAVBAR */}
+
+                <Navbar
+                    setSidebarMode={setSidebarMode}
+                />
+
+
+                <div className="dashboard-content">
+
+
+                    {/* CONTENU DE LA PAGE */}
+
+                    {children}
+
+
+                    {/* LOADING */}
+
+                  {loading && (
+    <div className="global-page-loading">
+        <Loading />
+    </div>
+)}
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    );
 
 }
 

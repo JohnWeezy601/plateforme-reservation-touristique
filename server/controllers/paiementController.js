@@ -5,145 +5,138 @@ const db = require("../db");
 // Ajouter paiement avec preuve
 // ==================================
 
-exports.createPaiement = async(req,res)=>{
+exports.createPaiement = async (req, res) => {
 
+    try {
 
-try{
+        const {
+            id_reservation,
+            montant,
+            mode_paiement
+        } = req.body;
 
 
-const {
+        console.log(
+            "Données paiement reçues :",
+            req.body
+        );
 
-    id_reservation,
-    montant,
-    mode_paiement
 
-} = req.body;
+        // ==================================
+        // FICHIER PREUVE PAIEMENT
+        // ==================================
 
+        const preuve = req.file
+            ? req.file.filename
+            : null;
 
 
-console.log(
-"Données paiement reçues :",
-req.body
-);
+        // ==================================
+        // VÉRIFICATION
+        // ==================================
 
+        if (
+            !id_reservation ||
+            !montant ||
+            !mode_paiement
+        ) {
 
+            return res.status(400).json({
 
-// fichier preuve paiement
+                message:
+                    "Les champs obligatoires sont manquants"
 
-const preuve = req.file
-?
-req.file.filename
-:
-null;
+            });
 
+        }
 
 
+        // ==================================
+        // CRÉER PAIEMENT
+        // ==================================
 
+        const sql = `
 
-// Vérification
+            INSERT INTO paiement
 
-if(
-!id_reservation ||
-!montant ||
-!mode_paiement
-){
+            (
+                id_reservation,
+                montant,
+                mode_paiement,
+                statut,
+                preuve
+            )
 
-return res.status(400).json({
+            VALUES (?, ?, ?, ?, ?)
 
-message:"Les champs obligatoires sont manquants"
+        `;
 
-});
 
-}
+        const [result] = await db.query(
 
+            sql,
 
+            [
+                id_reservation,
+                montant,
+                mode_paiement,
+                "En attente",
+                preuve
+            ]
 
+        );
 
-const sql = `
 
-INSERT INTO paiement
+        console.log(
+            "Paiement créé avec le statut En attente :",
+            result.insertId
+        );
 
-(
-id_reservation,
-montant,
-mode_paiement,
-statut,
-preuve
-)
 
-VALUES (?,?,?,?,?)
+        // IMPORTANT :
+        // AUCUNE NOTIFICATION ICI.
+        //
+        // Le paiement vient juste d'être envoyé.
+        // L'administrateur doit d'abord le vérifier.
 
-`;
 
+        res.json({
 
+            message:
+                "Paiement envoyé avec succès",
 
+            id_paiement:
+                result.insertId,
 
+            preuve:
+                preuve
 
-const [result] = await db.query(
+        });
 
-sql,
 
-[
+    }
 
-id_reservation,
+    catch (error) {
 
-montant,
+        console.log(
+            "Erreur ajout paiement :",
+            error
+        );
 
-mode_paiement,
 
-"En attente",
+        res.status(500).json({
 
-preuve
+            message:
+                "Erreur ajout paiement",
 
-]
+            error:
+                error.message
 
-);
+        });
 
-
-
-
-
-res.json({
-
-message:"Paiement envoyé avec succès",
-
-id_paiement:result.insertId,
-
-preuve:preuve
-
-});
-
-
-
-}
-
-catch(error){
-
-
-console.log(
-"Erreur ajout paiement :",
-error
-);
-
-
-
-res.status(500).json({
-
-message:"Erreur ajout paiement",
-
-error:error.message
-
-});
-
-
-}
-
+    }
 
 };
-
-
-
-
 
 
 
@@ -152,255 +145,608 @@ error:error.message
 // Afficher paiements
 // ==================================
 
-exports.getPaiements = async(req,res)=>{
+exports.getPaiements = async (req, res) => {
 
-try{
+    try {
 
-const [paiements] = await db.query(`
-SELECT
+        const [paiements] = await db.query(`
 
-p.*,
+            SELECT
 
-r.id_reservation,
-r.date_reservation,
-r.date_debut_sejour,
-r.date_fin_sejour,
-r.nombre_personnes,
-r.montant_total,
-r.statut AS statut_reservation,
+                p.*,
 
-u.id_utilisateur,
-u.nom,
-u.prenom,
-u.email,
+                r.id_reservation,
+                r.date_reservation,
+                r.date_debut_sejour,
+                r.date_fin_sejour,
+                r.nombre_personnes,
+                r.montant_total,
+                r.statut AS statut_reservation,
 
-o.id_offre,
-o.titre,
-o.prix,
-o.image,
+                u.id_utilisateur,
+                u.nom,
+                u.prenom,
+                u.email,
 
-d.nom AS destination
+                o.id_offre,
+                o.titre,
+                o.prix,
+                o.image,
 
-FROM paiement p
+                d.nom AS destination
 
-INNER JOIN reservation r
-ON p.id_reservation = r.id_reservation
+            FROM paiement p
 
-INNER JOIN utilisateur u
-ON r.id_utilisateur = u.id_utilisateur
+            INNER JOIN reservation r
+                ON p.id_reservation = r.id_reservation
 
-INNER JOIN offre o
-ON r.id_offre = o.id_offre
+            INNER JOIN utilisateur u
+                ON r.id_utilisateur = u.id_utilisateur
 
-INNER JOIN destination d
-ON o.id_destination = d.id_destination
+            INNER JOIN offre o
+                ON r.id_offre = o.id_offre
 
-ORDER BY p.id_paiement DESC
+            INNER JOIN destination d
+                ON o.id_destination = d.id_destination
 
-`);
+            ORDER BY p.id_paiement DESC
 
-res.json(paiements);
+        `);
 
-}
-catch(error){
 
-console.log(
-"Erreur récupération paiements :",
-error
-);
+        res.json(paiements);
 
-res.status(500).json({
+    }
 
-message:"Erreur récupération paiements",
+    catch (error) {
 
-error:error.message
+        console.log(
+            "Erreur récupération paiements :",
+            error
+        );
 
-});
 
-}
+        res.status(500).json({
+
+            message:
+                "Erreur récupération paiements",
+
+            error:
+                error.message
+
+        });
+
+    }
 
 };
 
+
+
+
 // ==================================
-// Modifier paiement (validation admin)
+// Modifier paiement
+// Validation / rejet admin
 // ==================================
-exports.updatePaiement = async(req,res)=>{
 
-try{
+exports.updatePaiement = async (req, res) => {
 
+    try {
 
-const id=req.params.id;
+        const id = req.params.id;
 
+        const {
+            statut
+        } = req.body;
 
-const {
-statut
-}=req.body;
 
+        console.log(
+            "Modification paiement :",
+            {
+                id_paiement: id,
+                nouveau_statut: statut
+            }
+        );
 
 
-const sql=`
+        // ==================================
+        // VÉRIFICATION STATUT
+        // ==================================
 
-UPDATE paiement
+        if (!statut) {
 
-SET
+            return res.status(400).json({
 
-statut=?
+                message:
+                    "Le statut du paiement est obligatoire"
 
-WHERE id_paiement=?
+            });
 
-`;
+        }
 
 
+        // ==================================
+        // MODIFIER LE PAIEMENT
+        // ==================================
 
-const [result]=await db.query(
+        const sql = `
 
-sql,
+            UPDATE paiement
 
-[
-statut,
-id
-]
+            SET statut = ?
 
-);
+            WHERE id_paiement = ?
 
+        `;
 
 
-if(result.affectedRows===0){
+        const [result] = await db.query(
 
-return res.status(404).json({
+            sql,
 
-message:"Paiement introuvable"
+            [
+                statut,
+                id
+            ]
 
-});
+        );
 
-}
 
+        if (
+            result.affectedRows === 0
+        ) {
 
+            return res.status(404).json({
 
+                message:
+                    "Paiement introuvable"
 
-// ===============================
-// CREER NOTIFICATION SI PAIEMENT PAYE
-// ===============================
-// ===============================
-// CREER NOTIFICATION SI PAIEMENT PAYE
-// ===============================
+            });
 
-if(statut === "Payé" || statut === "Paye"){
+        }
 
 
-console.log("Paiement confirmé, création notification");
+        // ==================================
+        // RÉCUPÉRER L'UTILISATEUR
+        // ==================================
 
+        const [paiement] = await db.query(
 
-const [paiement] = await db.query(
+            `
 
-`
-SELECT 
-r.id_utilisateur
+            SELECT
 
-FROM paiement p
+                p.id_paiement,
+                p.statut,
 
-INNER JOIN reservation r
+                r.id_reservation,
+                r.id_utilisateur
 
-ON p.id_reservation = r.id_reservation
+            FROM paiement p
 
-WHERE p.id_paiement=?
-`,
+            INNER JOIN reservation r
 
-[id]
+                ON p.id_reservation =
+                   r.id_reservation
 
-);
+            WHERE p.id_paiement = ?
 
+            `,
 
+            [id]
 
-console.log(
-"Utilisateur concerné :",
-paiement
-);
+        );
 
 
+        if (
+            paiement.length === 0
+        ) {
 
-if(paiement.length > 0){
+            return res.status(404).json({
 
+                message:
+                    "Paiement ou réservation introuvable"
 
-await db.query(
+            });
 
-`
+        }
 
-INSERT INTO notification
 
-(
-id_utilisateur,
-titre,
-message,
-type,
-lien
-)
+        const idUtilisateur =
+            paiement[0].id_utilisateur;
 
-VALUES (?,?,?,?,?)
 
-`,
+        console.log(
+            "Utilisateur concerné :",
+            idUtilisateur
+        );
 
-[
 
-paiement[0].id_utilisateur,
 
-"Paiement validé",
+        // ==================================
+        // NORMALISER LE STATUT
+        // ==================================
 
-"Votre paiement est confirmé. Téléchargez votre reçu.",
+        const statutNormalise =
+            String(statut || "")
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                );
 
-"Paiement",
 
-"/api/recu/"+id
 
-]
+        // =====================================================
+        // PAIEMENT VALIDÉ
+        // =====================================================
 
+        if (
+            statutNormalise === "paye" ||
+            statutNormalise === "valide"
+        ) {
 
-);
 
+            console.log(
+                "Paiement validé."
+            );
 
-console.log(
-"Notification paiement créée"
-);
 
+            // ==================================
+            // ÉVITER LES DOUBLONS
+            // ==================================
 
-}
+            const [notificationExistante] =
+                await db.query(
 
+                    `
 
-}
+                    SELECT id_notification
 
+                    FROM notification
 
+                    WHERE id_utilisateur = ?
 
-res.json({
+                    AND type = 'Paiement'
 
-message:"Statut paiement modifié avec succès"
+                    AND titre = 'Paiement validé'
 
-});
+                    AND message LIKE ?
 
+                    LIMIT 1
 
+                    `,
 
-}
-catch(error){
+                    [
+                        idUtilisateur,
+                        `%#${id}%`
+                    ]
 
+                );
 
-console.log(
-"Erreur modification paiement :",
-error
-);
 
+            if (
+                notificationExistante.length === 0
+            ) {
 
 
-res.status(500).json({
+                await db.query(
 
-message:"Erreur modification paiement",
+                    `
 
-error:error.message
+                    INSERT INTO notification
 
-});
+                    (
+                        id_utilisateur,
+                        titre,
+                        message,
+                        type,
+                        lien
+                    )
 
+                    VALUES (?, ?, ?, ?, ?)
 
-}
+                    `,
+
+                    [
+
+                        idUtilisateur,
+
+                        "Paiement validé",
+
+                        `Votre paiement #${id} est confirmé. Téléchargez votre reçu.`,
+
+                        "Paiement",
+
+                        "/api/recu/" + id
+
+                    ]
+
+                );
+
+
+                console.log(
+                    "Notification paiement validé créée."
+                );
+
+            }
+
+        }
+
+
+
+        // =====================================================
+        // PAIEMENT NON VALIDÉ
+        // =====================================================
+
+        else if (
+
+            statutNormalise === "non valide" ||
+
+            statutNormalise === "non validee" ||
+
+            statutNormalise === "non validee" ||
+
+            statutNormalise === "non valide"
+
+        ) {
+
+
+            console.log(
+                "Paiement non validé."
+            );
+
+
+            // ==================================
+            // ÉVITER LES DOUBLONS
+            // ==================================
+
+            const [notificationExistante] =
+                await db.query(
+
+                    `
+
+                    SELECT id_notification
+
+                    FROM notification
+
+                    WHERE id_utilisateur = ?
+
+                    AND type = 'Paiement'
+
+                    AND titre = 'Paiement non validé'
+
+                    AND message LIKE ?
+
+                    LIMIT 1
+
+                    `,
+
+                    [
+                        idUtilisateur,
+                        `%#${id}%`
+                    ]
+
+                );
+
+
+            if (
+                notificationExistante.length === 0
+            ) {
+
+
+                await db.query(
+
+                    `
+
+                    INSERT INTO notification
+
+                    (
+                        id_utilisateur,
+                        titre,
+                        message,
+                        type,
+                        lien
+                    )
+
+                    VALUES (?, ?, ?, ?, ?)
+
+                    `,
+
+                    [
+
+                        idUtilisateur,
+
+                        "Paiement non validé",
+
+                        `Votre paiement #${id} n'a pas été validé. Veuillez vérifier votre paiement et effectuer une nouvelle tentative.`,
+
+                        "Paiement",
+
+                        "/mes-reservations"
+
+                    ]
+
+                );
+
+
+                console.log(
+                    "Notification paiement non validé créée."
+                );
+
+            }
+
+        }
+
+
+
+        // =====================================================
+        // PAIEMENT ÉCHOUÉ
+        // =====================================================
+
+        else if (
+
+            statutNormalise === "echoue" ||
+
+            statutNormalise === "echec"
+
+        ) {
+
+
+            console.log(
+                "Paiement échoué."
+            );
+
+
+            // ==================================
+            // ÉVITER LES DOUBLONS
+            // ==================================
+
+            const [notificationExistante] =
+                await db.query(
+
+                    `
+
+                    SELECT id_notification
+
+                    FROM notification
+
+                    WHERE id_utilisateur = ?
+
+                    AND type = 'Paiement'
+
+                    AND titre = 'Paiement échoué'
+
+                    AND message LIKE ?
+
+                    LIMIT 1
+
+                    `,
+
+                    [
+                        idUtilisateur,
+                        `%#${id}%`
+                    ]
+
+                );
+
+
+            if (
+                notificationExistante.length === 0
+            ) {
+
+
+                await db.query(
+
+                    `
+
+                    INSERT INTO notification
+
+                    (
+                        id_utilisateur,
+                        titre,
+                        message,
+                        type,
+                        lien
+                    )
+
+                    VALUES (?, ?, ?, ?, ?)
+
+                    `,
+
+                    [
+
+                        idUtilisateur,
+
+                        "Paiement échoué",
+
+                        `Votre paiement #${id} a échoué. Veuillez réessayer le paiement.`,
+
+                        "Paiement",
+
+                        "/mes-reservations"
+
+                    ]
+
+                );
+
+
+                console.log(
+                    "Notification paiement échoué créée."
+                );
+
+            }
+
+        }
+
+
+
+        // =====================================================
+        // EN ATTENTE
+        // =====================================================
+
+        else if (
+
+            statutNormalise === "en attente" ||
+
+            statutNormalise === "attente"
+
+        ) {
+
+
+            // IMPORTANT :
+            // aucune notification.
+            //
+            // L'admin n'a pas encore terminé
+            // la vérification du paiement.
+
+            console.log(
+                "Paiement toujours en attente : aucune notification."
+            );
+
+        }
+
+
+
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
+
+        res.json({
+
+            message:
+                "Statut paiement modifié avec succès",
+
+            statut:
+                statut
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "Erreur modification paiement :",
+            error
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Erreur modification paiement",
+
+            error:
+                error.message
+
+        });
+
+    }
 
 };
+
 
 
 
@@ -408,83 +754,69 @@ error:error.message
 // Supprimer paiement
 // ==================================
 
-exports.deletePaiement = async(req,res)=>{
+exports.deletePaiement = async (req, res) => {
+
+    try {
+
+        const id = req.params.id;
 
 
-try{
+        const [result] = await db.query(
+
+            `
+
+            DELETE FROM paiement
+
+            WHERE id_paiement = ?
+
+            `,
+
+            [id]
+
+        );
 
 
-const id=req.params.id;
+        if (
+            result.affectedRows === 0
+        ) {
+
+            return res.status(404).json({
+
+                message:
+                    "Paiement introuvable"
+
+            });
+
+        }
 
 
+        res.json({
 
-const [result]=await db.query(
+            message:
+                "Paiement supprimé avec succès"
 
+        });
 
-`
+    }
 
-DELETE FROM paiement
+    catch (error) {
 
-WHERE id_paiement=?
-
-`,
-
-[id]
-
-
-);
-
+        console.log(
+            "Erreur suppression paiement :",
+            error
+        );
 
 
+        res.status(500).json({
 
+            message:
+                "Erreur suppression paiement",
 
-if(result.affectedRows===0){
+            error:
+                error.message
 
+        });
 
-return res.status(404).json({
-
-message:"Paiement introuvable"
-
-});
-
-
-}
-
-
-
-
-
-res.json({
-
-message:"Paiement supprimé avec succès"
-
-});
-
-
-
-}
-
-catch(error){
-
-
-console.log(
-"Erreur suppression paiement :",
-error
-);
-
-
-
-res.status(500).json({
-
-message:"Erreur suppression paiement",
-
-error:error.message
-
-});
-
-
-}
-
-
+    }
 
 };

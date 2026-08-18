@@ -1,99 +1,81 @@
 const db = require("../db");
 
 
+
 // ===============================
 // AJOUTER UNE NOTIFICATION
 // ===============================
 
-exports.createNotification = async (req, res) => {
-
-    try {
-
-        const {
-            id_utilisateur,
-            titre,
-            message,
-            type,
-            lien
-        } = req.body;
+exports.createNotification = (req,res)=>{
 
 
-        console.log("===== CREATION NOTIFICATION =====");
-        console.log("ID UTILISATEUR :", id_utilisateur);
-        console.log("TITRE :", titre);
-        console.log("MESSAGE :", message);
-        console.log("TYPE :", type);
-        console.log("LIEN :", lien);
+const {
+    id_utilisateur,
+    titre,
+    message,
+    type
+
+}=req.body;
 
 
-        const sql = `
 
-            INSERT INTO notification
-            (
-                id_utilisateur,
-                titre,
-                message,
-                type,
-                lien
-            )
+const sql = `
 
-            VALUES (?,?,?,?,?)
+INSERT INTO notification
 
-        `;
+(id_utilisateur,titre,message,type)
+
+VALUES (?,?,?,?)
+
+`;
 
 
-        const [result] = await db.query(
 
-            sql,
+db.query(
 
-            [
-                id_utilisateur,
-                titre,
-                message,
-                type,
-                lien || null
-            ]
+sql,
 
-        );
+[
+id_utilisateur,
+titre,
+message,
+type
+],
 
 
-        console.log(
-            "Notification créée avec ID :",
-            result.insertId
-        );
+(err,result)=>{
 
 
-        res.status(201).json({
+if(err){
 
-            message: "Notification créée avec succès",
+return res.status(500).json({
 
-            id_notification: result.insertId
+message:"Erreur création notification",
+error:err
 
-        });
+});
 
-
-    }
-    catch (error) {
-
-        console.log(
-            "Erreur création notification :",
-            error
-        );
+}
 
 
-        res.status(500).json({
 
-            message: "Erreur création notification",
+res.json({
 
-            error: error.message
+message:"Notification créée avec succès",
 
-        });
+id_notification:result.insertId
 
-    }
+});
+
+
+}
+
+
+);
+
+
 
 };
-
-
 
 
 
@@ -432,5 +414,168 @@ exports.countUnread = async(req,res)=>{
 
     }
 
+
+};
+
+
+
+
+// =====================================================
+// NOTIFICATION PAIEMENT NON VALIDÉ / ÉCHOUÉ
+// =====================================================
+
+exports.notifierPaiementNonValide = async ({
+    id_utilisateur,
+    id_paiement,
+    statut
+}) => {
+
+    try {
+
+        if (!id_utilisateur) {
+            console.log(
+                "Impossible de créer la notification : utilisateur manquant"
+            );
+            return;
+        }
+
+
+        const statutNormalise = String(statut || "")
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+
+        // =================================================
+        // ON NOTIFIE UNIQUEMENT POUR CES STATUTS
+        // =================================================
+
+        const statutsAutorises = [
+            "non valide",
+            "non validee",
+            "echoue",
+            "echec"
+        ];
+
+
+        if (!statutsAutorises.includes(statutNormalise)) {
+
+            return;
+
+        }
+
+
+        // =================================================
+        // ÉVITER LES DOUBLONS
+        // =================================================
+
+        const [notificationsExistantes] = await db.query(
+
+            `
+            SELECT id_notification
+
+            FROM notification
+
+            WHERE id_utilisateur = ?
+
+            AND type = 'Paiement'
+
+            AND message LIKE ?
+
+            LIMIT 1
+            `,
+
+            [
+                id_utilisateur,
+                `%${id_paiement}%`
+            ]
+
+        );
+
+
+        if (
+            notificationsExistantes.length > 0
+        ) {
+
+            console.log(
+                "Notification paiement déjà existante pour le paiement :",
+                id_paiement
+            );
+
+            return;
+
+        }
+
+
+        // =================================================
+        // MESSAGE
+        // =================================================
+
+        let titre = "Paiement non validé";
+
+        let message =
+            `Votre paiement #${id_paiement} n'a pas été validé. Veuillez vérifier votre paiement.`;
+
+
+        if (
+            statutNormalise === "echoue" ||
+            statutNormalise === "echec"
+        ) {
+
+            titre = "Paiement échoué";
+
+            message =
+                `Votre paiement #${id_paiement} a échoué. Veuillez réessayer le paiement.`;
+
+        }
+
+
+        // =================================================
+        // CRÉER NOTIFICATION
+        // =================================================
+
+        await db.query(
+
+            `
+            INSERT INTO notification
+            (
+                id_utilisateur,
+                titre,
+                message,
+                type
+            )
+
+            VALUES (?, ?, ?, 'Paiement')
+            `,
+
+            [
+                id_utilisateur,
+                titre,
+                message
+            ]
+
+        );
+
+
+        console.log(
+            "Notification paiement créée :",
+            {
+                id_utilisateur,
+                id_paiement,
+                statut
+            }
+        );
+
+
+    }
+    catch(error) {
+
+        console.log(
+            "Erreur notification paiement :",
+            error
+        );
+
+    }
 
 };

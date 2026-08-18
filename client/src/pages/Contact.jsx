@@ -152,7 +152,7 @@ function Contact(){
 
                     <h3>
 
-                        🌴 Travel Explorer
+                         Travel Explorer
 
                     </h3>
 
@@ -183,7 +183,7 @@ function Contact(){
 
                         <span>
 
-                            +261 34 00 000 00
+                            +261 33 96 477 59
 
                         </span>
 
@@ -200,7 +200,7 @@ function Contact(){
 
                         <span>
 
-                            contact@travelexplorer.com
+                            reservation.touristique.mada@gmail.com
 
                         </span>
 

@@ -42,6 +42,27 @@ const [destination,setDestination]=useState(null);
 const [autresDestinations,setAutresDestinations]=useState([]);
 
 const [offres,setOffres]=useState([]);
+const [offresOuvertes,setOffresOuvertes]=useState({});
+
+const formatPrixEuro = (prix) => {
+
+    if (
+        prix === null ||
+        prix === undefined ||
+        prix === ""
+    ) {
+        return "Prix sur demande";
+    }
+
+    return Number(prix).toLocaleString(
+        "fr-FR",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+};
 
 
 
@@ -572,12 +593,39 @@ alt={offre.titre}
 
 
 
+<div className="offer-description-wrapper">
 
-<p>
+    <p
+        className={
+            offresOuvertes[offre.id_offre]
+                ? "offer-description"
+                : "offer-description offer-description-limitee"
+        }
+    >
+        {offre.description}
+    </p>
 
-{offre.description}
+    {offre.description &&
+        offre.description.length > 120 && (
 
-</p>
+            <span
+                className="offer-voir-plus"
+                onClick={() =>
+                    setOffresOuvertes({
+                        ...offresOuvertes,
+                        [offre.id_offre]:
+                            !offresOuvertes[offre.id_offre]
+                    })
+                }
+            >
+                {offresOuvertes[offre.id_offre]
+                    ? "Voir moins"
+                    : "Voir plus"}
+            </span>
+
+        )}
+
+</div>
 
 
 
@@ -602,20 +650,9 @@ alt={offre.titre}
 
 
 
+<h3>
 
-<h3 className="offer-price">
-
-
-{
-
-Number(offre.prix)
-
-.toLocaleString("fr-FR")
-
-}
-
-Ar
-
+    💰 {formatPrixEuro(offre.prix)} €
 
 </h3>
 

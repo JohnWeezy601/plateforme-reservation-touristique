@@ -338,3 +338,17 @@
 
 
 }
+
+
+.voir-plus {
+    color: #2563eb;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.voir-plus:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+

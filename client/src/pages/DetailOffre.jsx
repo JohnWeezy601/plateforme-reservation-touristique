@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
 import {
     FaMapMarkerAlt,
     FaTag,
@@ -8,7 +8,11 @@ import {
     FaUsers,
     FaCalendarAlt,
     FaArrowLeft,
-    FaCheckCircle
+    FaChevronLeft,
+    FaChevronRight,
+    FaCheckCircle,
+    FaClock,
+    FaHotel
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -20,11 +24,15 @@ function DetailOffre() {
     const navigate = useNavigate();
 
     const [offre, setOffre] = useState(null);
+    const [photos, setPhotos] = useState([]);
+    const [photoActuelle, setPhotoActuelle] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [galerieOuverte, setGalerieOuverte] = useState(false);
 
-    // ==========================
-    // Charger une offre
-    // ==========================
+
+    // =====================================================
+    // CHARGEMENT DE L'OFFRE
+    // =====================================================
 
     useEffect(() => {
 
@@ -32,17 +40,60 @@ function DetailOffre() {
 
             try {
 
+                setLoading(true);
+
                 const res = await api.get(`/offres/${id}`);
 
-                setOffre(res.data);
+                const data = res.data;
+
+                setOffre(data);
+
+                const galerie = [];
+
+                // Image principale
+                if (data.image) {
+
+                    galerie.push({
+                        id_photo: "principale",
+                        chemin_photo: data.image
+                    });
+
+                }
+
+                // Photos supplémentaires
+                if (Array.isArray(data.photos)) {
+
+                    data.photos.forEach((photo, index) => {
+
+                        if (photo.chemin_photo) {
+
+                            galerie.push({
+                                id_photo:
+                                    photo.id_photo ||
+                                    `photo-${index}`,
+
+                                chemin_photo:
+                                    photo.chemin_photo
+                            });
+
+                        }
+
+                    });
+
+                }
+
+                setPhotos(galerie);
+                setPhotoActuelle(0);
 
             }
             catch (error) {
 
-                console.log(
-                    "Erreur chargement offre",
+                console.error(
+                    "Erreur chargement offre :",
                     error
                 );
+
+                setOffre(null);
 
             }
             finally {
@@ -58,331 +109,982 @@ function DetailOffre() {
     }, [id]);
 
 
-    // ==========================
-    // Chargement
-    // ==========================
+    // =====================================================
+    // URL PHOTO
+    // =====================================================
+
+    const obtenirUrlPhoto = (photo) => {
+
+        if (!photo) {
+            return "/image-default.jpg";
+        }
+
+        if (
+            photo.startsWith("http://") ||
+            photo.startsWith("https://")
+        ) {
+
+            return photo;
+
+        }
+
+        return `http://localhost:8081/uploads/${photo}`;
+
+    };
+
+
+    // =====================================================
+    // IMAGE ACTUELLE
+    // =====================================================
+
+    const imageActuelle =
+        photos.length > 0
+            ? photos[photoActuelle]
+            : null;
+
+
+    const urlImageActuelle =
+        imageActuelle
+            ? obtenirUrlPhoto(
+                imageActuelle.chemin_photo
+            )
+            : "/image-default.jpg";
+
+
+    // =====================================================
+    // PHOTO PRECEDENTE
+    // =====================================================
+
+    const photoPrecedente = () => {
+
+        if (photos.length <= 1) return;
+
+        setPhotoActuelle((ancienne) => {
+
+            return ancienne === 0
+                ? photos.length - 1
+                : ancienne - 1;
+
+        });
+
+    };
+
+
+    // =====================================================
+    // PHOTO SUIVANTE
+    // =====================================================
+
+    const photoSuivante = () => {
+
+        if (photos.length <= 1) return;
+
+        setPhotoActuelle((ancienne) => {
+
+            return ancienne >= photos.length - 1
+                ? 0
+                : ancienne + 1;
+
+        });
+
+    };
+
+
+    // =====================================================
+    // CHARGEMENT
+    // =====================================================
 
     if (loading) {
 
         return (
+
             <div className="detail-offre-loading">
 
-                <div className="loading-spinner"></div>
+                <div className="detail-loading-spinner"></div>
 
                 <p>
                     Chargement de l'offre...
                 </p>
 
             </div>
+
         );
 
     }
 
 
-    // ==========================
-    // Offre introuvable
-    // ==========================
+    // =====================================================
+    // OFFRE INTROUVABLE
+    // =====================================================
 
     if (!offre) {
 
         return (
+
             <div className="detail-offre-error">
 
-                <h2>
-                    Offre introuvable
-                </h2>
+                <div className="detail-error-card">
 
-                <button
-                    onClick={() => navigate(-1)}
-                >
-                    Retour
-                </button>
+                    <h2>
+                        Offre introuvable
+                    </h2>
+
+                    <p>
+                        Cette offre n'existe pas ou
+                        n'est plus disponible.
+                    </p>
+
+                    <button
+                        onClick={() => navigate(-1)}
+                    >
+
+                        <FaArrowLeft />
+
+                        Retour
+
+                    </button>
+
+                </div>
 
             </div>
+
         );
 
     }
 
 
-    // ==========================
-    // Affichage
-    // ==========================
-
     return (
 
-        <div className="detail-offre-page">
+        <main className="detail-offre-page">
 
-            <div className="detail-offre-card">
-
-                {/* ==========================
-                    IMAGE
-                ========================== */}
-
-                <div className="detail-offre-image-container">
-
-                    <img
-                        className="detail-offre-image"
-                        src={
-                            offre.image
-                                ? `http://localhost:8081/uploads/${offre.image}`
-                                : "/image-default.jpg"
-                        }
-                        alt={offre.titre}
-                    />
-
-                    <button
-                        className="btn-retour"
-                        onClick={() => navigate(-1)}
-                    >
-                        <FaArrowLeft />
-                        Retour
-                    </button>
-
-                </div>
+            <div className="detail-offre-container">
 
 
-                {/* ==========================
-                    CONTENU
-                ========================== */}
+                {/* =================================================
+                    RETOUR
+                ================================================= */}
 
-                <div className="detail-offre-content">
+                <button
+                    className="detail-back-button"
+                    onClick={() => navigate(-1)}
+                >
 
-                    <div className="offre-heading">
+                    <FaArrowLeft />
 
-                        <div>
+                    <span>
+                        Retour aux offres
+                    </span>
 
-                            <span className="offre-badge">
-                                <FaCheckCircle />
-                                Offre disponible
+                </button>
+
+
+                {/* =================================================
+                    HEADER
+                ================================================= */}
+
+                <section className="detail-offre-header">
+
+                    <div className="detail-header-left">
+
+                        <div className="detail-available-badge">
+
+                            <FaCheckCircle />
+
+                            Offre disponible
+
+                        </div>
+
+
+                       <h1>
+    {offre.titre}
+</h1>
+
+{/* PRESTATAIRE */}
+<div className="detail-prestataire">
+    <FaHotel />
+    <span>
+        Proposé par :{" "}
+        <strong>
+            {offre.prestataire || "Prestataire non précisé"}
+        </strong>
+    </span>
+</div>
+
+<div className="detail-header-meta">
+                            <span>
+
+                                <FaMapMarkerAlt />
+
+                                {offre.destination ||
+                                    "Destination non précisée"}
+
                             </span>
 
-                            <h1>
-                                {offre.titre}
-                            </h1>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* ==========================
-                        DESCRIPTION
-                    ========================== */}
-
-                    <div className="description-section">
-
-                        <h2>
-                            À propos de cette offre
-                        </h2>
-
-                        <p>
-                            {offre.description ||
-                                "Découvrez cette offre touristique et profitez d'une expérience unique."}
-                        </p>
-
-                    </div>
-
-
-                    {/* ==========================
-                        INFORMATIONS
-                    ========================== */}
-
-                    <div className="detail-offre-info">
-
-                        {/* DESTINATION */}
-
-                        <div className="info-box">
-
-                            <div className="info-icon destination-icon">
-                                <FaMapMarkerAlt />
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Destination
-                                </strong>
-
-                                <span>
-                                    {offre.destination ||
-                                        "Destination inconnue"}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* CATEGORIE */}
-
-                        <div className="info-box">
-
-                            <div className="info-icon category-icon">
-                                <FaTag />
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Catégorie
-                                </strong>
-
-                                <span>
-                                    {offre.categorie ||
-                                        "Non précisée"}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* PRIX */}
-
-                        <div className="info-box price-box">
-
-                            <div className="info-icon price-icon">
-                                <FaMoneyBillWave />
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Prix
-                                </strong>
-
-                                <span className="prix-offre">
-
-                                    {Number(offre.prix || 0)
-                                        .toLocaleString("fr-FR")}
-
-                                    {" "}Ar
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* CAPACITE */}
-
-                        <div className="info-box">
-
-                            <div className="info-icon capacity-icon">
-                                <FaUsers />
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Capacité
-                                </strong>
-
-                                <span>
-                                    {offre.capacite || 0} personnes
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* DATE DEBUT */}
-
-                        <div className="info-box">
-
-                            <div className="info-icon date-icon">
-                                <FaCalendarAlt />
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Début
-                                </strong>
-
-                                <span>
-                                    {offre.date_debut
-                                        ? new Date(
-                                            offre.date_debut
-                                        ).toLocaleDateString("fr-FR")
-                                        : "-"}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* DATE FIN */}
-
-                        <div className="info-box">
-
-                            <div className="info-icon date-icon">
-                                <FaCalendarAlt />
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Fin
-                                </strong>
-
-                                <span>
-                                    {offre.date_fin
-                                        ? new Date(
-                                            offre.date_fin
-                                        ).toLocaleDateString("fr-FR")
-                                        : "-"}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* ==========================
-                        ACTION
-                    ========================== */}
-
-                    <div className="reservation-section">
-
-                        <div className="reservation-text">
-
-                            <strong>
-                                Prêt pour votre prochaine aventure ?
-                            </strong>
 
                             <span>
-                                Réservez cette offre dès maintenant.
+
+                                <FaTag />
+
+                                {offre.categorie ||
+                                    "Catégorie non précisée"}
+
                             </span>
+
+
+                            {offre.capacite && (
+
+                                <span>
+
+                                    <FaUsers />
+
+                                    Jusqu'à {offre.capacite} personnes
+
+                                </span>
+
+                            )}
 
                         </div>
 
-                        <button
-                            className="btn-reserver"
+                    </div>
+
+                </section>
+
+
+                {/* =================================================
+                    GALERIE
+                ================================================= */}
+
+                <section className="detail-gallery-section">
+
+                    <div className="detail-gallery">
+
+
+                        {/* =================================================
+                            GRANDE PHOTO
+                        ================================================= */}
+
+                        <div
+                            className="detail-gallery-main"
                             onClick={() =>
-                                navigate(
-                                    `/reservation-public/${offre.id_offre}`
-                                )
+                                setGalerieOuverte(true)
                             }
                         >
-                            Réserver maintenant
-                        </button>
+
+                            <img
+                                src={urlImageActuelle}
+                                alt={offre.titre}
+                            />
+
+
+                            {photos.length > 1 && (
+
+                                <>
+
+                                    <button
+                                        className="gallery-arrow gallery-arrow-left"
+                                        onClick={(e) => {
+
+                                            e.stopPropagation();
+
+                                            photoPrecedente();
+
+                                        }}
+                                        aria-label="Photo précédente"
+                                    >
+
+                                        <FaChevronLeft />
+
+                                    </button>
+
+
+                                    <button
+                                        className="gallery-arrow gallery-arrow-right"
+                                        onClick={(e) => {
+
+                                            e.stopPropagation();
+
+                                            photoSuivante();
+
+                                        }}
+                                        aria-label="Photo suivante"
+                                    >
+
+                                        <FaChevronRight />
+
+                                    </button>
+
+                                </>
+
+                            )}
+
+
+                            <div className="gallery-photo-counter">
+
+                                {photoActuelle + 1}
+
+                                {" / "}
+
+                                {photos.length || 1}
+
+                            </div>
+
+                        </div>
+
+
+                        {/* =================================================
+                            4 PETITES PHOTOS
+                        ================================================= */}
+
+                        {photos.length > 1 && (
+
+                            <div className="detail-gallery-side">
+
+                                {photos.slice(1, 5).map(
+                                    (photo, index) => {
+
+                                        const estDerniere =
+                                            index === 3 &&
+                                            photos.length > 5;
+
+                                        return (
+
+                                            <button
+                                                key={photo.id_photo}
+                                                className="gallery-side-photo"
+                                                onClick={() => {
+
+                                                    if (estDerniere) {
+
+                                                        setGalerieOuverte(true);
+
+                                                    }
+                                                    else {
+
+                                                        setPhotoActuelle(
+                                                            index + 1
+                                                        );
+
+                                                    }
+
+                                                }}
+                                            >
+
+                                                <img
+                                                    src={obtenirUrlPhoto(
+                                                        photo.chemin_photo
+                                                    )}
+                                                    alt={
+                                                        `Photo ${index + 2}`
+                                                    }
+                                                />
+
+
+                                                {estDerniere && (
+
+                                                    <span className="gallery-more">
+
+                                                        +{photos.length - 5}
+
+                                                    </span>
+
+                                                )}
+
+                                            </button>
+
+                                        );
+
+                                    }
+                                )}
+
+                            </div>
+
+                        )}
 
                     </div>
 
-                </div>
+
+                    {/* =================================================
+                        MINIATURES
+                    ================================================= */}
+
+                    {photos.length > 1 && (
+
+                        <div className="detail-thumbnails">
+
+                            {photos.map(
+                                (photo, index) => (
+
+                                    <button
+                                        key={photo.id_photo}
+                                        className={
+                                            photoActuelle === index
+                                                ? "detail-thumbnail active"
+                                                : "detail-thumbnail"
+                                        }
+                                        onClick={() =>
+                                            setPhotoActuelle(index)
+                                        }
+                                        aria-label={
+                                            `Afficher la photo ${index + 1}`
+                                        }
+                                    >
+
+                                        <img
+                                            src={obtenirUrlPhoto(
+                                                photo.chemin_photo
+                                            )}
+                                            alt={
+                                                `Aperçu ${index + 1}`
+                                            }
+                                        />
+
+                                    </button>
+
+                                )
+                            )}
+
+                        </div>
+
+                    )}
+
+                </section>
+
+
+                {/* =================================================
+                    CONTENU PRINCIPAL
+                ================================================= */}
+
+                <section className="detail-content-layout">
+
+
+                    {/* =================================================
+                        COLONNE GAUCHE
+                    ================================================= */}
+
+                    <div className="detail-content-left">
+
+
+                        {/* PRESENTATION */}
+
+                        <section className="detail-card">
+
+                            <div className="detail-section-title">
+
+                                <h2>
+                                    Présentation
+                                </h2>
+
+                                <span></span>
+
+                            </div>
+
+
+                            <p className="detail-description">
+
+                                {offre.description ||
+                                    "Découvrez cette offre touristique et profitez d'une expérience exceptionnelle au cœur de Madagascar."}
+
+                            </p>
+
+                        </section>
+
+
+                        {/* INFORMATIONS */}
+
+                        <section className="detail-card">
+
+                            <div className="detail-section-title">
+
+                                <h2>
+                                    Informations de l'offre
+                                </h2>
+
+                                <span></span>
+
+                            </div>
+
+
+                            <div className="detail-information-grid">
+
+
+                                <div className="detail-information-item">
+
+                                    <div className="information-icon">
+
+                                        <FaMapMarkerAlt />
+
+                                    </div>
+
+                                    <div>
+
+                                        <small>
+                                            Destination
+                                        </small>
+
+                                        <strong>
+
+                                            {offre.destination ||
+                                                "Non précisée"}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="detail-information-item">
+
+                                    <div className="information-icon">
+
+                                        <FaTag />
+
+                                    </div>
+
+                                    <div>
+
+                                        <small>
+                                            Catégorie
+                                        </small>
+
+                                        <strong>
+
+                                            {offre.categorie ||
+                                                "Non précisée"}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="detail-information-item">
+
+                                    <div className="information-icon">
+
+                                        <FaUsers />
+
+                                    </div>
+
+                                    <div>
+
+                                        <small>
+                                            Capacité
+                                        </small>
+
+                                        <strong>
+
+                                            {offre.capacite
+                                                ? `${offre.capacite} personnes`
+                                                : "Non précisée"}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="detail-information-item">
+
+                                    <div className="information-icon">
+
+                                        <FaClock />
+
+                                    </div>
+
+                                    <div>
+
+                                        <small>
+                                            Disponibilité
+                                        </small>
+
+                                        <strong>
+                                            Offre disponible
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="detail-information-item">
+
+                                    <div className="information-icon">
+
+                                        <FaCalendarAlt />
+
+                                    </div>
+
+                                    <div>
+
+                                        <small>
+                                            Date de début
+                                        </small>
+
+                                        <strong>
+
+                                            {offre.date_debut
+                                                ? new Date(
+                                                    offre.date_debut
+                                                ).toLocaleDateString(
+                                                    "fr-FR"
+                                                )
+                                                : "Non précisée"}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="detail-information-item">
+
+                                    <div className="information-icon">
+
+                                        <FaCalendarAlt />
+
+                                    </div>
+
+                                    <div>
+
+                                        <small>
+                                            Date de fin
+                                        </small>
+
+                                        <strong>
+
+                                            {offre.date_fin
+                                                ? new Date(
+                                                    offre.date_fin
+                                                ).toLocaleDateString(
+                                                    "fr-FR"
+                                                )
+                                                : "Non précisée"}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+                        {/* DATES */}
+
+                        <section className="detail-card">
+
+                            <div className="detail-section-title">
+
+                                <h2>
+                                    Dates du séjour
+                                </h2>
+
+                                <span></span>
+
+                            </div>
+
+
+                            <div className="detail-dates-wrapper">
+
+
+                                <div className="detail-date-box">
+
+                                    <FaCalendarAlt />
+
+                                    <div>
+
+                                        <small>
+                                            Début
+                                        </small>
+
+                                        <strong>
+
+                                            {offre.date_debut
+                                                ? new Date(
+                                                    offre.date_debut
+                                                ).toLocaleDateString(
+                                                    "fr-FR",
+                                                    {
+                                                        day: "2-digit",
+                                                        month: "long",
+                                                        year: "numeric"
+                                                    }
+                                                )
+                                                : "-"}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="detail-date-line"></div>
+
+
+                                <div className="detail-date-box">
+
+                                    <FaCalendarAlt />
+
+                                    <div>
+
+                                        <small>
+                                            Fin
+                                        </small>
+
+                                        <strong>
+
+                                            {offre.date_fin
+                                                ? new Date(
+                                                    offre.date_fin
+                                                ).toLocaleDateString(
+                                                    "fr-FR",
+                                                    {
+                                                        day: "2-digit",
+                                                        month: "long",
+                                                        year: "numeric"
+                                                    }
+                                                )
+                                                : "-"}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+
+                    {/* =================================================
+                        RESERVATION
+                    ================================================= */}
+
+                    <aside className="detail-booking-column">
+
+                        <div className="detail-booking-card">
+
+
+                            <div className="booking-card-top">
+
+                                <span>
+                                    À partir de
+                                </span>
+
+                                <div className="booking-price">
+
+                               <div className="booking-price">
+    {Number(offre.prix || 0).toLocaleString("fr-FR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}
+
+    <small> €</small>
+</div>
+
+                                     <small>
+                                      {" "}€
+                                     </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="booking-divider"></div>
+
+
+                            <div className="booking-info">
+
+
+                                <div>
+
+                                    <FaUsers />
+
+                                    <span>
+                                        Capacité
+                                    </span>
+
+                                    <strong>
+                                        {offre.capacite || 0}
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <FaCalendarAlt />
+
+                                    <span>
+                                        Disponibilité
+                                    </span>
+
+                                    <strong>
+                                        Disponible
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <button
+                                className="detail-reservation-button"
+                                onClick={() =>
+                                    navigate(
+                                        `/reservation-public/${offre.id_offre}`
+                                    )
+                                }
+                            >
+
+                                Réserver maintenant
+
+                                <FaChevronRight />
+
+                            </button>
+
+
+                            <p className="booking-secure">
+
+                                <FaCheckCircle />
+
+                                Réservation simple et sécurisée
+
+                            </p>
+
+                        </div>
+
+
+                        {/* AIDE */}
+
+                        <div className="detail-help-card">
+
+                            <div className="help-icon">
+
+                                <FaHotel />
+
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Une question ?
+                                </strong>
+
+                                <p>
+                                    Consultez les informations
+                                    de cette offre avant
+                                    votre réservation.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </aside>
+
+                </section>
+
+
+                {/* =================================================
+                    MODALE GALERIE
+                ================================================= */}
+
+                {galerieOuverte && (
+
+                    <div
+                        className="gallery-modal"
+                        onClick={() =>
+                            setGalerieOuverte(false)
+                        }
+                    >
+
+
+                        <button
+                            className="gallery-modal-close"
+                            onClick={() =>
+                                setGalerieOuverte(false)
+                            }
+                        >
+
+                            ×
+
+                        </button>
+
+
+                        <button
+                            className="gallery-modal-prev"
+                            onClick={(e) => {
+
+                                e.stopPropagation();
+
+                                photoPrecedente();
+
+                            }}
+                        >
+
+                            <FaChevronLeft />
+
+                        </button>
+
+
+                        <img
+                            className="gallery-modal-image"
+                            src={urlImageActuelle}
+                            alt={offre.titre}
+                            onClick={(e) =>
+                                e.stopPropagation()
+                            }
+                        />
+
+
+                        <button
+                            className="gallery-modal-next"
+                            onClick={(e) => {
+
+                                e.stopPropagation();
+
+                                photoSuivante();
+
+                            }}
+                        >
+
+                            <FaChevronRight />
+
+                        </button>
+
+
+                        <div className="gallery-modal-counter">
+
+                            {photoActuelle + 1}
+
+                            {" / "}
+
+                            {photos.length}
+
+                        </div>
+
+                    </div>
+
+                )}
 
             </div>
 
-        </div>
+        </main>
 
     );
+
 }
 
 export default DetailOffre;
-

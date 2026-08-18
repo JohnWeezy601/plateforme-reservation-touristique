@@ -1,3 +1,8 @@
+/* =====================================================
+   ASSISTANT TOURISTIQUE
+   CSS COMPLET ET ISOLÉ
+===================================================== */
+
 
 /* =====================================================
    BOUTON FLOTTANT
@@ -13,6 +18,14 @@
     width: 60px;
     height: 60px;
 
+    min-width: 60px;
+    max-width: 60px;
+
+    min-height: 60px;
+    max-height: 60px;
+
+    padding: 0;
+
     border: none;
     border-radius: 50%;
 
@@ -26,18 +39,23 @@
 
     font-size: 25px;
 
+    line-height: 1;
+
     cursor: pointer;
+
+    box-sizing: border-box;
 
     box-shadow:
         0 8px 25px rgba(37, 99, 235, 0.35);
 
-    z-index: 9999;
+    z-index: 11000;
 
     transition:
         transform 0.25s ease,
         background 0.25s ease,
         box-shadow 0.25s ease;
 }
+
 
 .assistant-floating-button:hover {
 
@@ -64,6 +82,9 @@
     width: 390px;
     height: 590px;
 
+    margin: 0;
+    padding: 0;
+
     background: white;
 
     border-radius: 18px;
@@ -73,12 +94,14 @@
     display: flex;
     flex-direction: column;
 
+    box-sizing: border-box;
+
     box-shadow:
         0 15px 50px rgba(0, 0, 0, 0.18);
 
     border: 1px solid #e2e8f0;
 
-    z-index: 9998;
+    z-index: 11001;
 
     animation:
         assistantOpen 0.25s ease;
@@ -86,7 +109,19 @@
 
 
 /* =====================================================
-   ANIMATION OUVERTURE
+   RESET UNIQUEMENT DANS L'ASSISTANT
+===================================================== */
+
+.assistant-touristique *,
+.assistant-touristique *::before,
+.assistant-touristique *::after {
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   ANIMATION
 ===================================================== */
 
 @keyframes assistantOpen {
@@ -115,9 +150,12 @@
    HEADER
 ===================================================== */
 
-.assistant-header {
+.assistant-touristique .assistant-header {
 
     min-height: 75px;
+    height: 75px;
+
+    width: 100%;
 
     background:
         linear-gradient(
@@ -137,17 +175,22 @@
     gap: 12px;
 
     flex-shrink: 0;
+
+    box-sizing: border-box;
 }
 
 
 /* =====================================================
-   ICONE ROBOT HEADER
+   ICONE ROBOT
 ===================================================== */
 
-.assistant-header-icon {
+.assistant-touristique .assistant-header-icon {
 
     width: 45px;
     height: 45px;
+
+    min-width: 45px;
+    min-height: 45px;
 
     border-radius: 50%;
 
@@ -161,6 +204,19 @@
 
     font-size: 22px;
 
+    line-height: 1;
+
+    flex-shrink: 0;
+}
+
+
+.assistant-touristique .assistant-header-icon svg {
+
+    width: 22px;
+    height: 22px;
+
+    font-size: 22px;
+
     flex-shrink: 0;
 }
 
@@ -169,7 +225,7 @@
    TEXTE HEADER
 ===================================================== */
 
-.assistant-header-text {
+.assistant-touristique .assistant-header-text {
 
     display: flex;
 
@@ -180,7 +236,15 @@
     min-width: 0;
 }
 
-.assistant-header-text strong {
+
+.assistant-touristique .assistant-header-text strong {
+
+    display: block;
+
+    margin: 0;
+    padding: 0;
+
+    color: white;
 
     font-size: 16px;
 
@@ -189,11 +253,19 @@
     line-height: 1.3;
 }
 
-.assistant-header-text span {
+
+.assistant-touristique .assistant-header-text span {
+
+    display: block;
 
     margin-top: 3px;
+    padding: 0;
+
+    color: white;
 
     font-size: 12px;
+
+    line-height: 1.3;
 
     opacity: 0.85;
 }
@@ -203,10 +275,15 @@
    BOUTON FERMER
 ===================================================== */
 
-.assistant-close {
+.assistant-touristique .assistant-close {
 
     width: 35px;
     height: 35px;
+
+    min-width: 35px;
+    min-height: 35px;
+
+    padding: 0;
 
     border: none;
 
@@ -225,14 +302,25 @@
 
     font-size: 17px;
 
-    transition:
-        background 0.2s ease;
+    line-height: 1;
+
+    flex-shrink: 0;
 }
 
-.assistant-close:hover {
+
+.assistant-touristique .assistant-close:hover {
 
     background:
         rgba(255, 255, 255, 0.18);
+}
+
+
+.assistant-touristique .assistant-close svg {
+
+    width: 17px;
+    height: 17px;
+
+    font-size: 17px;
 }
 
 
@@ -240,7 +328,9 @@
    PREFERENCES
 ===================================================== */
 
-.assistant-preferences {
+.assistant-touristique .assistant-preferences {
+
+    width: 100%;
 
     padding: 8px 12px;
 
@@ -262,12 +352,14 @@
     flex-shrink: 0;
 }
 
-.assistant-preferences:empty {
+
+.assistant-touristique .assistant-preferences:empty {
 
     display: none;
 }
 
-.assistant-preferences span {
+
+.assistant-touristique .assistant-preferences span {
 
     display: inline-flex;
 
@@ -286,21 +378,31 @@
     font-size: 11px;
 
     font-weight: 600;
+
+    line-height: 1.2;
 }
 
-.assistant-preferences span svg {
+
+.assistant-touristique .assistant-preferences span svg {
+
+    width: 10px;
+    height: 10px;
 
     font-size: 10px;
+
+    flex-shrink: 0;
 }
 
 
 /* =====================================================
-   ZONE DES MESSAGES
+   MESSAGES
 ===================================================== */
 
-.assistant-messages {
+.assistant-touristique .assistant-messages {
 
     flex: 1;
+
+    width: 100%;
 
     padding: 15px;
 
@@ -315,6 +417,8 @@
     gap: 12px;
 
     scroll-behavior: smooth;
+
+    box-sizing: border-box;
 }
 
 
@@ -322,34 +426,31 @@
    SCROLLBAR
 ===================================================== */
 
-.assistant-messages::-webkit-scrollbar {
+.assistant-touristique .assistant-messages::-webkit-scrollbar {
 
     width: 5px;
 }
 
-.assistant-messages::-webkit-scrollbar-track {
+
+.assistant-touristique .assistant-messages::-webkit-scrollbar-track {
 
     background: transparent;
 }
 
-.assistant-messages::-webkit-scrollbar-thumb {
+
+.assistant-touristique .assistant-messages::-webkit-scrollbar-thumb {
 
     background: #cbd5e1;
 
     border-radius: 10px;
 }
 
-.assistant-messages::-webkit-scrollbar-thumb:hover {
-
-    background: #94a3b8;
-}
-
 
 /* =====================================================
-   MESSAGE GENERAL
+   MESSAGE
 ===================================================== */
 
-.assistant-message {
+.assistant-touristique .assistant-message {
 
     display: flex;
 
@@ -359,9 +460,14 @@
 
     max-width: 92%;
 
+    margin: 0;
+
+    padding: 0;
+
     animation:
         messageAppear 0.2s ease;
 }
+
 
 @keyframes messageAppear {
 
@@ -383,21 +489,13 @@
 }
 
 
-/* =====================================================
-   MESSAGE ASSISTANT
-===================================================== */
-
-.bot-message {
+.assistant-touristique .bot-message {
 
     align-self: flex-start;
 }
 
 
-/* =====================================================
-   MESSAGE UTILISATEUR
-===================================================== */
-
-.user-message {
+.assistant-touristique .user-message {
 
     align-self: flex-end;
 
@@ -409,12 +507,16 @@
    AVATAR ROBOT
 ===================================================== */
 
-.message-avatar {
+.assistant-touristique .message-avatar {
 
     width: 30px;
     height: 30px;
 
     min-width: 30px;
+    min-height: 30px;
+
+    max-width: 30px;
+    max-height: 30px;
 
     border-radius: 50%;
 
@@ -428,6 +530,19 @@
     justify-content: center;
 
     font-size: 14px;
+
+    line-height: 1;
+
+    flex-shrink: 0;
+}
+
+
+.assistant-touristique .message-avatar svg {
+
+    width: 14px;
+    height: 14px;
+
+    font-size: 14px;
 }
 
 
@@ -435,7 +550,7 @@
    CONTENU MESSAGE
 ===================================================== */
 
-.message-content {
+.assistant-touristique .message-content {
 
     padding: 10px 13px;
 
@@ -450,6 +565,8 @@
     word-break: break-word;
 
     min-width: 0;
+
+    margin: 0;
 }
 
 
@@ -457,7 +574,7 @@
    MESSAGE BOT
 ===================================================== */
 
-.bot-message .message-content {
+.assistant-touristique .bot-message .message-content {
 
     background: white;
 
@@ -477,7 +594,7 @@
    MESSAGE UTILISATEUR
 ===================================================== */
 
-.user-message .message-content {
+.assistant-touristique .user-message .message-content {
 
     background: #2563eb;
 
@@ -491,10 +608,86 @@
 
 
 /* =====================================================
-   CARTES DES OFFRES
+   NAVIGATION
 ===================================================== */
 
-.assistant-offers {
+.assistant-touristique .assistant-navigation {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    margin-top: 10px;
+
+    width: 100%;
+}
+
+
+.assistant-touristique .assistant-navigation-button {
+
+    width: 100%;
+
+    min-height: 36px;
+
+    padding: 8px 10px;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 8px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    text-align: left;
+}
+
+
+.assistant-touristique .assistant-navigation-button:hover {
+
+    background: #dbeafe;
+}
+
+
+.assistant-touristique .assistant-navigation-icon {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+
+.assistant-touristique .assistant-navigation-icon svg {
+
+    width: 13px;
+    height: 13px;
+}
+
+
+/* =====================================================
+   OFFRES
+===================================================== */
+
+.assistant-touristique .assistant-offers {
 
     display: flex;
 
@@ -512,9 +705,12 @@
    CARTE OFFRE
 ===================================================== */
 
-.assistant-offer-card {
+.assistant-touristique .assistant-offer-card {
 
     width: 100%;
+
+    margin: 0;
+    padding: 0;
 
     background: white;
 
@@ -533,7 +729,8 @@
         box-shadow 0.2s ease;
 }
 
-.assistant-offer-card:hover {
+
+.assistant-touristique .assistant-offer-card:hover {
 
     transform:
         translateY(-2px);
@@ -547,13 +744,17 @@
    IMAGE OFFRE
 ===================================================== */
 
-.assistant-offer-card img {
+.assistant-touristique .assistant-offer-card img {
 
     display: block;
 
     width: 100%;
 
     height: 120px;
+
+    margin: 0;
+
+    padding: 0;
 
     object-fit: cover;
 
@@ -562,10 +763,10 @@
 
 
 /* =====================================================
-   CONTENU CARTE
+   CONTENU OFFRE
 ===================================================== */
 
-.assistant-offer-content {
+.assistant-touristique .assistant-offer-content {
 
     padding: 11px;
 
@@ -577,13 +778,13 @@
 }
 
 
-/* =====================================================
-   TITRE OFFRE
-===================================================== */
-
-.assistant-offer-content strong {
+.assistant-touristique .assistant-offer-content strong {
 
     display: block;
+
+    margin: 0;
+
+    padding: 0;
 
     color: #1e293b;
 
@@ -595,17 +796,16 @@
 }
 
 
-/* =====================================================
-   INFORMATIONS OFFRE
-===================================================== */
-
-.assistant-offer-content > span {
+.assistant-touristique .assistant-offer-content > span {
 
     display: flex;
 
     align-items: center;
 
     gap: 6px;
+
+    margin: 0;
+    padding: 0;
 
     color: #64748b;
 
@@ -614,31 +814,39 @@
     line-height: 1.3;
 }
 
-.assistant-offer-content > span svg {
+
+.assistant-touristique .assistant-offer-content > span svg {
+
+    width: 11px;
+    height: 11px;
 
     color: #2563eb;
 
     font-size: 11px;
 
     min-width: 11px;
+
+    flex-shrink: 0;
 }
 
 
 /* =====================================================
-   BOUTON VOIR L'OFFRE
+   BOUTON OFFRE
 ===================================================== */
 
-.assistant-offer-button {
+.assistant-touristique .assistant-offer-button {
 
     margin-top: 5px;
 
     width: 100%;
 
+    min-height: 34px;
+
+    padding: 8px 10px;
+
     border: none;
 
     border-radius: 8px;
-
-    padding: 8px 10px;
 
     background: #2563eb;
 
@@ -652,18 +860,17 @@
 
     gap: 7px;
 
+    font-family: inherit;
+
     font-size: 11px;
 
     font-weight: 600;
 
     cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
 }
 
-.assistant-offer-button:hover {
+
+.assistant-touristique .assistant-offer-button:hover {
 
     background: #1d4ed8;
 
@@ -671,17 +878,21 @@
         translateY(-1px);
 }
 
-.assistant-offer-button svg {
+
+.assistant-touristique .assistant-offer-button svg {
+
+    width: 10px;
+    height: 10px;
 
     font-size: 10px;
 }
 
 
 /* =====================================================
-   ANIMATION CHARGEMENT
+   CHARGEMENT
 ===================================================== */
 
-.assistant-typing {
+.assistant-touristique .assistant-typing {
 
     display: flex;
 
@@ -694,31 +905,39 @@
     min-height: 20px;
 }
 
-.assistant-typing span {
+
+.assistant-touristique .assistant-typing span {
 
     width: 6px;
     height: 6px;
 
+    min-width: 6px;
+    min-height: 6px;
+
     border-radius: 50%;
 
     background: #94a3b8;
+
+    padding: 0;
+    margin: 0;
 
     animation:
         assistantTyping
         1.2s infinite ease-in-out;
 }
 
-.assistant-typing span:nth-child(2) {
 
-    animation-delay:
-        0.15s;
+.assistant-touristique .assistant-typing span:nth-child(2) {
+
+    animation-delay: 0.15s;
 }
 
-.assistant-typing span:nth-child(3) {
 
-    animation-delay:
-        0.3s;
+.assistant-touristique .assistant-typing span:nth-child(3) {
+
+    animation-delay: 0.3s;
 }
+
 
 @keyframes assistantTyping {
 
@@ -743,10 +962,12 @@
 
 
 /* =====================================================
-   ZONE DE SAISIE
+   ZONE SAISIE
 ===================================================== */
 
-.assistant-input-container {
+.assistant-touristique .assistant-input-container {
+
+    width: 100%;
 
     display: flex;
 
@@ -755,6 +976,8 @@
     gap: 8px;
 
     padding: 10px;
+
+    margin: 0;
 
     background: white;
 
@@ -769,9 +992,13 @@
    TEXTAREA
 ===================================================== */
 
-.assistant-input-container textarea {
+.assistant-touristique .assistant-input-container textarea {
 
     flex: 1;
+
+    width: auto;
+
+    min-width: 0;
 
     min-height: 40px;
 
@@ -786,23 +1013,23 @@
 
     padding: 10px 12px;
 
+    margin: 0;
+
     outline: none;
 
     font-family: inherit;
 
     font-size: 13px;
 
+    line-height: 1.4;
+
     color: #334155;
 
     background: #f8fafc;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-
-    box-sizing: border-box;
 }
 
+
+.assistant-touristique
 .assistant-input-container textarea:focus {
 
     border-color: #2563eb;
@@ -813,22 +1040,23 @@
     background: white;
 }
 
-.assistant-input-container textarea::placeholder {
-
-    color: #94a3b8;
-}
-
 
 /* =====================================================
    BOUTON ENVOYER
 ===================================================== */
 
-.assistant-send-button {
+.assistant-touristique .assistant-send-button {
 
     width: 42px;
     height: 42px;
 
     min-width: 42px;
+    min-height: 42px;
+
+    max-width: 42px;
+    max-height: 42px;
+
+    padding: 0;
 
     border: none;
 
@@ -847,12 +1075,20 @@
 
     font-size: 15px;
 
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
+    line-height: 1;
+
+    flex-shrink: 0;
 }
 
-.assistant-send-button:hover:not(:disabled) {
+
+.assistant-touristique .assistant-send-button svg {
+
+    width: 15px;
+    height: 15px;
+}
+
+
+.assistant-touristique .assistant-send-button:hover:not(:disabled) {
 
     background: #1d4ed8;
 
@@ -860,7 +1096,8 @@
         translateY(-1px);
 }
 
-.assistant-send-button:disabled {
+
+.assistant-touristique .assistant-send-button:disabled {
 
     background: #cbd5e1;
 
@@ -874,17 +1111,23 @@
    FOOTER
 ===================================================== */
 
-.assistant-footer {
+.assistant-touristique .assistant-footer {
+
+    width: 100%;
 
     text-align: center;
 
     padding: 6px;
+
+    margin: 0;
 
     background: white;
 
     color: #94a3b8;
 
     font-size: 10px;
+
+    line-height: 1.3;
 
     border-top:
         1px solid #f1f5f9;
@@ -894,7 +1137,7 @@
 
 
 /* =====================================================
-   RESPONSIVE TABLETTE / MOBILE
+   MOBILE
 ===================================================== */
 
 @media (max-width: 600px) {
@@ -905,16 +1148,16 @@
 
         bottom: 85px;
 
-        width:
-            calc(100vw - 30px);
+        width: calc(100vw - 30px);
 
-        height:
-            min(
-                590px,
-                calc(100vh - 110px)
-            );
+        height: min(
+            590px,
+            calc(100vh - 110px)
+        );
 
         border-radius: 16px;
+
+        z-index: 11001;
     }
 
 
@@ -925,20 +1168,27 @@
         bottom: 15px;
 
         width: 55px;
-
         height: 55px;
 
+        min-width: 55px;
+        max-width: 55px;
+
+        min-height: 55px;
+        max-height: 55px;
+
         font-size: 22px;
+
+        z-index: 11000;
     }
 
 
-    .assistant-message {
+    .assistant-touristique .assistant-message {
 
         max-width: 94%;
     }
 
 
-    .assistant-offer-card img {
+    .assistant-touristique .assistant-offer-card img {
 
         height: 110px;
     }
@@ -957,41 +1207,55 @@
 
         bottom: 80px;
 
-        width:
-            calc(100vw - 20px);
+        width: calc(100vw - 20px);
 
-        height:
-            calc(100vh - 100px);
+        height: calc(100vh - 100px);
+
+        z-index: 11001;
     }
 
 
-    .assistant-header {
+    .assistant-touristique .assistant-header {
 
         min-height: 68px;
+
+        height: 68px;
     }
 
 
-    .assistant-message {
+    .assistant-touristique .assistant-message {
 
         max-width: 95%;
     }
 
 
-    .assistant-input-container {
+    .assistant-touristique .assistant-input-container {
 
         padding: 8px;
     }
 
 
-    .assistant-offer-content {
+    .assistant-touristique .assistant-offer-content {
 
         padding: 9px;
     }
 
 
-    .assistant-offer-card img {
+    .assistant-touristique .assistant-offer-card img {
 
         height: 100px;
     }
 }
 
+
+.assistant-offer-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.assistant-offer-actions .assistant-offer-button {
+    flex: 1;
+    min-width: 120px;
+}

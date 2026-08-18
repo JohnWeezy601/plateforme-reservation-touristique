@@ -1,0 +1,77 @@
+/* =====================================================
+   LOADING GLOBAL ADMIN
+===================================================== */
+
+.admin-loading-overlay {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.75);
+
+    z-index: 99999;
+
+    animation: adminLoadingFadeIn 0.15s ease-out;
+}
+
+
+/* =====================================================
+   CERCLE
+===================================================== */
+
+.admin-loading-spinner {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    border: 4px solid #e2e8f0;
+
+    border-top-color: #2563eb;
+
+    box-sizing: border-box;
+
+    animation: adminLoadingSpin 0.75s linear infinite;
+}
+
+
+/* =====================================================
+   ROTATION
+===================================================== */
+
+@keyframes adminLoadingSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =====================================================
+   APPARITION
+===================================================== */
+
+@keyframes adminLoadingFadeIn {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}

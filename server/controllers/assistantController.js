@@ -6,17 +6,47 @@ const {
 
 
 // =====================================================
+// NORMALISER UN TEXTE
+// =====================================================
+
+function normaliserTexte(message) {
+
+    return String(message || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+}
+
+
+// =====================================================
 // ANALYSER LES DEMANDES SIMPLES SANS GEMINI
 // =====================================================
 
 function analyserDemandeSimple(message) {
 
-    const texte = message
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .replace(/\s+/g, " ");
+    const texte = normaliserTexte(message);
+
+
+    // =================================================
+    // IMPORTANT
+    // =================================================
+    // Une recherche d'offre doit obligatoirement
+    // continuer vers Gemini.
+    // =================================================
+
+    const demandeRechercheOffre =
+        /(cherche|recherche|propose|proposer|trouve|trouver|recommande|recommander|offre|offres|activite|activité|voyage|sejour|séjour|randonnee|randonnée|plage|aventure|excursion|visiter|visite)/i;
+
+    if (
+        demandeRechercheOffre.test(texte)
+    ) {
+
+        return null;
+
+    }
 
 
     // =================================================
@@ -24,6 +54,7 @@ function analyserDemandeSimple(message) {
     // =================================================
 
     const salutations = [
+
         "bonjour",
         "bonsoir",
         "salut",
@@ -32,6 +63,7 @@ function analyserDemandeSimple(message) {
         "hey",
         "bjr",
         "bsr"
+
     ];
 
 
@@ -51,9 +83,11 @@ function analyserDemandeSimple(message) {
                 "Bonjour 👋 Je suis votre assistant touristique. Je peux vous aider à découvrir Madagascar, rechercher une offre disponible ou vous expliquer comment utiliser la plateforme.",
 
             navigation: [
-                "/Accueil",
+
+                "/",
                 "/destinations-public",
                 "/offres-public"
+
             ]
 
         };
@@ -139,9 +173,11 @@ function analyserDemandeSimple(message) {
                 "Je vais très bien, merci 😊 Je suis votre assistant touristique et je peux vous aider avec les destinations, les offres et le fonctionnement de la plateforme.",
 
             navigation: [
-                "/Accueil",
+
+                "/",
                 "/destinations-public",
                 "/offres-public"
+
             ]
 
         };
@@ -186,9 +222,11 @@ function analyserDemandeSimple(message) {
                 "Bien sûr 😊 Je peux vous aider à découvrir les destinations, rechercher les offres disponibles ou vous expliquer comment utiliser la plateforme.",
 
             navigation: [
-                "/Accueil",
+
+                "/",
                 "/destinations-public",
                 "/offres-public"
+
             ]
 
         };
@@ -197,7 +235,7 @@ function analyserDemandeSimple(message) {
 
 
     // =================================================
-    // 5. REPONSES TRES COURTES
+    // 5. REPONSES COURTES
     // =================================================
 
     const reponsesCourtes = [
@@ -237,8 +275,10 @@ function analyserDemandeSimple(message) {
                 "Très bien 😊 Je reste à votre disposition si vous souhaitez rechercher une offre ou obtenir des informations sur la plateforme.",
 
             navigation: [
+
                 "/offres-public",
                 "/destinations-public"
+
             ]
 
         };
@@ -248,11 +288,6 @@ function analyserDemandeSimple(message) {
 
     // =================================================
     // 6. CONNEXION
-    // =================================================
-    //
-    // Ces demandes sont suffisamment simples pour
-    // ne pas nécessiter Gemini.
-    //
     // =================================================
 
     const connexionSimple =
@@ -272,10 +307,12 @@ function analyserDemandeSimple(message) {
                 "Se connecter à la plateforme",
 
             reponse:
-                "Pour vous connecter, rendez-vous sur la page de connexion, puis saisissez vos identifiants. Si vous n'avez pas encore de compte, vous devez d'abord vous inscrire.",
+                "Pour vous connecter, rendez-vous sur la page de connexion, puis saisissez vos identifiants. Si vous n'avez pas encore de compte, vous devez d'abord créer un compte.",
 
             navigation: [
+
                 "/login-client"
+
             ]
 
         };
@@ -307,7 +344,9 @@ function analyserDemandeSimple(message) {
                 "Pour utiliser les fonctionnalités nécessitant un compte, vous devez d'abord créer un compte puis vous connecter à la plateforme.",
 
             navigation: [
+
                 "/login-client"
+
             ]
 
         };
@@ -320,7 +359,7 @@ function analyserDemandeSimple(message) {
     // =================================================
 
     const mesReservations =
-        /^(ou|où|comment|je veux).*(mes reservations|mes réservations|voir mes reservations|voir mes réservations)[!.?\s]*$/i;
+        /^(ou|où|comment|je veux|je peux).*(mes reservations|mes réservations|voir mes reservations|voir mes réservations)[!.?\s]*$/i;
 
 
     if (
@@ -339,7 +378,9 @@ function analyserDemandeSimple(message) {
                 "Vous pouvez consulter vos réservations depuis la page « Mes réservations ». Vous devez être connecté à votre compte.",
 
             navigation: [
+
                 "/mes-reservations"
+
             ]
 
         };
@@ -371,7 +412,9 @@ function analyserDemandeSimple(message) {
                 "Vous pouvez consulter toutes les offres touristiques actuellement disponibles sur la page « Offres ».",
 
             navigation: [
+
                 "/offres-public"
+
             ]
 
         };
@@ -400,10 +443,12 @@ function analyserDemandeSimple(message) {
                 "Consulter les destinations",
 
             reponse:
-                "Vous pouvez découvrir les destinations touristiques disponibles sur la page « Destinations » de la plateforme.",
+                "Vous pouvez découvrir les destinations touristiques disponibles sur la plateforme depuis la page « Destinations ».",
 
             navigation: [
+
                 "/destinations-public"
+
             ]
 
         };
@@ -412,17 +457,7 @@ function analyserDemandeSimple(message) {
 
 
     // =================================================
-    // 11. GUIDE SIMPLE DE RESERVATION
-    // =================================================
-    //
-    // Attention :
-    // Une phrase très simple comme :
-    // "Comment réserver ?"
-    // ne nécessite pas Gemini.
-    //
-    // Une demande complexe concernant une réservation
-    // pourra toujours être envoyée à Gemini.
-    //
+    // 11. RESERVATION
     // =================================================
 
     const reservationSimple =
@@ -442,13 +477,16 @@ function analyserDemandeSimple(message) {
                 "Comprendre comment effectuer une réservation",
 
             reponse:
-                "Pour effectuer une réservation, commencez par vous connecter à votre compte. Consultez ensuite les destinations ou les offres, choisissez une offre et ouvrez son détail. Vous pourrez alors effectuer votre réservation. Après cela, consultez vos notifications pour suivre son état. Une fois la réservation confirmée, vous pourrez procéder au paiement et retrouver votre réservation dans « Mes réservations ».",
+                "Pour effectuer une réservation, connectez-vous d'abord à votre compte. Consultez ensuite les destinations ou les offres disponibles. Choisissez une offre et ouvrez son détail, puis effectuez votre réservation. Après la réservation, consultez vos notifications pour vérifier le message de confirmation. Lorsque la réservation est confirmée, vous pouvez continuer avec le paiement. Vous pouvez ensuite suivre votre réservation depuis « Mes réservations ». Après votre séjour, pensez également à laisser un avis.",
 
             navigation: [
+
                 "/login-client",
                 "/destinations-public",
                 "/offres-public",
-                "/mes-reservations"
+                "/mes-reservations",
+                "/notifications"
+
             ]
 
         };
@@ -457,11 +495,11 @@ function analyserDemandeSimple(message) {
 
 
     // =================================================
-    // 12. PAIEMENT SIMPLE
+    // 12. PAIEMENT
     // =================================================
 
     const paiementSimple =
-        /^(comment|ou|où|je veux|je dois|comment faire).*(payer|paiement)[!.?\s]*$/i;
+        /^(comment|ou|où|je veux|je dois|comment faire).*(payer|paiement|paiment|payement)[!.?\s]*$/i;
 
 
     if (
@@ -477,10 +515,14 @@ function analyserDemandeSimple(message) {
                 "Comprendre comment effectuer le paiement",
 
             reponse:
-                "Le paiement intervient lorsque votre réservation a été confirmée. Vous pouvez ensuite procéder au paiement selon les options proposées par la plateforme et retrouver votre réservation dans « Mes réservations ».",
+                "Après avoir effectué votre réservation, consultez vos notifications. Vous devez d'abord vérifier le message de confirmation de la réservation. Lorsque la réservation est confirmée, vous pouvez continuer vers le paiement. Après le paiement, vous pourrez retrouver les informations liées au paiement et votre reçu selon les fonctionnalités disponibles dans votre espace. Vous pouvez également suivre votre réservation depuis « Mes réservations ».",
 
             navigation: [
-                "/mes-reservations"
+
+                "/notifications",
+                "/mes-reservations",
+                "/paiements"
+
             ]
 
         };
@@ -489,11 +531,47 @@ function analyserDemandeSimple(message) {
 
 
     // =================================================
-    // 13. NOTIFICATIONS
+    // 13. RECUS
+    // =================================================
+
+    const recuSimple =
+        /^(comment|ou|où|je veux|je peux|ou est|où est|comment faire).*(recu|reçu|justificatif|preuve).*(paiement|payer)?[!.?\s]*$/i;
+
+
+    if (
+        recuSimple.test(texte)
+    ) {
+
+        return {
+
+            type_demande:
+                "guide_plateforme",
+
+            intention:
+                "Trouver le reçu de paiement",
+
+            reponse:
+                "Après avoir effectué votre paiement, consultez les informations de paiement associées à votre réservation. Les notifications peuvent également vous permettre de vérifier la confirmation et les informations liées à votre paiement. Vous pouvez consulter votre réservation depuis « Mes réservations » et votre espace de paiement si celui-ci est disponible.",
+
+            navigation: [
+
+                "/notifications",
+                "/paiements",
+                "/mes-reservations"
+
+            ]
+
+        };
+
+    }
+
+
+    // =================================================
+    // 14. NOTIFICATIONS
     // =================================================
 
     const notificationSimple =
-        /^(comment|ou|où|je veux|je peux).*(notification|notifications)[!.?\s]*$/i;
+        /^(comment|ou|où|je veux|je peux|ou est|où est).*(notification|notifications)[!.?\s]*$/i;
 
 
     if (
@@ -509,9 +587,13 @@ function analyserDemandeSimple(message) {
                 "Consulter les notifications",
 
             reponse:
-                "Les notifications vous permettent notamment de suivre l'état de votre réservation. Consultez-les après avoir effectué une réservation afin de suivre son évolution.",
+                "Les notifications vous permettent notamment de suivre l'évolution de votre réservation et de vérifier les messages de confirmation. Après avoir effectué une réservation, consultez régulièrement vos notifications. Lorsqu'un message confirme votre réservation, vous pouvez continuer avec le paiement.",
 
-            navigation: []
+            navigation: [
+
+                "/notifications"
+
+            ]
 
         };
 
@@ -519,11 +601,11 @@ function analyserDemandeSimple(message) {
 
 
     // =================================================
-    // 14. AVIS SIMPLE
+    // 15. AVIS
     // =================================================
 
     const avisSimple =
-        /^(comment|ou|où|je veux|je peux).*(laisser|donner|faire).*(avis|commentaire)[!.?\s]*$/i;
+        /^(comment|ou|où|je veux|je peux|ou est|où est).*(laisser|donner|faire|ecrire|écrire).*(avis|commentaire)[!.?\s]*$/i;
 
 
     if (
@@ -539,10 +621,12 @@ function analyserDemandeSimple(message) {
                 "Comprendre comment laisser un avis",
 
             reponse:
-                "Après votre séjour, vous pourrez laisser un avis lorsque vous serez autorisé à le faire. Vous devez être connecté à votre compte.",
+                "Après votre séjour, vous pouvez laisser un avis sur votre expérience lorsque la fonctionnalité est disponible pour votre réservation. Connectez-vous à votre compte et consultez « Mes réservations ». Pensez à partager votre expérience afin d'aider les autres voyageurs.",
 
             navigation: [
+
                 "/mes-reservations"
+
             ]
 
         };
@@ -551,12 +635,7 @@ function analyserDemandeSimple(message) {
 
 
     // =================================================
-    // AUCUNE REGLE LOCALE
-    // =================================================
-    //
-    // La demande est probablement suffisamment complexe
-    // pour nécessiter Gemini.
-    //
+    // 16. AUCUNE REGLE LOCALE
     // =================================================
 
     return null;
@@ -564,9 +643,86 @@ function analyserDemandeSimple(message) {
 }
 
 
+// =====================================================
+// NETTOYER LES ROUTES
+// =====================================================
+
+function nettoyerNavigation(navigation) {
+
+    if (
+        !Array.isArray(navigation)
+    ) {
+
+        return [];
+
+    }
+
+
+    const routesAutorisees = [
+
+        "/",
+        "/destinations-public",
+        "/offres-public",
+        "/login-client",
+        "/mes-reservations",
+        "/notifications",
+        "/paiements"
+
+    ];
+
+
+    return navigation
+
+        .filter(
+            route =>
+                typeof route === "string"
+        )
+
+        .filter(
+            route => {
+
+                if (
+                    routesAutorisees.includes(route)
+                ) {
+
+                    return true;
+
+                }
+
+
+                if (
+                    /^\/detail-offre\/\d+$/.test(route)
+                ) {
+
+                    return true;
+
+                }
+
+
+                if (
+                    /^\/reservation-public\/\d+$/.test(route)
+                ) {
+
+                    return true;
+
+                }
+
+
+                return false;
+
+            }
+        )
+
+        .filter(
+            (route, index, tableau) =>
+                tableau.indexOf(route) === index
+        );
+
+}
+
 
 // =====================================================
-// ASSISTANT TOURISTIQUE INTELLIGENT
+// ASSISTANT TOURISTIQUE
 // =====================================================
 
 exports.assisterTouriste = async (req, res) => {
@@ -574,13 +730,20 @@ exports.assisterTouriste = async (req, res) => {
     try {
 
         const {
+
             message,
-            historique = []
+
+            historique = [],
+
+            preferences = {},
+
+            pageActuelle = "/"
+
         } = req.body;
 
 
         // =================================================
-        // 1. VERIFICATION DU MESSAGE
+        // VERIFICATION
         // =================================================
 
         if (
@@ -593,6 +756,8 @@ exports.assisterTouriste = async (req, res) => {
 
                 message:
                     "Veuillez saisir une demande.",
+
+                analyse: {},
 
                 recommandations: [],
 
@@ -617,22 +782,17 @@ exports.assisterTouriste = async (req, res) => {
         );
 
         console.log(
+            "Page actuelle :",
+            pageActuelle
+        );
+
+        console.log(
             "===================================="
         );
 
 
         // =================================================
-        // 2. ANALYSE LOCALE
-        // =================================================
-        //
-        // IMPORTANT :
-        //
-        // Cette étape est exécutée AVANT :
-        //
-        // - la requête Gemini ;
-        // - la récupération du catalogue ;
-        // - l'utilisation du quota Gemini.
-        //
+        // 1. ANALYSE LOCALE
         // =================================================
 
         const demandeSimple =
@@ -644,19 +804,7 @@ exports.assisterTouriste = async (req, res) => {
         ) {
 
             console.log(
-                "===================================="
-            );
-
-            console.log(
-                "REPONSE LOCALE"
-            );
-
-            console.log(
-                "Aucun appel Gemini nécessaire."
-            );
-
-            console.log(
-                "===================================="
+                "REPONSE LOCALE - GEMINI NON UTILISE"
             );
 
 
@@ -676,6 +824,10 @@ exports.assisterTouriste = async (req, res) => {
                     besoin_offres:
                         false,
 
+                    destination:
+                        preferences.destination ||
+                        "",
+
                     budget:
                         null,
 
@@ -683,14 +835,20 @@ exports.assisterTouriste = async (req, res) => {
                         null,
 
                     duree:
-                        null
+                        null,
+
+                    typeVoyage:
+                        preferences.typeVoyage ||
+                        ""
 
                 },
 
                 recommandations: [],
 
                 navigation:
-                    demandeSimple.navigation
+                    nettoyerNavigation(
+                        demandeSimple.navigation
+                    )
 
             });
 
@@ -698,12 +856,7 @@ exports.assisterTouriste = async (req, res) => {
 
 
         // =================================================
-        // 3. RECUPERER LES OFFRES
-        // =================================================
-        //
-        // Cette partie n'est exécutée que si Gemini
-        // est réellement nécessaire.
-        //
+        // 2. RECUPERER LES OFFRES DISPONIBLES
         // =================================================
 
         const [offres] =
@@ -712,18 +865,27 @@ exports.assisterTouriste = async (req, res) => {
                 SELECT
 
                     o.id_offre,
+
                     o.titre,
+
                     o.description,
+
                     o.prix,
+
                     o.capacite,
+
                     o.disponibilite,
+
                     o.image,
 
                     o.id_destination,
+
                     o.id_categorie,
 
                     d.nom AS destination,
+
                     d.region,
+
                     d.pays,
 
                     c.nom AS categorie
@@ -738,17 +900,65 @@ exports.assisterTouriste = async (req, res) => {
                     ON o.id_categorie =
                        c.id_categorie
 
-                WHERE o.disponibilite > 0
+                WHERE
+                    o.disponibilite > 0
 
-                ORDER BY o.prix ASC
+                ORDER BY
+                    o.prix ASC
 
             `);
 
 
         console.log(
-            "Nombre total d'offres disponibles :",
+            "Nombre d'offres disponibles :",
             offres.length
         );
+
+
+        // =================================================
+        // 3. CATALOGUE POUR GEMINI
+        // =================================================
+
+        const catalogueGemini =
+            offres.map(
+                offre => ({
+
+                    id_offre:
+                        Number(
+                            offre.id_offre
+                        ),
+
+                    titre:
+                        offre.titre,
+
+                    description:
+                        offre.description,
+
+                    prix:
+                        Number(
+                            offre.prix || 0
+                        ),
+
+                    capacite:
+                        offre.capacite,
+
+                    disponibilite:
+                        offre.disponibilite,
+
+                    destination:
+                        offre.destination,
+
+                    region:
+                        offre.region,
+
+                    pays:
+                        offre.pays,
+
+                    categorie:
+                        offre.categorie
+
+                })
+            );
 
 
         // =================================================
@@ -761,15 +971,7 @@ exports.assisterTouriste = async (req, res) => {
         try {
 
             console.log(
-                "===================================="
-            );
-
-            console.log(
-                "APPEL GEMINI NECESSAIRE"
-            );
-
-            console.log(
-                "===================================="
+                "APPEL GEMINI"
             );
 
 
@@ -778,35 +980,26 @@ exports.assisterTouriste = async (req, res) => {
 
                     message,
 
-                    offres,
+                    catalogueGemini,
 
                     historique
 
                 );
 
+
+            console.log(
+                "REPONSE GEMINI :",
+                analyseIA
+            );
+
         }
         catch (error) {
 
             console.error(
-                "===================================="
-            );
-
-            console.error(
-                "ERREUR GEMINI"
-            );
-
-            console.error(
+                "ERREUR GEMINI :",
                 error
             );
 
-            console.error(
-                "===================================="
-            );
-
-
-            // =================================================
-            // RECUPERER LE STATUT
-            // =================================================
 
             const status =
                 Number(
@@ -825,7 +1018,7 @@ exports.assisterTouriste = async (req, res) => {
 
 
             // =================================================
-            // 429 = QUOTA / LIMITE
+            // QUOTA
             // =================================================
 
             if (
@@ -851,6 +1044,9 @@ exports.assisterTouriste = async (req, res) => {
                         besoin_offres:
                             false,
 
+                        destination:
+                            "",
+
                         budget:
                             null,
 
@@ -858,7 +1054,10 @@ exports.assisterTouriste = async (req, res) => {
                             null,
 
                         duree:
-                            null
+                            null,
+
+                        typeVoyage:
+                            ""
 
                     },
 
@@ -878,7 +1077,7 @@ exports.assisterTouriste = async (req, res) => {
 
 
             // =================================================
-            // 503 = GEMINI INDISPONIBLE
+            // SERVICE INDISPONIBLE
             // =================================================
 
             if (
@@ -903,6 +1102,9 @@ exports.assisterTouriste = async (req, res) => {
                         besoin_offres:
                             false,
 
+                        destination:
+                            "",
+
                         budget:
                             null,
 
@@ -910,7 +1112,10 @@ exports.assisterTouriste = async (req, res) => {
                             null,
 
                         duree:
-                            null
+                            null,
+
+                        typeVoyage:
+                            ""
 
                     },
 
@@ -929,14 +1134,10 @@ exports.assisterTouriste = async (req, res) => {
             }
 
 
-            // =================================================
-            // AUTRE ERREUR
-            // =================================================
-
             return res.json({
 
                 message:
-                    "Vous pouvez continuer à découvrir les destinations et les offres disponibles sur notre plateforme.",
+                    "Je rencontre momentanément un problème pour analyser votre demande. Vous pouvez continuer à consulter les offres et les destinations disponibles.",
 
                 analyse: {
 
@@ -949,6 +1150,9 @@ exports.assisterTouriste = async (req, res) => {
                     besoin_offres:
                         false,
 
+                    destination:
+                        "",
+
                     budget:
                         null,
 
@@ -956,7 +1160,10 @@ exports.assisterTouriste = async (req, res) => {
                         null,
 
                     duree:
-                        null
+                        null,
+
+                    typeVoyage:
+                        ""
 
                 },
 
@@ -964,9 +1171,9 @@ exports.assisterTouriste = async (req, res) => {
 
                 navigation: [
 
-                    "/destinations-public",
+                    "/offres-public",
 
-                    "/offres-public"
+                    "/destinations-public"
 
                 ]
 
@@ -976,21 +1183,50 @@ exports.assisterTouriste = async (req, res) => {
 
 
         // =================================================
-        // 5. SECURISER LES OFFRE_IDS
+        // 5. SECURISER LA REPONSE GEMINI
+        // =================================================
+
+        if (
+            !analyseIA ||
+            typeof analyseIA !== "object"
+        ) {
+
+            analyseIA = {
+
+                reponse:
+                    "Je n'ai pas pu analyser correctement votre demande.",
+
+                besoin_offres:
+                    false,
+
+                offre_ids: [],
+
+                navigation: []
+
+            };
+
+        }
+
+
+        // =================================================
+        // 6. OFFRE IDS
         // =================================================
 
         const offreIds =
             Array.isArray(
                 analyseIA.offre_ids
             )
-                ?
-                analyseIA.offre_ids
-                :
-                [];
+                ? analyseIA.offre_ids
+                    .map(id => Number(id))
+                    .filter(
+                        id =>
+                            Number.isInteger(id)
+                    )
+                : [];
 
 
         // =================================================
-        // 6. RECUPERER LES OFFRES SELECTIONNEES
+        // 7. RECUPERER LES VRAIES OFFRES
         // =================================================
 
         let recommandations = [];
@@ -1013,8 +1249,7 @@ exports.assisterTouriste = async (req, res) => {
 
                                     Number(
                                         offre.id_offre
-                                    ) ===
-                                    Number(id)
+                                    ) === id
 
                             );
 
@@ -1027,203 +1262,122 @@ exports.assisterTouriste = async (req, res) => {
 
 
         // =================================================
-        // 7. NAVIGATION
+        // 8. SI GEMINI A CHOISI DES IDS INVALIDES
+        // =================================================
+
+        if (
+            analyseIA.besoin_offres === true &&
+            recommandations.length === 0
+        ) {
+
+            console.log(
+                "Aucune offre correspondant aux IDs Gemini."
+            );
+
+        }
+
+
+        // =================================================
+        // 9. NAVIGATION GEMINI
         // =================================================
 
         let navigation =
-            Array.isArray(
+            nettoyerNavigation(
                 analyseIA.navigation
-            )
-                ?
-                [
-                    ...analyseIA.navigation
-                ]
-                :
-                [];
-
-
-        // =================================================
-        // 8. ROUTES AUTORISEES
-        // =================================================
-
-        const routesAutorisees = [
-
-            "/Accueil",
-
-            "/destinations-public",
-
-            "/offres-public",
-
-            "/login-client",
-
-            "/mes-reservations"
-
-        ];
-
-
-        // =================================================
-        // 9. NETTOYER LES ROUTES
-        // =================================================
-
-        navigation =
-            navigation
-
-                .filter(
-                    route =>
-                        typeof route ===
-                        "string"
-                )
-
-                .filter(
-                    route => {
-
-                        // ---------------------------------
-                        // Routes fixes
-                        // ---------------------------------
-
-                        if (
-                            routesAutorisees.includes(
-                                route
-                            )
-                        ) {
-
-                            return true;
-
-                        }
-
-
-                        // ---------------------------------
-                        // Détail d'une offre
-                        // ---------------------------------
-
-                        if (
-                            /^\/detail-offre\/\d+$/
-                                .test(route)
-                        ) {
-
-                            return true;
-
-                        }
-
-
-                        // ---------------------------------
-                        // Réservation d'une offre
-                        // ---------------------------------
-
-                        if (
-                            /^\/reservation-public\/\d+$/
-                                .test(route)
-                        ) {
-
-                            return true;
-
-                        }
-
-
-                        return false;
-
-                    }
-                );
-
-
-        // =================================================
-        // 10. AJOUTER AUTOMATIQUEMENT LE DETAIL
-        // =================================================
-
-        if (
-            recommandations.length > 0
-        ) {
-
-            recommandations.forEach(
-                offre => {
-
-                    const routeDetail =
-                        `/detail-offre/${offre.id_offre}`;
-
-
-                    if (
-                        !navigation.includes(
-                            routeDetail
-                        )
-                    ) {
-
-                        navigation.push(
-                            routeDetail
-                        );
-
-                    }
-
-                }
             );
 
-        }
-
 
         // =================================================
-        // 11. AJOUTER LA ROUTE DE RESERVATION
-        // =================================================
-        //
-        // On garde ta logique de réservation.
-        //
+        // 10. AJOUTER LES LIENS DES OFFRES
         // =================================================
 
-        if (
-            recommandations.length > 0
-        ) {
+        recommandations.forEach(
+            offre => {
 
-            recommandations.forEach(
-                offre => {
-
-                    const routeReservation =
-                        `/reservation-public/${offre.id_offre}`;
+                const routeDetail =
+                    `/detail-offre/${offre.id_offre}`;
 
 
-                    if (
-                        !navigation.includes(
-                            routeReservation
-                        )
-                    ) {
+                const routeReservation =
+                    `/reservation-public/${offre.id_offre}`;
 
-                        navigation.push(
-                            routeReservation
-                        );
 
-                    }
+                if (
+                    !navigation.includes(
+                        routeDetail
+                    )
+                ) {
+
+                    navigation.push(
+                        routeDetail
+                    );
 
                 }
-            );
 
-        }
+
+                if (
+                    !navigation.includes(
+                        routeReservation
+                    )
+                ) {
+
+                    navigation.push(
+                        routeReservation
+                    );
+
+                }
+
+            }
+        );
 
 
         // =================================================
-        // 12. REPONSE FINALE
+        // 11. REPONSE FINALE
         // =================================================
 
         return res.json({
 
             message:
-                analyseIA.reponse,
+                analyseIA.reponse ||
+                "Voici les informations correspondant à votre demande.",
 
             analyse: {
 
                 type_demande:
-                    analyseIA.type_demande,
+                    analyseIA.type_demande ||
+                    "information",
 
                 intention:
-                    analyseIA.intention,
+                    analyseIA.intention ||
+                    "",
 
                 besoin_offres:
-                    analyseIA.besoin_offres,
+                    analyseIA.besoin_offres === true,
+
+                destination:
+                    analyseIA.destination ||
+                    preferences.destination ||
+                    "",
 
                 budget:
-                    analyseIA.budget,
+                    analyseIA.budget ??
+                    preferences.budget ??
+                    null,
 
                 nombrePersonnes:
-                    analyseIA.nombre_personnes,
+                    analyseIA.nombre_personnes ??
+                    preferences.personnes ??
+                    null,
 
                 duree:
-                    analyseIA.duree
+                    analyseIA.duree ??
+                    preferences.duree ??
+                    null,
+
+                typeVoyage:
+                    analyseIA.typeVoyage ||
+                    preferences.typeVoyage ||
+                    ""
 
             },
 
@@ -1257,6 +1411,8 @@ exports.assisterTouriste = async (req, res) => {
 
             message:
                 "Une erreur inattendue est survenue. Vous pouvez continuer à consulter les destinations et les offres disponibles.",
+
+            analyse: {},
 
             recommandations: [],
 

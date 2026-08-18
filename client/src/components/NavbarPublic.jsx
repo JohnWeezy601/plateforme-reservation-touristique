@@ -20,8 +20,8 @@ import {
     FaCamera,
     FaEye,
     FaRobot,
-    FaChevronDown,
-    FaHistory
+    FaHistory,
+    FaBars
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -31,32 +31,48 @@ import "./NavbarPublic.css";
 
 function NavbarPublic() {
 
-
     const navigate = useNavigate();
 
 
-    const [nombreNotifications, setNombreNotifications] = useState(0);
+    // =====================================================
+    // ÉTATS
+    // =====================================================
 
-    const [menuProfil, setMenuProfil] = useState(false);
+    const [nombreNotifications, setNombreNotifications] =
+        useState(0);
 
-    const [menuPlus, setMenuPlus] = useState(false);
+    const [menuProfil, setMenuProfil] =
+        useState(false);
 
-    const [utilisateur, setUtilisateur] = useState(null);
+    const [menuPrincipal, setMenuPrincipal] =
+        useState(false);
 
-    const [modalPhoto, setModalPhoto] = useState(false);
+    const [utilisateur, setUtilisateur] =
+        useState(null);
 
-    const [fichier, setFichier] = useState(null);
+    const [modalPhoto, setModalPhoto] =
+        useState(false);
 
-    const [profil, setProfil] = useState(null);
+    const [fichier, setFichier] =
+        useState(null);
+
+    const [profil, setProfil] =
+        useState(null);
 
 
-    // ============================
+    // =====================================================
     // CHARGER PROFIL
-    // ============================
+    // =====================================================
 
     useEffect(() => {
 
-        if (!utilisateur) return;
+        if (!utilisateur) {
+
+            setProfil(null);
+
+            return;
+
+        }
 
 
         const chargerProfil = async () => {
@@ -70,9 +86,12 @@ function NavbarPublic() {
                 setProfil(res.data);
 
             }
-            catch (err) {
+            catch (error) {
 
-                console.log(err);
+                console.log(
+                    "Erreur chargement profil :",
+                    error
+                );
 
             }
 
@@ -82,38 +101,72 @@ function NavbarPublic() {
         chargerProfil();
 
 
-        const interval = setInterval(() => {
+        const interval =
+            setInterval(
+                chargerProfil,
+                5000
+            );
 
-            chargerProfil();
 
-        }, 5000);
+        return () => {
 
+            clearInterval(interval);
 
-        return () => clearInterval(interval);
+        };
 
     }, [utilisateur]);
 
 
-    // ============================
-    // RECUPERER UTILISATEUR
-    // ============================
+    // =====================================================
+    // RÉCUPÉRER UTILISATEUR
+    // =====================================================
 
     useEffect(() => {
 
         const recupererUtilisateur = () => {
 
-            const data = JSON.parse(
-                localStorage.getItem("utilisateur")
-            );
+            try {
+
+                const stockage =
+                    localStorage.getItem(
+                        "utilisateur"
+                    );
 
 
-            const user =
-                data?.utilisateur
-                    ? data.utilisateur
-                    : data;
+                if (!stockage) {
+
+                    setUtilisateur(null);
+
+                    return;
+
+                }
 
 
-            setUtilisateur(user || null);
+                const data =
+                    JSON.parse(stockage);
+
+
+                const user =
+                    data?.utilisateur
+                        ? data.utilisateur
+                        : data;
+
+
+                setUtilisateur(
+                    user || null
+                );
+
+            }
+            catch (error) {
+
+                console.log(
+                    "Erreur lecture utilisateur :",
+                    error
+                );
+
+                setUtilisateur(null);
+
+            }
 
         };
 
@@ -151,16 +204,21 @@ function NavbarPublic() {
     }, []);
 
 
-    // ============================
+    // =====================================================
     // VOIR PHOTO PROFIL
-    // ============================
+    // =====================================================
 
     const voirPhotoProfil = () => {
 
-        if (!utilisateur?.photo) {
+        const photo =
+            profil?.photo ||
+            utilisateur?.photo;
+
+
+        if (!photo) {
 
             alert(
-                "Aucune photo de profil disponible"
+                "Aucune photo de profil disponible."
             );
 
             return;
@@ -169,29 +227,43 @@ function NavbarPublic() {
 
 
         window.open(
-            `http://localhost:8081/uploads/${utilisateur.photo}`,
+            `http://localhost:8081/uploads/${photo}`,
             "_blank"
         );
 
     };
 
 
-    // ============================
+    // =====================================================
     // CHANGER PHOTO
-    // ============================
+    // =====================================================
 
     const changerPhoto = async () => {
 
         if (!fichier) {
 
-            alert("Choisissez une image");
+            alert(
+                "Choisissez une image."
+            );
 
             return;
 
         }
 
 
-        const formData = new FormData();
+        if (!utilisateur?.id_utilisateur) {
+
+            alert(
+                "Utilisateur non identifié."
+            );
+
+            return;
+
+        }
+
+
+        const formData =
+            new FormData();
 
 
         formData.append(
@@ -202,25 +274,21 @@ function NavbarPublic() {
 
         try {
 
-            const res = await api.put(
+            const res =
+                await api.put(
 
-                `/utilisateurs/photo/${utilisateur.id_utilisateur}`,
+                    `/utilisateurs/photo/${utilisateur.id_utilisateur}`,
 
-                formData,
+                    formData,
 
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
+                    {
+                        headers: {
+                            "Content-Type":
+                                "multipart/form-data"
+                        }
                     }
-                }
 
-            );
-
-
-            console.log(
-                "Photo modifiée",
-                res.data
-            );
+                );
 
 
             const nouveauUtilisateur = {
@@ -234,7 +302,9 @@ function NavbarPublic() {
 
             localStorage.setItem(
                 "utilisateur",
-                JSON.stringify(nouveauUtilisateur)
+                JSON.stringify(
+                    nouveauUtilisateur
+                )
             );
 
 
@@ -243,23 +313,34 @@ function NavbarPublic() {
             );
 
 
-            setModalPhoto(false);
+            setProfil(
+                prev => ({
+                    ...prev,
+                    photo: res.data.photo
+                })
+            );
 
+
+            setModalPhoto(false);
 
             setFichier(null);
 
 
             alert(
-                "Photo modifiée avec succès"
+                "Photo modifiée avec succès."
             );
 
         }
         catch (error) {
 
-            console.log(error);
+            console.log(
+                "Erreur changement photo :",
+                error
+            );
+
 
             alert(
-                "Erreur changement photo"
+                "Erreur lors du changement de photo."
             );
 
         }
@@ -267,309 +348,343 @@ function NavbarPublic() {
     };
 
 
-    // ============================
+    // =====================================================
     // NOTIFICATIONS
-    // ============================
+    // =====================================================
 
     useEffect(() => {
 
-        const chargerNotifications = async () => {
+        if (
+            !utilisateur ||
+            utilisateur.role === "Administrateur"
+        ) {
 
-            if (!utilisateur)
-                return;
+            setNombreNotifications(0);
 
+            return;
 
-            try {
-
-                const res = await api.get(
-                    `/notifications/utilisateur/${utilisateur.id_utilisateur}`
-                );
-
-
-                const total =
-                    res.data.filter(
-                        n => Number(n.lu) === 0
-                    ).length;
+        }
 
 
-                setNombreNotifications(total);
+        const chargerNotifications =
+            async () => {
 
-            }
-            catch (error) {
+                try {
 
-                console.log(error);
+                    const res =
+                        await api.get(
+                            `/notifications/utilisateur/${utilisateur.id_utilisateur}`
+                        );
 
-            }
 
-        };
+                    const notifications =
+                        Array.isArray(res.data)
+                            ? res.data
+                            : [];
+
+
+                    const total =
+                        notifications.filter(
+                            notification =>
+                                Number(
+                                    notification.lu
+                                ) === 0
+                        ).length;
+
+
+                    setNombreNotifications(
+                        total
+                    );
+
+                }
+                catch (error) {
+
+                    console.log(
+                        "Erreur notifications :",
+                        error
+                    );
+
+                }
+
+            };
 
 
         chargerNotifications();
 
+
+        const interval =
+            setInterval(
+                chargerNotifications,
+                5000
+            );
+
+
+        return () => {
+
+            clearInterval(interval);
+
+        };
+
     }, [utilisateur]);
 
 
-    // ============================
-    // DECONNEXION
-    // ============================
+    // =====================================================
+    // FERMER LES MENUS
+    // =====================================================
 
-    const deconnexion = () => {
+    const fermerMenus = () => {
 
-        localStorage.removeItem("utilisateur");
-
-        localStorage.removeItem("token");
-
-
-        setUtilisateur(null);
+        setMenuPrincipal(false);
 
         setMenuProfil(false);
-
-        setMenuPlus(false);
-
-
-        navigate("/");
-
-        window.location.reload();
 
     };
 
 
-    // ============================
+    // =====================================================
+    // DÉCONNEXION
+    // =====================================================
+
+    const deconnexion = () => {
+
+        localStorage.removeItem(
+            "utilisateur"
+        );
+
+        localStorage.removeItem(
+            "token"
+        );
+
+
+        setUtilisateur(null);
+
+        setProfil(null);
+
+        setMenuPrincipal(false);
+
+        setMenuProfil(false);
+
+
+        window.dispatchEvent(
+            new Event(
+                "utilisateurDeconnecte"
+            )
+        );
+
+
+        navigate("/");
+
+    };
+
+
+    // =====================================================
     // PHOTO PROFIL
-    // ============================
+    // =====================================================
 
-    const photoProfil = utilisateur?.photo
+    const photoProfil =
+        profil?.photo ||
+        utilisateur?.photo
+            ? `http://localhost:8081/uploads/${
+                profil?.photo ||
+                utilisateur?.photo
+            }`
+            : null;
 
-        ?
 
-        `http://localhost:8081/uploads/${utilisateur.photo}`
+    // =====================================================
+    // CLIENT CONNECTÉ ?
+    // =====================================================
 
-        :
+    const clientConnecte =
+        utilisateur &&
+        utilisateur.role !== "Administrateur";
 
-        null;
 
-
-    // ============================
+    // =====================================================
     // AFFICHAGE
-    // ============================
+    // =====================================================
 
     return (
 
         <nav className="navbar-public">
 
 
-            {/* ============================
+            {/* =================================================
                 LOGO
-            ============================ */}
+            ================================================= */}
 
             <div className="logo-public">
 
-                <span>
+                <span className="logo-icon">
                     🌍
                 </span>
 
-                <span>
+                <span className="logo-text">
                     Plateforme Touristique
                 </span>
-
-
-                {/* ============================
-                    NOTIFICATIONS
-                ============================ */}
-
-                {
-                    utilisateur &&
-                    utilisateur.role !== "Administrateur" &&
-
-                    <div
-                        className="notification-container"
-                        onClick={() =>
-                            navigate("/mes-notifications")
-                        }
-                    >
-
-                        <FaBell />
-
-                        {
-                            nombreNotifications > 0 &&
-
-                            <span className="notification-badge">
-
-                                {nombreNotifications}
-
-                            </span>
-                        }
-
-                    </div>
-                }
 
             </div>
 
 
-            {/* ============================
-                NAVIGATION
-            ============================ */}
+            {/* =================================================
+                NAVIGATION CLIENT NON CONNECTÉ
+            ================================================= */}
 
-            <ul>
+            {!clientConnecte && (
 
+                <ul className="navbar-navigation">
 
-                {/* ============================
-                    ACCUEIL
-                ============================ */}
+                    <li>
 
-                <li>
+                        <NavLink to="/">
+                            <FaHome />
+                            <span>Accueil</span>
+                        </NavLink>
 
-                    <NavLink to="/">
-
-                        <FaHome />
-
-                        Accueil
-
-                    </NavLink>
-
-                </li>
+                    </li>
 
 
-                {/* ============================
-                    DESTINATIONS
-                ============================ */}
+                    <li>
 
-                <li>
+                        <NavLink to="/destinations-public">
+                            <FaGlobe />
+                            <span>Destinations</span>
+                        </NavLink>
 
-                    <NavLink to="/destinations-public">
-
-                        <FaGlobe />
-
-                        Destinations
-
-                    </NavLink>
-
-                </li>
+                    </li>
 
 
-                {/* ============================
-                    OFFRES
-                ============================ */}
+                    <li>
 
-                <li>
+                        <NavLink to="/offres-public">
+                            <FaSuitcase />
+                            <span>Offres</span>
+                        </NavLink>
 
-                    <NavLink to="/offres-public">
+                    </li>
 
-                        <FaSuitcase />
-
-                        Offres
-
-                    </NavLink>
-
-                </li>
-
-
-                {/* ==================================================
-                    AVIS POUR UTILISATEUR NON CONNECTÉ
-                ================================================== */}
-
-                {
-                    !utilisateur &&
 
                     <li>
 
                         <NavLink to="/avis-public">
-
                             <FaStar />
-
-                            Avis
-
+                            <span>Avis</span>
                         </NavLink>
 
                     </li>
-                }
 
 
-                {/* ============================
-                    CONTACT
-                ============================ */}
+                    <li>
 
-                <li>
+                        <NavLink to="/contact">
+                            <FaEnvelope />
+                            <span>Contact</span>
+                        </NavLink>
 
-                    <NavLink to="/contact">
+                    </li>
 
-                        <FaEnvelope />
+                </ul>
 
-                        Contact
-
-                    </NavLink>
-
-                </li>
+            )}
 
 
-                {/* ==================================================
-                    MENU PLUS POUR UTILISATEUR CONNECTÉ
-                ================================================== */}
+            {/* =================================================
+                ACTIONS CLIENT CONNECTÉ
+            ================================================= */}
 
-                {
-                    utilisateur &&
-                    utilisateur.role !== "Administrateur" &&
+            {clientConnecte && (
 
-                    <li className="plus-menu-container">
+                <div className="client-actions">
+
+
+                    {/* =================================================
+                        MENU
+                    ================================================= */}
+
+                    <div className="menu-principal-container">
 
                         <button
                             type="button"
-                            className="plus-button"
+                            className="menu-principal-button"
                             onClick={() =>
-                                setMenuPlus(!menuPlus)
+                                setMenuPrincipal(
+                                    !menuPrincipal
+                                )
                             }
+                            aria-label="Menu"
                         >
 
-                            <span>
-                                Plus
-                            </span>
+                            <FaBars />
 
-                            <FaChevronDown
-                                className={
-                                    menuPlus
-                                        ? "plus-arrow rotate"
-                                        : "plus-arrow"
-                                }
-                            />
+                            
 
                         </button>
 
 
-                        {
-                            menuPlus &&
+                        {menuPrincipal && (
 
-                            <div className="plus-menu">
+                            <div className="menu-principal">
 
-
-                                {/* ============================
-                                    AVIS
-                                ============================ */}
 
                                 <NavLink
-                                    to="/avis-public"
-                                    onClick={() =>
-                                        setMenuPlus(false)
-                                    }
+                                    to="/"
+                                    onClick={fermerMenus}
                                 >
 
-                                    <FaStar />
+                                    <FaHome />
 
                                     <span>
-                                        Avis
+                                        Accueil
                                     </span>
 
                                 </NavLink>
 
 
-                                {/* ============================
-                                    RECOMMANDATIONS IA
-                                ============================ */}
+                                <NavLink
+                                    to="/destinations-public"
+                                    onClick={fermerMenus}
+                                >
+
+                                    <FaGlobe />
+
+                                    <span>
+                                        Destinations
+                                    </span>
+
+                                </NavLink>
+
+
+                                <NavLink
+                                    to="/offres-public"
+                                    onClick={fermerMenus}
+                                >
+
+                                    <FaSuitcase />
+
+                                    <span>
+                                        Offres
+                                    </span>
+
+                                </NavLink>
+
+
+                               <NavLink 
+                              to="/contact"
+                               onClick={fermerMenus}
+                               >
+
+                              <FaEnvelope />
+
+                            <span>
+                                Contact
+                           </span>
+
+                              </NavLink>
+
 
                                 <NavLink
                                     to="/recommandations-client"
-                                    onClick={() =>
-                                        setMenuPlus(false)
-                                    }
+                                    onClick={fermerMenus}
                                 >
 
                                     <FaRobot />
@@ -580,93 +695,117 @@ function NavbarPublic() {
 
                                 </NavLink>
 
-
-                                {/* ============================
-                                    HISTORIQUE
-                                ============================ */}
-
-                                <NavLink
-                                    to="/mes-reservations"
-                                    onClick={() =>
-                                        setMenuPlus(false)
-                                    }
-                                >
-
-                                    <FaHistory />
-
-                                    <span>
-                                        Historique
-                                    </span>
-
-                                </NavLink>
-
-
                             </div>
 
+                        )}
+
+                    </div>
+
+
+                    {/* =================================================
+                                      AVIS
+                      ================================================= */}
+
+<button
+    type="button"
+    className="navbar-icon-button avis-button"
+    onClick={() =>
+        navigate("/avis-public")
+    }
+    aria-label="Avis"
+>
+
+    <FaStar />
+
+</button>
+
+
+                    {/* =================================================
+                        NOTIFICATION
+                    ================================================= */}
+
+                    <button
+                        type="button"
+                        className="navbar-icon-button notification-button"
+                        onClick={() =>
+                            navigate(
+                                "/mes-notifications"
+                            )
                         }
+                        aria-label="Notifications"
+                    >
 
-                    </li>
-                }
+                        <FaBell />
+
+                        {nombreNotifications > 0 && (
+
+                            <span className="notification-badge">
+
+                                {nombreNotifications}
+
+                            </span>
+
+                        )}
+
+                    </button>
 
 
-            </ul>
+                    {/* =================================================
+                        HISTORIQUE
+                    ================================================= */}
+
+                    <button
+                        type="button"
+                        className="navbar-icon-button history-button"
+                        onClick={() =>
+                            navigate(
+                                "/mes-reservations"
+                            )
+                        }
+                        aria-label="Historique"
+                    >
+
+                        <FaHistory />
+
+                    </button>
 
 
-            {/* ============================
-                PROFIL
-            ============================ */}
-
-            {
-                utilisateur &&
-                utilisateur.role !== "Administrateur"
-
-                    ?
+                    {/* =================================================
+                        PROFIL
+                    ================================================= */}
 
                     <div className="profil-container">
 
-
-                        {/* ============================
-                            BOUTON PROFIL
-                        ============================ */}
 
                         <button
                             type="button"
                             className="profil-button"
                             onClick={() =>
-                                setMenuProfil(!menuProfil)
+                                setMenuProfil(
+                                    !menuProfil
+                                )
                             }
+                            aria-label="Profil"
                         >
 
-                            {
-                                photoProfil
+                            {photoProfil ? (
 
-                                    ?
+                                <img
+                                    src={photoProfil}
+                                    className="profil-photo"
+                                    alt="Profil"
+                                />
 
-                                    <img
-                                        src={photoProfil}
-                                        className="profil-photo"
-                                        alt="Profil"
-                                    />
+                            ) : (
 
-                                    :
+                                <FaUser />
 
-                                    <FaUser />
-                            }
-
-
-                            <span>
-                                {utilisateur.prenom}
-                            </span>
+                            )}
 
                         </button>
 
 
-                        {/* ============================
-                            MENU PROFIL
-                        ============================ */}
-
-                        {
-                            menuProfil &&
+                        {menuProfil && (
 
                             <div className="profil-menu">
 
@@ -687,7 +826,7 @@ function NavbarPublic() {
                                     <FaCamera />
 
                                     <span>
-                                        Changer photo de profil
+                                        Changer photo
                                     </span>
 
                                 </button>
@@ -709,18 +848,18 @@ function NavbarPublic() {
                                     <FaEye />
 
                                     <span>
-                                        Voir photo de profil
+                                        Voir ma photo
                                     </span>
 
                                 </button>
 
 
-                                {/* DECONNEXION */}
+                                {/* DÉCONNEXION */}
 
                                 <button
                                     type="button"
-                                    onClick={deconnexion}
                                     className="logout"
+                                    onClick={deconnexion}
                                 >
 
                                     <FaSignOutAlt />
@@ -731,45 +870,54 @@ function NavbarPublic() {
 
                                 </button>
 
-
                             </div>
 
-                        }
-
+                        )}
 
                     </div>
 
+                </div>
 
-                    :
+            )}
 
 
-                    /* ============================
-                       CONNEXION
-                    ============================ */
+            {/* =================================================
+                CONNEXION
+            ================================================= */}
 
-                    <NavLink
-                        to="/login-client"
-                        className="btn-login-client"
+            {!clientConnecte && (
+
+                <NavLink
+                    to="/login-client"
+                    className="btn-login-client"
+                >
+
+                    Connexion
+
+                </NavLink>
+
+            )}
+
+
+            {/* =================================================
+                MODALE PHOTO
+            ================================================= */}
+
+            {modalPhoto && (
+
+                <div
+                    className="modal-photo"
+                    onClick={() =>
+                        setModalPhoto(false)
+                    }
+                >
+
+                    <div
+                        className="modal-photo-content"
+                        onClick={e =>
+                            e.stopPropagation()
+                        }
                     >
-
-                        Connexion
-
-                    </NavLink>
-
-            }
-
-
-            {/* ============================
-                MODAL PHOTO
-            ============================ */}
-
-            {
-                modalPhoto &&
-
-                <div className="modal-photo">
-
-                    <div className="modal-photo-content">
-
 
                         <h3>
                             Changer photo de profil
@@ -779,7 +927,7 @@ function NavbarPublic() {
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) =>
+                            onChange={e =>
                                 setFichier(
                                     e.target.files[0]
                                 )
@@ -789,15 +937,12 @@ function NavbarPublic() {
 
                         <div className="modal-actions">
 
-
                             <button
                                 type="button"
                                 className="btn-save-photo"
                                 onClick={changerPhoto}
                             >
-
                                 Enregistrer
-
                             </button>
 
 
@@ -812,21 +957,16 @@ function NavbarPublic() {
 
                                 }}
                             >
-
                                 Annuler
-
                             </button>
 
-
                         </div>
-
 
                     </div>
 
                 </div>
 
-            }
-
+            )}
 
         </nav>
 

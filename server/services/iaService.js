@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const { GoogleGenAI } = require("@google/genai");
 
+
 // =====================================================
 // CONFIGURATION GEMINI
 // =====================================================
@@ -10,11 +11,32 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
+
 // =====================================================
 // MODELE GEMINI
 // =====================================================
 
 const GEMINI_MODEL = "gemini-3.5-flash-lite";
+
+
+// =====================================================
+// ROUTES AUTORISEES
+// =====================================================
+
+const ROUTES_AUTORISEES = [
+
+    "/Accueil",
+
+    "/destinations-public",
+
+    "/offres-public",
+
+    "/login-client",
+
+    "/mes-reservations"
+
+];
+
 
 // =====================================================
 // NORMALISER UN MESSAGE
@@ -32,17 +54,76 @@ function normaliserTexte(texte) {
 
 }
 
+
 // =====================================================
-// REPONSES LOCALES
+// RESULTAT LOCAL STANDARD
+// =====================================================
+
+function creerResultatLocal({
+
+    type_demande = "conversation",
+
+    besoin_offres = false,
+
+    intention = "",
+
+    reponse = "",
+
+    offre_ids = [],
+
+    navigation = [],
+
+    budget = null,
+
+    nombre_personnes = null,
+
+    duree = null
+
+}) {
+
+    return {
+
+        utiliseGemini: false,
+
+        resultat: {
+
+            type_demande,
+
+            besoin_offres,
+
+            intention,
+
+            reponse,
+
+            offre_ids,
+
+            navigation,
+
+            budget,
+
+            nombre_personnes,
+
+            duree
+
+        }
+
+    };
+
+}
+
+
+// =====================================================
+// ANALYSER UNE DEMANDE LOCALE
 // =====================================================
 //
-// Ces demandes NE SONT PAS envoyées à Gemini.
-// Elles consomment donc 0 quota.
+// Ces demandes ne nécessitent pas Gemini.
+// Elles consomment donc 0 quota Gemini.
 // =====================================================
 
 function analyserDemandeLocale(message) {
 
     const texte = normaliserTexte(message);
+
 
     // =================================================
     // MESSAGE VIDE
@@ -50,21 +131,18 @@ function analyserDemandeLocale(message) {
 
     if (!texte) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
-                type_demande: "conversation",
-                besoin_offres: false,
-                intention: "",
-                reponse: "Veuillez saisir votre demande.",
-                offre_ids: [],
-                navigation: [],
-                budget: null,
-                nombre_personnes: null,
-                duree: null
-            }
-        };
+            type_demande: "conversation",
+
+            intention: "message_vide",
+
+            reponse:
+                "Veuillez saisir votre demande.",
+
+            navigation: []
+
+        });
 
     }
 
@@ -90,37 +168,26 @@ function analyserDemandeLocale(message) {
 
     if (salutations.includes(texte)) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "conversation",
 
-                type_demande: "conversation",
+            intention: "salutation",
 
-                besoin_offres: false,
+            reponse:
+                "Bonjour ! 👋 Je suis votre assistant touristique. Je peux vous aider à découvrir les destinations, rechercher une offre ou vous expliquer comment utiliser la plateforme.",
 
-                intention: "salutation",
+            navigation: [
 
-                reponse:
-                    "Bonjour ! 👋 Je suis votre assistant touristique. Je peux vous aider à découvrir les destinations, rechercher une offre ou vous expliquer comment utiliser la plateforme.",
+                "/Accueil",
 
-                offre_ids: [],
+                "/destinations-public",
 
-                navigation: [
-                    "/Accueil",
-                    "/destinations-public",
-                    "/offres-public"
-                ],
+                "/offres-public"
 
-                budget: null,
+            ]
 
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
@@ -134,6 +201,10 @@ function analyserDemandeLocale(message) {
         "merci",
         "merci beaucoup",
         "merci bcp",
+        "merci bien",
+        "je vous remercie",
+        "c est gentil",
+        "cest gentil",
         "c est bon merci",
         "cest bon merci",
         "d accord merci",
@@ -147,33 +218,18 @@ function analyserDemandeLocale(message) {
 
     if (remerciements.includes(texte)) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "conversation",
 
-                type_demande: "conversation",
+            intention: "remerciement",
 
-                besoin_offres: false,
+            reponse:
+                "Avec plaisir ! 😊 N'hésitez pas si vous avez besoin d'aide pour préparer votre voyage.",
 
-                intention: "remerciement",
+            navigation: []
 
-                reponse:
-                    "Avec plaisir ! 😊 N'hésitez pas si vous avez besoin d'aide pour votre voyage.",
-
-                offre_ids: [],
-
-                navigation: [],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
@@ -185,55 +241,60 @@ function analyserDemandeLocale(message) {
     const conversations = [
 
         "ca va",
+        "comment ca va",
         "comment vas tu",
         "comment tu vas",
+        "comment allez vous",
+        "qui es tu",
         "qui es tu",
         "tu es qui",
+        "qui etes vous",
+        "tu vas bien",
+        "vous allez bien",
+
         "tu peux m aider",
         "tu peux maider",
         "pouvez vous m aider",
         "pouvez vous maider",
         "peux tu m aider",
-        "peux tu maider"
+        "peux tu maider",
+
+        "j ai besoin d aide",
+        "jai besoin d aide",
+        "aide moi",
+        "aidez moi"
 
     ];
 
 
     if (conversations.includes(texte)) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "conversation",
 
-                type_demande: "conversation",
+            intention: "conversation_generale",
 
-                besoin_offres: false,
+            reponse:
+                "Bien sûr ! 😊 Je suis l'assistant touristique de la plateforme. Je peux vous aider à trouver une offre, découvrir une destination ou comprendre comment utiliser la plateforme.",
 
-                intention: "conversation_generale",
+            navigation: [
 
-                reponse:
-                    "Bien sûr ! 😊 Je suis l'assistant touristique de la plateforme. Je peux vous aider à trouver une offre, découvrir une destination ou comprendre comment utiliser la plateforme.",
+                "/Accueil",
 
-                offre_ids: [],
+                "/destinations-public",
 
-                navigation: [],
+                "/offres-public"
 
-                budget: null,
+            ]
 
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 4. MESSAGES TRES SIMPLES
+    // 4. REPONSES TRES COURTES
     // =================================================
 
     const simples = [
@@ -249,40 +310,34 @@ function analyserDemandeLocale(message) {
         "super",
         "bien",
         "exact",
-        "compris"
+        "exactement",
+        "compris",
+        "c est bon",
+        "cest bon"
 
     ];
 
 
     if (simples.includes(texte)) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "conversation",
 
-                type_demande: "conversation",
+            intention: "confirmation",
 
-                besoin_offres: false,
+            reponse:
+                "Très bien 😊 Je reste à votre disposition si vous souhaitez rechercher une offre ou obtenir des informations sur la plateforme.",
 
-                intention: "confirmation",
+            navigation: [
 
-                reponse:
-                    "Très bien 😊. Je reste à votre disposition pour vous aider.",
+                "/offres-public",
 
-                offre_ids: [],
+                "/destinations-public"
 
-                navigation: [],
+            ]
 
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
@@ -293,391 +348,458 @@ function analyserDemandeLocale(message) {
 
     if (
 
-        texte.includes("comment me connecter") ||
-        texte.includes("comment se connecter") ||
-        texte.includes("comment connecter") ||
-        texte.includes("ou me connecter") ||
-        texte.includes("ou se connecter") ||
         texte === "connexion" ||
-        texte === "login"
+
+        texte === "login" ||
+
+        texte.includes("comment me connecter") ||
+
+        texte.includes("comment se connecter") ||
+
+        texte.includes("comment connecter") ||
+
+        texte.includes("ou me connecter") ||
+
+        texte.includes("ou se connecter") ||
+
+        texte.includes("je veux me connecter") ||
+
+        texte.includes("je dois me connecter") ||
+
+        texte.includes("comment acceder a mon compte") ||
+
+        texte.includes("comment acceder a mon compte")
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "connexion",
 
-                besoin_offres: false,
+            reponse:
+                "Pour vous connecter, rendez-vous sur la page de connexion et saisissez vos identifiants. Si vous n'avez pas encore de compte, vous devez d'abord vous inscrire.",
 
-                intention: "connexion",
+            navigation: [
 
-                reponse:
-                    "Pour vous connecter, rendez-vous sur la page de connexion. Si vous n'avez pas encore de compte, vous devez d'abord vous inscrire.",
+                "/login-client"
 
-                offre_ids: [],
+            ]
 
-                navigation: [
-                    "/login-client"
-                ],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 6. MES RESERVATIONS
+    // 6. INSCRIPTION
+    // =================================================
+
+    if (
+
+        texte === "inscription" ||
+
+        texte === "inscrire" ||
+
+        texte.includes("creer un compte") ||
+
+        texte.includes("créer un compte") ||
+
+        texte.includes("comment creer un compte") ||
+
+        texte.includes("comment m inscrire") ||
+
+        texte.includes("comment minscrire") ||
+
+        texte.includes("ou creer un compte") ||
+
+        texte.includes("je veux creer un compte")
+
+    ) {
+
+        return creerResultatLocal({
+
+            type_demande: "guide_plateforme",
+
+            intention: "inscription",
+
+            reponse:
+                "Pour créer un compte, rendez-vous sur la page de connexion puis utilisez l'option d'inscription. Après avoir créé votre compte, vous pourrez vous connecter et utiliser les fonctionnalités de réservation.",
+
+            navigation: [
+
+                "/login-client"
+
+            ]
+
+        });
+
+    }
+
+
+    // =================================================
+    // 7. MES RESERVATIONS
     // =================================================
 
     if (
 
         texte.includes("mes reservations") ||
+
         texte.includes("voir mes reservations") ||
+
         texte.includes("ou sont mes reservations") ||
+
         texte.includes("ou trouver mes reservations") ||
-        texte.includes("consulter mes reservations")
+
+        texte.includes("consulter mes reservations") ||
+
+        texte.includes("afficher mes reservations") ||
+
+        texte.includes("ma reservation") ||
+
+        texte.includes("mes reservation")
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "consulter_reservations",
 
-                besoin_offres: false,
+            reponse:
+                "Vous pouvez consulter vos réservations dans la rubrique « Mes réservations ». Vous devez être connecté à votre compte pour y accéder.",
 
-                intention: "consulter_reservations",
+            navigation: [
 
-                reponse:
-                    "Vous pouvez consulter vos réservations dans la rubrique « Mes réservations ». Vous devez être connecté à votre compte pour y accéder.",
+                "/mes-reservations"
 
-                offre_ids: [],
+            ]
 
-                navigation: [
-                    "/mes-reservations"
-                ],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 7. VOIR LES OFFRES
+    // 8. VOIR LES OFFRES
     // =================================================
 
     if (
 
         texte === "ou sont les offres" ||
+
         texte === "ou trouver les offres" ||
+
         texte === "voir les offres" ||
+
         texte === "consulter les offres" ||
+
         texte === "je veux voir les offres" ||
-        texte === "afficher les offres"
+
+        texte === "je peux voir les offres" ||
+
+        texte === "afficher les offres" ||
+
+        texte === "catalogue" ||
+
+        texte === "voir le catalogue" ||
+
+        texte === "consulter le catalogue"
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "consulter_offres",
 
-                besoin_offres: false,
+            reponse:
+                "Vous pouvez consulter toutes les offres touristiques actuellement disponibles sur la plateforme.",
 
-                intention: "consulter_offres",
+            navigation: [
 
-                reponse:
-                    "Vous pouvez consulter toutes les offres touristiques actuellement disponibles sur la plateforme.",
+                "/offres-public"
 
-                offre_ids: [],
+            ]
 
-                navigation: [
-                    "/offres-public"
-                ],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 8. DESTINATIONS
+    // 9. DESTINATIONS
     // =================================================
 
     if (
 
         texte === "voir les destinations" ||
+
         texte === "consulter les destinations" ||
+
         texte === "je veux voir les destinations" ||
+
         texte === "ou sont les destinations" ||
-        texte === "ou trouver les destinations"
+
+        texte === "ou trouver les destinations" ||
+
+        texte === "decouvrir les destinations" ||
+
+        texte === "voir les regions" ||
+
+        texte === "voir les régions"
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "consulter_destinations",
 
-                besoin_offres: false,
+            reponse:
+                "Vous pouvez consulter les différentes destinations touristiques proposées par la plateforme.",
 
-                intention: "consulter_destinations",
+            navigation: [
 
-                reponse:
-                    "Vous pouvez consulter les différentes destinations touristiques proposées par la plateforme.",
+                "/destinations-public"
 
-                offre_ids: [],
+            ]
 
-                navigation: [
-                    "/destinations-public"
-                ],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 9. COMMENT RESERVER ?
+    // 10. COMMENT RESERVER
     // =================================================
 
     if (
 
         texte === "comment reserver" ||
+
         texte === "comment faire une reservation" ||
+
         texte === "comment effectuer une reservation" ||
+
         texte === "comment reserver une offre" ||
+
         texte === "comment ca marche pour reserver" ||
+
         texte === "je veux reserver" ||
+
         texte === "comment faire pour reserver" ||
-        texte === "ou dois je aller pour reserver"
+
+        texte === "ou dois je aller pour reserver" ||
+
+        texte === "comment reserver sur la plateforme"
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "effectuer_reservation",
 
-                besoin_offres: false,
+            reponse:
+                "Pour effectuer une réservation, commencez par vous connecter à votre compte. Ensuite, consultez les destinations ou les offres, choisissez l'offre qui vous intéresse, ouvrez son détail puis effectuez la réservation. Vous pourrez ensuite suivre votre réservation dans « Mes réservations » et consulter vos notifications. Lorsque la réservation est confirmée, vous pourrez procéder au paiement.",
 
-                intention: "effectuer_reservation",
+            navigation: [
 
-                reponse:
-                    "Pour effectuer une réservation, commencez par vous connecter à votre compte. Ensuite, consultez les destinations ou les offres, choisissez l'offre qui vous intéresse, ouvrez son détail puis effectuez la réservation. Vous pourrez ensuite suivre votre réservation dans « Mes réservations » et consulter vos notifications. Lorsque la réservation est confirmée, vous pourrez procéder au paiement.",
+                "/login-client",
 
-                offre_ids: [],
+                "/destinations-public",
 
-                navigation: [
-                    "/destinations-public",
-                    "/offres-public",
-                    "/login-client",
-                    "/mes-reservations"
-                ],
+                "/offres-public",
 
-                budget: null,
+                "/mes-reservations"
 
-                nombre_personnes: null,
+            ]
 
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 10. PAIEMENT
+    // 11. PAIEMENT
     // =================================================
 
     if (
 
         texte === "comment payer" ||
+
         texte.includes("comment payer ma reservation") ||
+
+        texte.includes("comment payer ma réservation") ||
+
         texte.includes("comment effectuer le paiement") ||
+
         texte.includes("comment faire le paiement") ||
-        texte.includes("ou payer ma reservation")
+
+        texte.includes("ou payer ma reservation") ||
+
+        texte.includes("ou payer ma réservation") ||
+
+        texte.includes("quand payer ma reservation") ||
+
+        texte.includes("quand payer ma réservation")
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "paiement",
 
-                besoin_offres: false,
+            reponse:
+                "Le paiement intervient lorsque votre réservation est confirmée. Vous pourrez alors procéder au paiement selon le mode de paiement disponible sur la plateforme. Vous pouvez ensuite retrouver votre réservation dans « Mes réservations ».",
 
-                intention: "paiement",
+            navigation: [
 
-                reponse:
-                    "Le paiement intervient lorsque votre réservation est confirmée. Vous pourrez alors procéder au paiement selon le mode de paiement disponible sur la plateforme. Vous pouvez ensuite retrouver votre réservation dans « Mes réservations ».",
+                "/mes-reservations"
 
-                offre_ids: [],
+            ]
 
-                navigation: [
-                    "/mes-reservations"
-                ],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 11. NOTIFICATIONS
+    // 12. NOTIFICATIONS
     // =================================================
 
     if (
 
         texte.includes("mes notifications") ||
+
         texte.includes("voir mes notifications") ||
+
         texte.includes("ou sont mes notifications") ||
-        texte.includes("consulter mes notifications")
+
+        texte.includes("consulter mes notifications") ||
+
+        texte.includes("afficher mes notifications") ||
+
+        texte === "notifications"
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "notifications",
 
-                besoin_offres: false,
+            reponse:
+                "Les notifications vous permettent notamment de suivre les informations liées à vos réservations, notamment leur état et leur confirmation.",
 
-                intention: "notifications",
+            navigation: []
 
-                reponse:
-                    "Les notifications vous permettent de suivre les informations liées à vos réservations, notamment leur état et leur confirmation.",
-
-                offre_ids: [],
-
-                navigation: [],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 12. AVIS
+    // 13. AVIS
     // =================================================
 
     if (
 
         texte.includes("comment laisser un avis") ||
+
         texte.includes("comment donner mon avis") ||
+
         texte.includes("comment laisser mon commentaire") ||
+
         texte.includes("ou laisser un avis") ||
-        texte.includes("comment faire un avis")
+
+        texte.includes("comment faire un avis") ||
+
+        texte.includes("comment donner un commentaire") ||
+
+        texte.includes("ou donner mon avis")
 
     ) {
 
-        return {
-            utiliseGemini: false,
+        return creerResultatLocal({
 
-            resultat: {
+            type_demande: "guide_plateforme",
 
-                type_demande: "guide_plateforme",
+            intention: "laisser_avis",
 
-                besoin_offres: false,
+            reponse:
+                "Après votre séjour, lorsque vous êtes autorisé à laisser un avis, vous pouvez donner votre note et votre commentaire concernant l'offre. Vous devez être connecté à votre compte pour utiliser cette fonctionnalité.",
 
-                intention: "laisser_avis",
+            navigation: [
 
-                reponse:
-                    "Après votre séjour, lorsque vous êtes autorisé à laisser un avis, vous pouvez donner votre note et votre commentaire concernant l'offre. Vous pourrez également utiliser les fonctionnalités disponibles pour partager votre expérience.",
+                "/mes-reservations"
 
-                offre_ids: [],
+            ]
 
-                navigation: [
-                    "/mes-reservations"
-                ],
-
-                budget: null,
-
-                nombre_personnes: null,
-
-                duree: null
-
-            }
-
-        };
+        });
 
     }
 
 
     // =================================================
-    // 13. AUCUNE REPONSE LOCALE
+    // 14. CONTACT / AIDE
     // =================================================
-    //
-    // On laisse Gemini traiter le message.
+
+    if (
+
+        texte === "aide" ||
+
+        texte === "aidez moi" ||
+
+        texte === "aide moi" ||
+
+        texte === "j ai besoin d aide" ||
+
+        texte === "jai besoin daide"
+
+    ) {
+
+        return creerResultatLocal({
+
+            type_demande: "conversation",
+
+            intention: "demande_aide",
+
+            reponse:
+                "Bien sûr 😊 Je peux vous aider à découvrir les destinations, rechercher une offre disponible ou vous expliquer comment utiliser la plateforme.",
+
+            navigation: [
+
+                "/Accueil",
+
+                "/destinations-public",
+
+                "/offres-public"
+
+            ]
+
+        });
+
+    }
+
+
+    // =================================================
+    // AUCUNE REPONSE LOCALE
     // =================================================
 
     return {
+
         utiliseGemini: true
+
     };
 
 }
@@ -707,7 +829,7 @@ Tu aides les utilisateurs à :
 
 Tu dois comprendre naturellement le sens du message.
 
-Ne te limite jamais à une recherche par mots-clés.
+Ne te limite jamais à une recherche exacte par mots-clés.
 
 L'utilisateur peut écrire :
 
@@ -727,7 +849,7 @@ de conversation fourni par le serveur.
 
 La plateforme permet au client de :
 
-1. créer un compte / s'inscrire ;
+1. créer un compte ;
 2. se connecter ;
 3. consulter les destinations ;
 4. consulter les offres ;
@@ -802,11 +924,40 @@ du catalogue.
 Une demande concernant le fonctionnement de la plateforme
 ne nécessite pas de recherche d'offre.
 
+Si l'utilisateur demande une information touristique
+générale sur Madagascar, réponds avec des informations
+générales et ne transforme pas automatiquement la
+demande en recherche d'offre.
+
+Ne présente jamais une information touristique inventée
+comme provenant de la base de données.
+
 Réponds naturellement en français.
 
 Sois clair, utile et honnête.
 
 Ne donne pas une réponse artificiellement longue.
+
+Si l'utilisateur demande une offre, sélectionne uniquement
+les offres réellement pertinentes.
+
+Ne sélectionne pas une offre uniquement parce qu'elle
+est disponible ou moins chère.
+
+Le budget doit être interprété comme une contrainte
+lorsqu'il est clairement exprimé.
+
+Le nombre de personnes doit être pris en compte lorsqu'il
+est exprimé.
+
+La durée doit être prise en compte lorsqu'elle est exprimée.
+
+Si plusieurs contraintes sont données, prends-les toutes
+en compte.
+
+Ne mélange pas différentes destinations ou régions
+sans raison.
+
 `;
 
 
@@ -821,65 +972,123 @@ const schemaAssistant = {
     properties: {
 
         type_demande: {
+
             type: "string",
+
             enum: [
+
                 "conversation",
+
                 "information_touristique",
+
                 "recherche_offre",
+
                 "guide_plateforme"
+
             ]
+
         },
 
         besoin_offres: {
+
             type: "boolean"
+
         },
 
         intention: {
+
             type: "string"
+
         },
 
         reponse: {
+
             type: "string"
+
         },
 
         offre_ids: {
+
             type: "array",
+
             items: {
+
                 type: "integer"
+
             }
+
         },
 
         navigation: {
+
             type: "array",
+
             items: {
+
                 type: "string"
+
             }
+
         },
 
         budget: {
-            type: ["number", "null"]
+
+            type: [
+
+                "number",
+
+                "null"
+
+            ]
+
         },
 
         nombre_personnes: {
-            type: ["integer", "null"]
+
+            type: [
+
+                "integer",
+
+                "null"
+
+            ]
+
         },
 
         duree: {
-            type: ["integer", "null"]
+
+            type: [
+
+                "integer",
+
+                "null"
+
+            ]
+
         }
 
     },
 
     required: [
+
         "type_demande",
+
         "besoin_offres",
+
         "intention",
+
         "reponse",
+
         "offre_ids",
+
         "navigation",
+
         "budget",
+
         "nombre_personnes",
+
         "duree"
+
     ],
 
     additionalProperties: false
@@ -901,9 +1110,12 @@ function nettoyerJSON(texte) {
 
     }
 
+
     let texteJSON =
         String(texte).trim();
 
+
+    // Retirer ```json
     if (
         texteJSON.startsWith("```json")
     ) {
@@ -916,6 +1128,7 @@ function nettoyerJSON(texte) {
 
     }
 
+    // Retirer ```
     else if (
         texteJSON.startsWith("```")
     ) {
@@ -928,16 +1141,24 @@ function nettoyerJSON(texte) {
 
     }
 
+
+    // Chercher le premier objet JSON
     const debut =
         texteJSON.indexOf("{");
+
 
     const fin =
         texteJSON.lastIndexOf("}");
 
+
     if (
+
         debut !== -1 &&
+
         fin !== -1 &&
+
         fin > debut
+
     ) {
 
         texteJSON =
@@ -948,7 +1169,476 @@ function nettoyerJSON(texte) {
 
     }
 
+
     return texteJSON;
+
+}
+
+
+// =====================================================
+// NETTOYER LES ROUTES
+// =====================================================
+
+function nettoyerNavigation(navigation) {
+
+    if (
+        !Array.isArray(navigation)
+    ) {
+
+        return [];
+
+    }
+
+
+    return navigation
+
+        .filter(
+            route =>
+                typeof route === "string"
+        )
+
+        .map(
+            route =>
+                route.trim()
+        )
+
+        .filter(
+            route => {
+
+                // -------------------------------------
+                // Routes fixes
+                // -------------------------------------
+
+                if (
+                    ROUTES_AUTORISEES.includes(route)
+                ) {
+
+                    return true;
+
+                }
+
+
+                // -------------------------------------
+                // Détail offre
+                // -------------------------------------
+
+                if (
+                    /^\/detail-offre\/\d+$/
+                        .test(route)
+                ) {
+
+                    return true;
+
+                }
+
+
+                // -------------------------------------
+                // Réservation
+                // -------------------------------------
+
+                if (
+                    /^\/reservation-public\/\d+$/
+                        .test(route)
+                ) {
+
+                    return true;
+
+                }
+
+
+                return false;
+
+            }
+        )
+
+        .filter(
+            (route, index, tableau) =>
+                tableau.indexOf(route) === index
+        );
+
+}
+
+
+// =====================================================
+// PREPARER LE CATALOGUE
+// =====================================================
+
+function preparerCatalogue(offres) {
+
+    if (
+        !Array.isArray(offres)
+    ) {
+
+        return [];
+
+    }
+
+
+    return offres.map(
+
+        offre => ({
+
+            id_offre:
+                Number(offre.id_offre),
+
+            titre:
+                offre.titre || "",
+
+            description:
+                offre.description || "",
+
+            prix:
+                Number(offre.prix || 0),
+
+            capacite:
+                Number(offre.capacite || 0),
+
+            disponibilite:
+                Number(offre.disponibilite || 0),
+
+            destination:
+                offre.destination || "",
+
+            region:
+                offre.region || "",
+
+            pays:
+                offre.pays || "",
+
+            categorie:
+                offre.categorie || ""
+
+        })
+
+    );
+
+}
+
+
+// =====================================================
+// PREPARER L'HISTORIQUE
+// =====================================================
+
+function preparerHistorique(historique) {
+
+    if (
+
+        !Array.isArray(historique) ||
+
+        historique.length === 0
+
+    ) {
+
+        return "Aucun historique disponible.";
+
+    }
+
+
+    return historique
+
+        .slice(-10)
+
+        .map(
+
+            item => {
+
+                if (
+                    typeof item === "string"
+                ) {
+
+                    return item;
+
+                }
+
+
+                const role =
+                    item?.role ||
+                    "utilisateur";
+
+
+                const contenu =
+                    item?.message ||
+                    item?.content ||
+                    "";
+
+
+                return `${role} : ${contenu}`;
+
+            }
+
+        )
+
+        .join("\n");
+
+}
+
+
+// =====================================================
+// VALIDER LES IDS D'OFFRES
+// =====================================================
+
+function validerOffreIds(
+
+    offreIds,
+
+    catalogue
+
+) {
+
+    if (
+        !Array.isArray(offreIds)
+    ) {
+
+        return [];
+
+    }
+
+
+    const idsDisponibles =
+        new Set(
+
+            catalogue.map(
+
+                offre =>
+                    Number(
+                        offre.id_offre
+                    )
+
+            )
+
+        );
+
+
+    return offreIds
+
+        .map(
+            id =>
+                Number(id)
+        )
+
+        .filter(
+
+            id =>
+
+                Number.isInteger(id) &&
+
+                idsDisponibles.has(id)
+
+        )
+
+        .filter(
+
+            (id, index, tableau) =>
+                tableau.indexOf(id) === index
+
+        );
+
+}
+
+
+// =====================================================
+// NORMALISER RESULTAT GEMINI
+// =====================================================
+
+function normaliserResultatGemini(
+
+    resultat,
+
+    catalogue
+
+) {
+
+    const resultatFinal = {
+
+        type_demande:
+            resultat?.type_demande ||
+            "conversation",
+
+        besoin_offres:
+            resultat?.besoin_offres === true,
+
+        intention:
+            typeof resultat?.intention === "string"
+                ? resultat.intention
+                : "",
+
+        reponse:
+            typeof resultat?.reponse === "string"
+                ? resultat.reponse
+                : "Je peux vous aider à préparer votre voyage à Madagascar.",
+
+        offre_ids:
+            validerOffreIds(
+                resultat?.offre_ids,
+                catalogue
+            ),
+
+        navigation:
+            nettoyerNavigation(
+                resultat?.navigation
+            ),
+
+        budget:
+            resultat?.budget === null ||
+            resultat?.budget === undefined
+                ? null
+                : Number(resultat.budget),
+
+        nombre_personnes:
+            resultat?.nombre_personnes === null ||
+            resultat?.nombre_personnes === undefined
+                ? null
+                : Number(resultat.nombre_personnes),
+
+        duree:
+            resultat?.duree === null ||
+            resultat?.duree === undefined
+                ? null
+                : Number(resultat.duree)
+
+    };
+
+
+    // =================================================
+    // SECURITE DU TYPE DE DEMANDE
+    // =================================================
+
+    const typesAutorises = [
+
+        "conversation",
+
+        "information_touristique",
+
+        "recherche_offre",
+
+        "guide_plateforme"
+
+    ];
+
+
+    if (
+        !typesAutorises.includes(
+            resultatFinal.type_demande
+        )
+    ) {
+
+        resultatFinal.type_demande =
+            "conversation";
+
+    }
+
+
+    // =================================================
+    // SI RECHERCHE D'OFFRE
+    // =================================================
+
+    if (
+        resultatFinal.type_demande ===
+        "recherche_offre"
+    ) {
+
+        resultatFinal.besoin_offres =
+            true;
+
+    }
+
+
+    // =================================================
+    // SI PAS RECHERCHE D'OFFRE
+    // =================================================
+
+    if (
+        resultatFinal.type_demande !==
+        "recherche_offre"
+    ) {
+
+        resultatFinal.besoin_offres =
+            false;
+
+        resultatFinal.offre_ids =
+            [];
+
+    }
+
+
+    // =================================================
+    // SECURITE NOMBRES
+    // =================================================
+
+    if (
+        !Number.isFinite(
+            resultatFinal.budget
+        )
+    ) {
+
+        resultatFinal.budget =
+            null;
+
+    }
+
+
+    if (
+        !Number.isInteger(
+            resultatFinal.nombre_personnes
+        ) ||
+
+        resultatFinal.nombre_personnes <= 0
+
+    ) {
+
+        resultatFinal.nombre_personnes =
+            null;
+
+    }
+
+
+    if (
+        !Number.isInteger(
+            resultatFinal.duree
+        ) ||
+
+        resultatFinal.duree <= 0
+
+    ) {
+
+        resultatFinal.duree =
+            null;
+
+    }
+
+
+    // =================================================
+    // AJOUTER DETAIL OFFRE
+    // =================================================
+
+    if (
+        resultatFinal.offre_ids.length > 0
+    ) {
+
+        const premierId =
+            resultatFinal.offre_ids[0];
+
+
+        const routeDetail =
+            `/detail-offre/${premierId}`;
+
+
+        if (
+            !resultatFinal.navigation.includes(
+                routeDetail
+            )
+        ) {
+
+            resultatFinal.navigation.push(
+                routeDetail
+            );
+
+        }
+
+    }
+
+
+    return resultatFinal;
 
 }
 
@@ -958,15 +1648,27 @@ function nettoyerJSON(texte) {
 // =====================================================
 
 async function testerIA(
+
     message,
+
     offres = [],
+
     historique = []
+
 ) {
 
+    // =================================================
+    // VERIFICATION
+    // =================================================
+
     if (
+
         !message ||
+
         typeof message !== "string" ||
+
         !message.trim()
+
     ) {
 
         throw new Error(
@@ -977,86 +1679,85 @@ async function testerIA(
 
 
     // =================================================
-    // PREPARER LE CATALOGUE
+    // ANALYSE LOCALE
+    // =================================================
+
+    const analyseLocale =
+        analyserDemandeLocale(
+            message
+        );
+
+
+    if (
+        analyseLocale &&
+        analyseLocale.utiliseGemini === false
+    ) {
+
+        console.log(
+            "===================================="
+        );
+
+        console.log(
+            "REPONSE LOCALE"
+        );
+
+        console.log(
+            "Aucun appel Gemini nécessaire."
+        );
+
+        console.log(
+            "===================================="
+        );
+
+
+        return analyseLocale.resultat;
+
+    }
+
+
+    // =================================================
+    // CATALOGUE
     // =================================================
 
     const catalogue =
-        Array.isArray(offres)
-            ? offres.map(offre => ({
+        preparerCatalogue(
+            offres
+        );
 
-                id_offre:
-                    Number(offre.id_offre),
 
-                titre:
-                    offre.titre || "",
-
-                description:
-                    offre.description || "",
-
-                prix:
-                    Number(offre.prix || 0),
-
-                capacite:
-                    Number(offre.capacite || 0),
-
-                disponibilite:
-                    Number(offre.disponibilite || 0),
-
-                destination:
-                    offre.destination || "",
-
-                region:
-                    offre.region || "",
-
-                pays:
-                    offre.pays || "",
-
-                categorie:
-                    offre.categorie || ""
-
-            }))
-            : [];
+    console.log(
+        "Nombre d'offres envoyées à Gemini :",
+        catalogue.length
+    );
 
 
     // =================================================
     // HISTORIQUE
     // =================================================
 
-    let historiqueTexte =
-        "Aucun historique disponible.";
+    const historiqueTexte =
+        preparerHistorique(
+            historique
+        );
 
+
+    // =================================================
+    // VERIFICATION CLE API
+    // =================================================
 
     if (
-        Array.isArray(historique) &&
-        historique.length > 0
+        !process.env.GEMINI_API_KEY
     ) {
 
-        historiqueTexte =
-            historique
-                .slice(-10)
-                .map(item => {
+        const erreur =
+            new Error(
+                "GEMINI_API_KEY est absente du fichier .env."
+            );
 
-                    if (
-                        typeof item === "string"
-                    ) {
+        erreur.status =
+            500;
 
-                        return item;
-
-                    }
-
-                    const role =
-                        item.role ||
-                        "utilisateur";
-
-                    const contenu =
-                        item.message ||
-                        item.content ||
-                        "";
-
-                    return `${role} : ${contenu}`;
-
-                })
-                .join("\n");
+        throw erreur;
 
     }
 
@@ -1069,30 +1770,45 @@ async function testerIA(
 
 ${CONNAISSANCE_PLATEFORME}
 
-Voici les offres actuellement disponibles :
+========================================
+CATALOGUE DES OFFRES DISPONIBLES
+========================================
 
-${JSON.stringify(catalogue, null, 2)}
+${JSON.stringify(
+    catalogue,
+    null,
+    2
+)}
 
-Historique :
+========================================
+HISTORIQUE DE CONVERSATION
+========================================
 
 ${historiqueTexte}
 
-Message actuel :
+========================================
+MESSAGE ACTUEL
+========================================
 
 ${message}
 
-Analyse le sens du message.
+========================================
+INSTRUCTIONS
+========================================
+
+Analyse le sens réel du message.
 
 Détermine :
 
 1. le type de demande ;
-2. si une recherche d'offre est réellement nécessaire ;
-3. les offres réellement pertinentes ;
-4. la réponse naturelle ;
-5. les routes utiles ;
-6. le budget ;
-7. le nombre de personnes ;
-8. la durée.
+2. l'intention ;
+3. si une recherche d'offre est réellement nécessaire ;
+4. les offres pertinentes ;
+5. une réponse naturelle ;
+6. les routes utiles ;
+7. le budget ;
+8. le nombre de personnes ;
+9. la durée.
 
 IMPORTANT :
 
@@ -1103,26 +1819,59 @@ Si la demande concerne une information touristique générale,
 ne cherche pas d'offres.
 
 Si la demande recherche réellement une offre,
-utilise uniquement le catalogue.
+utilise uniquement le catalogue fourni.
 
 Si aucune offre ne correspond,
 offre_ids doit être [].
 
-Ne sélectionne jamais une offre simplement parce qu'elle
+Ne sélectionne jamais une offre uniquement parce qu'elle
 est disponible ou moins chère.
 
-Ne mélange jamais différentes destinations ou régions.
+Une offre doit être pertinente par rapport à la demande.
+
+Ne fabrique jamais d'identifiant d'offre.
+
+Ne fabrique jamais de prix.
+
+Ne fabrique jamais de destination.
+
+Ne fabrique jamais de disponibilité.
+
+Ne fabrique jamais de capacité.
+
+Ne fabrique jamais de région.
+
+Ne fabrique jamais de catégorie.
+
+Les routes doivent être choisies uniquement parmi
+les routes autorisées par la connaissance de la plateforme.
 
 Retourne uniquement un objet JSON correspondant au schéma.
 `;
 
 
+    // =================================================
+    // APPEL GEMINI
+    // =================================================
+
     try {
 
-        console.log("====================================");
-        console.log("APPEL GEMINI");
-        console.log("Modèle :", GEMINI_MODEL);
-        console.log("====================================");
+        console.log(
+            "===================================="
+        );
+
+        console.log(
+            "APPEL GEMINI"
+        );
+
+        console.log(
+            "Modèle :",
+            GEMINI_MODEL
+        );
+
+        console.log(
+            "===================================="
+        );
 
 
         const response =
@@ -1136,19 +1885,11 @@ Retourne uniquement un objet JSON correspondant au schéma.
 
                 config: {
 
-                    responseFormat: {
+                    responseMimeType:
+                        "application/json",
 
-                        text: {
-
-                            mimeType:
-                                "application/json",
-
-                            schema:
-                                schemaAssistant
-
-                        }
-
-                    }
+                    responseSchema:
+                        schemaAssistant
 
                 }
 
@@ -1156,7 +1897,7 @@ Retourne uniquement un objet JSON correspondant au schéma.
 
 
         const texteReponse =
-            response.text;
+            response?.text;
 
 
         console.log(
@@ -1165,13 +1906,22 @@ Retourne uniquement un objet JSON correspondant au schéma.
         );
 
 
+        // =================================================
+        // NETTOYER JSON
+        // =================================================
+
         const texteJSON =
             nettoyerJSON(
                 texteReponse
             );
 
 
+        // =================================================
+        // PARSER JSON
+        // =================================================
+
         let resultat;
+
 
         try {
 
@@ -1181,6 +1931,7 @@ Retourne uniquement un objet JSON correspondant au schéma.
                 );
 
         }
+
         catch (jsonError) {
 
             console.error(
@@ -1188,232 +1939,58 @@ Retourne uniquement un objet JSON correspondant au schéma.
                 texteReponse
             );
 
-            throw new Error(
-                "La réponse de Gemini n'est pas un JSON valide."
-            );
 
-        }
-
-
-        // =================================================
-        // VALEURS PAR DEFAUT
-        // =================================================
-
-        if (!resultat.type_demande) {
-
-            resultat.type_demande =
-                "conversation";
-
-        }
-
-        if (
-            typeof resultat.besoin_offres !==
-            "boolean"
-        ) {
-
-            resultat.besoin_offres =
-                false;
-
-        }
-
-        if (
-            typeof resultat.intention !==
-            "string"
-        ) {
-
-            resultat.intention =
-                "";
-
-        }
-
-        if (
-            typeof resultat.reponse !==
-            "string"
-        ) {
-
-            resultat.reponse =
-                "Je peux vous aider à préparer votre voyage à Madagascar.";
-
-        }
-
-
-        if (
-            !Array.isArray(
-                resultat.navigation
-            )
-        ) {
-
-            resultat.navigation =
-                [];
-
-        }
-
-
-        if (
-            !Array.isArray(
-                resultat.offre_ids
-            )
-        ) {
-
-            resultat.offre_ids =
-                [];
-
-        }
-
-
-        // =================================================
-        // VERIFIER LES IDS
-        // =================================================
-
-        const idsDisponibles =
-            new Set(
-
-                catalogue.map(
-                    offre =>
-                        Number(
-                            offre.id_offre
-                        )
-                )
-
-            );
-
-
-        resultat.offre_ids =
-            resultat.offre_ids
-                .map(id => Number(id))
-                .filter(
-                    id =>
-                        Number.isInteger(id) &&
-                        idsDisponibles.has(id)
+            const erreur =
+                new Error(
+                    "La réponse de Gemini n'est pas un JSON valide."
                 );
 
 
-        // =================================================
-        // SECURITE
-        // =================================================
-
-        if (
-            resultat.type_demande !==
-            "recherche_offre"
-        ) {
-
-            resultat.besoin_offres =
-                false;
-
-            resultat.offre_ids =
-                [];
-
-        }
+            erreur.cause =
+                jsonError;
 
 
-        if (
-            resultat.type_demande ===
-            "recherche_offre"
-        ) {
-
-            resultat.besoin_offres =
-                true;
+            throw erreur;
 
         }
 
 
         // =================================================
-        // ROUTES AUTORISEES
+        // NORMALISATION
         // =================================================
 
-        const routesAutorisees = [
+        const resultatFinal =
+            normaliserResultatGemini(
 
-            "/Accueil",
-            "/destinations-public",
-            "/offres-public",
-            "/login-client",
-            "/mes-reservations"
+                resultat,
 
-        ];
+                catalogue
 
-
-        resultat.navigation =
-            resultat.navigation
-                .filter(
-                    route =>
-                        typeof route ===
-                        "string"
-                )
-                .filter(route => {
-
-                    if (
-                        routesAutorisees.includes(
-                            route
-                        )
-                    ) {
-
-                        return true;
-
-                    }
-
-                    if (
-                        /^\/detail-offre\/\d+$/
-                            .test(route)
-                    ) {
-
-                        return true;
-
-                    }
-
-                    if (
-                        /^\/reservation-public\/\d+$/
-                            .test(route)
-                    ) {
-
-                        return true;
-
-                    }
-
-                    return false;
-
-                });
-
-
-        // =================================================
-        // AJOUT ROUTE DETAIL
-        // =================================================
-
-        if (
-            resultat.offre_ids.length > 0
-        ) {
-
-            const premierId =
-                resultat.offre_ids[0];
-
-            const routeDetail =
-                `/detail-offre/${premierId}`;
-
-            if (
-                !resultat.navigation.includes(
-                    routeDetail
-                )
-            ) {
-
-                resultat.navigation.push(
-                    routeDetail
-                );
-
-            }
-
-        }
+            );
 
 
         console.log(
-            "RESULTAT IA :",
+            "===================================="
+        );
+
+        console.log(
+            "RESULTAT IA"
+        );
+
+        console.log(
             JSON.stringify(
-                resultat,
+                resultatFinal,
                 null,
                 2
             )
         );
 
+        console.log(
+            "===================================="
+        );
 
-        return resultat;
+
+        return resultatFinal;
 
     }
 
@@ -1436,23 +2013,46 @@ Retourne uniquement un objet JSON correspondant au schéma.
         );
 
 
+        // =================================================
+        // RECUPERER LE STATUS
+        // =================================================
+
         const status =
-            error?.status ||
-            error?.code ||
-            error?.response?.status ||
-            null;
+            Number(
+
+                error?.status ||
+
+                error?.code ||
+
+                error?.response?.status ||
+
+                0
+
+            );
+
+
+        const messageErreur =
+            String(
+                error?.message || ""
+            ).toLowerCase();
 
 
         // =================================================
-        // 429
+        // 429 : QUOTA / RATE LIMIT
         // =================================================
 
         if (
-            Number(status) === 429 ||
-            error?.message?.includes("429") ||
-            error?.message
-                ?.toLowerCase()
-                .includes("quota")
+
+            status === 429 ||
+
+            messageErreur.includes("429") ||
+
+            messageErreur.includes("quota") ||
+
+            messageErreur.includes("rate limit") ||
+
+            messageErreur.includes("resource exhausted")
+
         ) {
 
             const erreur =
@@ -1460,8 +2060,10 @@ Retourne uniquement un objet JSON correspondant au schéma.
                     "Quota Gemini dépassé temporairement."
                 );
 
+
             erreur.status =
                 429;
+
 
             throw erreur;
 
@@ -1469,12 +2071,19 @@ Retourne uniquement un objet JSON correspondant au schéma.
 
 
         // =================================================
-        // 503
+        // 503 : SERVICE INDISPONIBLE
         // =================================================
 
         if (
-            Number(status) === 503 ||
-            error?.message?.includes("503")
+
+            status === 503 ||
+
+            messageErreur.includes("503") ||
+
+            messageErreur.includes("unavailable") ||
+
+            messageErreur.includes("service unavailable")
+
         ) {
 
             const erreur =
@@ -1482,13 +2091,52 @@ Retourne uniquement un objet JSON correspondant au schéma.
                     "Gemini est temporairement indisponible."
                 );
 
+
             erreur.status =
                 503;
+
 
             throw erreur;
 
         }
 
+
+        // =================================================
+        // 401 / 403 : CLE API
+        // =================================================
+
+        if (
+
+            status === 401 ||
+
+            status === 403 ||
+
+            messageErreur.includes("api key") ||
+
+            messageErreur.includes("unauthorized") ||
+
+            messageErreur.includes("permission denied")
+
+        ) {
+
+            const erreur =
+                new Error(
+                    "La clé API Gemini est invalide ou non autorisée."
+                );
+
+
+            erreur.status =
+                status || 401;
+
+
+            throw erreur;
+
+        }
+
+
+        // =================================================
+        // AUTRE ERREUR
+        // =================================================
 
         throw error;
 
