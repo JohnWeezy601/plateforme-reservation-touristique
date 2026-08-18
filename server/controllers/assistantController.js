@@ -2,8 +2,7 @@ const db = require("../db");
 
 const {
     testerIA
-} = require("../services/iaservice");
-
+} = require("../services/iaService");
 
 // =====================================================
 // NORMALISER UN TEXTE
