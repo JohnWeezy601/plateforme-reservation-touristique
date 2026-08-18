@@ -166,7 +166,7 @@ function Recu() {
                                 src={
                                     recu.photo
                                         ?
-                                        `http://localhost:8081/uploads/${recu.photo}`
+                                        `${import.meta.env.VITE_SERVER_URL}/uploads/${recu.photo}`
                                         :
                                         "/avatar.png"
                                 }

@@ -248,7 +248,7 @@ function OffresPublic() {
 
                                     src={
                                         offre.image
-                                            ? `http://localhost:8081/uploads/${offre.image}`
+                                            ? `${import.meta.env.VITE_SERVER_URL}/uploads/${offre.image}`
                                             : "/image-default.jpg"
                                     }
 

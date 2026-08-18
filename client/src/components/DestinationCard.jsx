@@ -28,7 +28,7 @@ function DestinationCard({ destination }) {
 
                     <img
 
-                    src={`http://localhost:8081/uploads/${destination.image}`}
+                    src={`${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`}
 
                     alt={destination.nom}
 

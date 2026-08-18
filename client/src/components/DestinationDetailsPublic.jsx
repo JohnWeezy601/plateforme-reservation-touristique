@@ -150,7 +150,7 @@ console.log("LONGITUDE :", destination.longitude);
             ====================== */}
 
             <img
-                src={`http://localhost:8081/uploads/${destination.image}`}
+                src={`${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`}
                 alt={destination.nom}
                 className="detail-main-image"
             />
@@ -267,7 +267,7 @@ console.log("LONGITUDE :", destination.longitude);
 
                         <img
                             src={
-                                `http://localhost:8081/uploads/${d.image}`
+                                `${import.meta.env.VITE_SERVER_URL}/uploads/${d.image}`
                             }
                             alt={d.nom}
                         />

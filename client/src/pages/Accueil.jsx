@@ -67,16 +67,16 @@ const formatPrixEuro = (prix) => {
 
         // Si l'API renvoie /uploads/image.jpg
         if (image.startsWith("/uploads/")) {
-            return `http://localhost:8081${image}`;
+            return `${import.meta.env.VITE_SERVER_URL}${image}`;
         }
 
         // Si l'API renvoie /image.jpg
         if (image.startsWith("/")) {
-            return `http://localhost:8081${image}`;
+            return `${import.meta.env.VITE_SERVER_URL}${image}`;
         }
 
         // Si l'API renvoie seulement image.jpg
-        return `http://localhost:8081/uploads/${image}`;
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
     };
 
 

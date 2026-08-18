@@ -289,7 +289,7 @@ function Contacts() {
         if (
             photoNettoyee.startsWith("/uploads/")
         ) {
-            return `http://localhost:8081${photoNettoyee}`;
+            return `${import.meta.env.VITE_SERVER_URL}${photoNettoyee}`;
         }
 
         // ---------------------------------------------
@@ -299,14 +299,14 @@ function Contacts() {
         if (
             photoNettoyee.startsWith("uploads/")
         ) {
-            return `http://localhost:8081/${photoNettoyee}`;
+            return `${import.meta.env.VITE_SERVER_URL}/${photoNettoyee}`;
         }
 
         // ---------------------------------------------
         // Nom simple du fichier
         // ---------------------------------------------
 
-        return `http://localhost:8081/uploads/${photoNettoyee}`;
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${photoNettoyee}`;
     };
 
     // =====================================================

@@ -128,7 +128,7 @@ function DetailOffre() {
 
         }
 
-        return `http://localhost:8081/uploads/${photo}`;
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${photo}`;
 
     };
 

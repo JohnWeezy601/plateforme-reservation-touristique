@@ -107,65 +107,39 @@ exports.getAvis = async(req,res)=>{
 try{
 
 
-const [avis]=await db.query(
+const [avis] = await db.query(`
+    SELECT
+        a.id_avis,
+        a.id_utilisateur,
+        a.id_offre,
+        a.note,
+        a.commentaire,
+        a.date_avis,
+        a.statut,
+        u.nom,
+        u.prenom,
+        u.photo,
+        u.role,
+        o.titre,
 
-`
+        (
+            SELECT COUNT(*)
+            FROM avis_like al
+            WHERE al.id_avis = a.id_avis
+        ) AS nombre_likes
 
-SELECT
+    FROM avis a
 
-a.id_avis,
+    LEFT JOIN utilisateur u
+        ON u.id_utilisateur = a.id_utilisateur
 
-a.id_utilisateur,
+    LEFT JOIN offre o
+        ON o.id_offre = a.id_offre
 
-a.id_offre,
+    WHERE a.statut LIKE 'Publi%'
 
-a.note,
-
-a.commentaire,
-
-a.date_avis,
-
-a.statut,
-
-u.nom,
-
-u.prenom,
-
-u.photo,
-
-u.role,
-
-o.titre,
-
-(
-
-SELECT COUNT(*)
-
-FROM avis_like al
-
-WHERE al.id_avis=a.id_avis
-
-)
-
-AS nombre_likes
-
-FROM avis a
-
-LEFT JOIN utilisateur u
-
-ON u.id_utilisateur=a.id_utilisateur
-
-LEFT JOIN offre o
-
-ON o.id_offre=a.id_offre
-
-WHERE a.statut='Publié'
-
-ORDER BY a.date_avis DESC
-
-`
-
-);
+    ORDER BY a.date_avis DESC
+`);
 
 
 

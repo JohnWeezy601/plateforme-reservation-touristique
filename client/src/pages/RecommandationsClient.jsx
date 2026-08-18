@@ -426,17 +426,13 @@ return (
                 </div>
 
 
-                <h1>
-
-                    Bonjour{" "}
-
-                    <span>
-                        {utilisateur.prenom}
-                    </span>{" "}
-
+               <h1>
+    Bonjour{" "}
+    <span>
+        {utilisateur.prenom}
+    </span>{" "}
                     👋
-
-                </h1>
+</h1>
 
 
                 <p>
@@ -498,7 +494,7 @@ return (
             <div>
 
                 <span className="heading-small">
-                    ✨ POUR VOUS
+                    💡 POUR VOUS
                 </span>
 
 
@@ -576,7 +572,7 @@ return (
                     }
                 >
 
-                    Découvrir les offres
+                    Dàcouvrir les offres
 
                     <FaArrowRight />
 
@@ -606,7 +602,7 @@ return (
 
                                 const image =
                                     recommandation.image
-                                        ? `http://localhost:8081/uploads/${recommandation.image}`
+                                        ? `${import.meta.env.VITE_SERVER_URL}/uploads/${recommandation.image}`
                                         : null;
 
 

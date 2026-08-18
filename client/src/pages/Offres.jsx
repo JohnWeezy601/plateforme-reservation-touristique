@@ -1290,7 +1290,7 @@ function Offres() {
                                     <img
                                         src={
                                             item.image
-                                                ? `http://localhost:8081/uploads/${item.image}`
+                                                ? `${import.meta.env.VITE_SERVER_URL}/uploads/${item.image}`
                                                 : "/image-default.jpg"
                                         }
                                         alt={item.titre}
@@ -2035,7 +2035,7 @@ function Offres() {
 
                                                         <img
                                                             src={
-                                                                `http://localhost:8081/uploads/${photo.chemin_photo}`
+                                                                `${import.meta.env.VITE_SERVER_URL}/uploads/${photo.chemin_photo}`
                                                             }
                                                             alt="Photo détail"
                                                         />

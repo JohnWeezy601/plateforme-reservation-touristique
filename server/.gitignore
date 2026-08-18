@@ -1,0 +1,13 @@
+﻿node_modules/
+.env
+.env.*
+!.env.example
+
+uploads/
+*.pem
+*.key
+*.crt
+
+db.js.backup
+*.log
+.DS_Store

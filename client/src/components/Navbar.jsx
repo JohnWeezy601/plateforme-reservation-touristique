@@ -308,7 +308,7 @@ admin?.photo ?
 <img
 
 src={
-`http://localhost:8081/uploads/${admin.photo}`
+`${import.meta.env.VITE_SERVER_URL}/uploads/${admin.photo}`
 }
 
 className="admin-avatar"

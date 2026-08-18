@@ -288,7 +288,7 @@ function ProfilAdmin(){
 
                         <img
 
-                        src={`http://localhost:8081/uploads/${admin.photo}`}
+                        src={`${import.meta.env.VITE_SERVER_URL}/uploads/${admin.photo}`}
 
                         className="profile-image"
 

@@ -268,7 +268,7 @@ return(
 <img
 
 src={
-`http://localhost:8081/uploads/${destination.image}`
+`${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`
 }
 
 alt={destination.nom}
@@ -558,7 +558,7 @@ offre.image
 
 ?
 
-`http://localhost:8081/uploads/${offre.image}`
+`${import.meta.env.VITE_SERVER_URL}/uploads/${offre.image}`
 
 :
 
@@ -799,7 +799,7 @@ onClick={()=>navigate(
 <img
 
 src={
-`http://localhost:8081/uploads/${d.image}`
+`${import.meta.env.VITE_SERVER_URL}/uploads/${d.image}`
 }
 
 />

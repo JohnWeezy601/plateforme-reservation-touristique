@@ -751,7 +751,7 @@ function MesReservations() {
                                                             <img
 
                                                                 src={
-                                                                    `http://localhost:8081/uploads/${reservation.image}`
+                                                                    `${import.meta.env.VITE_SERVER_URL}/uploads/${reservation.image}`
                                                                 }
 
                                                                 alt={
@@ -1428,7 +1428,7 @@ function MesReservations() {
                                         <img
 
                                             src={
-                                                `http://localhost:8081/uploads/${detailReservation.image}`
+                                                `${import.meta.env.VITE_SERVER_URL}/uploads/${detailReservation.image}`
                                             }
 
                                             alt={

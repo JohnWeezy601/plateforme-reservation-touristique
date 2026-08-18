@@ -227,7 +227,7 @@ function NavbarPublic() {
 
 
         window.open(
-            `http://localhost:8081/uploads/${photo}`,
+            `${import.meta.env.VITE_SERVER_URL}/uploads/${photo}`,
             "_blank"
         );
 
@@ -484,7 +484,7 @@ function NavbarPublic() {
     const photoProfil =
         profil?.photo ||
         utilisateur?.photo
-            ? `http://localhost:8081/uploads/${
+            ? `${import.meta.env.VITE_SERVER_URL}/uploads/${
                 profil?.photo ||
                 utilisateur?.photo
             }`

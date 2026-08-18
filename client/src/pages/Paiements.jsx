@@ -1726,7 +1726,7 @@ Preuve paiement
 
 src={
 
-`http://localhost:8081/uploads/${detailPaiement.preuve}`
+`${import.meta.env.VITE_SERVER_URL}/uploads/${detailPaiement.preuve}`
 
 }
 
@@ -1867,4 +1867,3 @@ Fermer
 
 
 export default Paiements;
-

@@ -25,7 +25,7 @@ function DestinationModal({
 
 
             setImagePreview(
-                `http://localhost:8081/uploads/${destination.image}`
+                `${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`
             );
 
 

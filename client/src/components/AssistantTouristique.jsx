@@ -1261,7 +1261,7 @@ useEffect(() => {
             }
 
 
-            return `http://localhost:8081/uploads/${image}`;
+            return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
 
         };
 

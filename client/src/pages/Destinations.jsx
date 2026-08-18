@@ -478,7 +478,7 @@ d.image ?
 
 
 src={
-`http://localhost:8081/uploads/${d.image}`
+`${import.meta.env.VITE_SERVER_URL}/uploads/${d.image}`
 }
 
 
