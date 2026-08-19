@@ -1014,67 +1014,85 @@ error:error.message
 
 
 
+exports.updateStatutAvis = async (req, res) => {
 
-// ============================================
-// Modifier statut avis ADMIN
-// ============================================
+    try {
 
+        const { statut } = req.body;
+        const id = req.params.id;
 
-exports.updateStatutAvis = async(req,res)=>{
+        console.log("===== UPDATE STATUT AVIS =====");
+        console.log("ID :", id);
+        console.log("Statut :", statut);
+        console.log("==============================");
 
+        if (!id) {
+            return res.status(400).json({
+                message: "ID avis manquant"
+            });
+        }
 
-try{
+        if (!statut) {
+            return res.status(400).json({
+                message: "Statut manquant"
+            });
+        }
 
+        // Vérifier que l'avis existe
+        const [avis] = await db.query(
+            `
+            SELECT id_avis, statut
+            FROM avis
+            WHERE id_avis = ?
+            `,
+            [id]
+        );
 
-await db.query(
+        if (avis.length === 0) {
+            return res.status(404).json({
+                message: "Avis introuvable"
+            });
+        }
 
-`
+        // Modifier le statut
+        const [result] = await db.query(
+            `
+            UPDATE avis
+            SET statut = ?
+            WHERE id_avis = ?
+            `,
+            [
+                statut,
+                id
+            ]
+        );
 
-UPDATE avis
+        console.log("Résultat UPDATE :", result);
 
-SET statut=?
+        res.json({
+            message: "Statut modifié avec succès",
+            id_avis: id,
+            ancien_statut: avis[0].statut,
+            nouveau_statut: statut
+        });
 
-WHERE id_avis=?
+    }
+    catch (error) {
 
-`
+        console.error(
+            "ERREUR UPDATE STATUT AVIS :",
+            error
+        );
 
-,
+        res.status(500).json({
+            message: "Erreur modification statut avis",
+            error: error.message,
+            code: error.code
+        });
 
-[
-
-req.body.statut,
-
-req.params.id
-
-]
-
-);
-
-
-
-res.json({
-
-message:"Statut modifié"
-
-});
-
-
-}
-catch(error){
-
-
-res.status(500).json({
-
-error:error.message
-
-});
-
-
-}
-
+    }
 
 };
-
 
 // ============================================
 // ADMIN : récupérer tous les avis

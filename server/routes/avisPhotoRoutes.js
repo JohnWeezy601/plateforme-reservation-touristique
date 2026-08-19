@@ -2,9 +2,11 @@ const express = require("express");
 
 const router = express.Router();
 
-const avisPhotoController = require("../controllers/avisPhotoController");
+const avisPhotoController =
+    require("../controllers/avisPhotoController");
 
-const uploadMiddleware = require("../middleware/uploadMiddleware");
+const uploadMiddleware =
+    require("../middleware/cloudinaryUploadMiddleware");
 
 
 // =======================================
@@ -13,9 +15,13 @@ const uploadMiddleware = require("../middleware/uploadMiddleware");
 // =======================================
 
 router.post(
+
     "/",
-    uploadMiddleware.array("photos",10),
+
+    uploadMiddleware.array("photos", 10),
+
     avisPhotoController.ajouterPhotosAvis
+
 );
 
 
@@ -25,10 +31,12 @@ router.post(
 // =======================================
 
 router.get(
-"/:id",
-avisPhotoController.getPhotosAvis
-);
 
+    "/:id",
+
+    avisPhotoController.getPhotosAvis
+
+);
 
 
 // =======================================
@@ -37,10 +45,12 @@ avisPhotoController.getPhotosAvis
 // =======================================
 
 router.delete(
-"/:id",
-avisPhotoController.supprimerPhotoAvis
-);
 
+    "/:id",
+
+    avisPhotoController.supprimerPhotoAvis
+
+);
 
 
 module.exports = router;
