@@ -751,3 +751,12 @@ padding:15px;
 
 
 }
+
+/* ==========================================
+   PROTECTION DES IMAGES DU DASHBOARD
+========================================== */
+
+.dashboard-page img {
+    max-width: 100%;
+    height: auto;
+}
