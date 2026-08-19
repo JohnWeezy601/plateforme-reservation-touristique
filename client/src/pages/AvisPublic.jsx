@@ -1,5 +1,4 @@
-
-import {
+﻿import {
     useEffect,
     useState
 } from "react";
@@ -43,6 +42,47 @@ function AvisPublic(){
     JSON.parse(
         localStorage.getItem("utilisateur")
     );
+
+    // ==================================
+    // URL DES PHOTOS D'AVIS
+    // ==================================
+    // Compatible avec :
+    // - anciennes photos locales
+    // - nouvelles photos Cloudinary
+    // ==================================
+
+    const getPhotoAvisUrl = (photo) => {
+
+        if(!photo){
+
+            return "";
+
+        }
+
+        // ==================================
+        // Photo Cloudinary
+        // ==================================
+
+        if(
+            photo.startsWith("http://") ||
+            photo.startsWith("https://")
+        ){
+
+            return photo;
+
+        }
+
+        // ==================================
+        // Ancienne photo locale
+        // ==================================
+
+        return (
+            import.meta.env.VITE_SERVER_URL +
+            "/uploads/avis/" +
+            photo
+        );
+
+    };
 
     // ==================================
     // CHARGER LES AVIS
@@ -115,16 +155,15 @@ function AvisPublic(){
             // ==============================
             // 1 - CREER L'AVIS
             // ==============================
+            // L'id_utilisateur n'est plus envoyé
+            // car le backend utilise req.user.id
 
             const res = await api.post(
                 "/avis",
                 {
-                    id_utilisateur:
-                    utilisateur.id_utilisateur,
+                    id_offre: 2,
 
-                    id_offre:2,
-
-                    note:Number(noteAvis),
+                    note: Number(noteAvis),
 
                     commentaire:
                     nouveauCommentaire
@@ -786,6 +825,7 @@ function AvisPublic(){
                                                     </span>
 
                                                 </>
+
                                             }
 
                                         </div>
@@ -865,7 +905,9 @@ function AvisPublic(){
                                             <img
                                                 key={photo.id_photo}
                                                 src={
-                                                    import.meta.env.VITE_SERVER_URL + "/uploads/avis/"+photo.photo
+                                                    getPhotoAvisUrl(
+                                                        photo.photo
+                                                    )
                                                 }
                                                 alt="photo avis"
                                             />

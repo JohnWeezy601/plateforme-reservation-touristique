@@ -231,45 +231,63 @@ console.log(error);
 
 
 
+const changerStatut = async (id, statut) => {
 
-// ===============================
-// CHANGER STATUT
-// ===============================
+    console.log("======================================");
+    console.log("CHANGEMENT STATUT AVIS");
+    console.log("ID :", id);
+    console.log("STATUT :", statut);
+    console.log("======================================");
 
+    try {
 
-const changerStatut=async(id,statut)=>{
+        const response = await api.put(
+            `/avis/statut/${id}`,
+            {
+                statut: statut
+            }
+        );
 
+        console.log("STATUT MODIFIÉ :", response.data);
 
-try{
+        // Mise à jour immédiate dans React
+        setAvis((anciensAvis) =>
+            anciensAvis.map((item) =>
+                item.id_avis === id
+                    ? {
+                        ...item,
+                        statut: statut
+                    }
+                    : item
+            )
+        );
 
+        // Fermer le menu
+        setMenuOuvert(null);
 
-await api.put(
+    } catch (error) {
 
-`/avis/statut/${id}`,
+        console.error("======================================");
+        console.error("ERREUR CHANGEMENT STATUT");
+        console.error("======================================");
 
-{
+        console.error("Erreur :", error);
 
-statut:statut
+        if (error.response) {
 
-}
+            console.error(
+                "Status :",
+                error.response.status
+            );
 
-);
+            console.error(
+                "Serveur :",
+                error.response.data
+            );
 
+        }
 
-
-chargerAvis();
-
-
-setMenuOuvert(null);
-
-
-
-}catch(error){
-
-console.log(error);
-
-}
-
+    }
 
 };
 
@@ -634,24 +652,15 @@ item.statut==="En attente" &&
 
 
 <button
-
-className="publish"
-
-onClick={()=>changerStatut(
-
-item.id_avis,
-
-"Publié"
-
-)}
-
+    type="button"
+    className="publish"
+    onClick={(e) => {
+        e.stopPropagation();
+        changerStatut(item.id_avis, "Publié");
+    }}
 >
-
-<FaCheck/>
-
-Publier
-
-
+    <FaCheck />
+    Publier
 </button>
 
 
@@ -661,27 +670,16 @@ Publier
 
 
 <button
-
-className="reject"
-
-onClick={()=>changerStatut(
-
-item.id_avis,
-
-"Refusé"
-
-)}
-
+    type="button"
+    className="reject"
+    onClick={(e) => {
+        e.stopPropagation();
+        changerStatut(item.id_avis, "Refusé");
+    }}
 >
-
-
-<FaTimesCircle/>
-
-Refuser
-
-
+    <FaTimesCircle />
+    Refuser
 </button>
-
 
 </>
 
