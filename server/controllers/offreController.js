@@ -1,5 +1,147 @@
 const db = require("../db");
 
+const cloudinary = require("../config/cloudinary");
+
+
+// ============================================================
+// FONCTION : ENVOYER UNE IMAGE VERS CLOUDINARY
+// ============================================================
+
+const uploadImageCloudinary = async (file) => {
+
+    if (!file || !file.buffer) {
+
+        return null;
+
+    }
+
+
+    return new Promise((resolve, reject) => {
+
+        const uploadStream = cloudinary.uploader.upload_stream(
+
+            {
+                folder: "plateforme-touristique/offres",
+
+                resource_type: "image"
+
+            },
+
+            (error, result) => {
+
+                if (error) {
+
+                    reject(error);
+
+                } else {
+
+                    resolve(result);
+
+                }
+
+            }
+
+        );
+
+
+        uploadStream.end(file.buffer);
+
+    });
+
+};
+
+
+// ============================================================
+// FONCTION : SUPPRIMER UNE IMAGE CLOUDINARY
+// ============================================================
+
+const deleteImageCloudinary = async (imageUrl) => {
+
+    try {
+
+        if (!imageUrl) {
+
+            return;
+
+        }
+
+
+        // Les anciennes images locales ne sont pas
+        // des images Cloudinary.
+
+        if (!imageUrl.includes("res.cloudinary.com")) {
+
+            return;
+
+        }
+
+
+        const url = new URL(imageUrl);
+
+        const pathname = url.pathname;
+
+
+        // Exemple :
+        // /xxx/image/upload/v123/plateforme-touristique/offres/image.jpg
+
+        const uploadIndex = pathname.indexOf("/upload/");
+
+
+        if (uploadIndex === -1) {
+
+            return;
+
+        }
+
+
+        let publicId = pathname.substring(
+            uploadIndex + "/upload/".length
+        );
+
+
+        // Supprimer la version v123
+        publicId = publicId.replace(
+            /^v\d+\//,
+            ""
+        );
+
+
+        // Supprimer extension
+        publicId = publicId.replace(
+            /\.[^/.]+$/,
+            ""
+        );
+
+
+        await cloudinary.uploader.destroy(
+
+            publicId,
+
+            {
+                resource_type: "image"
+            }
+
+        );
+
+
+        console.log(
+            "Image Cloudinary supprimée :",
+            publicId
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Erreur suppression image Cloudinary :",
+            error.message
+        );
+
+    }
+
+};
+
 
 // ============================================================
 // AJOUTER UNE OFFRE
@@ -18,16 +160,27 @@ exports.createOffre = async (req, res) => {
 
 
         const {
+
             id_prestataire,
+
             id_destination,
+
             id_categorie,
+
             titre,
+
             description,
+
             prix,
+
             capacite,
+
             disponibilite,
+
             date_debut,
+
             date_fin
+
         } = req.body;
 
 
@@ -36,24 +189,39 @@ exports.createOffre = async (req, res) => {
         // ====================================================
 
         if (
+
             !id_prestataire ||
+
             !id_destination ||
+
             !id_categorie ||
+
             !titre ||
+
             !description ||
+
             prix === undefined ||
+
             prix === "" ||
+
             capacite === undefined ||
+
             capacite === "" ||
+
             disponibilite === undefined ||
+
             disponibilite === "" ||
+
             !date_debut ||
+
             !date_fin
+
         ) {
 
             return res.status(400).json({
 
-                message: "Tous les champs obligatoires doivent être remplis."
+                message:
+                    "Tous les champs obligatoires doivent être remplis."
 
             });
 
@@ -61,47 +229,75 @@ exports.createOffre = async (req, res) => {
 
 
         // ====================================================
-        // CONVERSION DES VALEURS NUMERIQUES
+        // CONVERSION VALEURS NUMÉRIQUES
         // ====================================================
 
         const prixNombre = Number(prix);
+
         const capaciteNombre = Number(capacite);
-        const disponibiliteNombre = Number(disponibilite);
 
+        const disponibiliteNombre =
+            Number(disponibilite);
+
+
+        // ====================================================
+        // VALIDATION PRIX
+        // ====================================================
 
         if (
+
             isNaN(prixNombre) ||
+
             prixNombre <= 0
+
         ) {
 
             return res.status(400).json({
 
-                message: "Le prix doit être supérieur à 0."
+                message:
+                    "Le prix doit être supérieur à 0."
 
             });
 
         }
 
 
+        // ====================================================
+        // VALIDATION CAPACITÉ
+        // ====================================================
+
         if (
+
             isNaN(capaciteNombre) ||
+
             capaciteNombre <= 0 ||
+
             !Number.isInteger(capaciteNombre)
+
         ) {
 
             return res.status(400).json({
 
-                message: "La capacité doit être un entier supérieur à 0."
+                message:
+                    "La capacité doit être un entier supérieur à 0."
 
             });
 
         }
 
 
+        // ====================================================
+        // VALIDATION DISPONIBILITÉ
+        // ====================================================
+
         if (
+
             isNaN(disponibiliteNombre) ||
+
             disponibiliteNombre < 0 ||
+
             !Number.isInteger(disponibiliteNombre)
+
         ) {
 
             return res.status(400).json({
@@ -115,8 +311,11 @@ exports.createOffre = async (req, res) => {
 
 
         if (
+
             disponibiliteNombre >
+
             capaciteNombre
+
         ) {
 
             return res.status(400).json({
@@ -130,13 +329,33 @@ exports.createOffre = async (req, res) => {
 
 
         // ====================================================
-        // VALIDATION DES DATES
+        // VALIDATION DATES
         // ====================================================
 
+        const dateDebut = new Date(date_debut);
+
+        const dateFin = new Date(date_fin);
+
+
         if (
-            new Date(date_fin) <
-            new Date(date_debut)
+
+            isNaN(dateDebut.getTime()) ||
+
+            isNaN(dateFin.getTime())
+
         ) {
+
+            return res.status(400).json({
+
+                message:
+                    "Les dates fournies sont invalides."
+
+            });
+
+        }
+
+
+        if (dateFin < dateDebut) {
 
             return res.status(400).json({
 
@@ -149,22 +368,7 @@ exports.createOffre = async (req, res) => {
 
 
         // ====================================================
-        // IMAGE PRINCIPALE
-        // ====================================================
-
-        const image = req.file
-            ? req.file.filename
-            : null;
-
-
-        console.log(
-            "Image principale :",
-            image
-        );
-
-
-        // ====================================================
-        // VERIFIER PRESTATAIRE
+        // VÉRIFIER PRESTATAIRE
         // ====================================================
 
         const [prestataires] = await db.query(
@@ -184,7 +388,8 @@ exports.createOffre = async (req, res) => {
 
             return res.status(400).json({
 
-                message: "Prestataire introuvable."
+                message:
+                    "Prestataire introuvable."
 
             });
 
@@ -192,7 +397,7 @@ exports.createOffre = async (req, res) => {
 
 
         // ====================================================
-        // VERIFIER DESTINATION
+        // VÉRIFIER DESTINATION
         // ====================================================
 
         const [destinations] = await db.query(
@@ -212,7 +417,8 @@ exports.createOffre = async (req, res) => {
 
             return res.status(400).json({
 
-                message: "Destination introuvable."
+                message:
+                    "Destination introuvable."
 
             });
 
@@ -220,7 +426,7 @@ exports.createOffre = async (req, res) => {
 
 
         // ====================================================
-        // VERIFIER CATEGORIE
+        // VÉRIFIER CATÉGORIE
         // ====================================================
 
         const [categories] = await db.query(
@@ -240,9 +446,41 @@ exports.createOffre = async (req, res) => {
 
             return res.status(400).json({
 
-                message: "Catégorie introuvable."
+                message:
+                    "Catégorie introuvable."
 
             });
+
+        }
+
+
+        // ====================================================
+        // UPLOAD IMAGE CLOUDINARY
+        // ====================================================
+
+        let image = null;
+
+
+        if (req.file) {
+
+            console.log(
+                "Upload image vers Cloudinary..."
+            );
+
+
+            const result =
+                await uploadImageCloudinary(
+                    req.file
+                );
+
+
+            image = result.secure_url;
+
+
+            console.log(
+                "Image Cloudinary :",
+                image
+            );
 
         }
 
@@ -256,17 +494,29 @@ exports.createOffre = async (req, res) => {
             INSERT INTO offre
 
             (
+
                 id_prestataire,
+
                 id_destination,
+
                 id_categorie,
+
                 titre,
+
                 description,
+
                 prix,
+
                 capacite,
+
                 disponibilite,
+
                 date_debut,
+
                 date_fin,
+
                 image
+
             )
 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -281,15 +531,25 @@ exports.createOffre = async (req, res) => {
             [
 
                 id_prestataire,
+
                 id_destination,
+
                 id_categorie,
+
                 titre.trim(),
+
                 description.trim(),
+
                 prixNombre,
+
                 capaciteNombre,
+
                 disponibiliteNombre,
+
                 date_debut,
+
                 date_fin,
+
                 image
 
             ]
@@ -304,19 +564,21 @@ exports.createOffre = async (req, res) => {
 
 
         // ====================================================
-        // REPONSE
+        // RÉPONSE
         // ====================================================
 
         return res.status(201).json({
 
-            message: "Offre ajoutée avec succès",
+            message:
+                "Offre ajoutée avec succès",
 
-            id_offre: result.insertId,
+            id_offre:
+                result.insertId,
 
-            image: image
+            image:
+                image
 
         });
-
 
     }
 
@@ -330,16 +592,17 @@ exports.createOffre = async (req, res) => {
 
         return res.status(500).json({
 
-            message: "Erreur ajout offre",
+            message:
+                "Erreur ajout offre",
 
-            error: error.message
+            error:
+                error.message
 
         });
 
     }
 
 };
-
 
 
 // ============================================================
@@ -354,30 +617,52 @@ exports.updateOffre = async (req, res) => {
         console.log("REQUÊTE MODIFICATION OFFRE");
         console.log("======================================");
 
-        console.log("ID :", req.params.id);
-        console.log("Body :", req.body);
-        console.log("Fichier :", req.file);
+        console.log(
+            "ID :",
+            req.params.id
+        );
+
+        console.log(
+            "Body :",
+            req.body
+        );
+
+        console.log(
+            "Fichier :",
+            req.file
+        );
 
 
         const id = req.params.id;
 
 
         const {
+
             id_prestataire,
+
             id_destination,
+
             id_categorie,
+
             titre,
+
             description,
+
             prix,
+
             capacite,
+
             disponibilite,
+
             date_debut,
+
             date_fin
+
         } = req.body;
 
 
         // ====================================================
-        // VERIFIER OFFRE
+        // VÉRIFIER OFFRE
         // ====================================================
 
         const [offres] = await db.query(
@@ -397,14 +682,16 @@ exports.updateOffre = async (req, res) => {
 
             return res.status(404).json({
 
-                message: "Offre introuvable"
+                message:
+                    "Offre introuvable"
 
             });
 
         }
 
 
-        const ancienneOffre = offres[0];
+        const ancienneOffre =
+            offres[0];
 
 
         // ====================================================
@@ -412,19 +699,33 @@ exports.updateOffre = async (req, res) => {
         // ====================================================
 
         if (
+
             !id_prestataire ||
+
             !id_destination ||
+
             !id_categorie ||
+
             !titre ||
+
             !description ||
+
             prix === undefined ||
+
             prix === "" ||
+
             capacite === undefined ||
+
             capacite === "" ||
+
             disponibilite === undefined ||
+
             disponibilite === "" ||
+
             !date_debut ||
+
             !date_fin
+
         ) {
 
             return res.status(400).json({
@@ -437,14 +738,30 @@ exports.updateOffre = async (req, res) => {
         }
 
 
-        const prixNombre = Number(prix);
-        const capaciteNombre = Number(capacite);
-        const disponibiliteNombre = Number(disponibilite);
+        // ====================================================
+        // CONVERSION
+        // ====================================================
 
+        const prixNombre =
+            Number(prix);
+
+        const capaciteNombre =
+            Number(capacite);
+
+        const disponibiliteNombre =
+            Number(disponibilite);
+
+
+        // ====================================================
+        // VALIDATION PRIX
+        // ====================================================
 
         if (
+
             isNaN(prixNombre) ||
+
             prixNombre <= 0
+
         ) {
 
             return res.status(400).json({
@@ -457,10 +774,18 @@ exports.updateOffre = async (req, res) => {
         }
 
 
+        // ====================================================
+        // VALIDATION CAPACITÉ
+        // ====================================================
+
         if (
+
             isNaN(capaciteNombre) ||
+
             capaciteNombre <= 0 ||
+
             !Number.isInteger(capaciteNombre)
+
         ) {
 
             return res.status(400).json({
@@ -473,10 +798,18 @@ exports.updateOffre = async (req, res) => {
         }
 
 
+        // ====================================================
+        // VALIDATION DISPONIBILITÉ
+        // ====================================================
+
         if (
+
             isNaN(disponibiliteNombre) ||
+
             disponibiliteNombre < 0 ||
+
             !Number.isInteger(disponibiliteNombre)
+
         ) {
 
             return res.status(400).json({
@@ -490,8 +823,11 @@ exports.updateOffre = async (req, res) => {
 
 
         if (
+
             disponibiliteNombre >
+
             capaciteNombre
+
         ) {
 
             return res.status(400).json({
@@ -508,10 +844,32 @@ exports.updateOffre = async (req, res) => {
         // VALIDATION DATES
         // ====================================================
 
+        const dateDebut =
+            new Date(date_debut);
+
+        const dateFin =
+            new Date(date_fin);
+
+
         if (
-            new Date(date_fin) <
-            new Date(date_debut)
+
+            isNaN(dateDebut.getTime()) ||
+
+            isNaN(dateFin.getTime())
+
         ) {
+
+            return res.status(400).json({
+
+                message:
+                    "Les dates fournies sont invalides."
+
+            });
+
+        }
+
+
+        if (dateFin < dateDebut) {
 
             return res.status(400).json({
 
@@ -527,20 +885,40 @@ exports.updateOffre = async (req, res) => {
         // IMAGE
         // ====================================================
 
-        let image = ancienneOffre.image;
+        let image =
+            ancienneOffre.image;
+
+
+        let nouvelleImage = null;
 
 
         if (req.file) {
 
-            image = req.file.filename;
+            console.log(
+                "Nouvelle image détectée."
+            );
+
+
+            const result =
+                await uploadImageCloudinary(
+                    req.file
+                );
+
+
+            nouvelleImage =
+                result.secure_url;
+
+
+            image =
+                nouvelleImage;
+
+
+            console.log(
+                "Nouvelle image Cloudinary :",
+                image
+            );
 
         }
-
-
-        console.log(
-            "Image conservée/nouvelle :",
-            image
-        );
 
 
         // ====================================================
@@ -580,28 +958,40 @@ exports.updateOffre = async (req, res) => {
         `;
 
 
-        const [result] = await db.query(
+        const [result] =
+            await db.query(
 
-            sql,
+                sql,
 
-            [
+                [
 
-                id_prestataire,
-                id_destination,
-                id_categorie,
-                titre.trim(),
-                description.trim(),
-                prixNombre,
-                capaciteNombre,
-                disponibiliteNombre,
-                date_debut,
-                date_fin,
-                image,
-                id
+                    id_prestataire,
 
-            ]
+                    id_destination,
 
-        );
+                    id_categorie,
+
+                    titre.trim(),
+
+                    description.trim(),
+
+                    prixNombre,
+
+                    capaciteNombre,
+
+                    disponibiliteNombre,
+
+                    date_debut,
+
+                    date_fin,
+
+                    image,
+
+                    id
+
+                ]
+
+            );
 
 
         if (
@@ -614,6 +1004,28 @@ exports.updateOffre = async (req, res) => {
                     "Aucune modification effectuée."
 
             });
+
+        }
+
+
+        // ====================================================
+        // SUPPRIMER ANCIENNE IMAGE
+        // APRÈS LA MODIFICATION
+        // ====================================================
+
+        if (
+
+            req.file &&
+
+            ancienneOffre.image &&
+
+            ancienneOffre.image !== image
+
+        ) {
+
+            await deleteImageCloudinary(
+                ancienneOffre.image
+            );
 
         }
 
@@ -636,7 +1048,6 @@ exports.updateOffre = async (req, res) => {
                 image
 
         });
-
 
     }
 
@@ -666,7 +1077,6 @@ exports.updateOffre = async (req, res) => {
 };
 
 
-
 // ============================================================
 // SUPPRIMER UNE OFFRE
 // ============================================================
@@ -675,7 +1085,8 @@ exports.deleteOffre = async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        const id =
+            req.params.id;
 
 
         console.log(
@@ -685,20 +1096,21 @@ exports.deleteOffre = async (req, res) => {
 
 
         // ====================================================
-        // VERIFIER OFFRE
+        // RÉCUPÉRER L'OFFRE
         // ====================================================
 
-        const [offres] = await db.query(
+        const [offres] =
+            await db.query(
 
-            `
-            SELECT id_offre
-            FROM offre
-            WHERE id_offre = ?
-            `,
+                `
+                SELECT *
+                FROM offre
+                WHERE id_offre = ?
+                `,
 
-            [id]
+                [id]
 
-        );
+            );
 
 
         if (offres.length === 0) {
@@ -713,8 +1125,12 @@ exports.deleteOffre = async (req, res) => {
         }
 
 
+        const offre =
+            offres[0];
+
+
         // ====================================================
-        // SUPPRIMER PHOTOS DETAILS
+        // SUPPRIMER PHOTOS DÉTAILLÉES
         // ====================================================
 
         await db.query(
@@ -733,16 +1149,17 @@ exports.deleteOffre = async (req, res) => {
         // SUPPRIMER OFFRE
         // ====================================================
 
-        const [result] = await db.query(
+        const [result] =
+            await db.query(
 
-            `
-            DELETE FROM offre
-            WHERE id_offre = ?
-            `,
+                `
+                DELETE FROM offre
+                WHERE id_offre = ?
+                `,
 
-            [id]
+                [id]
 
-        );
+            );
 
 
         if (
@@ -759,13 +1176,29 @@ exports.deleteOffre = async (req, res) => {
         }
 
 
+        // ====================================================
+        // SUPPRIMER IMAGE CLOUDINARY
+        // ====================================================
+
+        if (offre.image) {
+
+            await deleteImageCloudinary(
+                offre.image
+            );
+
+        }
+
+
+        // ====================================================
+        // RÉPONSE
+        // ====================================================
+
         return res.json({
 
             message:
                 "Offre supprimée avec succès"
 
         });
-
 
     }
 
@@ -795,7 +1228,6 @@ exports.deleteOffre = async (req, res) => {
 };
 
 
-
 // ============================================================
 // AFFICHER TOUTES LES OFFRES
 // ============================================================
@@ -804,43 +1236,45 @@ exports.getOffres = async (req, res) => {
 
     try {
 
-        const [offres] = await db.query(
+        const [offres] =
+            await db.query(
 
-            `
+                `
 
-            SELECT
+                SELECT
 
-                o.*,
+                    o.*,
 
-                d.nom AS destination,
+                    d.nom AS destination,
 
-                c.nom AS categorie,
+                    c.nom AS categorie,
 
-                p.nom_entreprise AS prestataire
+                    p.nom_entreprise AS prestataire
 
-            FROM offre o
+                FROM offre o
 
-            LEFT JOIN destination d
+                LEFT JOIN destination d
 
-                ON o.id_destination =
-                   d.id_destination
+                    ON o.id_destination =
+                       d.id_destination
 
-            LEFT JOIN categorie c
+                LEFT JOIN categorie c
 
-                ON o.id_categorie =
-                   c.id_categorie
+                    ON o.id_categorie =
+                       c.id_categorie
 
-            LEFT JOIN prestataire p
+                LEFT JOIN prestataire p
 
-                ON o.id_prestataire =
-                   p.id_prestataire
+                    ON o.id_prestataire =
+                       p.id_prestataire
 
-            ORDER BY
-                o.id_offre DESC
+                ORDER BY
 
-            `
+                    o.id_offre DESC
 
-        );
+                `
+
+            );
 
 
         return res.json(offres);
@@ -873,70 +1307,69 @@ exports.getOffres = async (req, res) => {
 };
 
 
-
 // ============================================================
 // AFFICHER UNE OFFRE PAR ID
-// AVEC SES PHOTOS DETAILLEES
+// AVEC SES PHOTOS DÉTAILLÉES
 // ============================================================
 
 exports.getOffreById = async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        const id =
+            req.params.id;
 
 
         // ====================================================
         // OFFRE
         // ====================================================
 
-        const [offres] = await db.query(
+        const [offres] =
+            await db.query(
 
-            `
+                `
 
-            SELECT
+                SELECT
 
-                o.*,
+                    o.*,
 
-                d.nom AS destination,
+                    d.nom AS destination,
 
-                c.nom AS categorie,
+                    c.nom AS categorie,
 
-                p.nom_entreprise AS prestataire
+                    p.nom_entreprise AS prestataire
 
-            FROM offre o
+                FROM offre o
 
-            LEFT JOIN destination d
+                LEFT JOIN destination d
 
-                ON o.id_destination =
-                   d.id_destination
+                    ON o.id_destination =
+                       d.id_destination
 
-            LEFT JOIN categorie c
+                LEFT JOIN categorie c
 
-                ON o.id_categorie =
-                   c.id_categorie
+                    ON o.id_categorie =
+                       c.id_categorie
 
-            LEFT JOIN prestataire p
+                LEFT JOIN prestataire p
 
-                ON o.id_prestataire =
-                   p.id_prestataire
+                    ON o.id_prestataire =
+                       p.id_prestataire
 
-            WHERE o.id_offre = ?
+                WHERE o.id_offre = ?
 
-            `,
+                `,
 
-            [id]
+                [id]
 
-        );
+            );
 
 
         // ====================================================
         // OFFRE INTROUVABLE
         // ====================================================
 
-        if (
-            offres.length === 0
-        ) {
+        if (offres.length === 0) {
 
             return res.status(404).json({
 
@@ -948,58 +1381,63 @@ exports.getOffreById = async (req, res) => {
         }
 
 
-        const offre = offres[0];
+        const offre =
+            offres[0];
 
 
         // ====================================================
-        // PHOTOS DETAILLEES
+        // PHOTOS DÉTAILLÉES
         // ====================================================
 
-        const [photos] = await db.query(
+        const [photos] =
+            await db.query(
 
-            `
+                `
 
-            SELECT
+                SELECT
 
-                id_photo,
+                    id_photo,
 
-                id_offre,
+                    id_offre,
 
-                chemin_photo,
+                    chemin_photo,
 
-                type_photo,
+                    type_photo,
 
-                ordre_affichage
+                    ordre_affichage
 
-            FROM offre_photo
+                FROM offre_photo
 
-            WHERE id_offre = ?
+                WHERE id_offre = ?
 
-            ORDER BY
+                ORDER BY
 
-                ordre_affichage ASC,
+                    ordre_affichage ASC,
 
-                id_photo ASC
+                    id_photo ASC
 
-            `,
+                `,
 
-            [id]
+                [id]
 
+            );
+
+
+        // ====================================================
+        // AJOUTER PHOTOS
+        // ====================================================
+
+        offre.photos =
+            photos;
+
+
+        // ====================================================
+        // RÉPONSE
+        // ====================================================
+
+        return res.json(
+            offre
         );
-
-
-        // ====================================================
-        // AJOUTER PHOTOS À L'OBJET OFFRE
-        // ====================================================
-
-        offre.photos = photos;
-
-
-        // ====================================================
-        // REPONSE
-        // ====================================================
-
-        return res.json(offre);
 
     }
 

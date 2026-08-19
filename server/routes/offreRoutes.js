@@ -12,11 +12,7 @@ const upload =
     require("../middleware/upload");
 
 
-// =====================================
-// AJOUTER UNE OFFRE AVEC IMAGE PRINCIPALE
-// POST /api/offres
-// =====================================
-
+// Ajouter une offre
 router.post(
     "/",
     upload.single("image"),
@@ -24,24 +20,14 @@ router.post(
 );
 
 
-
-// =====================================
-// AFFICHER TOUTES LES OFFRES
-// GET /api/offres
-// =====================================
-
+// Toutes les offres
 router.get(
     "/",
     offreController.getOffres
 );
 
 
-
-// =====================================
-// AJOUTER PLUSIEURS PHOTOS À UNE OFFRE
-// POST /api/offres/:id/photos
-// =====================================
-
+// Ajouter plusieurs photos
 router.post(
     "/:id/photos",
     upload.array("photos", 10),
@@ -49,48 +35,28 @@ router.post(
 );
 
 
-
-// =====================================
-// RÉCUPÉRER LES PHOTOS D'UNE OFFRE
-// GET /api/offres/:id/photos
-// =====================================
-
+// Photos d'une offre
 router.get(
     "/:id/photos",
     offrePhotoController.getPhotos
 );
 
 
-
-// =====================================
-// SUPPRIMER UNE PHOTO
-// DELETE /api/offres/photos/:idPhoto
-// =====================================
-
+// Supprimer photo
 router.delete(
     "/photos/:idPhoto",
     offrePhotoController.supprimerPhoto
 );
 
 
-
-// =====================================
-// AFFICHER UNE OFFRE PAR ID
-// GET /api/offres/:id
-// =====================================
-
+// Offre par ID
 router.get(
     "/:id",
     offreController.getOffreById
 );
 
 
-
-// =====================================
-// MODIFIER UNE OFFRE
-// PUT /api/offres/:id
-// =====================================
-
+// Modifier
 router.put(
     "/:id",
     upload.single("image"),
@@ -98,17 +64,11 @@ router.put(
 );
 
 
-
-// =====================================
-// SUPPRIMER UNE OFFRE
-// DELETE /api/offres/:id
-// =====================================
-
+// Supprimer
 router.delete(
     "/:id",
     offreController.deleteOffre
 );
-
 
 
 module.exports = router;
