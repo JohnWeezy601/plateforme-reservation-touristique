@@ -1,4 +1,3 @@
-
 import {
     FaTimes,
     FaSave
@@ -19,17 +18,11 @@ function AdminProfileModal({
     }
 
 
-    // =============================
+    // ==========================================
     // PHOTO ADMIN
-    // =============================
+    // ==========================================
 
-    const photoAdmin = admin?.photo
-        ? (
-            admin.photo.startsWith("http")
-                ? admin.photo
-                : `${import.meta.env.VITE_SERVER_URL}/uploads/${admin.photo}`
-        )
-        : null;
+    const photoAdmin = admin?.photo || null;
 
 
     return (
@@ -43,17 +36,15 @@ function AdminProfileModal({
                 onClick={(e) => e.stopPropagation()}
             >
 
-
-                {/* =========================
+                {/* =================================
                     HEADER
-                ========================= */}
+                ================================= */}
 
                 <div className="admin-modal-header">
 
                     <h2>
                         Modifier mon profil
                     </h2>
-
 
                     <button
                         type="button"
@@ -66,9 +57,9 @@ function AdminProfileModal({
                 </div>
 
 
-                {/* =========================
+                {/* =================================
                     PROFIL ADMIN
-                ========================= */}
+                ================================= */}
 
                 <div className="admin-profile-preview">
 
@@ -79,6 +70,7 @@ function AdminProfileModal({
                             <img
                                 src={photoAdmin}
                                 alt="Photo de profil administrateur"
+                                className="admin-profile-photo-image"
                             />
 
                         ) : (
@@ -95,7 +87,9 @@ function AdminProfileModal({
                     <div className="admin-profile-preview-info">
 
                         <h3>
-                            {admin?.nom || ""} {admin?.prenom || ""}
+                            {admin?.nom || ""}
+                            {" "}
+                            {admin?.prenom || ""}
                         </h3>
 
                         <span>
@@ -107,12 +101,11 @@ function AdminProfileModal({
                 </div>
 
 
-                {/* =========================
+                {/* =================================
                     FORMULAIRE
-                ========================= */}
+                ================================= */}
 
                 <form onSubmit={save}>
-
 
                     {/* NOM */}
 
@@ -233,4 +226,3 @@ function AdminProfileModal({
 
 
 export default AdminProfileModal;
-
