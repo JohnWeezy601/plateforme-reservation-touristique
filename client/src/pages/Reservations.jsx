@@ -104,7 +104,28 @@ useEffect(()=>{
 },[]);
 
 
+// ==============================
+// URL IMAGE
+// ==============================
 
+const getImageUrl = (image) => {
+
+    if (!image) {
+        return null;
+    }
+
+    // Image déjà hébergée sur Cloudinary
+    if (
+        image.startsWith("http://") ||
+        image.startsWith("https://")
+    ) {
+        return image;
+    }
+
+    // Ancienne image locale
+    return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+
+};
 
 
 // ==============================
@@ -704,16 +725,11 @@ reservation.image &&
 
 <img
 
-src={
-
-`${import.meta.env.VITE_SERVER_URL}/uploads/${reservation.image}`
-
-}
+src={getImageUrl(reservation.image)}
 
 alt={reservation.titre}
 
 />
-
 
 }
 

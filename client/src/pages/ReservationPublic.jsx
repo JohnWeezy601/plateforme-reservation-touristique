@@ -197,6 +197,29 @@ function ReservationPublic() {
 
     };
 
+    // =====================================================
+// URL IMAGE
+// =====================================================
+
+const getImageUrl = (image) => {
+
+    if (!image) {
+        return "/image-default.jpg";
+    }
+
+    // Image déjà hébergée sur Cloudinary
+    if (
+        image.startsWith("http://") ||
+        image.startsWith("https://")
+    ) {
+        return image;
+    }
+
+    // Ancienne image locale
+    return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+
+};
+
 
     // =====================================================
     // DATE MINIMUM
@@ -820,17 +843,13 @@ function ReservationPublic() {
 
                         <div className="reservation-offer-image">
 
-                            <img
-                                src={
-                                    offre.image
-                                        ? `${import.meta.env.VITE_SERVER_URL}/uploads/${offre.image}`
-                                        : "/image-default.jpg"
-                                }
-                                alt={
-                                    offre.titre ||
-                                    "Offre touristique"
-                                }
-                            />
+                            <img 
+    src={getImageUrl(offre.image)} 
+    alt={ 
+        offre.titre || 
+        "Offre touristique" 
+    } 
+/>
 
 
                             <div className="offer-price-badge">
