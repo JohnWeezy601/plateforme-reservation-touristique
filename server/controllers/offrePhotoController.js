@@ -72,9 +72,6 @@ const deleteImageCloudinary = async (imageUrl) => {
         }
 
 
-        // Si ce n'est pas une URL Cloudinary,
-        // on ne fait rien.
-
         if (
             !imageUrl.includes(
                 "res.cloudinary.com"
@@ -116,19 +113,12 @@ const deleteImageCloudinary = async (imageUrl) => {
             );
 
 
-        // Supprimer la version Cloudinary
-        // Exemple :
-        // v123456789/
-
         publicId =
             publicId.replace(
                 /^v\d+\//,
                 ""
             );
 
-
-        // Supprimer l'extension
-        // .jpg / .png / .webp
 
         publicId =
             publicId.replace(
@@ -211,10 +201,6 @@ exports.ajouterPhotos = async (req, res) => {
         );
 
 
-        // ====================================================
-        // VÉRIFIER LES FICHIERS
-        // ====================================================
-
         if (
             !fichiers ||
             fichiers.length === 0
@@ -229,10 +215,6 @@ exports.ajouterPhotos = async (req, res) => {
 
         }
 
-
-        // ====================================================
-        // VÉRIFIER QUE L'OFFRE EXISTE
-        // ====================================================
 
         const [offres] =
             await db.query(
@@ -262,10 +244,6 @@ exports.ajouterPhotos = async (req, res) => {
         }
 
 
-        // ====================================================
-        // RÉCUPÉRER LE DERNIER ORDRE
-        // ====================================================
-
         const [dernieresPhotos] =
             await db.query(
 
@@ -289,16 +267,8 @@ exports.ajouterPhotos = async (req, res) => {
                 .dernier_ordre || 0;
 
 
-        // ====================================================
-        // TABLEAU DES PHOTOS AJOUTÉES
-        // ====================================================
-
         const photosAjoutees = [];
 
-
-        // ====================================================
-        // UPLOAD DES PHOTOS
-        // ====================================================
 
         for (
             let i = 0;
@@ -316,10 +286,6 @@ exports.ajouterPhotos = async (req, res) => {
             );
 
 
-            // -----------------------------------------------
-            // ENVOYER VERS CLOUDINARY
-            // -----------------------------------------------
-
             const cloudinaryResult =
                 await uploadImageCloudinary(
                     fichier
@@ -330,16 +296,8 @@ exports.ajouterPhotos = async (req, res) => {
                 cloudinaryResult.secure_url;
 
 
-            // -----------------------------------------------
-            // ORDRE
-            // -----------------------------------------------
-
             dernierOrdre++;
 
-
-            // -----------------------------------------------
-            // INSERTION MYSQL
-            // -----------------------------------------------
 
             const [result] =
                 await db.query(
@@ -373,10 +331,6 @@ exports.ajouterPhotos = async (req, res) => {
                 );
 
 
-            // -----------------------------------------------
-            // RÉPONSE
-            // -----------------------------------------------
-
             photosAjoutees.push({
 
                 id_photo:
@@ -404,10 +358,6 @@ exports.ajouterPhotos = async (req, res) => {
 
         }
 
-
-        // ====================================================
-        // RÉPONSE
-        // ====================================================
 
         return res.status(201).json({
 
@@ -490,8 +440,26 @@ exports.getPhotos = async (req, res) => {
             );
 
 
+        // ====================================================
+        // RÉCUPÉRATION DES IMAGES
+        // ====================================================
+        // chemin_photo est déjà une URL Cloudinary complète.
+        // Il ne faut pas ajouter /uploads/ devant.
+        // ====================================================
+
+        const photosAvecImages =
+            photos.map((photo) => ({
+
+                ...photo,
+
+                chemin_photo:
+                    photo.chemin_photo || null
+
+            }));
+
+
         return res.json(
-            photos
+            photosAvecImages
         );
 
     }
@@ -534,10 +502,6 @@ exports.supprimerPhoto = async (req, res) => {
             req.params.idPhoto;
 
 
-        // ====================================================
-        // RÉCUPÉRER LA PHOTO AVANT SUPPRESSION
-        // ====================================================
-
         const [photos] =
             await db.query(
 
@@ -578,10 +542,6 @@ exports.supprimerPhoto = async (req, res) => {
             photos[0];
 
 
-        // ====================================================
-        // SUPPRIMER DE MYSQL
-        // ====================================================
-
         const [result] =
             await db.query(
 
@@ -612,10 +572,6 @@ exports.supprimerPhoto = async (req, res) => {
         }
 
 
-        // ====================================================
-        // SUPPRIMER DE CLOUDINARY
-        // ====================================================
-
         if (
             photo.chemin_photo
         ) {
@@ -628,10 +584,6 @@ exports.supprimerPhoto = async (req, res) => {
 
         }
 
-
-        // ====================================================
-        // RÉPONSE
-        // ====================================================
 
         return res.json({
 

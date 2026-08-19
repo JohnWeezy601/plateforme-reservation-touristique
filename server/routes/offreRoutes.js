@@ -12,7 +12,10 @@ const upload =
     require("../middleware/upload");
 
 
-// Ajouter une offre
+// ============================================================
+// AJOUTER UNE OFFRE
+// ============================================================
+
 router.post(
     "/",
     upload.single("image"),
@@ -20,14 +23,20 @@ router.post(
 );
 
 
-// Toutes les offres
+// ============================================================
+// TOUTES LES OFFRES
+// ============================================================
+
 router.get(
     "/",
     offreController.getOffres
 );
 
 
-// Ajouter plusieurs photos
+// ============================================================
+// AJOUTER PLUSIEURS PHOTOS
+// ============================================================
+
 router.post(
     "/:id/photos",
     upload.array("photos", 10),
@@ -35,28 +44,40 @@ router.post(
 );
 
 
-// Photos d'une offre
+// ============================================================
+// PHOTOS D'UNE OFFRE
+// ============================================================
+
 router.get(
     "/:id/photos",
     offrePhotoController.getPhotos
 );
 
 
-// Supprimer photo
+// ============================================================
+// SUPPRIMER PHOTO
+// ============================================================
+
 router.delete(
     "/photos/:idPhoto",
     offrePhotoController.supprimerPhoto
 );
 
 
-// Offre par ID
+// ============================================================
+// OFFRE PAR ID
+// ============================================================
+
 router.get(
     "/:id",
     offreController.getOffreById
 );
 
 
-// Modifier
+// ============================================================
+// MODIFIER
+// ============================================================
+
 router.put(
     "/:id",
     upload.single("image"),
@@ -64,7 +85,10 @@ router.put(
 );
 
 
-// Supprimer
+// ============================================================
+// SUPPRIMER
+// ============================================================
+
 router.delete(
     "/:id",
     offreController.deleteOffre

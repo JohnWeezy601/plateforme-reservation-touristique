@@ -5,6 +5,12 @@ import "./Offres.css";
 function Offres() {
 
     // =========================================================
+    // URL SERVEUR
+    // =========================================================
+
+    const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
+    // =========================================================
     // DONNÉES
     // =========================================================
 
@@ -55,8 +61,7 @@ function Offres() {
     // FORMULAIRE
     // =========================================================
 
-    const [offre, setOffre] = useState({
-
+    const formulaireInitial = {
         id_prestataire: "",
         id_destination: "",
         id_categorie: "",
@@ -70,21 +75,15 @@ function Offres() {
 
         date_debut: "",
         date_fin: ""
+    };
 
-    });
+    const [offre, setOffre] = useState(formulaireInitial);
 
     // =========================================================
     // ERREURS
     // =========================================================
 
     const [erreurs, setErreurs] = useState({});
-
-    // =========================================================
-    // URL SERVEUR
-    // =========================================================
-
-    const SERVER_URL =
-        import.meta.env.VITE_SERVER_URL;
 
     // =========================================================
     // CHARGER LES DONNÉES
@@ -94,8 +93,6 @@ function Offres() {
 
         try {
 
-            console.log("🔄 Chargement des données...");
-
             const [
                 offresRes,
                 destinationsRes,
@@ -104,40 +101,124 @@ function Offres() {
             ] = await Promise.all([
 
                 api.get("/offres"),
-
                 api.get("/destinations"),
-
                 api.get("/categories"),
-
                 api.get("/prestataires")
 
             ]);
 
+            // =====================================================
+            // OFFRES
+            // =====================================================
+
+            let offresData = offresRes.data;
+
+            if (
+                offresData &&
+                Array.isArray(offresData.offres)
+            ) {
+                offresData = offresData.offres;
+            }
+
+            if (
+                offresData &&
+                Array.isArray(offresData.data)
+            ) {
+                offresData = offresData.data;
+            }
+
             setOffres(
-                Array.isArray(offresRes.data)
-                    ? offresRes.data
+                Array.isArray(offresData)
+                    ? offresData
                     : []
             );
+
+            // =====================================================
+            // DESTINATIONS
+            // =====================================================
+
+            let destinationsData =
+                destinationsRes.data;
+
+            if (
+                destinationsData &&
+                Array.isArray(destinationsData.destinations)
+            ) {
+                destinationsData =
+                    destinationsData.destinations;
+            }
+
+            if (
+                destinationsData &&
+                Array.isArray(destinationsData.data)
+            ) {
+                destinationsData =
+                    destinationsData.data;
+            }
 
             setDestinations(
-                Array.isArray(destinationsRes.data)
-                    ? destinationsRes.data
+                Array.isArray(destinationsData)
+                    ? destinationsData
                     : []
             );
+
+            // =====================================================
+            // CATÉGORIES
+            // =====================================================
+
+            let categoriesData =
+                categoriesRes.data;
+
+            if (
+                categoriesData &&
+                Array.isArray(categoriesData.categories)
+            ) {
+                categoriesData =
+                    categoriesData.categories;
+            }
+
+            if (
+                categoriesData &&
+                Array.isArray(categoriesData.data)
+            ) {
+                categoriesData =
+                    categoriesData.data;
+            }
 
             setCategories(
-                Array.isArray(categoriesRes.data)
-                    ? categoriesRes.data
+                Array.isArray(categoriesData)
+                    ? categoriesData
                     : []
             );
+
+            // =====================================================
+            // PRESTATAIRES
+            // =====================================================
+
+            let prestatairesData =
+                prestatairesRes.data;
+
+            if (
+                prestatairesData &&
+                Array.isArray(prestatairesData.prestataires)
+            ) {
+                prestatairesData =
+                    prestatairesData.prestataires;
+            }
+
+            if (
+                prestatairesData &&
+                Array.isArray(prestatairesData.data)
+            ) {
+                prestatairesData =
+                    prestatairesData.data;
+            }
 
             setPrestataires(
-                Array.isArray(prestatairesRes.data)
-                    ? prestatairesRes.data
+                Array.isArray(prestatairesData)
+                    ? prestatairesData
                     : []
             );
-
-            console.log("✅ Données chargées");
 
         }
 
@@ -163,6 +244,40 @@ function Offres() {
     }, []);
 
     // =========================================================
+    // FERMER MENU EN CLIQUANT AILLEURS
+    // =========================================================
+
+    useEffect(() => {
+
+        const fermerMenu = (event) => {
+
+            if (
+                !event.target.closest(".menu-offre")
+            ) {
+
+                setMenuOuvert(null);
+
+            }
+
+        };
+
+        document.addEventListener(
+            "click",
+            fermerMenu
+        );
+
+        return () => {
+
+            document.removeEventListener(
+                "click",
+                fermerMenu
+            );
+
+        };
+
+    }, []);
+
+    // =========================================================
     // CHANGEMENT INPUT
     // =========================================================
 
@@ -174,21 +289,15 @@ function Offres() {
         } = e.target;
 
         setOffre((ancienne) => ({
-
             ...ancienne,
-
             [name]: value
-
         }));
 
         if (erreurs[name]) {
 
             setErreurs((ancienne) => ({
-
                 ...ancienne,
-
                 [name]: ""
-
             }));
 
         }
@@ -207,18 +316,15 @@ function Offres() {
         if (!fichier) {
 
             setImage(null);
-
             return;
 
         }
 
         const formatsAutorises = [
-
             "image/jpeg",
             "image/jpg",
             "image/png",
             "image/webp"
-
         ];
 
         if (
@@ -232,7 +338,6 @@ function Offres() {
             );
 
             e.target.value = "";
-
             setImage(null);
 
             return;
@@ -249,7 +354,6 @@ function Offres() {
             );
 
             e.target.value = "";
-
             setImage(null);
 
             return;
@@ -266,9 +370,10 @@ function Offres() {
 
     const handlePhotosDetails = (e) => {
 
-        const fichiers = Array.from(
-            e.target.files || []
-        );
+        const fichiers =
+            Array.from(
+                e.target.files || []
+            );
 
         if (
             fichiers.length === 0
@@ -279,19 +384,16 @@ function Offres() {
         }
 
         const formatsAutorises = [
-
             "image/jpeg",
             "image/jpg",
             "image/png",
             "image/webp"
-
         ];
 
         const fichiersValides = [];
 
         for (
-            const fichier
-            of fichiers
+            const fichier of fichiers
         ) {
 
             if (
@@ -328,7 +430,7 @@ function Offres() {
         }
 
         // =====================================================
-        // NOMBRE DE PHOTOS DÉJÀ ENREGISTRÉES
+        // CALCUL DU NOMBRE DISPONIBLE
         // =====================================================
 
         const nombreExistantes =
@@ -366,11 +468,8 @@ function Offres() {
 
         setPhotosDetails(
             (anciennes) => [
-
                 ...anciennes,
-
                 ...photosAAjouter
-
             ]
         );
 
@@ -427,6 +526,8 @@ function Offres() {
 
         try {
 
+            setChargement(true);
+
             await api.delete(
                 `/offres/photos/${idPhoto}`
             );
@@ -454,12 +555,15 @@ function Offres() {
             );
 
             alert(
-
                 error.response?.data?.message ||
-
                 "Erreur lors de la suppression de la photo."
-
             );
+
+        }
+
+        finally {
+
+            setChargement(false);
 
         }
 
@@ -487,8 +591,7 @@ function Offres() {
         }
 
         else if (
-            offre.titre.trim().length <
-            3
+            offre.titre.trim().length < 3
         ) {
 
             nouvellesErreurs.titre =
@@ -549,8 +652,7 @@ function Offres() {
         }
 
         else if (
-            offre.description.trim().length <
-            10
+            offre.description.trim().length < 10
         ) {
 
             nouvellesErreurs.description =
@@ -575,7 +677,7 @@ function Offres() {
         }
 
         else if (
-            isNaN(prix) ||
+            !Number.isFinite(prix) ||
             prix <= 0
         ) {
 
@@ -601,9 +703,8 @@ function Offres() {
         }
 
         else if (
-            isNaN(capacite) ||
-            capacite <= 0 ||
-            !Number.isInteger(capacite)
+            !Number.isInteger(capacite) ||
+            capacite <= 0
         ) {
 
             nouvellesErreurs.capacite =
@@ -616,9 +717,7 @@ function Offres() {
         // =====================================================
 
         const disponibilite =
-            Number(
-                offre.disponibilite
-            );
+            Number(offre.disponibilite);
 
         if (
             offre.disponibilite === ""
@@ -630,11 +729,8 @@ function Offres() {
         }
 
         else if (
-            isNaN(disponibilite) ||
-            disponibilite < 0 ||
-            !Number.isInteger(
-                disponibilite
-            )
+            !Number.isInteger(disponibilite) ||
+            disponibilite < 0
         ) {
 
             nouvellesErreurs.disponibilite =
@@ -643,6 +739,7 @@ function Offres() {
         }
 
         else if (
+            Number.isInteger(capacite) &&
             capacite > 0 &&
             disponibilite > capacite
         ) {
@@ -685,8 +782,7 @@ function Offres() {
         if (
             offre.date_debut &&
             offre.date_fin &&
-            offre.date_fin <
-            offre.date_debut
+            offre.date_fin < offre.date_debut
         ) {
 
             nouvellesErreurs.date_fin =
@@ -713,21 +809,7 @@ function Offres() {
     const resetForm = () => {
 
         setOffre({
-
-            id_prestataire: "",
-            id_destination: "",
-            id_categorie: "",
-
-            titre: "",
-            description: "",
-
-            prix: "",
-            capacite: "",
-            disponibilite: "",
-
-            date_debut: "",
-            date_fin: ""
-
+            ...formulaireInitial
         });
 
         setImage(null);
@@ -752,6 +834,8 @@ function Offres() {
 
         resetForm();
 
+        setMenuOuvert(null);
+
         setModal(true);
 
     };
@@ -765,7 +849,7 @@ function Offres() {
     ) => {
 
         if (
-            !photosDetails ||
+            !idOffre ||
             photosDetails.length === 0
         ) {
 
@@ -796,12 +880,9 @@ function Offres() {
 
                 {
                     headers: {
-
                         "Content-Type":
                             "multipart/form-data"
-
                     }
-
                 }
 
             );
@@ -822,17 +903,11 @@ function Offres() {
     ) => {
 
         if (e) {
-
             e.preventDefault();
-
         }
 
-        if (
-            !validerFormulaire()
-        ) {
-
+        if (!validerFormulaire()) {
             return;
-
         }
 
         try {
@@ -846,12 +921,12 @@ function Offres() {
             const formData =
                 new FormData();
 
-            Object.keys(offre).forEach(
-                (key) => {
+            Object.entries(offre).forEach(
+                ([key, value]) => {
 
                     formData.append(
                         key,
-                        offre[key]
+                        value ?? ""
                     );
 
                 }
@@ -875,7 +950,8 @@ function Offres() {
             // =================================================
 
             if (
-                modeModification
+                modeModification &&
+                idModification
             ) {
 
                 const response =
@@ -886,14 +962,10 @@ function Offres() {
                         formData,
 
                         {
-
                             headers: {
-
                                 "Content-Type":
                                     "multipart/form-data"
-
                             }
-
                         }
 
                     );
@@ -903,13 +975,12 @@ function Offres() {
                     response.data
                 );
 
-                // =============================================
-                // AJOUTER NOUVELLES PHOTOS DÉTAILLÉES
-                // =============================================
+                // =================================================
+                // NOUVELLES PHOTOS
+                // =================================================
 
                 if (
-                    photosDetails.length >
-                    0
+                    photosDetails.length > 0
                 ) {
 
                     await envoyerPhotosDetails(
@@ -938,14 +1009,10 @@ function Offres() {
                         formData,
 
                         {
-
                             headers: {
-
                                 "Content-Type":
                                     "multipart/form-data"
-
                             }
-
                         }
 
                     );
@@ -956,16 +1023,16 @@ function Offres() {
                 );
 
                 const nouvelId =
-                    response.data.id_offre;
+                    response.data?.id_offre ||
+                    response.data?.offre?.id_offre;
 
-                // =============================================
-                // AJOUT PHOTOS DÉTAILLÉES
-                // =============================================
+                // =================================================
+                // PHOTOS DÉTAILLÉES
+                // =================================================
 
                 if (
                     nouvelId &&
-                    photosDetails.length >
-                    0
+                    photosDetails.length > 0
                 ) {
 
                     await envoyerPhotosDetails(
@@ -981,7 +1048,7 @@ function Offres() {
             }
 
             // =================================================
-            // RECHARGER
+            // RECHARGEMENT
             // =================================================
 
             await chargerDonnees();
@@ -1007,11 +1074,8 @@ function Offres() {
             );
 
             alert(
-
                 error.response?.data?.message ||
-
                 "Erreur lors de l'enregistrement de l'offre."
-
             );
 
         }
@@ -1038,13 +1102,17 @@ function Offres() {
 
             const response =
                 await api.get(
-
                     `/offres/${item.id_offre}`
-
                 );
 
             const offreComplete =
+                response.data?.offre ||
                 response.data;
+
+            console.log(
+                "📦 Offre complète :",
+                offreComplete
+            );
 
             // =================================================
             // REMPLIR FORMULAIRE
@@ -1053,23 +1121,23 @@ function Offres() {
             setOffre({
 
                 id_prestataire:
-                    offreComplete.id_prestataire ||
+                    offreComplete.id_prestataire ??
                     "",
 
                 id_destination:
-                    offreComplete.id_destination ||
+                    offreComplete.id_destination ??
                     "",
 
                 id_categorie:
-                    offreComplete.id_categorie ||
+                    offreComplete.id_categorie ??
                     "",
 
                 titre:
-                    offreComplete.titre ||
+                    offreComplete.titre ??
                     "",
 
                 description:
-                    offreComplete.description ||
+                    offreComplete.description ??
                     "",
 
                 prix:
@@ -1088,20 +1156,14 @@ function Offres() {
                     offreComplete.date_debut
                         ? String(
                             offreComplete.date_debut
-                        ).substring(
-                            0,
-                            10
-                        )
+                        ).substring(0, 10)
                         : "",
 
                 date_fin:
                     offreComplete.date_fin
                         ? String(
                             offreComplete.date_fin
-                        ).substring(
-                            0,
-                            10
-                        )
+                        ).substring(0, 10)
                         : ""
 
             });
@@ -1110,14 +1172,15 @@ function Offres() {
             // PHOTOS EXISTANTES
             // =================================================
 
-            setPhotosExistantes(
-
+            const photos =
                 Array.isArray(
                     offreComplete.photos
                 )
                     ? offreComplete.photos
-                    : []
+                    : [];
 
+            setPhotosExistantes(
+                photos
             );
 
             // =================================================
@@ -1155,6 +1218,11 @@ function Offres() {
                 error
             );
 
+            console.error(
+                "Réponse serveur :",
+                error.response?.data
+            );
+
             alert(
                 error.response?.data?.message ||
                 "Impossible de récupérer les détails de cette offre."
@@ -1190,6 +1258,8 @@ function Offres() {
 
         try {
 
+            setChargement(true);
+
             await api.delete(
                 `/offres/${id}`
             );
@@ -1212,12 +1282,15 @@ function Offres() {
             );
 
             alert(
-
                 error.response?.data?.message ||
-
                 "Erreur lors de la suppression."
-
             );
+
+        }
+
+        finally {
+
+            setChargement(false);
 
         }
 
@@ -1237,9 +1310,7 @@ function Offres() {
                         .trim();
 
                 if (!texte) {
-
                     return true;
-
                 }
 
                 return (
@@ -1285,20 +1356,16 @@ function Offres() {
 
     const totalPages =
         Math.ceil(
-
             offresFiltrees.length /
             offresParPage
-
         );
 
     const pageSure =
         totalPages > 0
-
             ? Math.min(
                 pageActuelle,
                 totalPages
             )
-
             : 1;
 
     const indexPremiereOffre =
@@ -1309,12 +1376,9 @@ function Offres() {
 
     const offresPage =
         offresFiltrees.slice(
-
             indexPremiereOffre,
-
             indexPremiereOffre +
             offresParPage
-
         );
 
     const changerPage = (
@@ -1331,11 +1395,8 @@ function Offres() {
             );
 
             window.scrollTo({
-
                 top: 0,
-
                 behavior: "smooth"
-
             });
 
         }
@@ -1350,9 +1411,18 @@ function Offres() {
         prix
     ) => {
 
-        return Number(
-            prix || 0
-        ).toLocaleString(
+        const valeur =
+            Number(prix);
+
+        if (
+            !Number.isFinite(valeur)
+        ) {
+
+            return "0,00";
+
+        }
+
+        return valeur.toLocaleString(
             "fr-FR",
             {
                 minimumFractionDigits: 2,
@@ -1371,22 +1441,16 @@ function Offres() {
     ) => {
 
         const valeur =
-            Number(
-                nombre || 0
-            );
+            Number(nombre || 0);
 
         if (
             valeur <= 0
         ) {
 
             return (
-
                 <span className="disponibilite complet">
-
                     🔴 Complet
-
                 </span>
-
             );
 
         }
@@ -1396,25 +1460,17 @@ function Offres() {
         ) {
 
             return (
-
                 <span className="disponibilite faible">
-
                     🟠 1 place disponible
-
                 </span>
-
             );
 
         }
 
         return (
-
             <span className="disponibilite disponible">
-
                 🟢 {valeur} places disponibles
-
             </span>
-
         );
 
     };
@@ -1428,8 +1484,19 @@ function Offres() {
     ) => {
 
         if (!filename) {
-
             return "/image-default.jpg";
+        }
+
+        if (
+            String(filename).startsWith(
+                "http://"
+            ) ||
+            String(filename).startsWith(
+                "https://"
+            )
+        ) {
+
+            return filename;
 
         }
 
@@ -1567,22 +1634,14 @@ function Offres() {
                         <p>
 
                             {recherche
-
                                 ? "Aucune offre ne correspond à votre recherche."
-
-                                : "Aucune offre n'est disponible pour le moment."
-
-                            }
+                                : "Aucune offre n'est disponible pour le moment."}
 
                         </p>
 
                     </div>
 
                 ) : (
-
-                    /* =================================================
-                       CARTES OFFRES
-                    ================================================= */
 
                     <div className="offres-admin-list">
 
@@ -1596,7 +1655,9 @@ function Offres() {
                                     }
                                 >
 
-                                    {/* IMAGE */}
+                                    {/* =================================================
+                                        IMAGE
+                                    ================================================= */}
 
                                     <div className="offre-image-container">
 
@@ -1608,6 +1669,12 @@ function Offres() {
                                                 item.titre ||
                                                 "Offre touristique"
                                             }
+                                            onError={(e) => {
+
+                                                e.currentTarget.src =
+                                                    "/image-default.jpg";
+
+                                            }}
                                         />
 
                                         {/* MENU */}
@@ -1617,18 +1684,18 @@ function Offres() {
                                             <button
                                                 type="button"
                                                 className="btn-menu-offre"
-                                                onClick={() =>
-                                                    setMenuOuvert(
+                                                onClick={(e) => {
 
+                                                    e.stopPropagation();
+
+                                                    setMenuOuvert(
                                                         menuOuvert ===
                                                         item.id_offre
-
                                                             ? null
-
                                                             : item.id_offre
+                                                    );
 
-                                                    )
-                                                }
+                                                }}
                                             >
                                                 ⋮
                                             </button>
@@ -1636,7 +1703,12 @@ function Offres() {
                                             {menuOuvert ===
                                                 item.id_offre && (
 
-                                                <div className="menu-actions">
+                                                <div
+                                                    className="menu-actions"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
+                                                >
 
                                                     <button
                                                         type="button"
@@ -1669,7 +1741,9 @@ function Offres() {
 
                                     </div>
 
-                                    {/* INFORMATIONS */}
+                                    {/* =================================================
+                                        INFORMATIONS
+                                    ================================================= */}
 
                                     <div className="info-offre">
 
@@ -1679,26 +1753,20 @@ function Offres() {
 
                                         <p>
                                             📍{" "}
-
                                             {item.destination ||
                                                 "Destination inconnue"}
-
                                         </p>
 
                                         <p>
                                             🏷️{" "}
-
                                             {item.categorie ||
                                                 "Catégorie non précisée"}
-
                                         </p>
 
                                         <p>
                                             🏢{" "}
-
                                             {item.prestataire ||
                                                 "Prestataire non précisé"}
-
                                         </p>
 
                                         <p className="prix-offre">
@@ -1726,16 +1794,12 @@ function Offres() {
                                                 📅 Début :{" "}
 
                                                 {item.date_debut
-
                                                     ? new Date(
                                                         item.date_debut
                                                     ).toLocaleDateString(
                                                         "fr-FR"
                                                     )
-
-                                                    : "-"
-
-                                                }
+                                                    : "-"}
 
                                             </span>
 
@@ -1744,16 +1808,12 @@ function Offres() {
                                                 📅 Fin :{" "}
 
                                                 {item.date_fin
-
                                                     ? new Date(
                                                         item.date_fin
                                                     ).toLocaleDateString(
                                                         "fr-FR"
                                                     )
-
-                                                    : "-"
-
-                                                }
+                                                    : "-"}
 
                                             </span>
 
@@ -1796,15 +1856,12 @@ function Offres() {
                         <div className="pagination-numeros">
 
                             {Array.from(
-
                                 {
                                     length:
                                         totalPages
                                 },
-
                                 (_, index) =>
                                     index + 1
-
                             ).map(
                                 (page) => (
 
@@ -1812,14 +1869,9 @@ function Offres() {
                                         type="button"
                                         key={page}
                                         className={
-
-                                            pageSure ===
-                                            page
-
+                                            pageSure === page
                                                 ? "page-number active"
-
                                                 : "page-number"
-
                                         }
                                         onClick={() =>
                                             changerPage(
@@ -1868,7 +1920,7 @@ function Offres() {
                     <div className="modal-offre">
 
                         {/* =================================================
-                            HEADER MODALE
+                            HEADER
                         ================================================= */}
 
                         <div className="modal-header">
@@ -1878,12 +1930,8 @@ function Offres() {
                                 <h2>
 
                                     {modeModification
-
                                         ? "✏️ Modifier l'offre"
-
-                                        : "➕ Nouvelle offre"
-
-                                    }
+                                        : "➕ Nouvelle offre"}
 
                                 </h2>
 
@@ -1896,17 +1944,11 @@ function Offres() {
                             <button
                                 type="button"
                                 className="close-modal"
+                                disabled={chargement}
                                 onClick={() => {
 
-                                    if (!chargement) {
-
-                                        setModal(
-                                            false
-                                        );
-
-                                        resetForm();
-
-                                    }
+                                    setModal(false);
+                                    resetForm();
 
                                 }}
                             >
@@ -1947,11 +1989,9 @@ function Offres() {
                                 />
 
                                 {erreurs.titre && (
-
                                     <small className="error-message">
                                         {erreurs.titre}
                                     </small>
-
                                 )}
 
                             </div>
@@ -2005,13 +2045,11 @@ function Offres() {
                                 </select>
 
                                 {erreurs.id_prestataire && (
-
                                     <small className="error-message">
                                         {
                                             erreurs.id_prestataire
                                         }
                                     </small>
-
                                 )}
 
                             </div>
@@ -2063,13 +2101,11 @@ function Offres() {
                                 </select>
 
                                 {erreurs.id_destination && (
-
                                     <small className="error-message">
                                         {
                                             erreurs.id_destination
                                         }
                                     </small>
-
                                 )}
 
                             </div>
@@ -2121,13 +2157,11 @@ function Offres() {
                                 </select>
 
                                 {erreurs.id_categorie && (
-
                                     <small className="error-message">
                                         {
                                             erreurs.id_categorie
                                         }
                                     </small>
-
                                 )}
 
                             </div>
@@ -2168,11 +2202,9 @@ function Offres() {
                                 </div>
 
                                 {erreurs.prix && (
-
                                     <small className="error-message">
                                         {erreurs.prix}
                                     </small>
-
                                 )}
 
                             </div>
@@ -2213,13 +2245,11 @@ function Offres() {
                                 </div>
 
                                 {erreurs.capacite && (
-
                                     <small className="error-message">
                                         {
                                             erreurs.capacite
                                         }
                                     </small>
-
                                 )}
 
                             </div>
@@ -2268,13 +2298,11 @@ function Offres() {
                                 </small>
 
                                 {erreurs.disponibilite && (
-
                                     <small className="error-message">
                                         {
                                             erreurs.disponibilite
                                         }
                                     </small>
-
                                 )}
 
                             </div>
@@ -2304,13 +2332,11 @@ function Offres() {
                                 />
 
                                 {erreurs.date_debut && (
-
                                     <small className="error-message">
                                         {
                                             erreurs.date_debut
                                         }
                                     </small>
-
                                 )}
 
                             </div>
@@ -2344,13 +2370,11 @@ function Offres() {
                                 />
 
                                 {erreurs.date_fin && (
-
                                     <small className="error-message">
                                         {
                                             erreurs.date_fin
                                         }
                                     </small>
-
                                 )}
 
                             </div>
@@ -2385,13 +2409,11 @@ function Offres() {
                             />
 
                             {erreurs.description && (
-
                                 <small className="error-message">
                                     {
                                         erreurs.description
                                     }
                                 </small>
-
                             )}
 
                         </div>
@@ -2422,42 +2444,41 @@ function Offres() {
 
                             </div>
 
-                            {/* IMAGE ACTUELLE EN MODIFICATION */}
+                            {/* IMAGE ACTUELLE */}
 
-                            {modeModification &&
-                                !image &&
-                                photosExistantes !== null && (
+                            {modeModification && (
 
-                                    <div className="image-actuelle">
+                                <div className="image-actuelle">
 
-                                        <small>
-                                            Image principale actuelle :
-                                        </small>
+                                    <small>
+                                        Image principale actuelle :
+                                    </small>
 
-                                        {offres
-                                            .find(
-                                                (o) =>
-                                                    o.id_offre ===
-                                                    idModification
-                                            )
-                                            ?.image && (
+                                    {offre.image ? (
 
-                                            <img
-                                                src={getImageUrl(
-                                                    offres.find(
-                                                        (o) =>
-                                                            o.id_offre ===
-                                                            idModification
-                                                    )?.image
-                                                )}
-                                                alt="Image actuelle"
-                                            />
+                                        <img
+                                            src={getImageUrl(
+                                                offre.image
+                                            )}
+                                            alt="Image actuelle"
+                                            onError={(e) => {
+                                                e.currentTarget.src =
+                                                    "/image-default.jpg";
+                                            }}
+                                        />
 
-                                        )}
+                                    ) : (
 
-                                    </div>
+                                        <img
+                                            src="/image-default.jpg"
+                                            alt="Image par défaut"
+                                        />
 
-                                )}
+                                    )}
+
+                                </div>
+
+                            )}
 
                             <input
                                 type="file"
@@ -2538,6 +2559,10 @@ function Offres() {
                                 onChange={
                                     handlePhotosDetails
                                 }
+                                disabled={
+                                    photosExistantes.length +
+                                    photosDetails.length >= 10
+                                }
                             />
 
                             {/* =================================================
@@ -2545,8 +2570,7 @@ function Offres() {
                             ================================================= */}
 
                             {modeModification &&
-                                photosExistantes.length >
-                                0 && (
+                                photosExistantes.length > 0 && (
 
                                     <div className="photos-existantes">
 
@@ -2571,6 +2595,10 @@ function Offres() {
                                                                 photo.chemin_photo
                                                             )}
                                                             alt="Photo détaillée"
+                                                            onError={(e) => {
+                                                                e.currentTarget.src =
+                                                                    "/image-default.jpg";
+                                                            }}
                                                         />
 
                                                         <button
@@ -2603,62 +2631,61 @@ function Offres() {
                                 NOUVELLES PHOTOS
                             ================================================= */}
 
-                            {photosDetails.length >
-                                0 && (
+                            {photosDetails.length > 0 && (
 
-                                    <div className="photos-selectionnees">
+                                <div className="photos-selectionnees">
 
-                                        <strong>
-                                            Nouvelles photos
-                                        </strong>
+                                    <strong>
+                                        Nouvelles photos
+                                    </strong>
 
-                                        <div className="photos-details-grid">
+                                    <div className="photos-details-grid">
 
-                                            {photosDetails.map(
-                                                (
-                                                    photo,
-                                                    index
-                                                ) => (
+                                        {photosDetails.map(
+                                            (
+                                                photo,
+                                                index
+                                            ) => (
 
-                                                    <div
-                                                        className="photo-detail-item"
-                                                        key={`${photo.name}-${index}`}
+                                                <div
+                                                    className="photo-detail-item"
+                                                    key={`${photo.name}-${photo.lastModified}-${index}`}
+                                                >
+
+                                                    <img
+                                                        src={URL.createObjectURL(
+                                                            photo
+                                                        )}
+                                                        alt={
+                                                            photo.name
+                                                        }
+                                                    />
+
+                                                    <button
+                                                        type="button"
+                                                        className="delete-photo-detail"
+                                                        disabled={
+                                                            chargement
+                                                        }
+                                                        onClick={() =>
+                                                            supprimerPhotoSelectionnee(
+                                                                index
+                                                            )
+                                                        }
                                                     >
+                                                        ✕
+                                                    </button>
 
-                                                        <img
-                                                            src={URL.createObjectURL(
-                                                                photo
-                                                            )}
-                                                            alt={
-                                                                photo.name
-                                                            }
-                                                        />
+                                                </div>
 
-                                                        <button
-                                                            type="button"
-                                                            className="delete-photo-detail"
-                                                            disabled={
-                                                                chargement
-                                                            }
-                                                            onClick={() =>
-                                                                supprimerPhotoSelectionnee(
-                                                                    index
-                                                                )
-                                                            }
-                                                        >
-                                                            ✕
-                                                        </button>
-
-                                                    </div>
-
-                                                )
-                                            )}
-
-                                        </div>
+                                            )
+                                        )}
 
                                     </div>
 
-                                )}
+                                </div>
+
+                            )}
 
                             {/* COMPTEUR */}
 
@@ -2687,10 +2714,7 @@ function Offres() {
                                 }
                                 onClick={() => {
 
-                                    setModal(
-                                        false
-                                    );
-
+                                    setModal(false);
                                     resetForm();
 
                                 }}
@@ -2710,16 +2734,10 @@ function Offres() {
                             >
 
                                 {chargement
-
                                     ? "⏳ Enregistrement..."
-
                                     : modeModification
-
                                         ? "💾 Enregistrer les modifications"
-
-                                        : "🚀 Publier l'offre"
-
-                                }
+                                        : "🚀 Publier l'offre"}
 
                             </button>
 

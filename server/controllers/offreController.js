@@ -66,9 +66,6 @@ const deleteImageCloudinary = async (imageUrl) => {
         }
 
 
-        // Les anciennes images locales ne sont pas
-        // des images Cloudinary.
-
         if (!imageUrl.includes("res.cloudinary.com")) {
 
             return;
@@ -81,9 +78,6 @@ const deleteImageCloudinary = async (imageUrl) => {
         const pathname = url.pathname;
 
 
-        // Exemple :
-        // /xxx/image/upload/v123/plateforme-touristique/offres/image.jpg
-
         const uploadIndex = pathname.indexOf("/upload/");
 
 
@@ -95,21 +89,27 @@ const deleteImageCloudinary = async (imageUrl) => {
 
 
         let publicId = pathname.substring(
+
             uploadIndex + "/upload/".length
+
         );
 
 
-        // Supprimer la version v123
         publicId = publicId.replace(
+
             /^v\d+\//,
+
             ""
+
         );
 
 
-        // Supprimer extension
         publicId = publicId.replace(
+
             /\.[^/.]+$/,
+
             ""
+
         );
 
 
@@ -118,15 +118,20 @@ const deleteImageCloudinary = async (imageUrl) => {
             publicId,
 
             {
+
                 resource_type: "image"
+
             }
 
         );
 
 
         console.log(
+
             "Image Cloudinary supprimée :",
+
             publicId
+
         );
 
     }
@@ -134,8 +139,11 @@ const deleteImageCloudinary = async (imageUrl) => {
     catch (error) {
 
         console.error(
+
             "Erreur suppression image Cloudinary :",
+
             error.message
+
         );
 
     }
@@ -563,10 +571,6 @@ exports.createOffre = async (req, res) => {
         );
 
 
-        // ====================================================
-        // RÉPONSE
-        // ====================================================
-
         return res.status(201).json({
 
             message:
@@ -738,10 +742,6 @@ exports.updateOffre = async (req, res) => {
         }
 
 
-        // ====================================================
-        // CONVERSION
-        // ====================================================
-
         const prixNombre =
             Number(prix);
 
@@ -751,10 +751,6 @@ exports.updateOffre = async (req, res) => {
         const disponibiliteNombre =
             Number(disponibilite);
 
-
-        // ====================================================
-        // VALIDATION PRIX
-        // ====================================================
 
         if (
 
@@ -773,10 +769,6 @@ exports.updateOffre = async (req, res) => {
 
         }
 
-
-        // ====================================================
-        // VALIDATION CAPACITÉ
-        // ====================================================
 
         if (
 
@@ -797,10 +789,6 @@ exports.updateOffre = async (req, res) => {
 
         }
 
-
-        // ====================================================
-        // VALIDATION DISPONIBILITÉ
-        // ====================================================
 
         if (
 
@@ -839,10 +827,6 @@ exports.updateOffre = async (req, res) => {
 
         }
 
-
-        // ====================================================
-        // VALIDATION DATES
-        // ====================================================
 
         const dateDebut =
             new Date(date_debut);
@@ -1010,7 +994,6 @@ exports.updateOffre = async (req, res) => {
 
         // ====================================================
         // SUPPRIMER ANCIENNE IMAGE
-        // APRÈS LA MODIFICATION
         // ====================================================
 
         if (
@@ -1095,10 +1078,6 @@ exports.deleteOffre = async (req, res) => {
         );
 
 
-        // ====================================================
-        // RÉCUPÉRER L'OFFRE
-        // ====================================================
-
         const [offres] =
             await db.query(
 
@@ -1129,10 +1108,6 @@ exports.deleteOffre = async (req, res) => {
             offres[0];
 
 
-        // ====================================================
-        // SUPPRIMER PHOTOS DÉTAILLÉES
-        // ====================================================
-
         await db.query(
 
             `
@@ -1144,10 +1119,6 @@ exports.deleteOffre = async (req, res) => {
 
         );
 
-
-        // ====================================================
-        // SUPPRIMER OFFRE
-        // ====================================================
 
         const [result] =
             await db.query(
@@ -1176,10 +1147,6 @@ exports.deleteOffre = async (req, res) => {
         }
 
 
-        // ====================================================
-        // SUPPRIMER IMAGE CLOUDINARY
-        // ====================================================
-
         if (offre.image) {
 
             await deleteImageCloudinary(
@@ -1188,10 +1155,6 @@ exports.deleteOffre = async (req, res) => {
 
         }
 
-
-        // ====================================================
-        // RÉPONSE
-        // ====================================================
 
         return res.json({
 
@@ -1277,7 +1240,28 @@ exports.getOffres = async (req, res) => {
             );
 
 
-        return res.json(offres);
+        // ====================================================
+        // RÉCUPÉRATION DES IMAGES
+        // ====================================================
+        // IMPORTANT :
+        // o.image contient déjà l'URL Cloudinary complète.
+        // On la renvoie directement sans /uploads/.
+        // ====================================================
+
+        const offresAvecImages =
+            offres.map((offre) => ({
+
+                ...offre,
+
+                image:
+                    offre.image || null
+
+            }));
+
+
+        return res.json(
+            offresAvecImages
+        );
 
     }
 
@@ -1365,10 +1349,6 @@ exports.getOffreById = async (req, res) => {
             );
 
 
-        // ====================================================
-        // OFFRE INTROUVABLE
-        // ====================================================
-
         if (offres.length === 0) {
 
             return res.status(404).json({
@@ -1424,11 +1404,25 @@ exports.getOffreById = async (req, res) => {
 
 
         // ====================================================
-        // AJOUTER PHOTOS
+        // RÉCUPÉRATION DES URLS DES PHOTOS
+        // ====================================================
+        // chemin_photo contient déjà l'URL Cloudinary.
+        // On ne rajoute donc jamais /uploads/.
         // ====================================================
 
+        offre.image =
+            offre.image || null;
+
+
         offre.photos =
-            photos;
+            photos.map((photo) => ({
+
+                ...photo,
+
+                chemin_photo:
+                    photo.chemin_photo || null
+
+            }));
 
 
         // ====================================================

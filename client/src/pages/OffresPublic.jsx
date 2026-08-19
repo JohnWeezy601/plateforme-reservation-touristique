@@ -24,6 +24,43 @@ function OffresPublic() {
 
 
     // =====================================================
+    // URL PHOTO
+    // =====================================================
+
+    const obtenirUrlPhoto = (photo) => {
+
+        // Aucun chemin
+        if (!photo) {
+
+            return "/image-default.jpg";
+
+        }
+
+
+        // =================================================
+        // URL CLOUDINARY
+        // =================================================
+
+        if (
+            photo.startsWith("http://") ||
+            photo.startsWith("https://")
+        ) {
+
+            return photo;
+
+        }
+
+
+        // =================================================
+        // ANCIENNES IMAGES LOCALES
+        // =================================================
+
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${photo}`;
+
+    };
+
+
+    // =====================================================
     // AFFICHAGE DU PRIX DIRECTEMENT EN EURO
     // =====================================================
 
@@ -247,9 +284,9 @@ function OffresPublic() {
                                 <img
 
                                     src={
-                                        offre.image
-                                            ? `${import.meta.env.VITE_SERVER_URL}/uploads/${offre.image}`
-                                            : "/image-default.jpg"
+                                        obtenirUrlPhoto(
+                                            offre.image
+                                        )
                                     }
 
                                     alt={

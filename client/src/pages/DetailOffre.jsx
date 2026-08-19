@@ -46,11 +46,19 @@ function DetailOffre() {
 
                 const data = res.data;
 
+                console.log(
+                    "Offre récupérée :",
+                    data
+                );
+
                 setOffre(data);
 
                 const galerie = [];
 
-                // Image principale
+                // =================================================
+                // IMAGE PRINCIPALE
+                // =================================================
+
                 if (data.image) {
 
                     galerie.push({
@@ -60,7 +68,10 @@ function DetailOffre() {
 
                 }
 
-                // Photos supplémentaires
+                // =================================================
+                // PHOTOS SUPPLÉMENTAIRES
+                // =================================================
+
                 if (Array.isArray(data.photos)) {
 
                     data.photos.forEach((photo, index) => {
@@ -81,6 +92,11 @@ function DetailOffre() {
                     });
 
                 }
+
+                console.log(
+                    "Galerie récupérée :",
+                    galerie
+                );
 
                 setPhotos(galerie);
                 setPhotoActuelle(0);
@@ -115,9 +131,17 @@ function DetailOffre() {
 
     const obtenirUrlPhoto = (photo) => {
 
+        // Aucun chemin
         if (!photo) {
+
             return "/image-default.jpg";
+
         }
+
+
+        // =================================================
+        // CLOUDINARY OU AUTRE URL DISTANTE
+        // =================================================
 
         if (
             photo.startsWith("http://") ||
@@ -127,6 +151,11 @@ function DetailOffre() {
             return photo;
 
         }
+
+
+        // =================================================
+        // ANCIENNES IMAGES LOCALES
+        // =================================================
 
         return `${import.meta.env.VITE_SERVER_URL}/uploads/${photo}`;
 
@@ -294,22 +323,35 @@ function DetailOffre() {
                         </div>
 
 
-                       <h1>
-    {offre.titre}
-</h1>
+                        <h1>
+                            {offre.titre}
+                        </h1>
 
-{/* PRESTATAIRE */}
-<div className="detail-prestataire">
-    <FaHotel />
-    <span>
-        Proposé par :{" "}
-        <strong>
-            {offre.prestataire || "Prestataire non précisé"}
-        </strong>
-    </span>
-</div>
 
-<div className="detail-header-meta">
+                        {/* PRESTATAIRE */}
+
+                        <div className="detail-prestataire">
+
+                            <FaHotel />
+
+                            <span>
+
+                                Proposé par :{" "}
+
+                                <strong>
+
+                                    {offre.prestataire ||
+                                        "Prestataire non précisé"}
+
+                                </strong>
+
+                            </span>
+
+                        </div>
+
+
+                        <div className="detail-header-meta">
+
                             <span>
 
                                 <FaMapMarkerAlt />
@@ -372,6 +414,12 @@ function DetailOffre() {
                             <img
                                 src={urlImageActuelle}
                                 alt={offre.titre}
+                                onError={(event) => {
+
+                                    event.currentTarget.src =
+                                        "/image-default.jpg";
+
+                                }}
                             />
 
 
@@ -475,6 +523,12 @@ function DetailOffre() {
                                                     alt={
                                                         `Photo ${index + 2}`
                                                     }
+                                                    onError={(event) => {
+
+                                                        event.currentTarget.src =
+                                                            "/image-default.jpg";
+
+                                                    }}
                                                 />
 
 
@@ -535,6 +589,12 @@ function DetailOffre() {
                                             alt={
                                                 `Aperçu ${index + 1}`
                                             }
+                                            onError={(event) => {
+
+                                                event.currentTarget.src =
+                                                    "/image-default.jpg";
+
+                                            }}
                                         />
 
                                     </button>
@@ -882,18 +942,25 @@ function DetailOffre() {
 
                                 <div className="booking-price">
 
-                               <div className="booking-price">
-    {Number(offre.prix || 0).toLocaleString("fr-FR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    })}
+                                    <div className="booking-price">
 
-    <small> €</small>
-</div>
+                                        {Number(
+                                            offre.prix || 0
+                                        ).toLocaleString(
+                                            "fr-FR",
+                                            {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }
+                                        )}
 
-                                     <small>
-                                      {" "}€
-                                     </small>
+                                        <small> €</small>
+
+                                    </div>
+
+                                    <small>
+                                        {" "}€
+                                    </small>
 
                                 </div>
 
@@ -1046,6 +1113,12 @@ function DetailOffre() {
                             onClick={(e) =>
                                 e.stopPropagation()
                             }
+                            onError={(event) => {
+
+                                event.currentTarget.src =
+                                    "/image-default.jpg";
+
+                            }}
                         />
 
 
