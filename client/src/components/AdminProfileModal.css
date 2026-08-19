@@ -1,22 +1,23 @@
+
 /* ==========================================
-   MODALE PROFIL ADMIN
+   MODALE PROFIL ADMINISTRATEUR
 ========================================== */
 
 .admin-modal-overlay {
     position: fixed;
     inset: 0;
 
-    background: rgba(15, 23, 42, 0.55);
+    z-index: 9999;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    z-index: 9999;
-
     padding: 20px;
 
     box-sizing: border-box;
+
+    background: rgba(15, 23, 42, 0.55);
 }
 
 
@@ -32,15 +33,16 @@
 
     overflow-y: auto;
 
-    background: #ffffff;
-
-    border-radius: 18px;
-
     padding: 25px;
 
     box-sizing: border-box;
 
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.20);
 }
 
 
@@ -50,7 +52,6 @@
 
 .admin-modal-header {
     display: flex;
-
     justify-content: space-between;
     align-items: center;
 
@@ -64,6 +65,7 @@
     color: #0f172a;
 
     font-size: 24px;
+    font-weight: 700;
 }
 
 
@@ -71,29 +73,29 @@
     width: 38px;
     height: 38px;
 
+    padding: 0;
+
     border: none;
-
     border-radius: 50%;
-
-    background: #f1f5f9;
-
-    color: #475569;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    cursor: pointer;
+    background: #f1f5f9;
+
+    color: #475569;
 
     font-size: 16px;
 
-    transition: 0.2s;
+    cursor: pointer;
+
+    transition: 0.2s ease;
 }
 
 
 .admin-modal-header button:hover {
     background: #fee2e2;
-
     color: #dc2626;
 }
 
@@ -104,25 +106,25 @@
 
 .admin-profile-preview {
     display: flex;
-
     align-items: center;
 
     gap: 15px;
 
+    margin-bottom: 25px;
     padding: 15px;
 
-    margin-bottom: 25px;
+    box-sizing: border-box;
 
     background: #f8fafc;
 
-    border-radius: 14px;
-
     border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
 }
 
 
 /* ==========================================
-   PHOTO ADMIN
+   CONTENEUR PHOTO
 ========================================== */
 
 .admin-profile-photo {
@@ -135,24 +137,29 @@
     max-width: 70px;
     max-height: 70px;
 
-    border-radius: 50%;
+    flex: 0 0 70px;
 
     overflow: hidden;
 
-    background: #e2e8f0;
-
     display: flex;
-
     justify-content: center;
     align-items: center;
+
+    box-sizing: border-box;
+
+    border-radius: 50%;
+
+    background: #e2e8f0;
 }
 
 
-/* IMPORTANT :
-   empêche la photo de devenir énorme
-*/
+/* ==========================================
+   PHOTO ADMIN
+========================================== */
 
 .admin-profile-photo img {
+    display: block;
+
     width: 70px !important;
     height: 70px !important;
 
@@ -164,7 +171,9 @@
 
     object-fit: cover;
 
-    display: block;
+    border: none;
+
+    border-radius: 50%;
 }
 
 
@@ -177,11 +186,12 @@
     height: 70px;
 
     display: flex;
-
     justify-content: center;
     align-items: center;
 
     font-size: 30px;
+
+    border-radius: 50%;
 }
 
 
@@ -191,15 +201,23 @@
 
 .admin-profile-preview-info {
     min-width: 0;
+
+    overflow: hidden;
 }
 
 
 .admin-profile-preview-info h3 {
     margin: 0 0 5px;
 
+    overflow: hidden;
+
     color: #0f172a;
 
     font-size: 18px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 
@@ -207,7 +225,6 @@
     color: #2563eb;
 
     font-size: 14px;
-
     font-weight: 600;
 }
 
@@ -229,7 +246,6 @@
     color: #334155;
 
     font-size: 14px;
-
     font-weight: 600;
 }
 
@@ -239,9 +255,12 @@
 
     padding: 11px 13px;
 
-    border: 1px solid #cbd5e1;
+    box-sizing: border-box;
 
+    border: 1px solid #cbd5e1;
     border-radius: 9px;
+
+    outline: none;
 
     background: #ffffff;
 
@@ -249,18 +268,28 @@
 
     font-size: 15px;
 
-    outline: none;
-
-    box-sizing: border-box;
-
-    transition: 0.2s;
+    transition: 0.2s ease;
 }
 
 
 .form-group input:focus {
     border-color: #2563eb;
 
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+
+/* ==========================================
+   RÔLE ADMIN
+========================================== */
+
+.admin-role-input {
+    background: #f8fafc !important;
+
+    color: #64748b !important;
+
+    cursor: not-allowed;
 }
 
 
@@ -276,27 +305,24 @@
     padding: 13px 18px;
 
     border: none;
-
     border-radius: 10px;
 
-    background: #2563eb;
-
-    color: white;
-
     display: flex;
-
     justify-content: center;
     align-items: center;
 
     gap: 8px;
 
-    font-size: 15px;
+    background: #2563eb;
 
+    color: #ffffff;
+
+    font-size: 15px;
     font-weight: 600;
 
     cursor: pointer;
 
-    transition: 0.2s;
+    transition: 0.2s ease;
 }
 
 
@@ -307,16 +333,26 @@
 }
 
 
+.admin-save-btn:active {
+    transform: translateY(0);
+}
+
+
 /* ==========================================
    RESPONSIVE
 ========================================== */
 
 @media (max-width: 600px) {
 
-    .admin-modal-box {
-        padding: 20px;
+    .admin-modal-overlay {
+        padding: 15px;
+    }
 
+
+    .admin-modal-box {
         max-height: 95vh;
+
+        padding: 20px;
     }
 
 
@@ -334,6 +370,8 @@
 
         max-width: 60px;
         max-height: 60px;
+
+        flex-basis: 60px;
     }
 
 
@@ -352,6 +390,8 @@
     .admin-profile-photo-default {
         width: 60px;
         height: 60px;
-    }
 
+        font-size: 26px;
+    }
 }
+

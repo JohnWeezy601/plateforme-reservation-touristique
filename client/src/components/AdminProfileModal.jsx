@@ -1,3 +1,4 @@
+
 import {
     FaTimes,
     FaSave
@@ -18,6 +19,19 @@ function AdminProfileModal({
     }
 
 
+    // =============================
+    // PHOTO ADMIN
+    // =============================
+
+    const photoAdmin = admin?.photo
+        ? (
+            admin.photo.startsWith("http")
+                ? admin.photo
+                : `${import.meta.env.VITE_SERVER_URL}/uploads/${admin.photo}`
+        )
+        : null;
+
+
     return (
         <div
             className="admin-modal-overlay"
@@ -29,7 +43,10 @@ function AdminProfileModal({
                 onClick={(e) => e.stopPropagation()}
             >
 
-                {/* HEADER */}
+
+                {/* =========================
+                    HEADER
+                ========================= */}
 
                 <div className="admin-modal-header">
 
@@ -37,9 +54,11 @@ function AdminProfileModal({
                         Modifier mon profil
                     </h2>
 
+
                     <button
                         type="button"
                         onClick={close}
+                        aria-label="Fermer"
                     >
                         <FaTimes />
                     </button>
@@ -47,21 +66,19 @@ function AdminProfileModal({
                 </div>
 
 
-                {/* PROFIL ADMIN */}
+                {/* =========================
+                    PROFIL ADMIN
+                ========================= */}
 
                 <div className="admin-profile-preview">
 
                     <div className="admin-profile-photo">
 
-                        {admin?.photo ? (
+                        {photoAdmin ? (
 
                             <img
-                                src={
-                                    admin.photo.startsWith("http")
-                                        ? admin.photo
-                                        : `${import.meta.env.VITE_SERVER_URL}/uploads/${admin.photo}`
-                                }
-                                alt="Photo de profil"
+                                src={photoAdmin}
+                                alt="Photo de profil administrateur"
                             />
 
                         ) : (
@@ -78,7 +95,7 @@ function AdminProfileModal({
                     <div className="admin-profile-preview-info">
 
                         <h3>
-                            {admin?.nom} {admin?.prenom}
+                            {admin?.nom || ""} {admin?.prenom || ""}
                         </h3>
 
                         <span>
@@ -90,17 +107,23 @@ function AdminProfileModal({
                 </div>
 
 
-                {/* FORMULAIRE */}
+                {/* =========================
+                    FORMULAIRE
+                ========================= */}
 
                 <form onSubmit={save}>
 
+
+                    {/* NOM */}
+
                     <div className="form-group">
 
-                        <label>
+                        <label htmlFor="admin-nom">
                             Nom
                         </label>
 
                         <input
+                            id="admin-nom"
                             type="text"
                             name="nom"
                             defaultValue={admin?.nom || ""}
@@ -110,13 +133,16 @@ function AdminProfileModal({
                     </div>
 
 
+                    {/* PRÉNOM */}
+
                     <div className="form-group">
 
-                        <label>
+                        <label htmlFor="admin-prenom">
                             Prénom
                         </label>
 
                         <input
+                            id="admin-prenom"
                             type="text"
                             name="prenom"
                             defaultValue={admin?.prenom || ""}
@@ -126,13 +152,16 @@ function AdminProfileModal({
                     </div>
 
 
+                    {/* EMAIL */}
+
                     <div className="form-group">
 
-                        <label>
+                        <label htmlFor="admin-email">
                             Email
                         </label>
 
                         <input
+                            id="admin-email"
                             type="email"
                             name="email"
                             defaultValue={admin?.email || ""}
@@ -142,13 +171,16 @@ function AdminProfileModal({
                     </div>
 
 
+                    {/* TÉLÉPHONE */}
+
                     <div className="form-group">
 
-                        <label>
+                        <label htmlFor="admin-telephone">
                             Téléphone
                         </label>
 
                         <input
+                            id="admin-telephone"
                             type="text"
                             name="telephone"
                             defaultValue={admin?.telephone || ""}
@@ -157,6 +189,27 @@ function AdminProfileModal({
                     </div>
 
 
+                    {/* RÔLE */}
+
+                    <div className="form-group">
+
+                        <label htmlFor="admin-role">
+                            Rôle
+                        </label>
+
+                        <input
+                            id="admin-role"
+                            type="text"
+                            value="Administrateur"
+                            readOnly
+                            className="admin-role-input"
+                        />
+
+                    </div>
+
+
+                    {/* BOUTON */}
+
                     <button
                         type="submit"
                         className="admin-save-btn"
@@ -164,7 +217,9 @@ function AdminProfileModal({
 
                         <FaSave />
 
-                        Sauvegarder les modifications
+                        <span>
+                            Sauvegarder les modifications
+                        </span>
 
                     </button>
 
@@ -178,3 +233,4 @@ function AdminProfileModal({
 
 
 export default AdminProfileModal;
+
