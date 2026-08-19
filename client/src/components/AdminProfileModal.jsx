@@ -17,11 +17,7 @@ function AdminProfileModal({
         return null;
     }
 
-console.log("========== ADMIN MODAL ==========");
-console.log("ADMIN :", admin);
-console.log("PHOTO :", admin?.photo);
-console.log("PHOTO TYPE :", typeof admin?.photo);
-console.log("================================");
+
     // ==========================================
     // PHOTO ADMIN
     // ==========================================
@@ -29,7 +25,19 @@ console.log("================================");
     const photoAdmin = admin?.photo || null;
 
 
+    // ==========================================
+    // DEBUG
+    // ==========================================
+
+    console.log("========== ADMIN MODAL ==========");
+    console.log("ADMIN :", admin);
+    console.log("PHOTO :", photoAdmin);
+    console.log("PHOTO TYPE :", typeof photoAdmin);
+    console.log("================================");
+
+
     return (
+
         <div
             className="admin-modal-overlay"
             onClick={close}
@@ -39,6 +47,7 @@ console.log("================================");
                 className="admin-modal-box"
                 onClick={(e) => e.stopPropagation()}
             >
+
 
                 {/* =================================
                     HEADER
@@ -67,30 +76,31 @@ console.log("================================");
 
                 <div className="admin-profile-preview">
 
-                    {/* PROFIL ADMIN */}
 
-                <div className="admin-profile">
+                    {/* PHOTO */}
 
+                    <div className="admin-profile-photo">
 
-                    {photoAdmin ? (
+                        {photoAdmin ? (
 
-                        <img
-                            src={photoAdmin}
-                            className="admin-avatar"
-                            alt="Photo administrateur"
-                        />
+                            <img
+                                src={photoAdmin}
+                                alt="Photo de profil administrateur"
+                                className="admin-profile-photo-image"
+                            />
 
-                    ) : (
+                        ) : (
 
-                        <div className="admin-avatar default">
-                            👤
-                        </div>
-
+                            <div className="admin-profile-photo-default">
+                                👤
+                            </div>
 
                         )}
 
                     </div>
 
+
+                    {/* INFORMATIONS */}
 
                     <div className="admin-profile-preview-info">
 
@@ -114,6 +124,7 @@ console.log("================================");
                 ================================= */}
 
                 <form onSubmit={save}>
+
 
                     {/* NOM */}
 
