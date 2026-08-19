@@ -17,7 +17,11 @@ function AdminProfileModal({
         return null;
     }
 
-
+console.log("========== ADMIN MODAL ==========");
+console.log("ADMIN :", admin);
+console.log("PHOTO :", admin?.photo);
+console.log("PHOTO TYPE :", typeof admin?.photo);
+console.log("================================");
     // ==========================================
     // PHOTO ADMIN
     // ==========================================
@@ -63,21 +67,25 @@ function AdminProfileModal({
 
                 <div className="admin-profile-preview">
 
-                    <div className="admin-profile-photo">
+                    {/* PROFIL ADMIN */}
 
-                        {photoAdmin ? (
+                <div className="admin-profile">
 
-                            <img
-                                src={photoAdmin}
-                                alt="Photo de profil administrateur"
-                                className="admin-profile-photo-image"
-                            />
 
-                        ) : (
+                    {photoAdmin ? (
 
-                            <div className="admin-profile-photo-default">
-                                👤
-                            </div>
+                        <img
+                            src={photoAdmin}
+                            className="admin-avatar"
+                            alt="Photo administrateur"
+                        />
+
+                    ) : (
+
+                        <div className="admin-avatar default">
+                            👤
+                        </div>
+
 
                         )}
 
