@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import api from "../api/api";
 
@@ -19,135 +18,23 @@ import "./Dashboard.css";
 
 function Dashboard() {
 
-    // =====================================================
-    // ÉTATS
-    // =====================================================
-
     const [stats, setStats] = useState(null);
 
+    // Profil administrateur
     const [admin, setAdmin] = useState(null);
 
-    const [chargementAdmin, setChargementAdmin] =
-        useState(true);
 
-
-    // =====================================================
-    // RÉCUPÉRER L'ADMIN CONNECTÉ
-    // =====================================================
-
-    const chargerProfilAdmin = async () => {
-
-        try {
-
-            const stockage =
-                localStorage.getItem("utilisateur");
-
-
-            if (!stockage) {
-
-                console.log(
-                    "Aucun utilisateur connecté"
-                );
-
-                setAdmin(null);
-
-                return;
-
-            }
-
-
-            const data =
-                JSON.parse(stockage);
-
-
-            /*
-                Selon ton système de connexion,
-                localStorage peut contenir :
-
-                {
-                    utilisateur: {...},
-                    token: "..."
-                }
-
-                ou directement :
-
-                {
-                    id: ...,
-                    nom: ...,
-                    ...
-                }
-            */
-
-            const utilisateur =
-                data?.utilisateur
-                    ? data.utilisateur
-                    : data;
-
-
-            const id =
-                utilisateur?.id_utilisateur ||
-                utilisateur?.id;
-
-
-            if (!id) {
-
-                console.log(
-                    "ID administrateur introuvable"
-                );
-
-                setAdmin(null);
-
-                return;
-
-            }
-
-
-            // =================================================
-            // RÉCUPÉRER LE PROFIL COMPLET DEPUIS MYSQL
-            // =================================================
-
-            const res =
-                await api.get(
-                    `/utilisateurs/${id}`
-                );
-
-
-            setAdmin(res.data);
-
-
-        }
-        catch (error) {
-
-            console.log(
-                "Erreur récupération profil admin :",
-                error
-            );
-
-            setAdmin(null);
-
-        }
-        finally {
-
-            setChargementAdmin(false);
-
-        }
-
-    };
-
-
-    // =====================================================
-    // CHARGER STATISTIQUES DASHBOARD
-    // =====================================================
+    // ===============================
+    // Charger statistiques dashboard
+    // ===============================
 
     const chargerDashboard = async () => {
 
         try {
 
-            const res =
-                await api.get(
-                    "/dashboard/statistiques"
-                );
-
+            const res = await api.get(
+                "/dashboard/statistiques"
+            );
 
             setStats(res.data);
 
@@ -164,22 +51,76 @@ function Dashboard() {
     };
 
 
-    // =====================================================
-    // CHARGEMENT INITIAL
-    // =====================================================
+    // ===============================
+    // Récupérer profil administrateur
+    // ===============================
+
+    const chargerProfilAdmin = async () => {
+
+        try {
+
+            const stockage =
+                localStorage.getItem("utilisateur");
+
+            if (!stockage) {
+                return;
+            }
+
+            const data =
+                JSON.parse(stockage);
+
+            const utilisateur =
+                data?.utilisateur
+                    ? data.utilisateur
+                    : data;
+
+            if (
+                !utilisateur?.id_utilisateur
+            ) {
+                return;
+            }
+
+            // Sécurité : uniquement administrateur
+            if (
+                utilisateur.role !== "Administrateur"
+            ) {
+                return;
+            }
+
+            const res = await api.get(
+                `/utilisateurs/${utilisateur.id_utilisateur}`
+            );
+
+            setAdmin(res.data);
+
+        }
+        catch (error) {
+
+            console.log(
+                "Erreur récupération profil administrateur :",
+                error
+            );
+
+        }
+
+    };
+
+
+    // ===============================
+    // Chargement initial
+    // ===============================
 
     useEffect(() => {
 
         chargerDashboard();
-
         chargerProfilAdmin();
 
     }, []);
 
 
-    // =====================================================
-    // CHARGEMENT
-    // =====================================================
+    // ===============================
+    // Chargement
+    // ===============================
 
     if (!stats) {
 
@@ -194,43 +135,28 @@ function Dashboard() {
     }
 
 
-    // =====================================================
-    // COULEURS GRAPHIQUE
-    // =====================================================
+    // ===============================
+    // Couleurs graphique
+    // ===============================
 
     const couleurs = [
-
         "#2563eb",
         "#16a34a",
         "#f59e0b",
         "#dc2626"
-
     ];
 
-
-    // =====================================================
-    // PHOTO ADMIN
-    // =====================================================
-
-    const photoAdmin =
-        admin?.photo || null;
-
-
-    // =====================================================
-    // AFFICHAGE
-    // =====================================================
 
     return (
 
         <div className="dashboard-page">
 
 
-            {/* =================================================
+            {/* =========================
                 HEADER
-            ================================================= */}
+            ========================= */}
 
             <div className="dashboard-header">
-
 
                 <div>
 
@@ -245,92 +171,48 @@ function Dashboard() {
                 </div>
 
 
-                {/* =================================================
-                    PROFIL ADMIN
-                ================================================= */}
+                {/* =========================
+                    PROFIL ADMINISTRATEUR
+                ========================= */}
 
                 <div className="admin-profile">
 
+                    {admin?.photo ? (
 
-                    {chargementAdmin ? (
-
-                        <span>
-                            Chargement...
-                        </span>
-
-                    ) : admin ? (
-
-                        <>
-
-                            {/* PHOTO */}
-
-                            {photoAdmin ? (
-
-                                <img
-                                    src={photoAdmin}
-                                    alt="Administrateur"
-                                    className="dashboard-admin-photo"
-                                />
-
-                            ) : (
-
-                                <div className="dashboard-admin-avatar">
-                                    👤
-                                </div>
-
-                            )}
-
-
-                            {/* INFORMATIONS */}
-
-                            <div className="dashboard-admin-info">
-
-                                <strong>
-
-                                    {admin.prenom || ""}{" "}
-
-                                    {admin.nom || ""}
-
-                                </strong>
-
-                                <span>
-                                    Administrateur
-                                </span>
-
-                            </div>
-
-                        </>
+                        <img
+                            src={admin.photo}
+                            alt="Profil administrateur"
+                            className="admin-profile-photo"
+                        />
 
                     ) : (
 
-                        <>
-
-                            <span>
-                                👤
-                            </span>
-
-                            <span>
-                                Administrateur
-                            </span>
-
-                        </>
+                        <span>
+                            👤
+                        </span>
 
                     )}
 
-                </div>
+                    <span>
 
+                        {admin
+                            ? `${admin.prenom || ""} ${admin.nom || ""}`.trim()
+                            : "Administrateur"
+                        }
+
+                    </span>
+
+                </div>
 
             </div>
 
 
-            {/* =================================================
+            {/* =========================
                 CARTES STATISTIQUES
-            ================================================= */}
+            ========================= */}
 
             <div className="stats-grid">
 
-
-                {/* UTILISATEURS */}
 
                 <div className="stat-card blue">
 
@@ -349,8 +231,6 @@ function Dashboard() {
                 </div>
 
 
-                {/* DESTINATIONS */}
-
                 <div className="stat-card green">
 
                     <div className="icon">
@@ -367,8 +247,6 @@ function Dashboard() {
 
                 </div>
 
-
-                {/* RÉSERVATIONS */}
 
                 <div className="stat-card orange">
 
@@ -387,8 +265,6 @@ function Dashboard() {
                 </div>
 
 
-                {/* PAIEMENTS */}
-
                 <div className="stat-card purple">
 
                     <div className="icon">
@@ -406,8 +282,6 @@ function Dashboard() {
                 </div>
 
 
-                {/* REVENUS */}
-
                 <div className="stat-card red">
 
                     <div className="icon">
@@ -415,13 +289,7 @@ function Dashboard() {
                     </div>
 
                     <h2>
-
-                        {Number(
-                            stats.revenus
-                        ).toLocaleString("fr-FR")}
-
-                        {" "}Ar
-
+                        {Number(stats.revenus).toLocaleString("fr-FR")} Ar
                     </h2>
 
                     <p>
@@ -430,8 +298,6 @@ function Dashboard() {
 
                 </div>
 
-
-                {/* RÉSERVATIONS RÉCENTES */}
 
                 <div className="stat-card blue">
 
@@ -450,8 +316,6 @@ function Dashboard() {
                 </div>
 
 
-                {/* DESTINATIONS POPULAIRES */}
-
                 <div className="stat-card green">
 
                     <div className="icon">
@@ -469,8 +333,6 @@ function Dashboard() {
                 </div>
 
 
-                {/* NOTIFICATIONS */}
-
                 <div className="stat-card orange">
 
                     <div className="icon">
@@ -487,27 +349,23 @@ function Dashboard() {
 
                 </div>
 
-
             </div>
 
 
-            {/* =================================================
+            {/* =========================
                 GRAPHIQUES
-            ================================================= */}
+            ========================= */}
 
             <div className="charts-container">
 
 
-                {/* =================================================
-                    RÉSERVATIONS PAR MOIS
-                ================================================= */}
+                {/* Graphique réservations */}
 
                 <div className="chart-box">
 
                     <h2>
                         📅 Réservations par mois
                     </h2>
-
 
                     <ResponsiveContainer
                         width="100%"
@@ -538,16 +396,13 @@ function Dashboard() {
                 </div>
 
 
-                {/* =================================================
-                    DESTINATIONS POPULAIRES
-                ================================================= */}
+                {/* Graphique destinations populaires */}
 
                 <div className="chart-box">
 
                     <h2>
                         🌍 Destinations populaires
                     </h2>
-
 
                     <ResponsiveContainer
                         width="90%"
@@ -557,9 +412,7 @@ function Dashboard() {
                         <PieChart>
 
                             <Pie
-                                data={
-                                    stats.destinationsPopulaires
-                                }
+                                data={stats.destinationsPopulaires}
                                 dataKey="total"
                                 nameKey="nom"
                                 outerRadius={100}
@@ -570,13 +423,11 @@ function Dashboard() {
 
                                         <Cell
                                             key={
-                                                item.id_destination ||
-                                                index
+                                                item.id_destination || index
                                             }
                                             fill={
                                                 couleurs[
-                                                    index %
-                                                    couleurs.length
+                                                    index % couleurs.length
                                                 ]
                                             }
                                         />
@@ -605,4 +456,4 @@ function Dashboard() {
 }
 
 
-export default Dashboard
+export default Dashboard;
