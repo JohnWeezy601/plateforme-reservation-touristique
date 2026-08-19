@@ -103,10 +103,10 @@
 
 
 /* ==========================================
-   PROFIL ADMIN
+   PROFIL DANS LE MODAL
 ========================================== */
 
-.admin-profile-preview {
+.admin-modal-profile-preview {
     display: flex;
 
     align-items: center;
@@ -128,10 +128,10 @@
 
 
 /* ==========================================
-   PHOTO ADMIN
+   PHOTO DU MODAL UNIQUEMENT
 ========================================== */
 
-.admin-profile-photo {
+.admin-modal-profile-photo {
     width: 70px;
     height: 70px;
 
@@ -159,10 +159,10 @@
 
 
 /* ==========================================
-   IMAGE ADMIN
+   IMAGE DU MODAL UNIQUEMENT
 ========================================== */
 
-.admin-profile-photo-image {
+.admin-modal-profile-photo img {
     width: 70px !important;
     height: 70px !important;
 
@@ -172,11 +172,11 @@
     max-width: 70px !important;
     max-height: 70px !important;
 
-    display: block;
-
     object-fit: cover;
 
-    border: 0;
+    display: block;
+
+    border: none;
 
     margin: 0;
 
@@ -185,10 +185,10 @@
 
 
 /* ==========================================
-   PHOTO PAR DÉFAUT
+   PHOTO PAR DÉFAUT DU MODAL
 ========================================== */
 
-.admin-profile-photo-default {
+.admin-modal-profile-photo-default {
     width: 70px;
     height: 70px;
 
@@ -198,23 +198,21 @@
     align-items: center;
 
     font-size: 30px;
-
-    box-sizing: border-box;
 }
 
 
 /* ==========================================
-   INFORMATIONS ADMIN
+   INFORMATIONS PROFIL MODAL
 ========================================== */
 
-.admin-profile-preview-info {
+.admin-modal-profile-info {
     min-width: 0;
 
     flex: 1;
 }
 
 
-.admin-profile-preview-info h3 {
+.admin-modal-profile-info h3 {
     margin: 0 0 5px;
 
     color: #0f172a;
@@ -231,7 +229,7 @@
 }
 
 
-.admin-profile-preview-info span {
+.admin-modal-profile-info span {
     color: #2563eb;
 
     font-size: 14px;
@@ -244,12 +242,12 @@
    FORMULAIRE
 ========================================== */
 
-.form-group {
+.admin-modal-box .form-group {
     margin-bottom: 18px;
 }
 
 
-.form-group label {
+.admin-modal-box .form-group label {
     display: block;
 
     margin-bottom: 7px;
@@ -262,7 +260,7 @@
 }
 
 
-.form-group input {
+.admin-modal-box .form-group input {
     width: 100%;
 
     padding: 11px 13px;
@@ -285,7 +283,7 @@
 }
 
 
-.form-group input:focus {
+.admin-modal-box .form-group input:focus {
     border-color: #2563eb;
 
     box-shadow:
@@ -297,7 +295,7 @@
    RÔLE
 ========================================== */
 
-.admin-role-input {
+.admin-modal-box .admin-role-input {
     background: #f8fafc !important;
 
     color: #64748b !important;
@@ -310,7 +308,7 @@
    BOUTON SAUVEGARDER
 ========================================== */
 
-.admin-save-btn {
+.admin-modal-box .admin-save-btn {
     width: 100%;
 
     margin-top: 8px;
@@ -342,14 +340,14 @@
 }
 
 
-.admin-save-btn:hover {
+.admin-modal-box .admin-save-btn:hover {
     background: #1d4ed8;
 
     transform: translateY(-1px);
 }
 
 
-.admin-save-btn:active {
+.admin-modal-box .admin-save-btn:active {
     transform: translateY(0);
 }
 
@@ -377,7 +375,9 @@
     }
 
 
-    .admin-profile-photo {
+    /* PHOTO MODAL */
+
+    .admin-modal-profile-photo {
         width: 60px;
         height: 60px;
 
@@ -391,7 +391,7 @@
     }
 
 
-    .admin-profile-photo-image {
+    .admin-modal-profile-photo img {
         width: 60px !important;
         height: 60px !important;
 
@@ -403,7 +403,7 @@
     }
 
 
-    .admin-profile-photo-default {
+    .admin-modal-profile-photo-default {
         width: 60px;
         height: 60px;
     }

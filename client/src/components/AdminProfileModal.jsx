@@ -74,51 +74,36 @@ function AdminProfileModal({
                     PROFIL ADMIN
                 ================================= */}
 
-                <div className="admin-profile-preview">
+               <div className="admin-modal-profile-preview">
 
+    <div className="admin-modal-profile-photo">
 
-                    {/* PHOTO */}
+        {photoAdmin ? (
+            <img
+                src={photoAdmin}
+                alt="Photo de profil administrateur"
+            />
+        ) : (
+            <div className="admin-modal-profile-photo-default">
+                👤
+            </div>
+        )}
 
-                    <div className="admin-profile-photo">
+    </div>
 
-                        {photoAdmin ? (
+    <div className="admin-modal-profile-info">
 
-                            <img
-                                src={photoAdmin}
-                                alt="Photo de profil administrateur"
-                                className="admin-profile-photo-image"
-                            />
+        <h3>
+            {admin?.nom || ""} {admin?.prenom || ""}
+        </h3>
 
-                        ) : (
+        <span>
+            Administrateur
+        </span>
 
-                            <div className="admin-profile-photo-default">
-                                👤
-                            </div>
+    </div>
 
-                        )}
-
-                    </div>
-
-
-                    {/* INFORMATIONS */}
-
-                    <div className="admin-profile-preview-info">
-
-                        <h3>
-                            {admin?.nom || ""}
-                            {" "}
-                            {admin?.prenom || ""}
-                        </h3>
-
-                        <span>
-                            Administrateur
-                        </span>
-
-                    </div>
-
-                </div>
-
-
+</div>
                 {/* =================================
                     FORMULAIRE
                 ================================= */}
