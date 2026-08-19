@@ -12,68 +12,62 @@ import {
 
 import "./AvisPublic.css";
 
-function AvisPublic(){
+function AvisPublic() {
 
-    const [avis,setAvis]=useState([]);
+    const [avis, setAvis] = useState([]);
 
-    const [loading,setLoading]=useState(true);
+    const [loading, setLoading] = useState(true);
 
-    const [reponseActive,setReponseActive]=useState(null);
+    const [reponseActive, setReponseActive] = useState(null);
 
-    const [texteReponse,setTexteReponse]=useState("");
+    const [texteReponse, setTexteReponse] = useState("");
 
-    const [menu,setMenu]=useState(null);
+    const [menu, setMenu] = useState(null);
 
-    const [edition,setEdition]=useState(null);
+    const [edition, setEdition] = useState(null);
 
-    const [texteEdition,setTexteEdition]=useState("");
+    const [texteEdition, setTexteEdition] = useState("");
 
     // ==================================
     // AJOUT NOUVEL AVIS + PHOTOS
     // ==================================
 
-    const [nouveauCommentaire,setNouveauCommentaire]=useState("");
+    const [nouveauCommentaire, setNouveauCommentaire] = useState("");
 
-    const [noteAvis,setNoteAvis]=useState(5);
+    const [noteAvis, setNoteAvis] = useState(5);
 
-    const [photosAvis,setPhotosAvis]=useState([]);
+    const [photosAvis, setPhotosAvis] = useState([]);
 
     const utilisateur =
-    JSON.parse(
-        localStorage.getItem("utilisateur")
-    );
+        JSON.parse(
+            localStorage.getItem("utilisateur")
+        );
 
     // ==================================
     // URL DES PHOTOS D'AVIS
     // ==================================
-    // Compatible avec :
-    // - anciennes photos locales
-    // - nouvelles photos Cloudinary
-    // ==================================
 
     const getPhotoAvisUrl = (photo) => {
 
-        if(!photo){
-
+        if (!photo) {
             return "";
-
         }
 
         // ==================================
         // Photo Cloudinary
         // ==================================
 
-        if(
+        if (
             photo.startsWith("http://") ||
             photo.startsWith("https://")
-        ){
+        ) {
 
             return photo;
 
         }
 
         // ==================================
-        // Ancienne photo locale
+        // Photo locale
         // ==================================
 
         return (
@@ -85,27 +79,100 @@ function AvisPublic(){
     };
 
     // ==================================
-    // CHARGER LES AVIS
+    // CHARGER LES AVIS + TOUTES LES PHOTOS
     // ==================================
 
-    const chargerAvis=async()=>{
+    const chargerAvis = async () => {
 
-        try{
+        try {
+
+            setLoading(true);
+
+            // ==================================
+            // 1 - Récupérer les avis
+            // ==================================
 
             const res = await api.get("/avis");
 
-            setAvis(res.data);
+            const avisRecus = res.data;
+
+            // ==================================
+            // 2 - Récupérer les photos de
+            //     chaque avis
+            // ==================================
+
+            const avisAvecPhotos =
+                await Promise.all(
+
+                    avisRecus.map(
+                        async (a) => {
+
+                            try {
+
+                                const photoResponse =
+                                    await api.get(
+                                        "/avis-photo/" +
+                                        a.id_avis
+                                    );
+
+                                return {
+
+                                    ...a,
+
+                                    photos:
+                                        Array.isArray(
+                                            photoResponse.data
+                                        )
+                                            ?
+                                            photoResponse.data
+                                            :
+                                            []
+
+                                };
+
+                            }
+                            catch (photoError) {
+
+                                console.log(
+                                    "Erreur récupération photos avis",
+                                    a.id_avis,
+                                    photoError.response?.data ||
+                                    photoError
+                                );
+
+                                return {
+
+                                    ...a,
+
+                                    photos: []
+
+                                };
+
+                            }
+
+                        }
+                    )
+
+                );
+
+            console.log(
+                "AVIS AVEC PHOTOS :",
+                avisAvecPhotos
+            );
+
+            setAvis(avisAvecPhotos);
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(
                 "Erreur chargement avis",
+                error.response?.data ||
                 error
             );
 
         }
-        finally{
+        finally {
 
             setLoading(false);
 
@@ -113,19 +180,19 @@ function AvisPublic(){
 
     };
 
-    useEffect(()=>{
+    useEffect(() => {
 
         chargerAvis();
 
-    },[]);
+    }, []);
 
     // ==================================
     // AJOUTER UN AVIS AVEC PHOTOS
     // ==================================
 
-    const ajouterAvis = async()=>{
+    const ajouterAvis = async () => {
 
-        if(!utilisateur){
+        if (!utilisateur) {
 
             alert(
                 "Connectez-vous pour laisser un avis"
@@ -135,7 +202,7 @@ function AvisPublic(){
 
         }
 
-        if(!nouveauCommentaire.trim()){
+        if (!nouveauCommentaire.trim()) {
 
             alert(
                 "Veuillez écrire un commentaire"
@@ -145,18 +212,16 @@ function AvisPublic(){
 
         }
 
-        try{
+        try {
 
             console.log(
                 "Utilisateur connecté :",
                 utilisateur
             );
 
-            // ==============================
+            // ==================================
             // 1 - CREER L'AVIS
-            // ==============================
-            // L'id_utilisateur n'est plus envoyé
-            // car le backend utilise req.user.id
+            // ==================================
 
             const res = await api.post(
                 "/avis",
@@ -166,7 +231,7 @@ function AvisPublic(){
                     note: Number(noteAvis),
 
                     commentaire:
-                    nouveauCommentaire
+                        nouveauCommentaire
                 }
             );
 
@@ -176,9 +241,9 @@ function AvisPublic(){
             );
 
             const idAvis =
-            res.data.id_avis;
+                res.data.id_avis;
 
-            if(!idAvis){
+            if (!idAvis) {
 
                 alert(
                     "Impossible de récupérer l'identifiant de l'avis"
@@ -188,43 +253,47 @@ function AvisPublic(){
 
             }
 
-            // ==============================
+            // ==================================
             // 2 - ENVOYER LES PHOTOS
-            // ==============================
+            // ==================================
 
-            if(photosAvis.length > 0){
+            if (photosAvis.length > 0) {
 
                 console.log(
                     "Photos sélectionnées :",
                     photosAvis
                 );
 
-                const formData = new FormData();
+                const formData =
+                    new FormData();
 
                 formData.append(
                     "id_avis",
                     idAvis
                 );
 
-                photosAvis.forEach((photo)=>{
+                photosAvis.forEach(
+                    (photo) => {
 
-                    formData.append(
-                        "photos",
-                        photo
-                    );
+                        formData.append(
+                            "photos",
+                            photo
+                        );
 
-                });
-
-                const photoResponse = await api.post(
-                    "/avis-photo",
-                    formData,
-                    {
-                        headers:{
-                            "Content-Type":
-                            "multipart/form-data"
-                        }
                     }
                 );
+
+                const photoResponse =
+                    await api.post(
+                        "/avis-photo",
+                        formData,
+                        {
+                            headers: {
+                                "Content-Type":
+                                    "multipart/form-data"
+                            }
+                        }
+                    );
 
                 console.log(
                     "Réponse ajout photos :",
@@ -233,9 +302,9 @@ function AvisPublic(){
 
             }
 
-            // ==============================
-            // 3 - NETTOYAGE FORMULAIRE
-            // ==============================
+            // ==================================
+            // 3 - NETTOYAGE
+            // ==================================
 
             setNouveauCommentaire("");
 
@@ -243,21 +312,24 @@ function AvisPublic(){
 
             setNoteAvis(5);
 
-            // ==============================
-            // 4 - RECHARGER LES AVIS
-            // ==============================
+            // ==================================
+            // 4 - RECHARGER AVIS + PHOTOS
+            // ==================================
 
-            chargerAvis();
+            await chargerAvis();
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(
                 "Erreur ajout avis :",
-                error.response?.data || error
+                error.response?.data ||
+                error
             );
 
-            if(error.response?.status===401){
+            if (
+                error.response?.status === 401
+            ) {
 
                 alert(
                     "Session expirée, reconnectez-vous"
@@ -273,9 +345,9 @@ function AvisPublic(){
     // LIKE AVIS
     // ==================================
 
-    const likeAvis=async(id)=>{
+    const likeAvis = async (id) => {
 
-        if(!utilisateur){
+        if (!utilisateur) {
 
             alert(
                 "Connectez-vous pour aimer"
@@ -285,22 +357,22 @@ function AvisPublic(){
 
         }
 
-        try{
+        try {
 
             await api.post(
                 "/avis/like",
                 {
-                    id_avis:id,
+                    id_avis: id,
 
                     id_utilisateur:
-                    utilisateur.id_utilisateur
+                        utilisateur.id_utilisateur
                 }
             );
 
             chargerAvis();
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(
                 "Erreur like",
@@ -315,9 +387,9 @@ function AvisPublic(){
     // LIKE REPONSE
     // ==================================
 
-    const likeReponse=async(id)=>{
+    const likeReponse = async (id) => {
 
-        if(!utilisateur){
+        if (!utilisateur) {
 
             alert(
                 "Connectez-vous"
@@ -327,22 +399,22 @@ function AvisPublic(){
 
         }
 
-        try{
+        try {
 
             await api.post(
                 "/avis/reponse/like",
                 {
-                    id_reponse:id,
+                    id_reponse: id,
 
                     id_utilisateur:
-                    utilisateur.id_utilisateur
+                        utilisateur.id_utilisateur
                 }
             );
 
             chargerAvis();
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(
                 "Erreur like réponse",
@@ -357,9 +429,9 @@ function AvisPublic(){
     // ENVOYER UNE REPONSE
     // ==================================
 
-    const envoyerReponse=async(id)=>{
+    const envoyerReponse = async (id) => {
 
-        if(!utilisateur){
+        if (!utilisateur) {
 
             alert(
                 "Connectez-vous pour répondre"
@@ -369,24 +441,24 @@ function AvisPublic(){
 
         }
 
-        if(!texteReponse.trim()){
+        if (!texteReponse.trim()) {
 
             return;
 
         }
 
-        try{
+        try {
 
             await api.post(
                 "/avis/reponse",
                 {
-                    id_avis:id,
+                    id_avis: id,
 
                     id_utilisateur:
-                    utilisateur.id_utilisateur,
+                        utilisateur.id_utilisateur,
 
                     reponse:
-                    texteReponse
+                        texteReponse
                 }
             );
 
@@ -397,7 +469,7 @@ function AvisPublic(){
             chargerAvis();
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(
                 "Erreur réponse",
@@ -412,24 +484,24 @@ function AvisPublic(){
     // SUPPRIMER UN AVIS
     // ==================================
 
-    const supprimerAvis=async(id)=>{
+    const supprimerAvis = async (id) => {
 
-        if(
+        if (
             window.confirm(
                 "Supprimer cet avis ?"
             )
-        ){
+        ) {
 
-            try{
+            try {
 
                 await api.delete(
-                    "/avis/"+id
+                    "/avis/" + id
                 );
 
                 chargerAvis();
 
             }
-            catch(error){
+            catch (error) {
 
                 console.log(error);
 
@@ -443,17 +515,17 @@ function AvisPublic(){
     // MODIFIER UN AVIS
     // ==================================
 
-    const modifierAvis=async(id)=>{
+    const modifierAvis = async (id) => {
 
-        try{
+        try {
 
             await api.put(
-                "/avis/"+id,
+                "/avis/" + id,
                 {
-                    note:5,
+                    note: 5,
 
                     commentaire:
-                    texteEdition
+                        texteEdition
                 }
             );
 
@@ -464,7 +536,7 @@ function AvisPublic(){
             chargerAvis();
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(
                 "Erreur modification",
@@ -479,30 +551,33 @@ function AvisPublic(){
     // PARTAGER UN AVIS
     // ==================================
 
-    const partager=(a)=>{
+    const partager = (a) => {
 
         const url =
-        window.location.href;
+            window.location.href;
 
-        if(
+        if (
             navigator.share
-        ){
+        ) {
 
             navigator.share({
+
                 title:
-                "Avis touristique",
+                    "Avis touristique",
 
                 text:
-                a.commentaire,
+                    a.commentaire,
 
-                url:url
+                url: url
+
             });
 
         }
-        else{
+        else {
 
             window.open(
-                "https://www.facebook.com/sharer/sharer.php?u="+url,
+                "https://www.facebook.com/sharer/sharer.php?u=" +
+                url,
                 "_blank"
             );
 
@@ -514,7 +589,7 @@ function AvisPublic(){
     // COPIER LE LIEN
     // ==================================
 
-    const copier=()=>{
+    const copier = () => {
 
         navigator.clipboard.writeText(
             window.location.href
@@ -530,18 +605,22 @@ function AvisPublic(){
     // FORMAT DATE
     // ==================================
 
-    const date=(d)=>{
+    const date = (d) => {
 
         return new Date(d)
-        .toLocaleDateString(
-            "fr-FR"
-        );
+            .toLocaleDateString(
+                "fr-FR"
+            );
 
     };
 
-    if(loading){
+    // ==================================
+    // LOADING
+    // ==================================
 
-        return(
+    if (loading) {
+
+        return (
             <div className="avis-loading">
                 Chargement...
             </div>
@@ -549,7 +628,11 @@ function AvisPublic(){
 
     }
 
-    return(
+    // ==================================
+    // RENDER
+    // ==================================
+
+    return (
 
         <div className="avis-public-page">
 
@@ -562,11 +645,7 @@ function AvisPublic(){
             </p>
 
             {/* ===========================
-                FORMULAIRE NOUVEL AVIS
-            =========================== */}
-
-            {/* ===========================
-                CREATION AVIS STYLE FACEBOOK
+                CREATION AVIS
             =========================== */}
 
             <div className="create-post">
@@ -579,9 +658,10 @@ function AvisPublic(){
 
                     <textarea
                         placeholder="Partagez votre expérience..."
-                        value={nouveauCommentaire}
-                        onFocus={()=>{}}
-                        onChange={(e)=>
+                        value={
+                            nouveauCommentaire
+                        }
+                        onChange={(e) =>
                             setNouveauCommentaire(
                                 e.target.value
                             )
@@ -600,9 +680,11 @@ function AvisPublic(){
 
                         <select
                             value={noteAvis}
-                            onChange={(e)=>
+                            onChange={(e) =>
                                 setNoteAvis(
-                                    Number(e.target.value)
+                                    Number(
+                                        e.target.value
+                                    )
                                 )
                             }
                         >
@@ -640,17 +722,21 @@ function AvisPublic(){
                             multiple
                             accept="image/*"
                             hidden
-                            onChange={(e)=>{
+                            onChange={(e) => {
 
                                 const nouvellesPhotos =
-                                Array.from(e.target.files);
+                                    Array.from(
+                                        e.target.files
+                                    );
 
-                                setPhotosAvis((ancienne)=>[
-                                    ...ancienne,
-                                    ...nouvellesPhotos
-                                ]);
+                                setPhotosAvis(
+                                    (ancienne) => [
+                                        ...ancienne,
+                                        ...nouvellesPhotos
+                                    ]
+                                );
 
-                                e.target.value="";
+                                e.target.value = "";
 
                             }}
                         />
@@ -659,61 +745,70 @@ function AvisPublic(){
 
                 </div>
 
-                {/* APERCU PHOTOS */}
+                {/* ===========================
+                    APERCU PHOTOS
+                =========================== */}
 
                 {
-                    photosAvis.length>0 &&
+                    photosAvis.length > 0 &&
 
                     <div className="preview-container">
 
                         {
-                            photosAvis.map((photo,index)=>(
+                            photosAvis.map(
+                                (photo, index) => (
 
-                                <div
-                                    className="preview-photo"
-                                    key={index}
-                                >
-
-                                    <img
-                                        src={
-                                            URL.createObjectURL(photo)
-                                        }
-                                        alt="aperçu"
-                                    />
-
-                                    <button
-                                        type="button"
-                                        onClick={()=>{
-
-                                            setPhotosAvis(
-                                                photosAvis.filter(
-                                                    (_,i)=>
-                                                    i!==index
-                                                )
-                                            );
-
-                                        }}
+                                    <div
+                                        className="preview-photo"
+                                        key={index}
                                     >
-                                        ×
-                                    </button>
 
-                                </div>
+                                        <img
+                                            src={
+                                                URL.createObjectURL(
+                                                    photo
+                                                )
+                                            }
+                                            alt="aperçu"
+                                        />
 
-                            ))
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+
+                                                setPhotosAvis(
+                                                    photosAvis.filter(
+                                                        (_, i) =>
+                                                            i !== index
+                                                    )
+                                                );
+
+                                            }}
+                                        >
+                                            ×
+                                        </button>
+
+                                    </div>
+
+                                )
+                            )
                         }
 
                     </div>
-
                 }
 
                 <div className="publish-zone">
 
                     <span>
+
                         {
                             photosAvis.length
                         }
+
                         {" "}
+
                         photo(s) sélectionnée(s)
+
                     </span>
 
                     <button
@@ -726,333 +821,439 @@ function AvisPublic(){
 
             </div>
 
+            {/* ===========================
+                FEED
+            =========================== */}
+
             <div className="facebook-feed">
 
                 {
-                    avis.map(a=>(
+                    avis.map(
+                        (a) => (
 
-                        <div
-                            className="facebook-card"
-                            key={a.id_avis}
-                        >
+                            <div
+                                className="facebook-card"
+                                key={a.id_avis}
+                            >
 
-                            {/* HEADER */}
+                                {/* ===========================
+                                    HEADER
+                                =========================== */}
 
-                            <div className="post-header">
-
-                                {
-                                    a.photo ?
-
-                                    <img
-                                        src={
-                                            import.meta.env.VITE_SERVER_URL + "/uploads/"+a.photo
-                                        }
-                                        alt="profil"
-                                    />
-
-                                    :
-
-                                    <div className="avatar">
-                                        👤
-                                    </div>
-                                }
-
-                                <div>
-
-                                    <h3>
-                                        {a.nom} {a.prenom}
-                                    </h3>
+                                <div className="post-header">
 
                                     {
-                                        a.role==="Administrateur"
-                                        &&
-                                        <span className="admin-badge">
-                                            🛡 Administrateur
-                                        </span>
-                                    }
+                                        a.photo ?
 
-                                    <small>
-                                        {date(a.date_avis)}
-                                    </small>
+                                            <img
+                                                src={
+                                                    import.meta.env.VITE_SERVER_URL +
+                                                    "/uploads/" +
+                                                    a.photo
+                                                }
+                                                alt="profil"
+                                            />
 
-                                </div>
-
-                                <div className="menu-zone">
-
-                                    <FaEllipsisH
-                                        className="menu-icon"
-                                        onClick={()=>setMenu(
-                                            menu===a.id_avis
-                                            ?
-                                            null
                                             :
-                                            a.id_avis
-                                        )}
-                                    />
 
-                                    {
-                                        menu===a.id_avis &&
-
-                                        <div className="menu-popup">
-
-                                            {
-                                                utilisateur?.id_utilisateur===a.id_utilisateur
-                                                &&
-                                                <>
-
-                                                    <span
-                                                        onClick={()=>{
-
-                                                            setEdition(a.id_avis);
-
-                                                            setTexteEdition(
-                                                                a.commentaire
-                                                            );
-
-                                                            setMenu(null);
-
-                                                        }}
-                                                    >
-                                                        Modifier
-                                                    </span>
-
-                                                    <span
-                                                        onClick={()=>
-                                                            supprimerAvis(a.id_avis)
-                                                        }
-                                                    >
-                                                        Supprimer
-                                                    </span>
-
-                                                </>
-
-                                            }
-
-                                        </div>
+                                            <div className="avatar">
+                                                👤
+                                            </div>
                                     }
 
-                                </div>
+                                    <div>
 
-                            </div>
+                                        <h3>
+                                            {a.nom}{" "}
+                                            {a.prenom}
+                                        </h3>
 
-                            {/* NOTE */}
+                                        {
+                                            a.role ===
+                                            "Administrateur"
+                                            &&
+                                            <span className="admin-badge">
+                                                🛡 Administrateur
+                                            </span>
+                                        }
 
-                            <div className="stars">
+                                        <small>
+                                            {
+                                                date(
+                                                    a.date_avis
+                                                )
+                                            }
+                                        </small>
 
-                                {
-                                    [1,2,3,4,5].map(i=>(
+                                    </div>
 
-                                        <FaStar
-                                            key={i}
-                                            className={
-                                                i<=a.note
-                                                ?
-                                                "star-active"
-                                                :
-                                                ""
+                                    <div className="menu-zone">
+
+                                        <FaEllipsisH
+                                            className="menu-icon"
+                                            onClick={() =>
+                                                setMenu(
+                                                    menu ===
+                                                    a.id_avis
+                                                        ?
+                                                        null
+                                                        :
+                                                        a.id_avis
+                                                )
                                             }
                                         />
 
-                                    ))
-                                }
+                                        {
+                                            menu ===
+                                            a.id_avis &&
 
-                            </div>
+                                            <div className="menu-popup">
 
-                            {/* COMMENTAIRE */}
+                                                {
+                                                    utilisateur?.id_utilisateur ===
+                                                    a.id_utilisateur
+                                                    &&
+                                                    <>
 
-                            {
-                                edition===a.id_avis ?
+                                                        <span
+                                                            onClick={() => {
 
-                                <div className="edition-zone">
+                                                                setEdition(
+                                                                    a.id_avis
+                                                                );
 
-                                    <textarea
-                                        value={texteEdition}
-                                        onChange={
-                                            e=>
-                                            setTexteEdition(
-                                                e.target.value
-                                            )
-                                        }
-                                    />
+                                                                setTexteEdition(
+                                                                    a.commentaire
+                                                                );
 
-                                    <button
-                                        onClick={()=>
-                                            modifierAvis(a.id_avis)
-                                        }
-                                    >
-                                        Enregistrer
-                                    </button>
+                                                                setMenu(
+                                                                    null
+                                                                );
 
-                                </div>
+                                                            }}
+                                                        >
+                                                            Modifier
+                                                        </span>
 
-                                :
+                                                        <span
+                                                            onClick={() =>
+                                                                supprimerAvis(
+                                                                    a.id_avis
+                                                                )
+                                                            }
+                                                        >
+                                                            Supprimer
+                                                        </span>
 
-                                <p className="message">
-                                    {a.commentaire}
-                                </p>
-                            }
-
-                            {/* PHOTOS AVIS */}
-
-                            {
-                                a.photos?.length > 0 &&
-
-                                <div className="avis-photos">
-
-                                    {
-                                        a.photos.map(photo=>(
-
-                                            <img
-                                                key={photo.id_photo}
-                                                src={
-                                                    getPhotoAvisUrl(
-                                                        photo.photo
-                                                    )
+                                                    </>
                                                 }
-                                                alt="photo avis"
-                                            />
-
-                                        ))
-                                    }
-
-                                </div>
-                            }
-
-                            {/* ACTIONS */}
-
-                            <div className="actions">
-
-                                <span
-                                    onClick={()=>
-                                        likeAvis(a.id_avis)
-                                    }
-                                >
-                                    👍 J'aime
-                                </span>
-
-                                <span
-                                    onClick={()=>
-                                        setReponseActive(a.id_avis)
-                                    }
-                                >
-                                    💬 Répondre
-                                </span>
-
-                                <span
-                                    onClick={()=>
-                                        partager(a)
-                                    }
-                                >
-                                    ↗ Partager
-                                </span>
-
-                                <span
-                                    onClick={copier}
-                                >
-                                    🔗 Copier
-                                </span>
-
-                            </div>
-
-                            <div className="likes-count">
-                                👍 {a.nombre_likes || 0} J'aime
-                            </div>
-
-                            {/* REPONSES */}
-
-                            <div className="comments">
-
-                                {
-                                    a.reponses?.map(r=>(
-
-                                        <div
-                                            className="reply"
-                                            key={r.id_reponse}
-                                        >
-
-                                            {
-                                                r.photo ?
-
-                                                <img
-                                                    src={
-                                                        import.meta.env.VITE_SERVER_URL + "/uploads/"+r.photo
-                                                    }
-                                                    alt="profil"
-                                                />
-
-                                                :
-
-                                                <div className="avatar-small">
-                                                    👤
-                                                </div>
-                                            }
-
-                                            <div className="reply-content">
-
-                                                <strong>
-                                                    {r.nom} {r.prenom}
-                                                </strong>
-
-                                                <p>
-                                                    {r.reponse}
-                                                </p>
-
-                                                <div className="reply-actions">
-
-                                                    <span
-                                                        onClick={()=>
-                                                            likeReponse(r.id_reponse)
-                                                        }
-                                                    >
-                                                        👍 J'aime
-                                                    </span>
-
-                                                </div>
-
-                                                <small>
-                                                    👍 {r.nombre_likes || 0} J'aime
-                                                </small>
 
                                             </div>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                                {/* ===========================
+                                    NOTE
+                                =========================== */}
+
+                                <div className="stars">
+
+                                    {
+                                        [1, 2, 3, 4, 5]
+                                            .map(
+                                                (i) => (
+
+                                                    <FaStar
+                                                        key={i}
+                                                        className={
+                                                            i <= a.note
+                                                                ?
+                                                                "star-active"
+                                                                :
+                                                                ""
+                                                        }
+                                                    />
+
+                                                )
+                                            )
+                                    }
+
+                                </div>
+
+                                {/* ===========================
+                                    COMMENTAIRE
+                                =========================== */}
+
+                                {
+                                    edition ===
+                                    a.id_avis
+
+                                        ?
+
+                                        <div className="edition-zone">
+
+                                            <textarea
+                                                value={
+                                                    texteEdition
+                                                }
+                                                onChange={
+                                                    (e) =>
+                                                        setTexteEdition(
+                                                            e.target.value
+                                                        )
+                                                }
+                                            />
+
+                                            <button
+                                                onClick={() =>
+                                                    modifierAvis(
+                                                        a.id_avis
+                                                    )
+                                                }
+                                            >
+                                                Enregistrer
+                                            </button>
 
                                         </div>
 
-                                    ))
+                                        :
+
+                                        <p className="message">
+                                            {
+                                                a.commentaire
+                                            }
+                                        </p>
+                                }
+
+                                {/* ===========================
+                                    TOUTES LES PHOTOS DE L'AVIS
+                                =========================== */}
+
+                                {
+                                    Array.isArray(a.photos) &&
+                                    a.photos.length > 0 &&
+
+                                    <div className="avis-photos">
+
+                                        {
+                                            a.photos.map(
+                                                (photo) => (
+
+                                                    <img
+                                                        key={
+                                                            photo.id_photo
+                                                        }
+                                                        src={
+                                                            getPhotoAvisUrl(
+                                                                photo.photo
+                                                            )
+                                                        }
+                                                        alt="Photo de l'avis"
+                                                        onError={(e) => {
+
+                                                            console.log(
+                                                                "Erreur chargement image :",
+                                                                photo.photo
+                                                            );
+
+                                                            e.currentTarget.style.display =
+                                                                "none";
+
+                                                        }}
+                                                    />
+
+                                                )
+                                            )
+                                        }
+
+                                    </div>
+                                }
+
+                                {/* ===========================
+                                    ACTIONS
+                                =========================== */}
+
+                                <div className="actions">
+
+                                    <span
+                                        onClick={() =>
+                                            likeAvis(
+                                                a.id_avis
+                                            )
+                                        }
+                                    >
+                                        👍 J'aime
+                                    </span>
+
+                                    <span
+                                        onClick={() =>
+                                            setReponseActive(
+                                                a.id_avis
+                                            )
+                                        }
+                                    >
+                                        💬 Répondre
+                                    </span>
+
+                                    <span
+                                        onClick={() =>
+                                            partager(a)
+                                        }
+                                    >
+                                        ↗ Partager
+                                    </span>
+
+                                    <span
+                                        onClick={
+                                            copier
+                                        }
+                                    >
+                                        🔗 Copier
+                                    </span>
+
+                                </div>
+
+                                <div className="likes-count">
+
+                                    👍{" "}
+                                    {
+                                        a.nombre_likes ||
+                                        0
+                                    }{" "}
+                                    J'aime
+
+                                </div>
+
+                                {/* ===========================
+                                    REPONSES
+                                =========================== */}
+
+                                <div className="comments">
+
+                                    {
+                                        a.reponses?.map(
+                                            (r) => (
+
+                                                <div
+                                                    className="reply"
+                                                    key={
+                                                        r.id_reponse
+                                                    }
+                                                >
+
+                                                    {
+                                                        r.photo ?
+
+                                                            <img
+                                                                src={
+                                                                    import.meta.env.VITE_SERVER_URL +
+                                                                    "/uploads/" +
+                                                                    r.photo
+                                                                }
+                                                                alt="profil"
+                                                            />
+
+                                                            :
+
+                                                            <div className="avatar-small">
+                                                                👤
+                                                            </div>
+                                                    }
+
+                                                    <div className="reply-content">
+
+                                                        <strong>
+                                                            {
+                                                                r.nom
+                                                            }{" "}
+                                                            {
+                                                                r.prenom
+                                                            }
+                                                        </strong>
+
+                                                        <p>
+                                                            {
+                                                                r.reponse
+                                                            }
+                                                        </p>
+
+                                                        <div className="reply-actions">
+
+                                                            <span
+                                                                onClick={() =>
+                                                                    likeReponse(
+                                                                        r.id_reponse
+                                                                    )
+                                                                }
+                                                            >
+                                                                👍 J'aime
+                                                            </span>
+
+                                                        </div>
+
+                                                        <small>
+                                                            👍{" "}
+                                                            {
+                                                                r.nombre_likes ||
+                                                                0
+                                                            }{" "}
+                                                            J'aime
+                                                        </small>
+
+                                                    </div>
+
+                                                </div>
+
+                                            )
+                                        )
+                                    }
+
+                                </div>
+
+                                {/* ===========================
+                                    REPONSE
+                                =========================== */}
+
+                                {
+                                    reponseActive ===
+                                    a.id_avis &&
+
+                                    <div className="reply-box">
+
+                                        <input
+                                            type="text"
+                                            placeholder="Écrire une réponse..."
+                                            value={
+                                                texteReponse
+                                            }
+                                            onChange={
+                                                (e) =>
+                                                    setTexteReponse(
+                                                        e.target.value
+                                                    )
+                                            }
+                                        />
+
+                                        <button
+                                            onClick={() =>
+                                                envoyerReponse(
+                                                    a.id_avis
+                                                )
+                                            }
+                                        >
+                                            Publier
+                                        </button>
+
+                                    </div>
                                 }
 
                             </div>
 
-                            {
-                                reponseActive===a.id_avis &&
-
-                                <div className="reply-box">
-
-                                    <input
-                                        type="text"
-                                        placeholder="Écrire une réponse..."
-                                        value={texteReponse}
-                                        onChange={
-                                            e=>
-                                            setTexteReponse(
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-
-                                    <button
-                                        onClick={()=>
-                                            envoyerReponse(a.id_avis)
-                                        }
-                                    >
-                                        Publier
-                                    </button>
-
-                                </div>
-                            }
-
-                        </div>
-
-                    ))
+                        )
+                    )
                 }
 
             </div>
