@@ -1,6 +1,10 @@
+import {
+    FaTimes,
+    FaSave
+} from "react-icons/fa";
 
-import { FaTimes, FaSave } from "react-icons/fa";
 import "./AdminProfileModal.css";
+
 
 function AdminProfileModal({
     open,
@@ -13,6 +17,7 @@ function AdminProfileModal({
         return null;
     }
 
+
     return (
         <div
             className="admin-modal-overlay"
@@ -24,9 +29,7 @@ function AdminProfileModal({
                 onClick={(e) => e.stopPropagation()}
             >
 
-                {/* =========================
-                    HEADER
-                ========================= */}
+                {/* HEADER */}
 
                 <div className="admin-modal-header">
 
@@ -37,7 +40,6 @@ function AdminProfileModal({
                     <button
                         type="button"
                         onClick={close}
-                        aria-label="Fermer"
                     >
                         <FaTimes />
                     </button>
@@ -45,13 +47,52 @@ function AdminProfileModal({
                 </div>
 
 
-                {/* =========================
-                    FORMULAIRE
-                ========================= */}
+                {/* PROFIL ADMIN */}
+
+                <div className="admin-profile-preview">
+
+                    <div className="admin-profile-photo">
+
+                        {admin?.photo ? (
+
+                            <img
+                                src={
+                                    admin.photo.startsWith("http")
+                                        ? admin.photo
+                                        : `${import.meta.env.VITE_SERVER_URL}/uploads/${admin.photo}`
+                                }
+                                alt="Photo de profil"
+                            />
+
+                        ) : (
+
+                            <div className="admin-profile-photo-default">
+                                👤
+                            </div>
+
+                        )}
+
+                    </div>
+
+
+                    <div className="admin-profile-preview-info">
+
+                        <h3>
+                            {admin?.nom} {admin?.prenom}
+                        </h3>
+
+                        <span>
+                            Administrateur
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                {/* FORMULAIRE */}
 
                 <form onSubmit={save}>
-
-                    {/* NOM */}
 
                     <div className="form-group">
 
@@ -69,8 +110,6 @@ function AdminProfileModal({
                     </div>
 
 
-                    {/* PRÉNOM */}
-
                     <div className="form-group">
 
                         <label>
@@ -86,8 +125,6 @@ function AdminProfileModal({
 
                     </div>
 
-
-                    {/* EMAIL */}
 
                     <div className="form-group">
 
@@ -105,8 +142,6 @@ function AdminProfileModal({
                     </div>
 
 
-                    {/* TÉLÉPHONE */}
-
                     <div className="form-group">
 
                         <label>
@@ -121,8 +156,6 @@ function AdminProfileModal({
 
                     </div>
 
-
-                    {/* BOUTON */}
 
                     <button
                         type="submit"
@@ -143,5 +176,5 @@ function AdminProfileModal({
     );
 }
 
-export default AdminProfileModal;
 
+export default AdminProfileModal;
