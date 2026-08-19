@@ -1,152 +1,147 @@
+
 import { FaTimes, FaSave } from "react-icons/fa";
 import "./AdminProfileModal.css";
 
+function AdminProfileModal({
+    open,
+    close,
+    admin,
+    save
+}) {
 
-function AdminProfileModal({open, close, admin, save}){
+    if (!open) {
+        return null;
+    }
 
+    return (
+        <div
+            className="admin-modal-overlay"
+            onClick={close}
+        >
 
-if(!open) return null;
+            <div
+                className="admin-modal-box"
+                onClick={(e) => e.stopPropagation()}
+            >
 
+                {/* =========================
+                    HEADER
+                ========================= */}
 
+                <div className="admin-modal-header">
 
-return (
+                    <h2>
+                        Modifier mon profil
+                    </h2>
 
-<div className="admin-modal-overlay">
+                    <button
+                        type="button"
+                        onClick={close}
+                        aria-label="Fermer"
+                    >
+                        <FaTimes />
+                    </button>
 
+                </div>
 
-<div className="admin-modal-box">
 
+                {/* =========================
+                    FORMULAIRE
+                ========================= */}
 
-<div className="admin-modal-header">
+                <form onSubmit={save}>
 
+                    {/* NOM */}
 
-<h2>
-Modifier mon profil
-</h2>
+                    <div className="form-group">
 
+                        <label>
+                            Nom
+                        </label>
 
-<button 
-type="button"
-onClick={close}
->
+                        <input
+                            type="text"
+                            name="nom"
+                            defaultValue={admin?.nom || ""}
+                            required
+                        />
 
-<FaTimes/>
+                    </div>
 
-</button>
 
+                    {/* PRÉNOM */}
 
-</div>
+                    <div className="form-group">
 
+                        <label>
+                            Prénom
+                        </label>
 
+                        <input
+                            type="text"
+                            name="prenom"
+                            defaultValue={admin?.prenom || ""}
+                            required
+                        />
 
-<form onSubmit={save}>
+                    </div>
 
 
-<div className="form-group">
+                    {/* EMAIL */}
 
-<label>
-Nom
-</label>
+                    <div className="form-group">
 
-<input
+                        <label>
+                            Email
+                        </label>
 
-name="nom"
+                        <input
+                            type="email"
+                            name="email"
+                            defaultValue={admin?.email || ""}
+                            required
+                        />
 
-defaultValue={admin?.nom || ""}
+                    </div>
 
-/>
 
-</div>
+                    {/* TÉLÉPHONE */}
 
+                    <div className="form-group">
 
+                        <label>
+                            Téléphone
+                        </label>
 
+                        <input
+                            type="text"
+                            name="telephone"
+                            defaultValue={admin?.telephone || ""}
+                        />
 
-<div className="form-group">
+                    </div>
 
-<label>
-Prénom
-</label>
 
-<input
+                    {/* BOUTON */}
 
-name="prenom"
+                    <button
+                        type="submit"
+                        className="admin-save-btn"
+                    >
 
-defaultValue={admin?.prenom || ""}
+                        <FaSave />
 
-/>
+                        Sauvegarder les modifications
 
-</div>
+                    </button>
 
+                </form>
 
+            </div>
 
-
-<div className="form-group">
-
-<label>
-Email
-</label>
-
-<input
-
-type="email"
-
-name="email"
-
-defaultValue={admin?.email || ""}
-
-/>
-
-</div>
-
-
-
-
-<div className="form-group">
-
-<label>
-Téléphone
-</label>
-
-<input
-
-name="telephone"
-
-defaultValue={admin?.telephone || ""}
-
-/>
-
-</div>
-
-
-
-
-<button 
-type="submit"
-className="admin-save-btn"
->
-
-<FaSave/>
-
-Sauvegarder les modifications
-
-</button>
-
-
-</form>
-
-
-
-</div>
-
-
-
-</div>
-
-
-);
-
-
+        </div>
+    );
 }
 
-
 export default AdminProfileModal;
+

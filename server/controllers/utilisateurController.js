@@ -1,88 +1,113 @@
 const db = require("../db");
+
 const bcrypt = require("bcrypt");
+
 const jwt = require("jsonwebtoken");
 
+const cloudinary = require("cloudinary").v2;
+
+const fs = require("fs");
 
 
+// =====================================================
+// CONFIGURATION CLOUDINARY
+// =====================================================
 
-// =============================
+cloudinary.config({
+
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+
+    api_key: process.env.CLOUDINARY_API_KEY,
+
+    api_secret: process.env.CLOUDINARY_API_SECRET
+
+});
+
+
+// =====================================================
 // AJOUT UTILISATEUR
-// =============================
+// =====================================================
 
-exports.register = async(req,res)=>{
-
+exports.register = async (req, res) => {
 
     const {
 
         nom,
+
         prenom,
+
         email,
+
         mot_de_passe,
+
         password,
+
         telephone,
+
         role
 
     } = req.body;
 
 
-
-    const passwordFinal = password || mot_de_passe;
-
-
-
-    try{
+    const passwordFinal =
+        password || mot_de_passe;
 
 
-        if(!passwordFinal){
+    try {
 
+        // =====================================================
+        // VÉRIFIER MOT DE PASSE
+        // =====================================================
+
+        if (!passwordFinal) {
 
             return res.status(400).json({
 
-                message:"Le mot de passe est obligatoire"
+                message:
+                    "Le mot de passe est obligatoire"
 
             });
-
 
         }
 
 
-
+        // =====================================================
+        // RÔLES AUTORISÉS
+        // =====================================================
 
         const rolesAutorises = [
 
             "Administrateur",
+
             "Touriste",
+
             "Prestataire"
 
         ];
 
 
-
-        if(!rolesAutorises.includes(role)){
-
+        if (!rolesAutorises.includes(role)) {
 
             return res.status(400).json({
 
-                message:"Rôle invalide"
+                message: "Rôle invalide"
 
             });
-
 
         }
 
 
-
-
-
-
-
-        // Vérifier email existant
+        // =====================================================
+        // VÉRIFIER EMAIL EXISTANT
+        // =====================================================
 
         const [emailExiste] = await db.query(
 
             `
             SELECT id_utilisateur
+
             FROM utilisateur
+
             WHERE email=?
             `,
 
@@ -93,39 +118,32 @@ exports.register = async(req,res)=>{
         );
 
 
-
-        if(emailExiste.length > 0){
-
+        if (emailExiste.length > 0) {
 
             return res.status(400).json({
 
-                message:"Cet email existe déjà"
+                message:
+                    "Cet email existe déjà"
 
             });
-
 
         }
 
 
+        // =====================================================
+        // HASH MOT DE PASSE
+        // =====================================================
+
+        const hashPassword =
+            await bcrypt.hash(
+                passwordFinal,
+                10
+            );
 
 
-
-
-
-        const hashPassword = await bcrypt.hash(
-
-            passwordFinal,
-
-            10
-
-        );
-
-
-
-
-
-
-
+        // =====================================================
+        // INSERTION
+        // =====================================================
 
         const [result] = await db.query(
 
@@ -141,9 +159,7 @@ exports.register = async(req,res)=>{
             )
 
             VALUES (?,?,?,?,?,?)
-
             `,
-
 
             [
 
@@ -161,68 +177,47 @@ exports.register = async(req,res)=>{
 
             ]
 
-
         );
-
-
-
 
 
         res.json({
 
+            message:
+                "Utilisateur ajouté avec succès",
 
-            message:"Utilisateur ajouté avec succès",
-
-            id:result.insertId
-
+            id:
+                result.insertId
 
         });
 
-
-
-
-
     }
 
-
-    catch(error){
-
+    catch (error) {
 
         console.log(error);
 
 
-
         res.status(500).json({
 
+            message:
+                "Erreur ajout utilisateur",
 
-            message:"Erreur ajout utilisateur",
-
-            error:error.message
-
+            error:
+                error.message
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-// =============================
+// =====================================================
 // LOGIN
-// =============================
+// =====================================================
 
-
-exports.login = async(req,res)=>{
-
+exports.login = async (req, res) => {
 
     const {
 
@@ -233,15 +228,15 @@ exports.login = async(req,res)=>{
     } = req.body;
 
 
-
-    try{
-
+    try {
 
         const [result] = await db.query(
 
             `
             SELECT *
+
             FROM utilisateur
+
             WHERE email=?
             `,
 
@@ -252,151 +247,139 @@ exports.login = async(req,res)=>{
         );
 
 
-
-        if(result.length===0){
-
+        if (result.length === 0) {
 
             return res.status(404).json({
 
-                message:"Utilisateur introuvable"
+                message:
+                    "Utilisateur introuvable"
 
             });
-
 
         }
 
 
+        const utilisateur =
+            result[0];
 
 
-        const utilisateur=result[0];
+        // =====================================================
+        // VÉRIFIER MOT DE PASSE
+        // =====================================================
+
+        const passwordOK =
+            await bcrypt.compare(
+
+                mot_de_passe,
+
+                utilisateur.mot_de_passe
+
+            );
 
 
-
-        const passwordOK = await bcrypt.compare(
-
-            mot_de_passe,
-
-            utilisateur.mot_de_passe
-
-        );
-
-
-
-        if(!passwordOK){
-
+        if (!passwordOK) {
 
             return res.status(401).json({
 
-                message:"Mot de passe incorrect"
+                message:
+                    "Mot de passe incorrect"
 
             });
-
 
         }
 
 
+        // =====================================================
+        // TOKEN JWT
+        // =====================================================
+
+        const token =
+            jwt.sign(
+
+                {
+
+                    id:
+                        utilisateur.id_utilisateur,
+
+                    role:
+                        utilisateur.role
+
+                },
+
+                process.env.JWT_SECRET,
+
+                {
+
+                    expiresIn: "1h"
+
+                }
+
+            );
 
 
-
-
-
-        const token = jwt.sign(
-
-            {
-
-                id:utilisateur.id_utilisateur,
-
-                role:utilisateur.role
-
-            },
-
-            process.env.JWT_SECRET,
-
-            {
-
-                expiresIn:"1h"
-
-            }
-
-        );
-
-
-
-
-
-
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.json({
 
-
-            message:"Connexion réussie",
-
+            message:
+                "Connexion réussie",
 
             token,
 
+            utilisateur: {
 
-            utilisateur:{
+                id:
+                    utilisateur.id_utilisateur,
 
+                nom:
+                    utilisateur.nom,
 
-                id:utilisateur.id_utilisateur,
+                prenom:
+                    utilisateur.prenom,
 
-                nom:utilisateur.nom,
+                email:
+                    utilisateur.email,
 
-                prenom:utilisateur.prenom,
+                role:
+                    utilisateur.role,
 
-                email:utilisateur.email,
-
-                role:utilisateur.role,
-
-                photo:utilisateur.photo
-
+                photo:
+                    utilisateur.photo
 
             }
 
-
         });
-
-
-
 
     }
 
-    catch(error){
-
+    catch (error) {
 
         console.log(error);
 
 
         res.status(500).json({
 
-            message:"Erreur serveur"
+            message:
+                "Erreur serveur"
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-// =============================
+// =====================================================
 // MODIFIER UTILISATEUR
-// =============================
+// =====================================================
 
+exports.updateUtilisateur = async (req, res) => {
 
-exports.updateUtilisateur = async(req,res)=>{
-
-
-    const id=req.params.id;
-
+    const id =
+        req.params.id;
 
 
     const {
@@ -411,45 +394,41 @@ exports.updateUtilisateur = async(req,res)=>{
 
         role
 
-
     } = req.body;
 
 
+    try {
 
+        // =====================================================
+        // RÔLES AUTORISÉS
+        // =====================================================
 
-
-    try{
-
-
-
-        const rolesAutorises=[
+        const rolesAutorises = [
 
             "Administrateur",
+
             "Touriste",
+
             "Prestataire"
 
         ];
 
 
-
-
-        if(!rolesAutorises.includes(role)){
-
+        if (!rolesAutorises.includes(role)) {
 
             return res.status(400).json({
 
-                message:"Rôle invalide"
+                message:
+                    "Rôle invalide"
 
             });
-
 
         }
 
 
-
-
-
-
+        // =====================================================
+        // MODIFICATION
+        // =====================================================
 
         await db.query(
 
@@ -458,20 +437,18 @@ exports.updateUtilisateur = async(req,res)=>{
 
             SET
 
-            nom=?,
+                nom=?,
 
-            prenom=?,
+                prenom=?,
 
-            email=?,
+                email=?,
 
-            telephone=?,
+                telephone=?,
 
-            role=?
+                role=?
 
             WHERE id_utilisateur=?
-
             `,
-
 
             [
 
@@ -492,73 +469,55 @@ exports.updateUtilisateur = async(req,res)=>{
         );
 
 
-
-
-
-
-
         res.json({
 
-            message:"Utilisateur modifié avec succès"
+            message:
+                "Utilisateur modifié avec succès"
 
         });
 
-
-
-
-
     }
 
-    catch(error){
-
+    catch (error) {
 
         console.log(error);
 
 
         res.status(500).json({
 
-            message:"Erreur modification utilisateur"
+            message:
+                "Erreur modification utilisateur"
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-// =============================
+// =====================================================
 // SUPPRIMER UTILISATEUR
-// =============================
+// =====================================================
+
+exports.deleteUtilisateur = async (req, res) => {
+
+    const id =
+        req.params.id;
 
 
-exports.deleteUtilisateur = async(req,res)=>{
+    try {
 
-
-    const id=req.params.id;
-
-
-
-    try{
-
-
-
-        // supprimer recommandations IA
+        // =====================================================
+        // SUPPRIMER RECOMMANDATIONS IA
+        // =====================================================
 
         await db.query(
 
             `
             DELETE FROM recommandation_ia
-            WHERE id_utilisateur=?
 
+            WHERE id_utilisateur=?
             `,
 
             [
@@ -568,18 +527,16 @@ exports.deleteUtilisateur = async(req,res)=>{
         );
 
 
-
-
-
-
-        // supprimer notifications
+        // =====================================================
+        // SUPPRIMER NOTIFICATIONS
+        // =====================================================
 
         await db.query(
 
             `
             DELETE FROM notification
-            WHERE id_utilisateur=?
 
+            WHERE id_utilisateur=?
             `,
 
             [
@@ -589,19 +546,16 @@ exports.deleteUtilisateur = async(req,res)=>{
         );
 
 
-
-
-
-
-
-        // supprimer avis
+        // =====================================================
+        // SUPPRIMER AVIS
+        // =====================================================
 
         await db.query(
 
             `
             DELETE FROM avis
-            WHERE id_utilisateur=?
 
+            WHERE id_utilisateur=?
             `,
 
             [
@@ -611,20 +565,16 @@ exports.deleteUtilisateur = async(req,res)=>{
         );
 
 
-
-
-
-
-
-
-        // supprimer réservations
+        // =====================================================
+        // SUPPRIMER RÉSERVATIONS
+        // =====================================================
 
         await db.query(
 
             `
             DELETE FROM reservation
-            WHERE id_utilisateur=?
 
+            WHERE id_utilisateur=?
             `,
 
             [
@@ -634,20 +584,16 @@ exports.deleteUtilisateur = async(req,res)=>{
         );
 
 
-
-
-
-
-
-
-        // supprimer utilisateur
+        // =====================================================
+        // SUPPRIMER UTILISATEUR
+        // =====================================================
 
         await db.query(
 
             `
             DELETE FROM utilisateur
-            WHERE id_utilisateur=?
 
+            WHERE id_utilisateur=?
             `,
 
             [
@@ -657,224 +603,301 @@ exports.deleteUtilisateur = async(req,res)=>{
         );
 
 
-
-
-
-
         res.json({
 
-            message:"Utilisateur supprimé avec succès"
+            message:
+                "Utilisateur supprimé avec succès"
 
         });
 
-
-
-
-
     }
 
-    catch(error){
-
+    catch (error) {
 
         console.log(error);
 
 
         res.status(500).json({
 
-            message:"Erreur suppression utilisateur",
+            message:
+                "Erreur suppression utilisateur",
 
-            error:error.message
+            error:
+                error.message
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-// =============================
+// =====================================================
 // AFFICHER UTILISATEURS
-// =============================
+// =====================================================
+
+exports.getUtilisateurs = async (req, res) => {
+
+    try {
+
+        const [utilisateurs] =
+            await db.query(
+
+                `
+                SELECT
+
+                    id_utilisateur,
+
+                    nom,
+
+                    prenom,
+
+                    email,
+
+                    telephone,
+
+                    role,
+
+                    photo,
+
+                    date_inscription
+
+                FROM utilisateur
+
+                ORDER BY date_inscription DESC
+                `
+
+            );
 
 
-exports.getUtilisateurs = async(req,res)=>{
-
-
-    try{
-
-
-        const [utilisateurs]=await db.query(
-
-            `
-            SELECT
-
-            id_utilisateur,
-
-            nom,
-
-            prenom,
-
-            email,
-
-            telephone,
-
-            role,
-
-            photo,
-
-            date_inscription
-
-
-            FROM utilisateur
-
-
-            ORDER BY date_inscription DESC
-
-            `
-
-
+        res.json(
+            utilisateurs
         );
-
-
-
-        res.json(utilisateurs);
-
-
 
     }
 
-
-    catch(error){
-
+    catch (error) {
 
         console.log(error);
 
 
         res.status(500).json({
 
-            message:"Erreur récupération utilisateurs"
+            message:
+                "Erreur récupération utilisateurs"
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-// =============================
+// =====================================================
 // AFFICHER UN UTILISATEUR PAR ID
-// =============================
+// =====================================================
 
-exports.getUtilisateurById = async(req,res)=>{
+exports.getUtilisateurById = async (req, res) => {
 
-    const id = req.params.id;
-
-
-    try{
-
-        const [utilisateur] = await db.query(
-
-            `
-            SELECT
-
-            id_utilisateur,
-            nom,
-            prenom,
-            email,
-            telephone,
-            role,
-            photo,
-            date_inscription
-
-            FROM utilisateur
-
-            WHERE id_utilisateur=?
-
-            `,
-
-            [id]
-
-        );
+    const id =
+        req.params.id;
 
 
-        if(utilisateur.length === 0){
+    try {
+
+        const [utilisateur] =
+            await db.query(
+
+                `
+                SELECT
+
+                    id_utilisateur,
+
+                    nom,
+
+                    prenom,
+
+                    email,
+
+                    telephone,
+
+                    role,
+
+                    photo,
+
+                    date_inscription
+
+                FROM utilisateur
+
+                WHERE id_utilisateur=?
+                `,
+
+                [
+                    id
+                ]
+
+            );
+
+
+        if (utilisateur.length === 0) {
 
             return res.status(404).json({
 
-                message:"Utilisateur introuvable"
+                message:
+                    "Utilisateur introuvable"
 
             });
 
         }
 
 
-        res.json(utilisateur[0]);
-
+        res.json(
+            utilisateur[0]
+        );
 
     }
-    catch(error){
+
+    catch (error) {
 
         console.log(error);
 
 
         res.status(500).json({
 
-            message:"Erreur récupération utilisateur"
+            message:
+                "Erreur récupération utilisateur"
 
         });
 
     }
-
 
 };
 
 
 
+// =====================================================
+// MODIFIER PHOTO UTILISATEUR
+// =====================================================
+
+exports.updatePhoto = async (req, res) => {
+
+    const id =
+        req.params.id;
 
 
-// =============================
-// MODIFIER PHOTO
-// =============================
+    // =====================================================
+    // VÉRIFIER FICHIER
+    // =====================================================
 
-
-exports.updatePhoto = async(req,res)=>{
-
-
-    const id=req.params.id;
-
-
-
-    if(!req.file){
-
+    if (!req.file) {
 
         return res.status(400).json({
 
-            message:"Aucune photo envoyée"
+            message:
+                "Aucune photo envoyée"
 
         });
-
 
     }
 
 
+    try {
+
+        // =====================================================
+        // RÉCUPÉRER ANCIENNE PHOTO
+        // =====================================================
+
+        const [utilisateurs] =
+            await db.query(
+
+                `
+                SELECT photo
+
+                FROM utilisateur
+
+                WHERE id_utilisateur=?
+                `,
+
+                [
+                    id
+                ]
+
+            );
 
 
-    try{
+        if (utilisateurs.length === 0) {
 
+            return res.status(404).json({
+
+                message:
+                    "Utilisateur introuvable"
+
+            });
+
+        }
+
+
+        const anciennePhoto =
+            utilisateurs[0].photo;
+
+
+        // =====================================================
+        // UPLOAD CLOUDINARY
+        // =====================================================
+
+        console.log(
+            "☁️ Upload photo utilisateur vers Cloudinary..."
+        );
+
+
+        const resultat =
+            await cloudinary.uploader.upload(
+
+                req.file.path,
+
+                {
+
+                    folder:
+                        "plateforme-touristique/utilisateurs",
+
+                    resource_type:
+                        "image"
+
+                }
+
+            );
+
+
+        console.log(
+            "✅ Upload Cloudinary réussi"
+        );
+
+
+        console.log(
+            "URL :",
+            resultat.secure_url
+        );
+
+
+        console.log(
+            "Public ID :",
+            resultat.public_id
+        );
+
+
+        // =====================================================
+        // NOUVELLE URL
+        // =====================================================
+
+        const nouvellePhoto =
+            resultat.secure_url;
+
+
+        // =====================================================
+        // METTRE À JOUR MYSQL
+        // =====================================================
 
         await db.query(
 
@@ -884,13 +907,11 @@ exports.updatePhoto = async(req,res)=>{
             SET photo=?
 
             WHERE id_utilisateur=?
-
             `,
-
 
             [
 
-                req.file.filename,
+                nouvellePhoto,
 
                 id
 
@@ -899,33 +920,186 @@ exports.updatePhoto = async(req,res)=>{
         );
 
 
+        console.log(
+            "✅ Base de données mise à jour"
+        );
+
+
+        // =====================================================
+        // SUPPRIMER ANCIENNE PHOTO CLOUDINARY
+        // =====================================================
+
+        if (
+
+            anciennePhoto &&
+
+            anciennePhoto.includes(
+                "res.cloudinary.com"
+            )
+
+        ) {
+
+            try {
+
+                // -------------------------------------------------
+                // Extraire le chemin après /upload/
+                // -------------------------------------------------
+
+                const partie =
+                    anciennePhoto.split(
+                        "/upload/"
+                    )[1];
+
+
+                if (partie) {
+
+                    // -------------------------------------------------
+                    // Supprimer vXXXXXXXXXX/
+                    // -------------------------------------------------
+
+                    const sansVersion =
+                        partie.replace(
+                            /^v\d+\//,
+                            ""
+                        );
+
+
+                    // -------------------------------------------------
+                    // Supprimer extension
+                    // -------------------------------------------------
+
+                    const publicIdAncien =
+                        sansVersion.replace(
+                            /\.[^/.]+$/,
+                            ""
+                        );
+
+
+                    console.log(
+                        "🗑️ Suppression ancienne photo :",
+                        publicIdAncien
+                    );
+
+
+                    await cloudinary.uploader.destroy(
+
+                        publicIdAncien,
+
+                        {
+
+                            resource_type:
+                                "image"
+
+                        }
+
+                    );
+
+
+                    console.log(
+                        "✅ Ancienne photo supprimée de Cloudinary"
+                    );
+
+                }
+
+            }
+
+            catch (cloudinaryError) {
+
+                console.log(
+
+                    "⚠️ Impossible de supprimer l'ancienne photo Cloudinary :",
+
+                    cloudinaryError.message
+
+                );
+
+            }
+
+        }
+
+
+        // =====================================================
+        // SUPPRIMER FICHIER LOCAL TEMPORAIRE
+        // =====================================================
+
+        try {
+
+            if (
+
+                req.file.path &&
+
+                fs.existsSync(
+                    req.file.path
+                )
+
+            ) {
+
+                fs.unlinkSync(
+                    req.file.path
+                );
+
+                console.log(
+                    "🗑️ Fichier local temporaire supprimé"
+                );
+
+            }
+
+        }
+
+        catch (fileError) {
+
+            console.log(
+
+                "⚠️ Impossible de supprimer le fichier local :",
+
+                fileError.message
+
+            );
+
+        }
+
+
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.json({
 
-            message:"Photo modifiée",
+            message:
+                "Photo modifiée avec succès",
 
-            photo:req.file.filename
+            photo:
+                nouvellePhoto,
+
+            public_id:
+                resultat.public_id
 
         });
 
-
-
     }
 
-    catch(error){
+    catch (error) {
+
+        console.log(
+            "❌ Erreur modification photo :",
+            error
+        );
 
 
-        console.log(error);
-
+        // =====================================================
+        // SI CLOUDINARY A ÉTÉ UPLOADÉ MAIS MYSQL ÉCHOUE
+        // =====================================================
 
         res.status(500).json({
 
-            message:"Erreur photo"
+            message:
+                "Erreur lors de la modification de la photo",
+
+            error:
+                error.message
 
         });
 
-
     }
-
 
 };

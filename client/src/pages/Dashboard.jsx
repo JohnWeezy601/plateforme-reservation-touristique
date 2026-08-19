@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import api from "../api/api";
 
@@ -16,701 +17,592 @@ import {
 import "./Dashboard.css";
 
 
-function Dashboard(){
+function Dashboard() {
 
+    // =====================================================
+    // ÉTATS
+    // =====================================================
 
-const [stats,setStats] = useState(null);
+    const [stats, setStats] = useState(null);
 
+    const [admin, setAdmin] = useState(null);
 
+    const [chargementAdmin, setChargementAdmin] =
+        useState(true);
 
-// ===============================
-// Charger statistiques dashboard
-// ===============================
 
-const chargerDashboard = async()=>{
+    // =====================================================
+    // RÉCUPÉRER L'ADMIN CONNECTÉ
+    // =====================================================
 
+    const chargerProfilAdmin = async () => {
 
-try{
+        try {
 
+            const stockage =
+                localStorage.getItem("utilisateur");
 
-const res = await api.get(
-"/dashboard/statistiques"
-);
 
+            if (!stockage) {
 
-setStats(res.data);
+                console.log(
+                    "Aucun utilisateur connecté"
+                );
 
+                setAdmin(null);
 
-}
+                return;
 
-catch(error){
+            }
 
 
-console.log(
-"Erreur dashboard :",
-error
-);
+            const data =
+                JSON.parse(stockage);
 
 
-}
+            /*
+                Selon ton système de connexion,
+                localStorage peut contenir :
 
+                {
+                    utilisateur: {...},
+                    token: "..."
+                }
 
-};
+                ou directement :
 
+                {
+                    id: ...,
+                    nom: ...,
+                    ...
+                }
+            */
 
+            const utilisateur =
+                data?.utilisateur
+                    ? data.utilisateur
+                    : data;
 
 
+            const id =
+                utilisateur?.id_utilisateur ||
+                utilisateur?.id;
 
-useEffect(()=>{
 
+            if (!id) {
 
-chargerDashboard();
+                console.log(
+                    "ID administrateur introuvable"
+                );
 
+                setAdmin(null);
 
-},[]);
+                return;
 
+            }
 
 
+            // =================================================
+            // RÉCUPÉRER LE PROFIL COMPLET DEPUIS MYSQL
+            // =================================================
 
+            const res =
+                await api.get(
+                    `/utilisateurs/${id}`
+                );
 
 
-if(!stats){
+            setAdmin(res.data);
 
 
-return(
+        }
+        catch (error) {
 
+            console.log(
+                "Erreur récupération profil admin :",
+                error
+            );
 
-<div className="dashboard-loading">
+            setAdmin(null);
 
+        }
+        finally {
 
-Chargement du tableau de bord...
+            setChargementAdmin(false);
 
+        }
 
-</div>
+    };
 
 
-);
+    // =====================================================
+    // CHARGER STATISTIQUES DASHBOARD
+    // =====================================================
 
+    const chargerDashboard = async () => {
 
-}
+        try {
 
+            const res =
+                await api.get(
+                    "/dashboard/statistiques"
+                );
 
 
+            setStats(res.data);
 
+        }
+        catch (error) {
 
-// ===============================
-// Couleurs graphique
-// ===============================
+            console.log(
+                "Erreur dashboard :",
+                error
+            );
 
+        }
 
-const couleurs=[
+    };
 
-"#2563eb",
 
-"#16a34a",
+    // =====================================================
+    // CHARGEMENT INITIAL
+    // =====================================================
 
-"#f59e0b",
+    useEffect(() => {
 
-"#dc2626"
+        chargerDashboard();
 
-];
+        chargerProfilAdmin();
 
+    }, []);
 
 
+    // =====================================================
+    // CHARGEMENT
+    // =====================================================
 
+    if (!stats) {
 
+        return (
+            <div className="dashboard-loading">
 
+                Chargement du tableau de bord...
 
-return(
+            </div>
+        );
 
+    }
 
-<div className="dashboard-page">
 
+    // =====================================================
+    // COULEURS GRAPHIQUE
+    // =====================================================
 
+    const couleurs = [
 
+        "#2563eb",
+        "#16a34a",
+        "#f59e0b",
+        "#dc2626"
 
+    ];
 
-{/* =========================
-        HEADER
-========================= */}
 
+    // =====================================================
+    // PHOTO ADMIN
+    // =====================================================
 
-<div className="dashboard-header">
+    const photoAdmin =
+        admin?.photo || null;
 
 
-<div>
+    // =====================================================
+    // AFFICHAGE
+    // =====================================================
 
+    return (
 
-<h1>
+        <div className="dashboard-page">
 
-📊 Tableau de bord administrateur
 
-</h1>
+            {/* =================================================
+                HEADER
+            ================================================= */}
 
+            <div className="dashboard-header">
 
-<p>
 
-Vue générale de la plateforme touristique
+                <div>
 
-</p>
+                    <h1>
+                        📊 Tableau de bord administrateur
+                    </h1>
 
+                    <p>
+                        Vue générale de la plateforme touristique
+                    </p>
 
-</div>
+                </div>
 
 
+                {/* =================================================
+                    PROFIL ADMIN
+                ================================================= */}
 
+                <div className="admin-profile">
 
 
-<div className="admin-profile">
+                    {chargementAdmin ? (
 
+                        <span>
+                            Chargement...
+                        </span>
 
-👤 Administrateur
+                    ) : admin ? (
 
+                        <>
 
-</div>
+                            {/* PHOTO */}
 
+                            {photoAdmin ? (
 
-</div>
+                                <img
+                                    src={photoAdmin}
+                                    alt="Administrateur"
+                                    className="dashboard-admin-photo"
+                                />
 
+                            ) : (
 
+                                <div className="dashboard-admin-avatar">
+                                    👤
+                                </div>
 
+                            )}
 
 
+                            {/* INFORMATIONS */}
 
+                            <div className="dashboard-admin-info">
 
+                                <strong>
 
-{/* =========================
-        CARTES STATISTIQUES
-========================= */}
+                                    {admin.prenom || ""}{" "}
 
+                                    {admin.nom || ""}
 
+                                </strong>
 
-<div className="stats-grid">
+                                <span>
+                                    Administrateur
+                                </span>
 
+                            </div>
 
+                        </>
 
+                    ) : (
 
+                        <>
 
-<div className="stat-card blue">
+                            <span>
+                                👤
+                            </span>
 
+                            <span>
+                                Administrateur
+                            </span>
 
-<div className="icon">
+                        </>
 
-👥
+                    )}
 
-</div>
+                </div>
 
 
-<h2>
+            </div>
 
-{stats.totalUtilisateurs}
 
-</h2>
+            {/* =================================================
+                CARTES STATISTIQUES
+            ================================================= */}
 
+            <div className="stats-grid">
 
-<p>
 
-Utilisateurs
+                {/* UTILISATEURS */}
 
-</p>
+                <div className="stat-card blue">
 
+                    <div className="icon">
+                        👥
+                    </div>
 
-</div>
+                    <h2>
+                        {stats.totalUtilisateurs}
+                    </h2>
 
+                    <p>
+                        Utilisateurs
+                    </p>
 
+                </div>
 
 
+                {/* DESTINATIONS */}
 
+                <div className="stat-card green">
 
+                    <div className="icon">
+                        🌍
+                    </div>
 
-<div className="stat-card green">
+                    <h2>
+                        {stats.totalDestinations}
+                    </h2>
 
+                    <p>
+                        Destinations
+                    </p>
 
-<div className="icon">
+                </div>
 
-🌍
 
-</div>
+                {/* RÉSERVATIONS */}
 
+                <div className="stat-card orange">
 
-<h2>
+                    <div className="icon">
+                        📅
+                    </div>
 
-{stats.totalDestinations}
+                    <h2>
+                        {stats.totalReservations}
+                    </h2>
 
-</h2>
+                    <p>
+                        Réservations
+                    </p>
 
+                </div>
 
-<p>
 
-Destinations
+                {/* PAIEMENTS */}
 
-</p>
+                <div className="stat-card purple">
 
+                    <div className="icon">
+                        💳
+                    </div>
 
-</div>
+                    <h2>
+                        {stats.totalPaiements}
+                    </h2>
 
+                    <p>
+                        Paiements
+                    </p>
 
+                </div>
 
 
+                {/* REVENUS */}
 
+                <div className="stat-card red">
 
+                    <div className="icon">
+                        💰
+                    </div>
 
-<div className="stat-card orange">
+                    <h2>
 
+                        {Number(
+                            stats.revenus
+                        ).toLocaleString("fr-FR")}
 
-<div className="icon">
+                        {" "}Ar
 
-📅
+                    </h2>
 
-</div>
+                    <p>
+                        Revenus
+                    </p>
 
+                </div>
 
-<h2>
 
-{stats.totalReservations}
+                {/* RÉSERVATIONS RÉCENTES */}
 
-</h2>
+                <div className="stat-card blue">
 
+                    <div className="icon">
+                        📈
+                    </div>
 
-<p>
+                    <h2>
+                        {stats.dernieresReservations.length}
+                    </h2>
 
-Réservations
+                    <p>
+                        Réservations récentes
+                    </p>
 
-</p>
+                </div>
 
 
-</div>
+                {/* DESTINATIONS POPULAIRES */}
 
+                <div className="stat-card green">
 
+                    <div className="icon">
+                        ⭐
+                    </div>
 
+                    <h2>
+                        {stats.destinationsPopulaires.length}
+                    </h2>
 
+                    <p>
+                        Destinations populaires
+                    </p>
 
+                </div>
 
 
+                {/* NOTIFICATIONS */}
 
-<div className="stat-card purple">
+                <div className="stat-card orange">
 
+                    <div className="icon">
+                        🔔
+                    </div>
 
-<div className="icon">
+                    <h2>
+                        {stats.notifications.length}
+                    </h2>
 
-💳
+                    <p>
+                        Notifications
+                    </p>
 
-</div>
+                </div>
 
 
-<h2>
+            </div>
 
-{stats.totalPaiements}
 
-</h2>
+            {/* =================================================
+                GRAPHIQUES
+            ================================================= */}
 
+            <div className="charts-container">
 
-<p>
 
-Paiements
+                {/* =================================================
+                    RÉSERVATIONS PAR MOIS
+                ================================================= */}
 
-</p>
+                <div className="chart-box">
 
+                    <h2>
+                        📅 Réservations par mois
+                    </h2>
 
-</div>
 
+                    <ResponsiveContainer
+                        width="100%"
+                        height={300}
+                    >
 
+                        <BarChart
+                            data={stats.reservationsMois}
+                        >
 
+                            <XAxis
+                                dataKey="mois"
+                            />
 
+                            <YAxis />
 
+                            <Tooltip />
 
+                            <Bar
+                                dataKey="total"
+                                fill="#2563eb"
+                            />
 
+                        </BarChart>
 
-<div className="stat-card red">
+                    </ResponsiveContainer>
 
+                </div>
 
-<div className="icon">
 
-💰
+                {/* =================================================
+                    DESTINATIONS POPULAIRES
+                ================================================= */}
 
-</div>
+                <div className="chart-box">
 
+                    <h2>
+                        🌍 Destinations populaires
+                    </h2>
 
-<h2>
 
+                    <ResponsiveContainer
+                        width="90%"
+                        height={250}
+                    >
 
-{
+                        <PieChart>
 
-Number(stats.revenus)
+                            <Pie
+                                data={
+                                    stats.destinationsPopulaires
+                                }
+                                dataKey="total"
+                                nameKey="nom"
+                                outerRadius={100}
+                            >
 
-.toLocaleString("fr-FR")
+                                {stats.destinationsPopulaires.map(
+                                    (item, index) => (
 
-}
+                                        <Cell
+                                            key={
+                                                item.id_destination ||
+                                                index
+                                            }
+                                            fill={
+                                                couleurs[
+                                                    index %
+                                                    couleurs.length
+                                                ]
+                                            }
+                                        />
 
+                                    )
+                                )}
 
- Ar
+                            </Pie>
 
+                            <Tooltip />
 
-</h2>
+                        </PieChart>
 
+                    </ResponsiveContainer>
 
-<p>
+                </div>
 
-Revenus
 
-</p>
+            </div>
 
 
-</div>
+        </div>
 
-
-
-
-
-
-
-
-<div className="stat-card blue">
-
-
-<div className="icon">
-
-📈
-
-</div>
-
-
-<h2>
-
-{
-
-stats.dernieresReservations.length
-
-}
-
-
-</h2>
-
-
-<p>
-
-Réservations récentes
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div className="stat-card green">
-
-
-<div className="icon">
-
-⭐
-
-</div>
-
-
-<h2>
-
-{
-
-stats.destinationsPopulaires.length
-
-}
-
-
-</h2>
-
-
-<p>
-
-Destinations populaires
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div className="stat-card orange">
-
-
-<div className="icon">
-
-🔔
-
-</div>
-
-
-<h2>
-
-{
-
-stats.notifications.length
-
-}
-
-
-</h2>
-
-
-<p>
-
-Notifications
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-{/* =========================
-        GRAPHIQUES
-========================= */}
-
-
-
-<div className="charts-container">
-
-
-
-
-
-{/* Graphique réservations */}
-
-
-<div className="chart-box">
-
-
-<h2>
-
-📅 Réservations par mois
-
-</h2>
-
-
-
-
-<ResponsiveContainer
-
-width="100%"
-
-height={300}
-
->
-
-
-<BarChart
-
-data={stats.reservationsMois}
-
->
-
-
-
-<XAxis
-
-dataKey="mois"
-
-/>
-
-
-<YAxis/>
-
-
-<Tooltip/>
-
-
-
-<Bar
-
-dataKey="total"
-
-fill="#2563eb"
-
-/>
-
-
-
-</BarChart>
-
-
-</ResponsiveContainer>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Graphique destinations populaires */}
-
-
-
-<div className="chart-box">
-
-
-
-<h2>
-
-🌍 Destinations populaires
-
-</h2>
-
-
-
-
-
-<ResponsiveContainer
-
-width="90%"
-
-height={250}
-
->
-
-
-
-<PieChart>
-
-
-
-<Pie
-
-data={stats.destinationsPopulaires}
-
-dataKey="total"
-
-nameKey="nom"
-
-outerRadius={100}
-
-
->
-
-
-
-
-{
-
-stats.destinationsPopulaires.map(
-
-(item,index)=>(
-
-
-<Cell
-
-
-key={
-
-item.id_destination || index
+    );
 
 }
 
 
-fill={
-
-couleurs[index % couleurs.length]
-
-}
-
-
-/>
-
-
-)
-
-
-)
-
-
-}
-
-
-
-
-</Pie>
-
-
-
-<Tooltip/>
-
-
-
-</PieChart>
-
-
-
-
-</ResponsiveContainer>
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-
-
-);
-
-
-}
-
-
-
-export default Dashboard;
+export default Dashboard

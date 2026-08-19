@@ -204,35 +204,35 @@ function NavbarPublic() {
     }, []);
 
 
-    // =====================================================
-    // VOIR PHOTO PROFIL
-    // =====================================================
+   // =====================================================
+// VOIR PHOTO PROFIL
+// =====================================================
 
-    const voirPhotoProfil = () => {
+const voirPhotoProfil = () => {
 
-        const photo =
-            profil?.photo ||
-            utilisateur?.photo;
+    const photo =
+        profil?.photo ||
+        utilisateur?.photo;
 
+    if (!photo) {
 
-        if (!photo) {
-
-            alert(
-                "Aucune photo de profil disponible."
-            );
-
-            return;
-
-        }
-
-
-        window.open(
-            `${import.meta.env.VITE_SERVER_URL}/uploads/${photo}`,
-            "_blank"
+        alert(
+            "Aucune photo de profil disponible."
         );
 
-    };
+        return;
+    }
 
+    const urlPhoto =
+        photo.startsWith("http")
+            ? photo
+            : `http://localhost:8081/uploads/${photo}`;
+
+    window.open(
+        urlPhoto,
+        "_blank"
+    );
+};
 
     // =====================================================
     // CHANGER PHOTO
@@ -478,18 +478,22 @@ function NavbarPublic() {
 
 
     // =====================================================
-    // PHOTO PROFIL
-    // =====================================================
+// PHOTO PROFIL
+// =====================================================
 
-    const photoProfil =
-        profil?.photo ||
-        utilisateur?.photo
-            ? `${import.meta.env.VITE_SERVER_URL}/uploads/${
-                profil?.photo ||
-                utilisateur?.photo
-            }`
-            : null;
+const photoUtilisateur =
+    profil?.photo ||
+    utilisateur?.photo ||
+    null;
 
+const photoProfil =
+    photoUtilisateur
+        ? (
+            photoUtilisateur.startsWith("http")
+                ? photoUtilisateur
+                : `http://localhost:8081/uploads/${photoUtilisateur}`
+        )
+        : null;
 
     // =====================================================
     // CLIENT CONNECTÉ ?
@@ -706,18 +710,18 @@ function NavbarPublic() {
                                       AVIS
                       ================================================= */}
 
-<button
-    type="button"
-    className="navbar-icon-button avis-button"
-    onClick={() =>
-        navigate("/avis-public")
-    }
-    aria-label="Avis"
->
+                            <button
+                              type="button"
+                             className="navbar-icon-button avis-button"
+                               onClick={() =>
+                              navigate("/avis-public")
+                              }
+                             aria-label="Avis"
+                            >
 
-    <FaStar />
+                           <FaStar />
 
-</button>
+                             </button>
 
 
                     {/* =================================================
