@@ -19,996 +19,1085 @@ import {
 
 
 
-function Destinations(){
+function Destinations() {
 
 
 
-const [destinations,setDestinations]=useState([]);
+    const [destinations, setDestinations] = useState([]);
 
-const [recherche,setRecherche]=useState("");
+    const [recherche, setRecherche] = useState("");
 
-const [openModal,setOpenModal]=useState(false);
+    const [openModal, setOpenModal] = useState(false);
 
-const [selectedDestination,setSelectedDestination]=useState(null);
+    const [selectedDestination, setSelectedDestination] = useState(null);
 
-const [detailDestination,setDetailDestination]=useState(null);
+    const [detailDestination, setDetailDestination] = useState(null);
 
-const [menuOuvert,setMenuOuvert]=useState(null);
+    const [menuOuvert, setMenuOuvert] = useState(null);
 
-const [page,setPage]=useState(1);
+    const [page, setPage] = useState(1);
 
 
-const elementsParPage=5;
+    const elementsParPage = 5;
 
 
 
+    // ==========================
+    // URL SERVEUR
+    // ==========================
 
-// ==========================
-// Charger destinations
-// ==========================
+    const SERVER_URL =
+        import.meta.env.VITE_SERVER_URL;
 
-const chargerDestinations=async()=>{
 
 
-try{
+    // ==========================
+    // URL IMAGE
+    // ==========================
 
+    const getImageUrl = (image) => {
 
-const res=await api.get("/destinations");
+        if (!image) {
 
+            return null;
 
-console.log(
-"DESTINATIONS :",
-res.data
-);
+        }
 
+        // ==========================================
+        // Si l'image est déjà une URL complète
+        // Cloudinary / autre stockage distant
+        // ==========================================
 
+        if (
+            image.startsWith("http://") ||
+            image.startsWith("https://")
+        ) {
 
-setDestinations(res.data);
+            return image;
 
+        }
 
+        // ==========================================
+        // Ancien système : image dans /uploads
+        // ==========================================
 
-}
-catch(error){
+        return `${SERVER_URL}/uploads/${image}`;
 
+    };
 
-console.log(
-"Erreur chargement destinations",
-error
-);
 
 
-}
+    // ==========================
+    // Charger destinations
+    // ==========================
 
+    const chargerDestinations = async () => {
 
-};
 
+        try {
 
 
+            const res = await api.get("/destinations");
 
-// ==========================
-// Initialisation
-// ==========================
 
-useEffect(()=>{
+            console.log(
+                "DESTINATIONS :",
+                res.data
+            );
 
 
-chargerDestinations();
 
+            setDestinations(res.data);
 
 
-const fermerMenu=(e)=>{
 
+        }
+        catch (error) {
 
-if(!e.target.closest(".menu-action")){
 
+            console.log(
+                "Erreur chargement destinations",
+                error
+            );
 
-setMenuOuvert(null);
 
+        }
 
-}
 
+    };
 
-};
 
 
+    // ==========================
+    // Initialisation
+    // ==========================
 
-document.addEventListener(
-"click",
-fermerMenu
-);
+    useEffect(() => {
 
 
+        chargerDestinations();
 
-return()=>{
 
 
-document.removeEventListener(
-"click",
-fermerMenu
-);
+        const fermerMenu = (e) => {
 
 
-};
+            if (!e.target.closest(".menu-action")) {
 
 
+                setMenuOuvert(null);
 
-},[]);
 
+            }
 
 
+        };
 
 
 
+        document.addEventListener(
+            "click",
+            fermerMenu
+        );
 
-// ==========================
-// Supprimer
-// ==========================
 
 
-const supprimer=async(id)=>{
+        return () => {
 
 
-if(
-!window.confirm(
-"Voulez-vous supprimer cette destination ?"
-)
-)
-return;
+            document.removeEventListener(
+                "click",
+                fermerMenu
+            );
 
 
+        };
 
-try{
 
 
-const res=await api.delete(
-`/destinations/${id}`
-);
+    }, []);
 
 
 
-alert(
-res.data.message
-);
 
 
 
-chargerDestinations();
 
+    // ==========================
+    // Supprimer
+    // ==========================
 
 
-}
-catch(error){
+    const supprimer = async (id) => {
 
 
-console.log(
-"Erreur suppression :",
-error
-);
+        if (
+            !window.confirm(
+                "Voulez-vous supprimer cette destination ?"
+            )
+        )
 
+            return;
 
-alert(
-"Erreur suppression destination"
-);
 
 
-}
+        try {
 
 
+            const res = await api.delete(
+                `/destinations/${id}`
+            );
 
-};
 
 
+            alert(
+                res.data.message
+            );
 
 
 
+            chargerDestinations();
 
 
 
-// ==========================
-// Recherche
-// ==========================
+        }
+        catch (error) {
 
 
-const filtres=destinations.filter((d)=>
+            console.log(
+                "Erreur suppression :",
+                error
+            );
 
 
-d.nom
-.toLowerCase()
-.includes(
-recherche.toLowerCase()
-)
+            alert(
+                "Erreur suppression destination"
+            );
 
-||
 
-(d.region || "")
-.toLowerCase()
-.includes(
-recherche.toLowerCase()
-)
+        }
 
-||
 
-(d.pays || "")
-.toLowerCase()
-.includes(
-recherche.toLowerCase()
-)
 
+    };
 
 
-);
 
 
 
 
 
+    // ==========================
+    // Recherche
+    // ==========================
 
-// ==========================
-// Pagination
-// ==========================
 
+    const filtres = destinations.filter((d) => {
 
-const indexDernier =
-page * elementsParPage;
 
+        return (
 
-const indexPremier =
-indexDernier - elementsParPage;
+            d.nom
+                .toLowerCase()
+                .includes(
+                    recherche.toLowerCase()
+                )
 
+            ||
 
+            (d.region || "")
+                .toLowerCase()
+                .includes(
+                    recherche.toLowerCase()
+                )
 
-const destinationsAffichees =
-filtres.slice(
-indexPremier,
-indexDernier
-);
+            ||
 
+            (d.pays || "")
+                .toLowerCase()
+                .includes(
+                    recherche.toLowerCase()
+                )
 
+        );
 
-const nombrePages =
-Math.ceil(
-filtres.length / elementsParPage
-);
 
+    });
 
 
 
 
 
 
-return(
 
+    // ==========================
+    // Pagination
+    // ==========================
 
 
-<div className="destination-container">
+    const indexDernier =
+        page * elementsParPage;
 
 
+    const indexPremier =
+        indexDernier - elementsParPage;
 
 
 
+    const destinationsAffichees =
+        filtres.slice(
+            indexPremier,
+            indexDernier
+        );
 
 
-{/* HEADER */}
 
+    const nombrePages =
+        Math.ceil(
+            filtres.length /
+            elementsParPage
+        );
 
-<div className="destination-header">
 
 
-<div>
 
 
-<h1>
 
-<FaMapMarkerAlt/>
 
-Gestion des destinations
+    return (
 
-</h1>
 
 
-<p>
-Gérer les destinations touristiques.
-</p>
+        <div className="destination-container">
 
 
-</div>
 
 
 
+            {/* HEADER */}
 
 
-<button
+            <div className="destination-header">
 
-className="btn-add"
 
-onClick={()=>{
+                <div>
 
 
-setSelectedDestination(null);
+                    <h1>
 
-setOpenModal(true);
 
+                        <FaMapMarkerAlt />
 
-}}
 
->
+                        Gestion des destinations
 
 
-<FaPlus/>
+                    </h1>
 
 
-</button>
+                    <p>
+                        Gérer les destinations touristiques.
+                    </p>
 
 
+                </div>
 
-</div>
 
 
 
 
+                <button
 
+                    className="btn-add"
 
+                    onClick={() => {
 
 
+                        setSelectedDestination(null);
 
-{/* RECHERCHE */}
+                        setOpenModal(true);
 
 
+                    }}
 
-<div className="search-box">
+                >
 
 
-<FaSearch/>
+                    <FaPlus />
 
 
-<input
+                </button>
 
 
-placeholder="Rechercher une destination..."
+            </div>
 
 
-value={recherche}
 
 
-onChange={(e)=>{
 
 
-setRecherche(
-e.target.value
-);
 
+            {/* RECHERCHE */}
 
-setPage(1);
 
 
-}}
+            <div className="search-box">
 
 
-/>
+                <FaSearch />
 
 
+                <input
 
-</div>
 
+                    placeholder="Rechercher une destination..."
 
 
+                    value={recherche}
 
 
+                    onChange={(e) => {
 
 
+                        setRecherche(
+                            e.target.value
+                        );
 
 
-{/* TABLEAU */}
+                        setPage(1);
 
 
+                    }}
 
-<div className="table-container">
 
+                />
 
 
-<table>
+            </div>
 
 
 
-<thead>
 
 
-<tr>
 
 
-<th>ID</th>
+            {/* TABLEAU */}
 
-<th>Image</th>
 
-<th>Nom</th>
 
-<th>Région</th>
+            <div className="table-container">
 
-<th>Pays</th>
 
-<th>Description</th>
 
-<th>Actions</th>
+                <table>
 
 
-</tr>
 
+                    <thead>
 
-</thead>
 
+                        <tr>
 
 
+                            <th>ID</th>
 
+                            <th>Image</th>
 
+                            <th>Nom</th>
 
-<tbody>
+                            <th>Région</th>
 
+                            <th>Pays</th>
 
+                            <th>Description</th>
 
-{
+                            <th>Actions</th>
 
-destinationsAffichees.map((d)=>(
 
+                        </tr>
 
 
-<tr key={d.id_destination}>
+                    </thead>
 
 
-<td>
 
-{d.id_destination}
 
-</td>
 
+                    <tbody>
 
 
 
+                        {
 
 
-<td>
+                            destinationsAffichees.map((d) => (
 
 
 
-{
+                                <tr
+                                    key={
+                                        d.id_destination
+                                    }
+                                >
 
-d.image ?
 
+                                    <td>
 
-<img
 
+                                        {
+                                            d.id_destination
+                                        }
 
-src={
-`${import.meta.env.VITE_SERVER_URL}/uploads/${d.image}`
-}
 
+                                    </td>
 
-className="destination-image"
 
 
-alt="destination"
 
-/>
 
+                                    <td>
 
-:
 
+                                        {
 
-"Pas d'image"
 
+                                            d.image ? (
 
-}
 
+                                                <img
 
 
-</td>
+                                                    src={
+                                                        getImageUrl(
+                                                            d.image
+                                                        )
+                                                    }
 
 
+                                                    className="destination-image"
 
 
+                                                    alt="destination"
 
 
+                                                    onError={(e) => {
 
+                                                        console.error(
+                                                            "❌ Erreur chargement image destination :",
+                                                            d.image
+                                                        );
 
-<td>
+                                                        e.currentTarget.style.display =
+                                                            "none";
 
-{d.nom}
+                                                    }}
 
-</td>
+                                                />
 
 
+                                            ) : (
 
 
+                                                "Pas d'image"
 
 
-<td>
+                                            )
 
-{d.region}
 
-</td>
+                                        }
 
 
+                                    </td>
 
 
 
 
-<td>
 
-{d.pays}
+                                    <td>
 
-</td>
 
+                                        {
+                                            d.nom
+                                        }
 
 
+                                    </td>
 
 
 
-<td>
 
 
-{
+                                    <td>
 
-d.description
 
-?
+                                        {
+                                            d.region
+                                        }
 
-d.description.substring(0,50)+"..."
 
-:
+                                    </td>
 
-"Aucune description"
 
 
-}
 
 
+                                    <td>
 
-</td>
 
+                                        {
+                                            d.pays
+                                        }
 
 
+                                    </td>
 
 
 
 
 
-<td>
+                                    <td>
 
 
+                                        {
 
-<div className="menu-action">
 
+                                            d.description
 
+                                                ?
 
+                                                d.description.substring(
+                                                    0,
+                                                    50
+                                                ) + "..."
 
+                                                :
 
-<button
+                                                "Aucune description"
 
 
-className="btn-menu"
+                                        }
 
 
-onClick={(e)=>{
+                                    </td>
 
 
-e.stopPropagation();
 
 
 
-setMenuOuvert(
+                                    <td>
 
-menuOuvert===d.id_destination
 
-?
 
-null
+                                        <div className="menu-action">
 
-:
 
-d.id_destination
 
-);
 
 
-}}
+                                            <button
 
 
+                                                className="btn-menu"
 
->
 
+                                                onClick={(e) => {
 
-<FaEllipsisV/>
 
+                                                    e.stopPropagation();
 
-</button>
 
 
+                                                    setMenuOuvert(
 
 
+                                                        menuOuvert ===
+                                                            d.id_destination
 
+                                                            ?
 
+                                                            null
 
-{
+                                                            :
 
-menuOuvert===d.id_destination &&
+                                                            d.id_destination
 
 
+                                                    );
 
-<div
 
-className="menu-content"
+                                                }}
 
-onClick={(e)=>e.stopPropagation()}
 
+                                            >
 
->
 
+                                                <FaEllipsisV />
 
 
+                                            </button>
 
 
 
-<button
 
 
-onClick={()=>{
 
 
-setDetailDestination(d);
+                                            {
 
-setMenuOuvert(null);
 
+                                                menuOuvert ===
+                                                d.id_destination &&
 
-}}
 
 
->
+                                                <div
 
 
-<FaEye/>
+                                                    className="menu-content"
 
-Voir détails
 
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
 
-</button>
 
+                                                >
 
 
 
 
 
+                                                    <button
 
 
-<button
+                                                        onClick={() => {
 
 
-onClick={()=>{
+                                                            setDetailDestination(d);
 
+                                                            setMenuOuvert(null);
 
-setSelectedDestination(d);
 
+                                                        }}
 
-setOpenModal(true);
 
+                                                    >
 
-setMenuOuvert(null);
 
+                                                        <FaEye />
 
-}}
 
+                                                        Voir détails
 
->
 
+                                                    </button>
 
-<FaEdit/>
 
-Modifier
 
 
-</button>
 
 
 
+                                                    <button
 
 
+                                                        onClick={() => {
 
 
+                                                            setSelectedDestination(d);
 
+                                                            setOpenModal(true);
 
-<button
+                                                            setMenuOuvert(null);
 
 
-onClick={()=>{
+                                                        }}
 
 
-supprimer(
-d.id_destination
-);
+                                                    >
 
 
-setMenuOuvert(null);
+                                                        <FaEdit />
 
 
-}}
+                                                        Modifier
 
 
+                                                    </button>
 
->
 
 
-<FaTrash/>
 
-Supprimer
 
 
-</button>
 
+                                                    <button
 
 
+                                                        onClick={() => {
 
 
+                                                            supprimer(
+                                                                d.id_destination
+                                                            );
 
 
-</div>
+                                                            setMenuOuvert(null);
 
 
+                                                        }}
 
-}
 
+                                                    >
 
 
+                                                        <FaTrash />
 
 
-</div>
+                                                        Supprimer
 
 
+                                                    </button>
 
 
-</td>
 
 
 
+                                                </div>
 
 
+                                            }
 
-</tr>
 
 
-))
 
 
+                                        </div>
 
-}
 
+                                    </td>
 
 
-</tbody>
 
 
 
-</table>
+                                </tr>
 
 
+                            ))
 
-</div>
 
 
+                        }
 
 
 
+                    </tbody>
 
 
 
+                </table>
 
-{/* PAGINATION */}
 
 
+            </div>
 
-<div className="pagination">
 
 
 
 
 
 
-<button
+            {/* PAGINATION */}
 
 
-disabled={page===1}
 
+            <div className="pagination">
 
-onClick={()=>setPage(page-1)}
 
 
->
 
 
-<FaChevronLeft/>
+                <button
 
 
-</button>
+                    disabled={
+                        page === 1
+                    }
 
 
+                    onClick={() =>
+                        setPage(
+                            page - 1
+                        )
+                    }
 
 
+                >
 
 
+                    <FaChevronLeft />
 
 
-{
+                </button>
 
 
-Array.from(
 
-{length:nombrePages},
 
-(_,i)=>(
 
 
-<button
 
+                {
 
-key={i}
 
+                    Array.from(
 
-className={
 
-page===i+1
+                        {
+                            length:
+                                nombrePages
+                        },
 
-?
 
-"active-page"
+                        (_, i) => (
 
-:
 
-""
 
-}
+                            <button
 
 
-onClick={()=>setPage(i+1)}
+                                key={i}
 
 
->
+                                className={
 
 
-{i+1}
+                                    page ===
+                                        i + 1
 
+                                        ?
 
-</button>
+                                        "active-page"
 
+                                        :
 
-)
+                                        ""
 
 
-)
+                                }
 
 
+                                onClick={() =>
+                                    setPage(
+                                        i + 1
+                                    )
+                                }
 
-}
 
+                            >
 
 
+                                {
+                                    i + 1
+                                }
 
 
+                            </button>
 
 
-<button
+                        )
 
 
-disabled={page===nombrePages}
+                    )
 
 
-onClick={()=>setPage(page+1)}
+                }
 
 
->
 
 
-<FaChevronRight/>
 
 
-</button>
 
+                <button
 
 
+                    disabled={
+                        page === nombrePages
+                    }
 
 
-</div>
+                    onClick={() =>
+                        setPage(
+                            page + 1
+                        )
+                    }
 
 
+                >
 
 
+                    <FaChevronRight />
 
 
+                </button>
 
 
+            </div>
 
-{/* MODALE AJOUT / MODIFICATION */}
 
 
 
-<DestinationModal
 
 
 
-open={openModal}
+            {/* MODALE AJOUT / MODIFICATION */}
 
 
 
-close={()=>{
+            <DestinationModal
 
 
-setOpenModal(false);
 
+                open={
+                    openModal
+                }
 
-setSelectedDestination(null);
 
 
-}}
+                close={() => {
 
 
+                    setOpenModal(false);
 
-destination={selectedDestination}
+                    setSelectedDestination(null);
 
 
+                }}
 
-refresh={chargerDestinations}
 
 
-/>
+                destination={
+                    selectedDestination
+                }
 
 
 
+                refresh={
+                    chargerDestinations
+                }
 
 
 
+            />
 
 
 
-{/* MODALE DETAILS */}
 
 
 
-<DestinationDetailsModal
 
+            {/* MODALE DETAILS */}
 
 
-open={
-detailDestination !== null
-}
 
+            <DestinationDetailsModal
 
 
-close={()=>{
 
+                open={
+                    detailDestination !== null
+                }
 
-setDetailDestination(null);
 
 
-}}
+                close={() => {
 
 
+                    setDetailDestination(null);
 
-destination={detailDestination}
 
+                }}
 
-/>
 
 
+                destination={
+                    detailDestination
+                }
 
 
 
+            />
 
 
 
 
-</div>
 
+        </div>
 
 
 
-);
-
+    );
 
 
 }

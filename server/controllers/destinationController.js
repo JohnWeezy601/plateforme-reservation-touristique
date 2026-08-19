@@ -1,17 +1,12 @@
 const db = require("../db");
-const fs = require("fs");
-const path = require("path");
 
-
-
-// =====================================
+// =========================================================
 // Ajouter destination
-// =====================================
+// =========================================================
 
 exports.createDestination = async (req, res) => {
 
     try {
-
 
         const {
             nom,
@@ -22,13 +17,17 @@ exports.createDestination = async (req, res) => {
             longitude
         } = req.body;
 
-
+        // =====================================================
+        // IMAGE
+        // =====================================================
 
         const image = req.file
-            ? req.file.filename
+            ? req.file.path
             : null;
 
-
+        // =====================================================
+        // INSERT
+        // =====================================================
 
         const sql = `
 
@@ -47,8 +46,6 @@ exports.createDestination = async (req, res) => {
 
         `;
 
-
-
         const [result] = await db.query(
 
             sql,
@@ -65,64 +62,52 @@ exports.createDestination = async (req, res) => {
 
         );
 
-
-
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.status(201).json({
 
             message:
-            "Destination ajoutée avec succès",
+                "Destination ajoutée avec succès",
 
             id:
-            result.insertId
+                result.insertId
 
         });
 
-
-
     }
 
-    catch(error){
-
+    catch (error) {
 
         console.log(
             "Erreur ajout destination :",
             error
         );
 
-
         res.status(500).json({
 
             message:
-            "Erreur ajout destination",
+                "Erreur ajout destination",
 
-            error:error.message
+            error:
+                error.message
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-// =====================================
+// =========================================================
 // Afficher toutes les destinations
-// =====================================
+// =========================================================
 
-exports.getDestinations = async(req,res)=>{
+exports.getDestinations = async (req, res) => {
 
-
-    try{
-
+    try {
 
         const [destinations] = await db.query(`
 
@@ -134,61 +119,39 @@ exports.getDestinations = async(req,res)=>{
 
         `);
 
-
-
         res.json(destinations);
-
-
 
     }
 
-
-    catch(error){
-
+    catch (error) {
 
         console.log(
-
             "Erreur récupération destinations :",
-
             error
-
         );
-
 
         res.status(500).json({
 
             message:
-            "Erreur récupération destinations"
+                "Erreur récupération destinations"
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-// =====================================
+// =========================================================
 // Afficher une destination par ID
-// =====================================
+// =========================================================
 
-exports.getDestinationById = async(req,res)=>{
+exports.getDestinationById = async (req, res) => {
 
-
-    try{
-
+    try {
 
         const id = req.params.id;
-
-
 
         const [destination] = await db.query(
 
@@ -198,7 +161,7 @@ exports.getDestinationById = async(req,res)=>{
 
             FROM destination
 
-            WHERE id_destination=?
+            WHERE id_destination = ?
 
             `,
 
@@ -206,81 +169,54 @@ exports.getDestinationById = async(req,res)=>{
 
         );
 
-
-
-
-        if(destination.length === 0){
-
+        if (destination.length === 0) {
 
             return res.status(404).json({
 
                 message:
-                "Destination introuvable"
+                    "Destination introuvable"
 
             });
 
-
         }
 
-
-
-
-        res.json(destination[0]);
-
-
+        res.json(
+            destination[0]
+        );
 
     }
 
-
-    catch(error){
-
+    catch (error) {
 
         console.log(
-
             "Erreur détail destination :",
-
             error
-
         );
-
 
         res.status(500).json({
 
             message:
-            "Erreur serveur"
+                "Erreur serveur"
 
         });
 
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-// =====================================
+// =========================================================
 // Modifier destination
-// =====================================
+// =========================================================
 
-exports.updateDestination = async(req,res)=>{
+exports.updateDestination = async (req, res) => {
 
-
-    try{
-
+    try {
 
         const id = req.params.id;
 
-
-
         const {
-
             nom,
             region,
             pays,
@@ -288,61 +224,33 @@ exports.updateDestination = async(req,res)=>{
             oldImage,
             latitude,
             longitude
-
         } = req.body;
 
+        // =====================================================
+        // IMAGE
+        // =====================================================
+        //
+        // Si une nouvelle image est envoyée :
+        // req.file.path = URL Cloudinary
+        //
+        // Sinon :
+        // on conserve l'ancienne image.
+        //
+        // =====================================================
 
+        let image =
+            oldImage || null;
 
+        if (req.file) {
 
-        let image = oldImage || null;
-
-
-
-
-
-        // Nouvelle image
-
-        if(req.file){
-
-
-            image = req.file.filename;
-
-
-
-            if(oldImage){
-
-
-                const ancienChemin = path.join(
-
-                    __dirname,
-
-                    "../uploads",
-
-                    oldImage
-
-                );
-
-
-
-                if(fs.existsSync(ancienChemin)){
-
-
-                    fs.unlinkSync(ancienChemin);
-
-
-                }
-
-
-            }
-
+            image =
+                req.file.path;
 
         }
 
-
-
-
-
-
+        // =====================================================
+        // UPDATE
+        // =====================================================
 
         const [result] = await db.query(
 
@@ -352,23 +260,15 @@ exports.updateDestination = async(req,res)=>{
 
             SET
 
-            nom=?,
+                nom = ?,
+                region = ?,
+                pays = ?,
+                description = ?,
+                image = ?,
+                latitude = ?,
+                longitude = ?
 
-            region=?,
-
-            pays=?,
-
-            description=?,
-
-            image=?,
-
-            latitude=?,
-
-            longitude=?
-
-
-            WHERE id_destination=?
-
+            WHERE id_destination = ?
 
             `,
 
@@ -394,98 +294,72 @@ exports.updateDestination = async(req,res)=>{
 
         );
 
+        // =====================================================
+        // DESTINATION INTROUVABLE
+        // =====================================================
 
-
-
-
-
-        if(result.affectedRows === 0){
-
+        if (
+            result.affectedRows === 0
+        ) {
 
             return res.status(404).json({
 
                 message:
-                "Destination introuvable"
+                    "Destination introuvable"
 
             });
 
-
         }
 
-
-
-
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.json({
 
             message:
-            "Destination modifiée avec succès"
+                "Destination modifiée avec succès"
 
         });
 
-
-
-
-
     }
 
-
-    catch(error){
-
+    catch (error) {
 
         console.log(
-
             "Erreur modification destination :",
-
             error
-
         );
-
-
 
         res.status(500).json({
 
             message:
-            "Erreur modification destination",
+                "Erreur modification destination",
 
-            error:error.message
+            error:
+                error.message
 
         });
 
-
-
     }
-
 
 };
 
 
 
-
-
-
-
-
-
-
-
-// =====================================
+// =========================================================
 // Supprimer destination
-// =====================================
+// =========================================================
 
-exports.deleteDestination = async(req,res)=>{
+exports.deleteDestination = async (req, res) => {
 
-
-    try{
-
+    try {
 
         const id = req.params.id;
 
-
-
-
-
-        // récupérer image
+        // =====================================================
+        // RÉCUPÉRER L'IMAGE
+        // =====================================================
 
         const [rows] = await db.query(
 
@@ -495,7 +369,7 @@ exports.deleteDestination = async(req,res)=>{
 
             FROM destination
 
-            WHERE id_destination=?
+            WHERE id_destination = ?
 
             `,
 
@@ -503,34 +377,25 @@ exports.deleteDestination = async(req,res)=>{
 
         );
 
-
-
-
-
-        if(rows.length === 0){
-
+        if (
+            rows.length === 0
+        ) {
 
             return res.status(404).json({
 
                 message:
-                "Destination introuvable"
+                    "Destination introuvable"
 
             });
 
-
         }
 
+        const image =
+            rows[0].image;
 
-
-
-        const image = rows[0].image;
-
-
-
-
-
-
-
+        // =====================================================
+        // SUPPRIMER DESTINATION
+        // =====================================================
 
         const [result] = await db.query(
 
@@ -538,7 +403,7 @@ exports.deleteDestination = async(req,res)=>{
 
             DELETE FROM destination
 
-            WHERE id_destination=?
+            WHERE id_destination = ?
 
             `,
 
@@ -546,121 +411,77 @@ exports.deleteDestination = async(req,res)=>{
 
         );
 
-
-
-
-
-
-        if(result.affectedRows === 0){
-
+        if (
+            result.affectedRows === 0
+        ) {
 
             return res.status(404).json({
 
                 message:
-                "Suppression impossible"
+                    "Suppression impossible"
 
             });
 
-
         }
 
-
-
-
-
-
-
-        // supprimer image physique
-
-        if(image){
-
-
-            const chemin = path.join(
-
-                __dirname,
-
-                "../uploads",
-
-                image
-
-            );
-
-
-
-            if(fs.existsSync(chemin)){
-
-
-                fs.unlinkSync(chemin);
-
-
-            }
-
-
-        }
-
-
-
-
-
-
+        // =====================================================
+        // CLOUDINARY
+        // =====================================================
+        //
+        // IMPORTANT :
+        // Avec Cloudinary, l'image ne doit plus être supprimée
+        // avec fs.unlinkSync().
+        //
+        // Si ton middleware Cloudinary utilise un public_id,
+        // on pourra supprimer également l'image Cloudinary.
+        //
+        // Pour l'instant on ne touche pas à la logique de
+        // suppression de la destination.
+        //
+        // =====================================================
 
         res.json({
 
             message:
-            "Destination supprimée avec succès"
+                "Destination supprimée avec succès"
 
         });
 
-
-
-
-
     }
 
-
-    catch(error){
-
-
+    catch (error) {
 
         console.log(
-
             "Erreur suppression destination :",
-
             error
-
         );
-
-
 
         res.status(500).json({
 
             message:
-            "Erreur suppression destination",
+                "Erreur suppression destination",
 
-            error:error.message
+            error:
+                error.message
 
         });
 
-
-
     }
-
 
 };
 
 
-// =====================================
+
+// =========================================================
 // Afficher les offres d'une destination
-// =====================================
+// =========================================================
 
-exports.getOffresByDestination = async(req,res)=>{
+exports.getOffresByDestination = async (req, res) => {
 
+    const id =
+        req.params.id;
 
-    const id = req.params.id;
-
-
-    try{
-
+    try {
 
         const [offres] = await db.query(`
 
@@ -672,57 +493,44 @@ exports.getOffresByDestination = async(req,res)=>{
 
                 c.nom AS categorie
 
-
             FROM offre o
-
 
             LEFT JOIN prestataire p
 
-            ON o.id_prestataire = p.id_prestataire
-
-
+                ON o.id_prestataire =
+                   p.id_prestataire
 
             LEFT JOIN categorie c
 
-            ON o.id_categorie = c.id_categorie
-
-
+                ON o.id_categorie =
+                   c.id_categorie
 
             WHERE o.id_destination = ?
 
-
             ORDER BY o.date_debut ASC
 
+        `, [id]);
 
-        `,[id]);
-
-
-
-
-        res.json(offres);
-
-
+        res.json(
+            offres
+        );
 
     }
 
-
-    catch(error){
-
+    catch (error) {
 
         console.log(
             "Erreur récupération offres destination :",
             error
         );
 
-
         res.status(500).json({
 
-            message:"Erreur récupération offres"
+            message:
+                "Erreur récupération offres"
 
         });
 
-
     }
-
 
 };

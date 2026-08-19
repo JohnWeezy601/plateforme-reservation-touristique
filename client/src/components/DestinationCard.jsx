@@ -10,6 +10,37 @@ function DestinationCard({ destination }) {
 
 
 
+    // ==========================
+    // URL IMAGE
+    // ==========================
+
+    const getImageUrl = (image) => {
+
+        if (!image) {
+
+            return "/image-default.jpg";
+
+        }
+
+
+        // Image Cloudinary
+        if (
+            image.startsWith("http://") ||
+            image.startsWith("https://")
+        ) {
+
+            return image;
+
+        }
+
+
+        // Ancienne image locale
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+
+    };
+
+
+
     return (
 
 
@@ -28,9 +59,13 @@ function DestinationCard({ destination }) {
 
                     <img
 
-                    src={`${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`}
+                        src={
+                            getImageUrl(
+                                destination.image
+                            )
+                        }
 
-                    alt={destination.nom}
+                        alt={destination.nom}
 
                     />
 
@@ -71,8 +106,6 @@ function DestinationCard({ destination }) {
 
 
 
-
-
                 <div className="destination-location">
 
 
@@ -87,8 +120,6 @@ function DestinationCard({ destination }) {
 
 
                 </div>
-
-
 
 
 
@@ -128,35 +159,33 @@ function DestinationCard({ destination }) {
 
 
 
-
-
                 <button
 
 
-                type="button"
+                    type="button"
 
 
-                onClick={()=>{
+                    onClick={()=>{
 
 
-                    console.log(
+                        console.log(
 
-                        "OUVERTURE DETAIL :",
+                            "OUVERTURE DETAIL :",
 
-                        destination
+                            destination
 
-                    );
-
-
-
-                    navigate(
-
-                        `/destinations/${destination.id_destination}`
-
-                    );
+                        );
 
 
-                }}
+
+                        navigate(
+
+                            `/destinations/${destination.id_destination}`
+
+                        );
+
+
+                    }}
 
 
                 >

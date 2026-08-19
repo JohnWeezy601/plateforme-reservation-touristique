@@ -8,11 +8,40 @@ import "./DestinationsPublic.css";
 
 
 
-function DestinationsPublic(){
+function DestinationsPublic() {
 
 
-    const [destinations,setDestinations] = useState([]);
+    const [destinations, setDestinations] = useState([]);
 
+
+
+
+    // ==========================
+    // URL IMAGE
+    // ==========================
+
+    const getImageUrl = (image) => {
+
+        if (!image) {
+
+            return "/image-default.jpg";
+
+        }
+
+        // Image Cloudinary
+        if (
+            image.startsWith("http://") ||
+            image.startsWith("https://")
+        ) {
+
+            return image;
+
+        }
+
+        // Anciennes images locales
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+
+    };
 
 
 
@@ -21,41 +50,57 @@ function DestinationsPublic(){
     // Charger destinations
     // ==========================
 
-    const chargerDestinations = async()=>{
+    const chargerDestinations = async () => {
 
 
-        try{
+        try {
 
 
-            const res = await api.get("/destinations");
+            const res =
+                await api.get("/destinations");
 
 
 
             console.log(
-
                 "DESTINATIONS PUBLIC :",
-
                 res.data
-
             );
 
 
 
-            setDestinations(res.data);
+            // =================================================
+            // Préparer les images
+            // =================================================
 
+            const destinationsAvecImages =
+                Array.isArray(res.data)
+                    ? res.data.map((destination) => ({
+
+                        ...destination,
+
+                        imageUrl:
+                            getImageUrl(
+                                destination.image
+                            )
+
+                    }))
+                    : [];
+
+
+
+            setDestinations(
+                destinationsAvecImages
+            );
 
 
         }
 
-        catch(error){
+        catch (error) {
 
 
             console.log(
-
                 "Erreur chargement destinations :",
-
                 error
-
             );
 
 
@@ -67,30 +112,23 @@ function DestinationsPublic(){
 
 
 
-
-
-
-    useEffect(()=>{
+    useEffect(() => {
 
 
         chargerDestinations();
 
 
-    },[]);
+    }, []);
 
 
 
 
 
 
-
-
-
-    return(
+    return (
 
 
         <div className="destination-public-container">
-
 
 
 
@@ -124,50 +162,42 @@ function DestinationsPublic(){
 
 
 
-
-
             <div className="destination-grid">
 
 
 
                 {
 
-
-                destinations.map((destination)=>(
-
-
-
-                    <DestinationCard
+                    destinations.map(
+                        (destination) => (
 
 
 
-                    key={
-
-                        destination.id_destination
-
-                    }
+                            <DestinationCard
 
 
-
-                    destination={destination}
-
-
-
-                    />
+                                key={
+                                    destination.id_destination
+                                }
 
 
+                                destination={
+                                    destination
+                                }
 
-                ))
+
+                            />
 
 
+
+                        )
+                    )
 
                 }
 
 
 
             </div>
-
-
 
 
 
