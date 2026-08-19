@@ -18,7 +18,6 @@ import {
     Pagination
 } from "swiper/modules";
 
-
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -28,198 +27,397 @@ import api from "../api/api";
 import "./DestinationDetailsPublic.css";
 
 
-function DestinationDetailsPublic(){
+function DestinationDetailsPublic() {
 
 
-const {id}=useParams();
+    const { id } = useParams();
 
-const navigate = useNavigate();
+    const navigate = useNavigate();
+
+
+    const [destination, setDestination] = useState(null);
+
+    const [autresDestinations, setAutresDestinations] = useState([]);
+
+    const [offres, setOffres] = useState([]);
+    const [offresOuvertes, setOffresOuvertes] = useState({});
+
+
+    // ==============================
+    // FORMAT PRIX
+    // ==============================
+
+    const formatPrixEuro = (prix) => {
+
+        if (
+            prix === null ||
+            prix === undefined ||
+            prix === ""
+        ) {
+            return "Prix sur demande";
+        }
+
+        return Number(prix).toLocaleString(
+            "fr-FR",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+
+    };
+
+
+    // ==============================
+    // GESTION DES IMAGES
+    // ==============================
+
+    const getImageUrl = (image) => {
+
+        if (!image) {
+
+            return "/image-default.jpg";
+
+        }
+
+
+        // ------------------------------------------------
+        // IMAGE CLOUDINARY
+        // ------------------------------------------------
+
+        if (
+            image.startsWith("http://") ||
+            image.startsWith("https://")
+        ) {
+
+            return image;
+
+        }
+
+
+        // ------------------------------------------------
+        // ANCIENNE IMAGE LOCALE
+        // ------------------------------------------------
+
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+
+    };
 
 
 
-const [destination,setDestination]=useState(null);
+    // ==============================
+    // Charger destination
+    // ==============================
 
-const [autresDestinations,setAutresDestinations]=useState([]);
+    const chargerDestination = async () => {
 
-const [offres,setOffres]=useState([]);
-const [offresOuvertes,setOffresOuvertes]=useState({});
 
-const formatPrixEuro = (prix) => {
+        try {
 
-    if (
-        prix === null ||
-        prix === undefined ||
-        prix === ""
-    ) {
-        return "Prix sur demande";
+
+            const res = await api.get(
+
+                `/destinations/${id}`
+
+            );
+
+
+            setDestination(res.data);
+
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Erreur détail destination :",
+                error
+            );
+
+        }
+
+
+    };
+
+
+
+
+
+    // ==============================
+    // Charger offres destination
+    // ==============================
+
+
+    const chargerOffres = async () => {
+
+
+        try {
+
+
+            const res = await api.get(
+
+                `/destinations/${id}/offres`
+
+            );
+
+
+            console.log(
+                "OFFRES DESTINATION :",
+                res.data
+            );
+
+
+            setOffres(res.data);
+
+
+        }
+
+        catch (error) {
+
+
+            console.log(
+
+                "Erreur chargement offres :",
+
+                error
+
+            );
+
+
+        }
+
+
+    };
+
+
+
+
+
+    // ==============================
+    // Charger autres destinations
+    // ==============================
+
+
+    const chargerAutres = async () => {
+
+
+        try {
+
+
+            const res = await api.get(
+
+                "/destinations"
+
+            );
+
+
+            const autres = res.data.filter(
+
+                (d) => d.id_destination !== Number(id)
+
+            );
+
+
+            setAutresDestinations(autres);
+
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+
+    };
+
+
+
+
+
+
+    useEffect(() => {
+
+
+        chargerDestination();
+
+        chargerAutres();
+
+        chargerOffres();
+
+
+    }, [id]);
+
+
+
+
+
+
+
+    if (!destination) {
+
+
+        return (
+
+            <h2 className="loading-detail">
+
+                Chargement...
+
+            </h2>
+
+        );
+
+
     }
 
-    return Number(prix).toLocaleString(
-        "fr-FR",
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }
-    );
 
-};
 
 
 
 
-// ==============================
-// Charger destination
-// ==============================
 
-const chargerDestination=async()=>{
+    return (
 
 
-try{
+        <div className="destination-detail-page">
 
 
-const res=await api.get(
+            <div className="destination-detail-main">
 
-`/destinations/${id}`
 
-);
 
 
-setDestination(res.data);
 
+                {/* ==============================
+                    IMAGE PRINCIPALE DESTINATION
+                ============================== */}
 
-}
 
-catch(error){
+                <img
 
-console.log(
-"Erreur détail destination :",
-error
-);
+                    src={getImageUrl(destination.image)}
 
-}
+                    alt={destination.nom}
 
+                    className="detail-main-image"
 
-};
+                />
 
 
 
 
 
-// ==============================
-// Charger offres destination
-// ==============================
+                <h1>
 
+                    {destination.nom}
 
-const chargerOffres=async()=>{
+                </h1>
 
 
-try{
 
 
-const res=await api.get(
 
-`/destinations/${id}/offres`
 
-);
 
+                <div className="detail-info-location">
 
 
-console.log(
-"OFFRES DESTINATION :",
-res.data
-);
+                    <FaMapMarkerAlt />
 
 
+                    {destination.region},
 
-setOffres(res.data);
+                    {destination.pays}
 
 
+                </div>
 
-}
 
-catch(error){
 
 
-console.log(
 
-"Erreur chargement offres :",
 
-error
 
-);
+                <p className="detail-description">
 
 
-}
+                    {destination.description}
 
 
+                </p>
 
-};
 
 
 
 
 
 
-// ==============================
-// Charger autres destinations
-// ==============================
+                <div className="detail-map">
 
 
-const chargerAutres=async()=>{
+                    <MapContainer
 
+                        center={[
 
-try{
+                            Number(destination.latitude),
 
+                            Number(destination.longitude)
 
-const res=await api.get(
+                        ]}
 
-"/destinations"
+                        zoom={12}
 
-);
+                        style={{
 
+                            height: "100%",
 
+                            width: "100%"
 
-const autres=res.data.filter(
+                        }}
 
-(d)=>d.id_destination !== Number(id)
+                    >
 
-);
 
+                        <TileLayer
 
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
-setAutresDestinations(autres);
+                        />
 
 
 
-}
+                        <Marker
 
-catch(error){
+                            position={[
 
-console.log(error);
+                                Number(destination.latitude),
 
-}
+                                Number(destination.longitude)
 
+                            ]}
 
+                        >
 
-};
 
+                            <Popup>
 
+                                {destination.nom}
 
+                            </Popup>
 
 
+                        </Marker>
 
 
-useEffect(()=>{
 
+                    </MapContainer>
 
-chargerDestination();
 
-chargerAutres();
 
-chargerOffres();
+                </div>
 
 
-},[id]);
 
 
 
@@ -227,628 +425,476 @@ chargerOffres();
 
 
 
+                {/* =====================
+                    OFFRES DISPONIBLES
+                ===================== */}
 
-if(!destination){
 
+                <div className="offers-section">
 
-return(
 
-<h2 className="loading-detail">
+                    <h2>
 
-Chargement...
+                        Nos offres disponibles
 
-</h2>
+                    </h2>
 
-);
 
 
-}
 
 
+                    {
 
 
+                        offres.length === 0 ?
 
 
+                            <p>
 
-return(
+                                Aucune offre disponible pour cette destination.
 
+                            </p>
 
-<div className="destination-detail-page">
 
+                            :
 
 
 
+                            <Swiper
 
-<div className="destination-detail-main">
 
+                                modules={[
 
+                                    Autoplay,
 
+                                    Navigation,
 
+                                    Pagination
 
-<img
+                                ]}
 
-src={
-`${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`
-}
 
-alt={destination.nom}
+                                spaceBetween={25}
 
-className="detail-main-image"
 
-/>
+                                slidesPerView={3}
 
 
+                                navigation
 
 
+                                pagination={{
 
-<h1>
+                                    clickable: true
 
-{destination.nom}
+                                }}
 
-</h1>
 
+                                autoplay={{
 
+                                    delay: 3000,
 
+                                    disableOnInteraction: false
 
+                                }}
 
 
-<div className="detail-info-location">
+                                speed={800}
 
 
-<FaMapMarkerAlt/>
+                                loop={true}
 
 
-{destination.region},
 
-{destination.pays}
 
 
-</div>
+                                breakpoints={{
 
 
+                                    0: {
 
+                                        slidesPerView: 1
 
+                                    },
 
 
+                                    768: {
 
-<p className="detail-description">
+                                        slidesPerView: 2
 
+                                    },
 
-{destination.description}
 
+                                    1200: {
 
-</p>
+                                        slidesPerView: 3
 
+                                    }
 
 
+                                }}
 
 
 
+                            >
 
-<div className="detail-map">
 
 
-<MapContainer
+                                {
 
-center={[
 
-Number(destination.latitude),
+                                    offres.map((offre) => (
 
-Number(destination.longitude)
 
-]}
+                                        <SwiperSlide
 
-zoom={12}
+                                            key={offre.id_offre}
 
-style={{
+                                        >
 
-height:"100%",
 
-width:"100%"
 
-}}
+                                            <div className="offer-card">
 
->
 
 
-<TileLayer
 
-url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
-/>
+                                                {/* =====================
+                                                    IMAGE OFFRE
+                                                ===================== */}
 
 
+                                                <img
 
-<Marker
+                                                    src={getImageUrl(offre.image)}
 
-position={[
+                                                    alt={offre.titre}
 
-Number(destination.latitude),
+                                                />
 
-Number(destination.longitude)
 
-]}
 
->
 
 
-<Popup>
 
-{destination.nom}
 
-</Popup>
+                                                <div className="offer-content">
 
 
-</Marker>
 
 
 
-</MapContainer>
+                                                    <h3>
 
+                                                        {offre.titre}
 
+                                                    </h3>
 
-</div>
 
 
 
 
 
 
+                                                    <div className="offer-description-wrapper">
 
 
+                                                        <p
 
-{/* =====================
-OFFRES DISPONIBLES
-===================== */}
+                                                            className={
 
+                                                                offresOuvertes[offre.id_offre]
 
-<div className="offers-section">
+                                                                    ? "offer-description"
 
+                                                                    : "offer-description offer-description-limitee"
 
-<h2>
+                                                            }
 
-Nos offres disponibles
+                                                        >
 
-</h2>
+                                                            {offre.description}
 
+                                                        </p>
 
 
 
-{
+                                                        {offre.description &&
 
-offres.length === 0 ?
+                                                            offre.description.length > 120 && (
 
 
-<p>
+                                                                <span
 
-Aucune offre disponible pour cette destination.
+                                                                    className="offer-voir-plus"
 
-</p>
+                                                                    onClick={() =>
 
+                                                                        setOffresOuvertes({
 
+                                                                            ...offresOuvertes,
 
-:
+                                                                            [offre.id_offre]:
 
+                                                                                !offresOuvertes[offre.id_offre]
 
+                                                                        })
 
-<Swiper
+                                                                    }
 
+                                                                >
 
-modules={[
+                                                                    {offresOuvertes[offre.id_offre]
 
-Autoplay,
+                                                                        ? "Voir moins"
 
-Navigation,
+                                                                        : "Voir plus"}
 
-Pagination
+                                                                </span>
 
-]}
 
+                                                            )}
 
 
-spaceBetween={25}
+                                                    </div>
 
 
 
-slidesPerView={3}
 
 
 
-navigation
 
 
 
-pagination={{
+                                                    <p>
 
-clickable:true
+                                                        🏨
 
-}}
+                                                        <strong>
 
+                                                            {offre.prestataire}
 
+                                                        </strong>
 
+                                                    </p>
 
-autoplay={{
 
-delay:3000,
 
-disableOnInteraction:false
 
-}}
 
 
 
+                                                    <h3>
 
-speed={800}
+                                                        💰 {formatPrixEuro(offre.prix)} €
 
+                                                    </h3>
 
 
 
-loop={true}
 
 
 
 
 
-breakpoints={{
 
+                                                    <button
 
-0:{
 
+                                                        onClick={() => {
 
-slidesPerView:1
 
+                                                            const utilisateur =
 
-},
+                                                                localStorage.getItem("utilisateur");
 
 
 
-768:{
+                                                            if (utilisateur) {
 
 
-slidesPerView:2
+                                                                navigate(
 
+                                                                    `/reservation-public/${offre.id_offre}`
 
-},
+                                                                );
 
 
+                                                            }
 
-1200:{
+                                                            else {
 
 
-slidesPerView:3
+                                                                navigate(
 
+                                                                    `/login-client?redirect=/reservation-public/${offre.id_offre}`
 
-}
+                                                                );
 
 
+                                                            }
 
-}}
 
 
+                                                        }}
 
->
 
 
+                                                    >
 
-{
 
+                                                        Réserver
 
-offres.map((offre)=>(
 
+                                                    </button>
 
-<SwiperSlide
 
-key={offre.id_offre}
 
->
 
 
 
-<div className="offer-card">
 
 
 
+                                                </div>
 
 
-<img
 
-src={
 
-offre.image
 
-?
+                                            </div>
 
-`${import.meta.env.VITE_SERVER_URL}/uploads/${offre.image}`
 
-:
 
-"/image-default.jpg"
+                                        </SwiperSlide>
 
-}
 
 
-alt={offre.titre}
+                                    ))
 
 
-/>
+                                }
 
 
 
+                            </Swiper>
 
 
 
-<div className="offer-content">
+                    }
 
 
 
 
+                </div>
 
-<h3>
 
-{offre.titre}
 
-</h3>
 
+            </div>
 
 
 
 
-<div className="offer-description-wrapper">
 
-    <p
-        className={
-            offresOuvertes[offre.id_offre]
-                ? "offer-description"
-                : "offer-description offer-description-limitee"
-        }
-    >
-        {offre.description}
-    </p>
 
-    {offre.description &&
-        offre.description.length > 120 && (
 
-            <span
-                className="offer-voir-plus"
-                onClick={() =>
-                    setOffresOuvertes({
-                        ...offresOuvertes,
-                        [offre.id_offre]:
-                            !offresOuvertes[offre.id_offre]
-                    })
+
+
+            <div className="other-destinations">
+
+
+
+                <h2>
+
+                    Autres destinations
+
+                </h2>
+
+
+
+
+
+                {
+
+
+                    autresDestinations.map((d) => (
+
+
+
+                        <div
+
+                            className="small-destination-card"
+
+                            key={d.id_destination}
+
+                            onClick={() => navigate(
+
+                                `/destinations/${d.id_destination}`
+
+                            )}
+
+                        >
+
+
+                            {/* =====================
+                                IMAGE AUTRE DESTINATION
+                            ===================== */}
+
+
+                            <img
+
+                                src={getImageUrl(d.image)}
+
+                                alt={d.nom}
+
+                            />
+
+
+
+                            <div>
+
+                                <h3>
+
+                                    {d.nom}
+
+                                </h3>
+
+
+                                <p>
+
+                                    {d.region}
+
+                                </p>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    ))
+
+
                 }
-            >
-                {offresOuvertes[offre.id_offre]
-                    ? "Voir moins"
-                    : "Voir plus"}
-            </span>
 
-        )}
 
-</div>
 
+            </div>
 
 
 
 
 
 
-<p>
 
-🏨
+        </div>
 
-<strong>
 
-{offre.prestataire}
-
-</strong>
-
-</p>
-
-
-
-
-
-
-<h3>
-
-    💰 {formatPrixEuro(offre.prix)} €
-
-</h3>
-
-
-
-
-
-
-
-
-<button
-
-
-onClick={()=>{
-
-
-const utilisateur =
-
-localStorage.getItem("utilisateur");
-
-
-
-if(utilisateur){
-
-
-navigate(
-
-`/reservation-public/${offre.id_offre}`
-
-);
-
-
-}
-
-else{
-
-
-navigate(
-
-`/login-client?redirect=/reservation-public/${offre.id_offre}`
-
-);
-
-
-}
-
-
-
-}}
-
-
-
->
-
-
-Réserver
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-</SwiperSlide>
-
-
-
-))
-
-
-}
-
-
-
-</Swiper>
-
-
-
-}
-
-
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div className="other-destinations">
-
-
-
-<h2>
-
-Autres destinations
-
-</h2>
-
-
-
-
-
-{
-
-autresDestinations.map((d)=>(
-
-
-
-<div
-
-className="small-destination-card"
-
-key={d.id_destination}
-
-onClick={()=>navigate(
-    `/destinations/${d.id_destination}`
-)}
-
->
-
-
-<img
-
-src={
-`${import.meta.env.VITE_SERVER_URL}/uploads/${d.image}`
-}
-
-/>
-
-
-
-<div>
-
-<h3>
-
-{d.nom}
-
-</h3>
-
-
-<p>
-
-{d.region}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-))
-
-
-}
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-);
-
+    );
 
 
 }
