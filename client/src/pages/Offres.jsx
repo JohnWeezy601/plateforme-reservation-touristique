@@ -5,7 +5,7 @@ import "./Offres.css";
 function Offres() {
 
     // =========================================================
-    // DONNEES
+    // DONNÉES
     // =========================================================
 
     const [offres, setOffres] = useState([]);
@@ -42,6 +42,7 @@ function Offres() {
     // =========================================================
 
     const [pageActuelle, setPageActuelle] = useState(1);
+
     const offresParPage = 6;
 
     // =========================================================
@@ -55,16 +56,21 @@ function Offres() {
     // =========================================================
 
     const [offre, setOffre] = useState({
+
         id_prestataire: "",
         id_destination: "",
         id_categorie: "",
+
         titre: "",
         description: "",
+
         prix: "",
         capacite: "",
         disponibilite: "",
+
         date_debut: "",
         date_fin: ""
+
     });
 
     // =========================================================
@@ -74,7 +80,14 @@ function Offres() {
     const [erreurs, setErreurs] = useState({});
 
     // =========================================================
-    // CHARGER LES DONNEES
+    // URL SERVEUR
+    // =========================================================
+
+    const SERVER_URL =
+        import.meta.env.VITE_SERVER_URL;
+
+    // =========================================================
+    // CHARGER LES DONNÉES
     // =========================================================
 
     const chargerDonnees = async () => {
@@ -89,20 +102,45 @@ function Offres() {
                 categoriesRes,
                 prestatairesRes
             ] = await Promise.all([
+
                 api.get("/offres"),
+
                 api.get("/destinations"),
+
                 api.get("/categories"),
+
                 api.get("/prestataires")
+
             ]);
 
-            setOffres(offresRes.data || []);
-            setDestinations(destinationsRes.data || []);
-            setCategories(categoriesRes.data || []);
-            setPrestataires(prestatairesRes.data || []);
+            setOffres(
+                Array.isArray(offresRes.data)
+                    ? offresRes.data
+                    : []
+            );
+
+            setDestinations(
+                Array.isArray(destinationsRes.data)
+                    ? destinationsRes.data
+                    : []
+            );
+
+            setCategories(
+                Array.isArray(categoriesRes.data)
+                    ? categoriesRes.data
+                    : []
+            );
+
+            setPrestataires(
+                Array.isArray(prestatairesRes.data)
+                    ? prestatairesRes.data
+                    : []
+            );
 
             console.log("✅ Données chargées");
 
         }
+
         catch (error) {
 
             console.error(
@@ -113,6 +151,10 @@ function Offres() {
         }
 
     };
+
+    // =========================================================
+    // CHARGEMENT INITIAL
+    // =========================================================
 
     useEffect(() => {
 
@@ -126,18 +168,27 @@ function Offres() {
 
     const handleChange = (e) => {
 
-        const { name, value } = e.target;
+        const {
+            name,
+            value
+        } = e.target;
 
         setOffre((ancienne) => ({
+
             ...ancienne,
+
             [name]: value
+
         }));
 
         if (erreurs[name]) {
 
             setErreurs((ancienne) => ({
+
                 ...ancienne,
+
                 [name]: ""
+
             }));
 
         }
@@ -150,42 +201,55 @@ function Offres() {
 
     const handleImage = (e) => {
 
-        const fichier = e.target.files?.[0];
+        const fichier =
+            e.target.files?.[0];
 
         if (!fichier) {
 
             setImage(null);
+
             return;
 
         }
 
         const formatsAutorises = [
+
             "image/jpeg",
             "image/jpg",
             "image/png",
             "image/webp"
+
         ];
 
-        if (!formatsAutorises.includes(fichier.type)) {
+        if (
+            !formatsAutorises.includes(
+                fichier.type
+            )
+        ) {
 
             alert(
                 "Format d'image non autorisé. Utilisez JPG, JPEG, PNG ou WEBP."
             );
 
             e.target.value = "";
+
             setImage(null);
 
             return;
 
         }
 
-        if (fichier.size > 5 * 1024 * 1024) {
+        if (
+            fichier.size >
+            5 * 1024 * 1024
+        ) {
 
             alert(
                 "L'image ne doit pas dépasser 5 Mo."
             );
 
             e.target.value = "";
+
             setImage(null);
 
             return;
@@ -197,7 +261,7 @@ function Offres() {
     };
 
     // =========================================================
-    // PHOTOS DETAILLEES
+    // PHOTOS DÉTAILLÉES
     // =========================================================
 
     const handlePhotosDetails = (e) => {
@@ -206,22 +270,35 @@ function Offres() {
             e.target.files || []
         );
 
-        if (fichiers.length === 0) {
+        if (
+            fichiers.length === 0
+        ) {
+
             return;
+
         }
 
         const formatsAutorises = [
+
             "image/jpeg",
             "image/jpg",
             "image/png",
             "image/webp"
+
         ];
 
         const fichiersValides = [];
 
-        for (const fichier of fichiers) {
+        for (
+            const fichier
+            of fichiers
+        ) {
 
-            if (!formatsAutorises.includes(fichier.type)) {
+            if (
+                !formatsAutorises.includes(
+                    fichier.type
+                )
+            ) {
 
                 alert(
                     `Le fichier "${fichier.name}" n'est pas une image autorisée.`
@@ -231,7 +308,10 @@ function Offres() {
 
             }
 
-            if (fichier.size > 5 * 1024 * 1024) {
+            if (
+                fichier.size >
+                5 * 1024 * 1024
+            ) {
 
                 alert(
                     `Le fichier "${fichier.name}" dépasse 5 Mo.`
@@ -241,31 +321,58 @@ function Offres() {
 
             }
 
-            fichiersValides.push(fichier);
+            fichiersValides.push(
+                fichier
+            );
 
         }
 
-        const nombreDisponible =
-            10 - photosDetails.length;
+        // =====================================================
+        // NOMBRE DE PHOTOS DÉJÀ ENREGISTRÉES
+        // =====================================================
 
-        if (nombreDisponible <= 0) {
+        const nombreExistantes =
+            photosExistantes.length;
+
+        const nombreNouvelles =
+            photosDetails.length;
+
+        const nombreTotal =
+            nombreExistantes +
+            nombreNouvelles;
+
+        const nombreDisponible =
+            10 - nombreTotal;
+
+        if (
+            nombreDisponible <= 0
+        ) {
 
             alert(
-                "Vous avez déjà sélectionné 10 photos."
+                "Maximum 10 photos détaillées par offre."
             );
 
             e.target.value = "";
+
             return;
 
         }
 
-        setPhotosDetails((anciennes) => [
-            ...anciennes,
-            ...fichiersValides.slice(
+        const photosAAjouter =
+            fichiersValides.slice(
                 0,
                 nombreDisponible
-            )
-        ]);
+            );
+
+        setPhotosDetails(
+            (anciennes) => [
+
+                ...anciennes,
+
+                ...photosAAjouter
+
+            ]
+        );
 
         if (
             fichiersValides.length >
@@ -273,7 +380,7 @@ function Offres() {
         ) {
 
             alert(
-                "Maximum 10 photos détaillées."
+                `Vous pouvez encore ajouter seulement ${nombreDisponible} photo(s). Maximum 10 photos au total.`
             );
 
         }
@@ -283,15 +390,19 @@ function Offres() {
     };
 
     // =========================================================
-    // SUPPRIMER PHOTO SELECTIONNEE
+    // SUPPRIMER PHOTO SÉLECTIONNÉE
     // =========================================================
 
-    const supprimerPhotoSelectionnee = (index) => {
+    const supprimerPhotoSelectionnee = (
+        index
+    ) => {
 
-        setPhotosDetails((anciennes) =>
-            anciennes.filter(
-                (_, i) => i !== index
-            )
+        setPhotosDetails(
+            (anciennes) =>
+                anciennes.filter(
+                    (_, i) =>
+                        i !== index
+                )
         );
 
     };
@@ -300,14 +411,18 @@ function Offres() {
     // SUPPRIMER PHOTO EXISTANTE
     // =========================================================
 
-    const supprimerPhotoExistante = async (idPhoto) => {
+    const supprimerPhotoExistante = async (
+        idPhoto
+    ) => {
 
         if (
             !window.confirm(
                 "Voulez-vous vraiment supprimer cette photo ?"
             )
         ) {
+
             return;
+
         }
 
         try {
@@ -316,11 +431,13 @@ function Offres() {
                 `/offres/photos/${idPhoto}`
             );
 
-            setPhotosExistantes((anciennes) =>
-                anciennes.filter(
-                    (photo) =>
-                        photo.id_photo !== idPhoto
-                )
+            setPhotosExistantes(
+                (anciennes) =>
+                    anciennes.filter(
+                        (photo) =>
+                            photo.id_photo !==
+                            idPhoto
+                    )
             );
 
             alert(
@@ -328,6 +445,7 @@ function Offres() {
             );
 
         }
+
         catch (error) {
 
             console.error(
@@ -336,8 +454,11 @@ function Offres() {
             );
 
             alert(
+
                 error.response?.data?.message ||
+
                 "Erreur lors de la suppression de la photo."
+
             );
 
         }
@@ -352,15 +473,22 @@ function Offres() {
 
         const nouvellesErreurs = {};
 
+        // =====================================================
         // TITRE
-        if (!offre.titre.trim()) {
+        // =====================================================
+
+        if (
+            !offre.titre.trim()
+        ) {
 
             nouvellesErreurs.titre =
                 "Le titre est obligatoire.";
 
         }
+
         else if (
-            offre.titre.trim().length < 3
+            offre.titre.trim().length <
+            3
         ) {
 
             nouvellesErreurs.titre =
@@ -368,39 +496,61 @@ function Offres() {
 
         }
 
+        // =====================================================
         // PRESTATAIRE
-        if (!offre.id_prestataire) {
+        // =====================================================
+
+        if (
+            !offre.id_prestataire
+        ) {
 
             nouvellesErreurs.id_prestataire =
                 "Veuillez choisir un prestataire.";
 
         }
 
+        // =====================================================
         // DESTINATION
-        if (!offre.id_destination) {
+        // =====================================================
+
+        if (
+            !offre.id_destination
+        ) {
 
             nouvellesErreurs.id_destination =
                 "Veuillez choisir une destination.";
 
         }
 
-        // CATEGORIE
-        if (!offre.id_categorie) {
+        // =====================================================
+        // CATÉGORIE
+        // =====================================================
+
+        if (
+            !offre.id_categorie
+        ) {
 
             nouvellesErreurs.id_categorie =
                 "Veuillez choisir une catégorie.";
 
         }
 
+        // =====================================================
         // DESCRIPTION
-        if (!offre.description.trim()) {
+        // =====================================================
+
+        if (
+            !offre.description.trim()
+        ) {
 
             nouvellesErreurs.description =
                 "La description est obligatoire.";
 
         }
+
         else if (
-            offre.description.trim().length < 10
+            offre.description.trim().length <
+            10
         ) {
 
             nouvellesErreurs.description =
@@ -408,15 +558,22 @@ function Offres() {
 
         }
 
+        // =====================================================
         // PRIX
-        const prix = Number(offre.prix);
+        // =====================================================
 
-        if (offre.prix === "") {
+        const prix =
+            Number(offre.prix);
+
+        if (
+            offre.prix === ""
+        ) {
 
             nouvellesErreurs.prix =
                 "Le prix est obligatoire.";
 
         }
+
         else if (
             isNaN(prix) ||
             prix <= 0
@@ -427,16 +584,22 @@ function Offres() {
 
         }
 
-        // CAPACITE
+        // =====================================================
+        // CAPACITÉ
+        // =====================================================
+
         const capacite =
             Number(offre.capacite);
 
-        if (offre.capacite === "") {
+        if (
+            offre.capacite === ""
+        ) {
 
             nouvellesErreurs.capacite =
                 "La capacité est obligatoire.";
 
         }
+
         else if (
             isNaN(capacite) ||
             capacite <= 0 ||
@@ -448,26 +611,37 @@ function Offres() {
 
         }
 
-        // DISPONIBILITE
-        const disponibilite =
-            Number(offre.disponibilite);
+        // =====================================================
+        // DISPONIBILITÉ
+        // =====================================================
 
-        if (offre.disponibilite === "") {
+        const disponibilite =
+            Number(
+                offre.disponibilite
+            );
+
+        if (
+            offre.disponibilite === ""
+        ) {
 
             nouvellesErreurs.disponibilite =
                 "La disponibilité est obligatoire.";
 
         }
+
         else if (
             isNaN(disponibilite) ||
             disponibilite < 0 ||
-            !Number.isInteger(disponibilite)
+            !Number.isInteger(
+                disponibilite
+            )
         ) {
 
             nouvellesErreurs.disponibilite =
                 "La disponibilité doit être un entier positif ou égal à 0.";
 
         }
+
         else if (
             capacite > 0 &&
             disponibilite > capacite
@@ -478,27 +652,41 @@ function Offres() {
 
         }
 
-        // DATE DEBUT
-        if (!offre.date_debut) {
+        // =====================================================
+        // DATE DÉBUT
+        // =====================================================
+
+        if (
+            !offre.date_debut
+        ) {
 
             nouvellesErreurs.date_debut =
                 "La date de début est obligatoire.";
 
         }
 
+        // =====================================================
         // DATE FIN
-        if (!offre.date_fin) {
+        // =====================================================
+
+        if (
+            !offre.date_fin
+        ) {
 
             nouvellesErreurs.date_fin =
                 "La date de fin est obligatoire.";
 
         }
 
-        // DATES
+        // =====================================================
+        // COMPARAISON DATES
+        // =====================================================
+
         if (
             offre.date_debut &&
             offre.date_fin &&
-            offre.date_fin < offre.date_debut
+            offre.date_fin <
+            offre.date_debut
         ) {
 
             nouvellesErreurs.date_fin =
@@ -506,22 +694,15 @@ function Offres() {
 
         }
 
-        setErreurs(nouvellesErreurs);
-
-        console.log(
-            "🔎 Erreurs formulaire :",
+        setErreurs(
             nouvellesErreurs
         );
 
-        const valide =
-            Object.keys(nouvellesErreurs).length === 0;
-
-        console.log(
-            "🔎 Formulaire valide :",
-            valide
+        return (
+            Object.keys(
+                nouvellesErreurs
+            ).length === 0
         );
-
-        return valide;
 
     };
 
@@ -532,23 +713,31 @@ function Offres() {
     const resetForm = () => {
 
         setOffre({
+
             id_prestataire: "",
             id_destination: "",
             id_categorie: "",
+
             titre: "",
             description: "",
+
             prix: "",
             capacite: "",
             disponibilite: "",
+
             date_debut: "",
             date_fin: ""
+
         });
 
         setImage(null);
+
         setPhotosDetails([]);
+
         setPhotosExistantes([]);
 
         setModeModification(false);
+
         setIdModification(null);
 
         setErreurs({});
@@ -562,29 +751,23 @@ function Offres() {
     const ouvrirAjout = () => {
 
         resetForm();
+
         setModal(true);
 
     };
 
     // =========================================================
-    // ENVOYER PHOTOS
+    // ENVOYER PHOTOS DÉTAILLÉES
     // =========================================================
 
-    const envoyerPhotosDetails = async (idOffre) => {
-
-        console.log(
-            "🖼️ Envoi photos détaillées :",
-            idOffre
-        );
+    const envoyerPhotosDetails = async (
+        idOffre
+    ) => {
 
         if (
             !photosDetails ||
             photosDetails.length === 0
         ) {
-
-            console.log(
-                "ℹ️ Aucune photo détaillée."
-            );
 
             return;
 
@@ -593,29 +776,35 @@ function Offres() {
         const formDataPhotos =
             new FormData();
 
-        photosDetails.forEach((photo) => {
+        photosDetails.forEach(
+            (photo) => {
 
-            formDataPhotos.append(
-                "photos",
-                photo
-            );
+                formDataPhotos.append(
+                    "photos",
+                    photo
+                );
 
-        });
-
-        const response = await api.post(
-
-            `/offres/${idOffre}/photos`,
-
-            formDataPhotos,
-
-            {
-                headers: {
-                    "Content-Type":
-                        "multipart/form-data"
-                }
             }
-
         );
+
+        const response =
+            await api.post(
+
+                `/offres/${idOffre}/photos`,
+
+                formDataPhotos,
+
+                {
+                    headers: {
+
+                        "Content-Type":
+                            "multipart/form-data"
+
+                    }
+
+                }
+
+            );
 
         console.log(
             "✅ Photos ajoutées :",
@@ -625,85 +814,53 @@ function Offres() {
     };
 
     // =========================================================
-    // ENREGISTRER
+    // ENREGISTRER OFFRE
     // =========================================================
 
-    const enregistrerOffre = async (e) => {
+    const enregistrerOffre = async (
+        e
+    ) => {
 
         if (e) {
+
             e.preventDefault();
+
         }
 
-        console.log(
-            "======================================"
-        );
-
-        console.log(
-            "🟢 BOUTON PUBLIER CLIQUÉ"
-        );
-
-        console.log(
-            "======================================"
-        );
-
-        console.log(
-            "Mode modification :",
-            modeModification
-        );
-
-        console.log(
-            "Offre :",
-            offre
-        );
-
-        console.log(
-            "Image :",
-            image
-        );
-
-        console.log(
-            "Photos :",
-            photosDetails
-        );
-
-        // =====================================================
-        // VALIDATION
-        // =====================================================
-
-        const valide =
-            validerFormulaire();
-
-        if (!valide) {
-
-            console.log(
-                "❌ Validation échouée."
-            );
+        if (
+            !validerFormulaire()
+        ) {
 
             return;
 
         }
 
-        console.log(
-            "✅ Validation réussie."
-        );
-
         try {
 
             setChargement(true);
 
+            // =================================================
+            // FORM DATA
+            // =================================================
+
             const formData =
                 new FormData();
 
-            Object.keys(offre).forEach((key) => {
+            Object.keys(offre).forEach(
+                (key) => {
 
-                formData.append(
-                    key,
-                    offre[key]
-                );
+                    formData.append(
+                        key,
+                        offre[key]
+                    );
 
-            });
+                }
+            );
 
-            // IMAGE
+            // =================================================
+            // IMAGE PRINCIPALE
+            // =================================================
+
             if (image) {
 
                 formData.append(
@@ -713,33 +870,13 @@ function Offres() {
 
             }
 
-            console.log(
-                "📦 FormData créé."
-            );
-
-            for (
-                const [key, value]
-                of formData.entries()
-            ) {
-
-                console.log(
-                    "FormData :",
-                    key,
-                    value
-                );
-
-            }
-
             // =================================================
             // MODIFICATION
             // =================================================
 
-            if (modeModification) {
-
-                console.log(
-                    "✏️ Modification offre :",
-                    idModification
-                );
+            if (
+                modeModification
+            ) {
 
                 const response =
                     await api.put(
@@ -749,21 +886,30 @@ function Offres() {
                         formData,
 
                         {
+
                             headers: {
+
                                 "Content-Type":
                                     "multipart/form-data"
+
                             }
+
                         }
 
                     );
 
                 console.log(
-                    "✅ Réponse modification :",
+                    "✅ Offre modifiée :",
                     response.data
                 );
 
+                // =============================================
+                // AJOUTER NOUVELLES PHOTOS DÉTAILLÉES
+                // =============================================
+
                 if (
-                    photosDetails.length > 0
+                    photosDetails.length >
+                    0
                 ) {
 
                     await envoyerPhotosDetails(
@@ -784,10 +930,6 @@ function Offres() {
 
             else {
 
-                console.log(
-                    "🚀 Ajout nouvelle offre..."
-                );
-
                 const response =
                     await api.post(
 
@@ -796,30 +938,34 @@ function Offres() {
                         formData,
 
                         {
+
                             headers: {
+
                                 "Content-Type":
                                     "multipart/form-data"
+
                             }
+
                         }
 
                     );
 
                 console.log(
-                    "✅ Réponse serveur :",
+                    "✅ Offre ajoutée :",
                     response.data
                 );
 
                 const nouvelId =
                     response.data.id_offre;
 
-                console.log(
-                    "🆔 ID nouvelle offre :",
-                    nouvelId
-                );
+                // =============================================
+                // AJOUT PHOTOS DÉTAILLÉES
+                // =============================================
 
                 if (
                     nouvelId &&
-                    photosDetails.length > 0
+                    photosDetails.length >
+                    0
                 ) {
 
                     await envoyerPhotosDetails(
@@ -835,7 +981,7 @@ function Offres() {
             }
 
             // =================================================
-            // RECHARGEMENT
+            // RECHARGER
             // =================================================
 
             await chargerDonnees();
@@ -847,10 +993,11 @@ function Offres() {
             setPageActuelle(1);
 
         }
+
         catch (error) {
 
             console.error(
-                "❌ ERREUR ENREGISTREMENT :",
+                "❌ ERREUR ENREGISTREMENT OFFRE :",
                 error
             );
 
@@ -859,17 +1006,16 @@ function Offres() {
                 error.response?.data
             );
 
-            console.error(
-                "Status :",
-                error.response?.status
-            );
-
             alert(
+
                 error.response?.data?.message ||
-                "Erreur lors de l'enregistrement."
+
+                "Erreur lors de l'enregistrement de l'offre."
+
             );
 
         }
+
         finally {
 
             setChargement(false);
@@ -879,10 +1025,12 @@ function Offres() {
     };
 
     // =========================================================
-    // MODIFIER
+    // MODIFIER OFFRE
     // =========================================================
 
-    const modifierOffre = async (item) => {
+    const modifierOffre = async (
+        item
+    ) => {
 
         try {
 
@@ -890,71 +1038,116 @@ function Offres() {
 
             const response =
                 await api.get(
+
                     `/offres/${item.id_offre}`
+
                 );
 
             const offreComplete =
                 response.data;
 
+            // =================================================
+            // REMPLIR FORMULAIRE
+            // =================================================
+
             setOffre({
 
                 id_prestataire:
-                    offreComplete.id_prestataire || "",
+                    offreComplete.id_prestataire ||
+                    "",
 
                 id_destination:
-                    offreComplete.id_destination || "",
+                    offreComplete.id_destination ||
+                    "",
 
                 id_categorie:
-                    offreComplete.id_categorie || "",
+                    offreComplete.id_categorie ||
+                    "",
 
                 titre:
-                    offreComplete.titre || "",
+                    offreComplete.titre ||
+                    "",
 
                 description:
-                    offreComplete.description || "",
+                    offreComplete.description ||
+                    "",
 
                 prix:
-                    offreComplete.prix ?? "",
+                    offreComplete.prix ??
+                    "",
 
                 capacite:
-                    offreComplete.capacite ?? "",
+                    offreComplete.capacite ??
+                    "",
 
                 disponibilite:
-                    offreComplete.disponibilite ?? "",
+                    offreComplete.disponibilite ??
+                    "",
 
                 date_debut:
                     offreComplete.date_debut
                         ? String(
                             offreComplete.date_debut
-                        ).substring(0, 10)
+                        ).substring(
+                            0,
+                            10
+                        )
                         : "",
 
                 date_fin:
                     offreComplete.date_fin
                         ? String(
                             offreComplete.date_fin
-                        ).substring(0, 10)
+                        ).substring(
+                            0,
+                            10
+                        )
                         : ""
 
             });
 
+            // =================================================
+            // PHOTOS EXISTANTES
+            // =================================================
+
             setPhotosExistantes(
-                offreComplete.photos || []
+
+                Array.isArray(
+                    offreComplete.photos
+                )
+                    ? offreComplete.photos
+                    : []
+
             );
 
+            // =================================================
+            // NOUVELLES PHOTOS
+            // =================================================
+
             setPhotosDetails([]);
+
+            // =================================================
+            // IMAGE PRINCIPALE
+            // =================================================
+
             setImage(null);
+
             setErreurs({});
 
             setIdModification(
                 item.id_offre
             );
 
-            setModeModification(true);
+            setModeModification(
+                true
+            );
+
             setMenuOuvert(null);
+
             setModal(true);
 
         }
+
         catch (error) {
 
             console.error(
@@ -963,10 +1156,12 @@ function Offres() {
             );
 
             alert(
+                error.response?.data?.message ||
                 "Impossible de récupérer les détails de cette offre."
             );
 
         }
+
         finally {
 
             setChargement(false);
@@ -976,14 +1171,16 @@ function Offres() {
     };
 
     // =========================================================
-    // SUPPRIMER
+    // SUPPRIMER OFFRE
     // =========================================================
 
-    const supprimerOffre = async (id) => {
+    const supprimerOffre = async (
+        id
+    ) => {
 
         if (
             !window.confirm(
-                "Voulez-vous vraiment supprimer cette offre ?"
+                "Voulez-vous vraiment supprimer cette offre ?\n\nLes photos détaillées associées seront également supprimées de la base de données."
             )
         ) {
 
@@ -1006,16 +1203,20 @@ function Offres() {
             setMenuOuvert(null);
 
         }
+
         catch (error) {
 
             console.error(
-                "❌ Erreur suppression :",
+                "❌ Erreur suppression offre :",
                 error
             );
 
             alert(
+
                 error.response?.data?.message ||
+
                 "Erreur lors de la suppression."
+
             );
 
         }
@@ -1027,44 +1228,56 @@ function Offres() {
     // =========================================================
 
     const offresFiltrees =
-        offres.filter((item) => {
+        offres.filter(
+            (item) => {
 
-            const texte =
-                recherche
-                    .toLowerCase()
-                    .trim();
+                const texte =
+                    recherche
+                        .toLowerCase()
+                        .trim();
 
-            if (!texte) {
-                return true;
+                if (!texte) {
+
+                    return true;
+
+                }
+
+                return (
+
+                    String(
+                        item.titre || ""
+                    )
+                        .toLowerCase()
+                        .includes(texte)
+
+                    ||
+
+                    String(
+                        item.destination || ""
+                    )
+                        .toLowerCase()
+                        .includes(texte)
+
+                    ||
+
+                    String(
+                        item.categorie || ""
+                    )
+                        .toLowerCase()
+                        .includes(texte)
+
+                    ||
+
+                    String(
+                        item.prestataire || ""
+                    )
+                        .toLowerCase()
+                        .includes(texte)
+
+                );
+
             }
-
-            return (
-
-                String(item.titre || "")
-                    .toLowerCase()
-                    .includes(texte)
-
-                ||
-
-                String(item.destination || "")
-                    .toLowerCase()
-                    .includes(texte)
-
-                ||
-
-                String(item.categorie || "")
-                    .toLowerCase()
-                    .includes(texte)
-
-                ||
-
-                String(item.prestataire || "")
-                    .toLowerCase()
-                    .includes(texte)
-
-            );
-
-        });
+        );
 
     // =========================================================
     // PAGINATION
@@ -1072,38 +1285,57 @@ function Offres() {
 
     const totalPages =
         Math.ceil(
+
             offresFiltrees.length /
             offresParPage
+
         );
 
     const pageSure =
         totalPages > 0
-            ? Math.min(pageActuelle, totalPages)
+
+            ? Math.min(
+                pageActuelle,
+                totalPages
+            )
+
             : 1;
 
     const indexPremiereOffre =
-        (pageSure - 1) *
+        (
+            pageSure - 1
+        ) *
         offresParPage;
 
     const offresPage =
         offresFiltrees.slice(
+
             indexPremiereOffre,
+
             indexPremiereOffre +
             offresParPage
+
         );
 
-    const changerPage = (page) => {
+    const changerPage = (
+        page
+    ) => {
 
         if (
             page >= 1 &&
             page <= totalPages
         ) {
 
-            setPageActuelle(page);
+            setPageActuelle(
+                page
+            );
 
             window.scrollTo({
+
                 top: 0,
+
                 behavior: "smooth"
+
             });
 
         }
@@ -1111,54 +1343,97 @@ function Offres() {
     };
 
     // =========================================================
-    // PRIX
+    // FORMAT PRIX
     // =========================================================
 
-    const formatPrix = (prix) => {
+    const formatPrix = (
+        prix
+    ) => {
 
         return Number(
             prix || 0
         ).toLocaleString(
-            "fr-FR"
+            "fr-FR",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
         );
 
     };
 
-
     // =========================================================
-    // DISPONIBILITE
+    // DISPONIBILITÉ
     // =========================================================
 
-    const afficherDisponibilite = (nombre) => {
+    const afficherDisponibilite = (
+        nombre
+    ) => {
 
         const valeur =
-            Number(nombre || 0);
+            Number(
+                nombre || 0
+            );
 
-        if (valeur <= 0) {
+        if (
+            valeur <= 0
+        ) {
 
             return (
+
                 <span className="disponibilite complet">
+
                     🔴 Complet
+
                 </span>
+
             );
 
         }
 
-        if (valeur === 1) {
+        if (
+            valeur === 1
+        ) {
 
             return (
+
                 <span className="disponibilite faible">
+
                     🟠 1 place disponible
+
                 </span>
+
             );
 
         }
 
         return (
+
             <span className="disponibilite disponible">
+
                 🟢 {valeur} places disponibles
+
             </span>
+
         );
+
+    };
+
+    // =========================================================
+    // URL IMAGE
+    // =========================================================
+
+    const getImageUrl = (
+        filename
+    ) => {
+
+        if (!filename) {
+
+            return "/image-default.jpg";
+
+        }
+
+        return `${SERVER_URL}/uploads/${filename}`;
 
     };
 
@@ -1170,16 +1445,22 @@ function Offres() {
 
         <div className="offres-admin">
 
-            {/* HEADER */}
+            {/* =================================================
+                HEADER
+            ================================================= */}
 
             <div className="offres-header">
 
                 <div>
-                    <h1>🎒 Gestion des offres</h1>
+
+                    <h1>
+                        🎒 Gestion des offres
+                    </h1>
 
                     <p>
                         Gérez vos séjours touristiques
                     </p>
+
                 </div>
 
                 <button
@@ -1192,28 +1473,39 @@ function Offres() {
 
             </div>
 
-            {/* LISTE */}
+            {/* =================================================
+                LISTE
+            ================================================= */}
 
             <div className="offres-list-card">
 
                 <div className="liste-header">
 
                     <div>
+
                         <h2>
                             Liste des offres
                         </h2>
 
                         <span className="nombre-resultats">
+
                             {offresFiltrees.length}{" "}
+
                             {offresFiltrees.length > 1
                                 ? "offres"
                                 : "offre"}
+
                         </span>
+
                     </div>
+
+                    {/* RECHERCHE */}
 
                     <div className="recherche-offres">
 
-                        <span>🔎</span>
+                        <span>
+                            🔎
+                        </span>
 
                         <input
                             type="text"
@@ -1225,7 +1517,9 @@ function Offres() {
                                     e.target.value
                                 );
 
-                                setPageActuelle(1);
+                                setPageActuelle(
+                                    1
+                                );
 
                             }}
                         />
@@ -1238,7 +1532,10 @@ function Offres() {
                                 onClick={() => {
 
                                     setRecherche("");
-                                    setPageActuelle(1);
+
+                                    setPageActuelle(
+                                        1
+                                    );
 
                                 }}
                             >
@@ -1251,7 +1548,9 @@ function Offres() {
 
                 </div>
 
-                {/* LISTE DES OFFRES */}
+                {/* =================================================
+                    AUCUNE OFFRE
+                ================================================= */}
 
                 {offresPage.length === 0 ? (
 
@@ -1266,159 +1565,214 @@ function Offres() {
                         </h3>
 
                         <p>
+
                             {recherche
+
                                 ? "Aucune offre ne correspond à votre recherche."
+
                                 : "Aucune offre n'est disponible pour le moment."
+
                             }
+
                         </p>
 
                     </div>
 
                 ) : (
 
+                    /* =================================================
+                       CARTES OFFRES
+                    ================================================= */
+
                     <div className="offres-admin-list">
 
-                        {offresPage.map((item) => (
+                        {offresPage.map(
+                            (item) => (
 
-                            <div
-                                className="offre-admin-card"
-                                key={item.id_offre}
-                            >
+                                <div
+                                    className="offre-admin-card"
+                                    key={
+                                        item.id_offre
+                                    }
+                                >
 
-                                <div className="offre-image-container">
+                                    {/* IMAGE */}
 
-                                    <img
-                                        src={
-                                            item.image
-                                                ? `${import.meta.env.VITE_SERVER_URL}/uploads/${item.image}`
-                                                : "/image-default.jpg"
-                                        }
-                                        alt={item.titre}
-                                    />
+                                    <div className="offre-image-container">
 
-                                    <div className="menu-offre">
-
-                                        <button
-                                            type="button"
-                                            className="btn-menu-offre"
-                                            onClick={() =>
-                                                setMenuOuvert(
-                                                    menuOuvert ===
-                                                    item.id_offre
-                                                        ? null
-                                                        : item.id_offre
-                                                )
+                                        <img
+                                            src={getImageUrl(
+                                                item.image
+                                            )}
+                                            alt={
+                                                item.titre ||
+                                                "Offre touristique"
                                             }
-                                        >
-                                            ⋮
-                                        </button>
+                                        />
 
-                                        {menuOuvert === item.id_offre && (
+                                        {/* MENU */}
 
-                                            <div className="menu-actions">
+                                        <div className="menu-offre">
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        modifierOffre(item)
-                                                    }
-                                                >
-                                                    ✏️ Modifier
-                                                </button>
+                                            <button
+                                                type="button"
+                                                className="btn-menu-offre"
+                                                onClick={() =>
+                                                    setMenuOuvert(
 
-                                                <button
-                                                    type="button"
-                                                    className="delete-action"
-                                                    onClick={() =>
-                                                        supprimerOffre(
-                                                            item.id_offre
-                                                        )
-                                                    }
-                                                >
-                                                    🗑️ Supprimer
-                                                </button>
+                                                        menuOuvert ===
+                                                        item.id_offre
 
-                                            </div>
+                                                            ? null
 
-                                        )}
+                                                            : item.id_offre
+
+                                                    )
+                                                }
+                                            >
+                                                ⋮
+                                            </button>
+
+                                            {menuOuvert ===
+                                                item.id_offre && (
+
+                                                <div className="menu-actions">
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            modifierOffre(
+                                                                item
+                                                            )
+                                                        }
+                                                    >
+                                                        ✏️ Modifier
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="delete-action"
+                                                        onClick={() =>
+                                                            supprimerOffre(
+                                                                item.id_offre
+                                                            )
+                                                        }
+                                                    >
+                                                        🗑️ Supprimer
+                                                    </button>
+
+                                                </div>
+
+                                            )}
+
+                                        </div>
+
+                                    </div>
+
+                                    {/* INFORMATIONS */}
+
+                                    <div className="info-offre">
+
+                                        <h3>
+                                            {item.titre}
+                                        </h3>
+
+                                        <p>
+                                            📍{" "}
+
+                                            {item.destination ||
+                                                "Destination inconnue"}
+
+                                        </p>
+
+                                        <p>
+                                            🏷️{" "}
+
+                                            {item.categorie ||
+                                                "Catégorie non précisée"}
+
+                                        </p>
+
+                                        <p>
+                                            🏢{" "}
+
+                                            {item.prestataire ||
+                                                "Prestataire non précisé"}
+
+                                        </p>
+
+                                        <p className="prix-offre">
+
+                                            💰{" "}
+
+                                            {formatPrix(
+                                                item.prix
+                                            )} €
+
+                                        </p>
+
+                                        <div className="card-disponibilite">
+
+                                            {afficherDisponibilite(
+                                                item.disponibilite
+                                            )}
+
+                                        </div>
+
+                                        <div className="card-dates">
+
+                                            <span>
+
+                                                📅 Début :{" "}
+
+                                                {item.date_debut
+
+                                                    ? new Date(
+                                                        item.date_debut
+                                                    ).toLocaleDateString(
+                                                        "fr-FR"
+                                                    )
+
+                                                    : "-"
+
+                                                }
+
+                                            </span>
+
+                                            <span>
+
+                                                📅 Fin :{" "}
+
+                                                {item.date_fin
+
+                                                    ? new Date(
+                                                        item.date_fin
+                                                    ).toLocaleDateString(
+                                                        "fr-FR"
+                                                    )
+
+                                                    : "-"
+
+                                                }
+
+                                            </span>
+
+                                        </div>
 
                                     </div>
 
                                 </div>
 
-                                <div className="info-offre">
-
-                                    <h3>
-                                        {item.titre}
-                                    </h3>
-
-                                    <p>
-                                        📍{" "}
-                                        {item.destination ||
-                                            "Destination inconnue"}
-                                    </p>
-
-                                    <p>
-                                        🏷️{" "}
-                                        {item.categorie ||
-                                            "Catégorie non précisée"}
-                                    </p>
-
-                                    <p>
-                                        🏢{" "}
-                                        {item.prestataire ||
-                                            "Prestataire non précisé"}
-                                    </p>
-
-                                    <p className="prix-offre">
-                                      💰 {formatPrix(item.prix)} €
-                                    </p>
-
-                                    <div className="card-disponibilite">
-                                        {afficherDisponibilite(
-                                            item.disponibilite
-                                        )}
-                                    </div>
-
-                                    <div className="card-dates">
-
-                                        <span>
-                                            📅 Début :{" "}
-                                            {item.date_debut
-                                                ? new Date(
-                                                    item.date_debut
-                                                ).toLocaleDateString(
-                                                    "fr-FR"
-                                                )
-                                                : "-"
-                                            }
-                                        </span>
-
-                                        <span>
-                                            📅 Fin :{" "}
-                                            {item.date_fin
-                                                ? new Date(
-                                                    item.date_fin
-                                                ).toLocaleDateString(
-                                                    "fr-FR"
-                                                )
-                                                : "-"
-                                            }
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        ))}
+                            )
+                        )}
 
                     </div>
 
                 )}
 
-                {/* PAGINATION */}
+                {/* =================================================
+                    PAGINATION
+                ================================================= */}
 
                 {totalPages > 1 && (
 
@@ -1427,7 +1781,9 @@ function Offres() {
                         <button
                             type="button"
                             className="pagination-btn"
-                            disabled={pageSure === 1}
+                            disabled={
+                                pageSure === 1
+                            }
                             onClick={() =>
                                 changerPage(
                                     pageSure - 1
@@ -1440,29 +1796,42 @@ function Offres() {
                         <div className="pagination-numeros">
 
                             {Array.from(
+
                                 {
-                                    length: totalPages
+                                    length:
+                                        totalPages
                                 },
+
                                 (_, index) =>
                                     index + 1
-                            ).map((page) => (
 
-                                <button
-                                    type="button"
-                                    key={page}
-                                    className={
-                                        pageSure === page
-                                            ? "page-number active"
-                                            : "page-number"
-                                    }
-                                    onClick={() =>
-                                        changerPage(page)
-                                    }
-                                >
-                                    {page}
-                                </button>
+                            ).map(
+                                (page) => (
 
-                            ))}
+                                    <button
+                                        type="button"
+                                        key={page}
+                                        className={
+
+                                            pageSure ===
+                                            page
+
+                                                ? "page-number active"
+
+                                                : "page-number"
+
+                                        }
+                                        onClick={() =>
+                                            changerPage(
+                                                page
+                                            )
+                                        }
+                                    >
+                                        {page}
+                                    </button>
+
+                                )
+                            )}
 
                         </div>
 
@@ -1470,7 +1839,8 @@ function Offres() {
                             type="button"
                             className="pagination-btn"
                             disabled={
-                                pageSure === totalPages
+                                pageSure ===
+                                totalPages
                             }
                             onClick={() =>
                                 changerPage(
@@ -1497,15 +1867,24 @@ function Offres() {
 
                     <div className="modal-offre">
 
+                        {/* =================================================
+                            HEADER MODALE
+                        ================================================= */}
+
                         <div className="modal-header">
 
                             <div>
 
                                 <h2>
+
                                     {modeModification
+
                                         ? "✏️ Modifier l'offre"
+
                                         : "➕ Nouvelle offre"
+
                                     }
+
                                 </h2>
 
                                 <p>
@@ -1519,8 +1898,15 @@ function Offres() {
                                 className="close-modal"
                                 onClick={() => {
 
-                                    setModal(false);
-                                    resetForm();
+                                    if (!chargement) {
+
+                                        setModal(
+                                            false
+                                        );
+
+                                        resetForm();
+
+                                    }
 
                                 }}
                             >
@@ -1529,7 +1915,9 @@ function Offres() {
 
                         </div>
 
-                        {/* FORMULAIRE */}
+                        {/* =================================================
+                            FORMULAIRE
+                        ================================================= */}
 
                         <div className="form-grid">
 
@@ -1545,8 +1933,12 @@ function Offres() {
                                     type="text"
                                     name="titre"
                                     placeholder="Ex : Séjour à Nosy Be"
-                                    value={offre.titre}
-                                    onChange={handleChange}
+                                    value={
+                                        offre.titre
+                                    }
+                                    onChange={
+                                        handleChange
+                                    }
                                     className={
                                         erreurs.titre
                                             ? "input-error"
@@ -1555,9 +1947,11 @@ function Offres() {
                                 />
 
                                 {erreurs.titre && (
+
                                     <small className="error-message">
                                         {erreurs.titre}
                                     </small>
+
                                 )}
 
                             </div>
@@ -1572,8 +1966,12 @@ function Offres() {
 
                                 <select
                                     name="id_prestataire"
-                                    value={offre.id_prestataire}
-                                    onChange={handleChange}
+                                    value={
+                                        offre.id_prestataire
+                                    }
+                                    onChange={
+                                        handleChange
+                                    }
                                     className={
                                         erreurs.id_prestataire
                                             ? "input-error"
@@ -1585,27 +1983,35 @@ function Offres() {
                                         Choisir un prestataire
                                     </option>
 
-                                    {prestataires.map((p) => (
+                                    {prestataires.map(
+                                        (p) => (
 
-                                        <option
-                                            key={
-                                                p.id_prestataire
-                                            }
-                                            value={
-                                                p.id_prestataire
-                                            }
-                                        >
-                                            {p.nom_entreprise}
-                                        </option>
+                                            <option
+                                                key={
+                                                    p.id_prestataire
+                                                }
+                                                value={
+                                                    p.id_prestataire
+                                                }
+                                            >
+                                                {
+                                                    p.nom_entreprise
+                                                }
+                                            </option>
 
-                                    ))}
+                                        )
+                                    )}
 
                                 </select>
 
                                 {erreurs.id_prestataire && (
+
                                     <small className="error-message">
-                                        {erreurs.id_prestataire}
+                                        {
+                                            erreurs.id_prestataire
+                                        }
                                     </small>
+
                                 )}
 
                             </div>
@@ -1620,8 +2026,12 @@ function Offres() {
 
                                 <select
                                     name="id_destination"
-                                    value={offre.id_destination}
-                                    onChange={handleChange}
+                                    value={
+                                        offre.id_destination
+                                    }
+                                    onChange={
+                                        handleChange
+                                    }
                                     className={
                                         erreurs.id_destination
                                             ? "input-error"
@@ -1633,32 +2043,38 @@ function Offres() {
                                         Choisir une destination
                                     </option>
 
-                                    {destinations.map((d) => (
+                                    {destinations.map(
+                                        (d) => (
 
-                                        <option
-                                            key={
-                                                d.id_destination
-                                            }
-                                            value={
-                                                d.id_destination
-                                            }
-                                        >
-                                            {d.nom}
-                                        </option>
+                                            <option
+                                                key={
+                                                    d.id_destination
+                                                }
+                                                value={
+                                                    d.id_destination
+                                                }
+                                            >
+                                                {d.nom}
+                                            </option>
 
-                                    ))}
+                                        )
+                                    )}
 
                                 </select>
 
                                 {erreurs.id_destination && (
+
                                     <small className="error-message">
-                                        {erreurs.id_destination}
+                                        {
+                                            erreurs.id_destination
+                                        }
                                     </small>
+
                                 )}
 
                             </div>
 
-                            {/* CATEGORIE */}
+                            {/* CATÉGORIE */}
 
                             <div className="form-group">
 
@@ -1668,8 +2084,12 @@ function Offres() {
 
                                 <select
                                     name="id_categorie"
-                                    value={offre.id_categorie}
-                                    onChange={handleChange}
+                                    value={
+                                        offre.id_categorie
+                                    }
+                                    onChange={
+                                        handleChange
+                                    }
                                     className={
                                         erreurs.id_categorie
                                             ? "input-error"
@@ -1681,27 +2101,33 @@ function Offres() {
                                         Choisir une catégorie
                                     </option>
 
-                                    {categories.map((c) => (
+                                    {categories.map(
+                                        (c) => (
 
-                                        <option
-                                            key={
-                                                c.id_categorie
-                                            }
-                                            value={
-                                                c.id_categorie
-                                            }
-                                        >
-                                            {c.nom}
-                                        </option>
+                                            <option
+                                                key={
+                                                    c.id_categorie
+                                                }
+                                                value={
+                                                    c.id_categorie
+                                                }
+                                            >
+                                                {c.nom}
+                                            </option>
 
-                                    ))}
+                                        )
+                                    )}
 
                                 </select>
 
                                 {erreurs.id_categorie && (
+
                                     <small className="error-message">
-                                        {erreurs.id_categorie}
+                                        {
+                                            erreurs.id_categorie
+                                        }
                                     </small>
+
                                 )}
 
                             </div>
@@ -1716,34 +2142,42 @@ function Offres() {
 
                                 <div className="input-suffix">
 
-                                   <input
-    type="number"
-    name="prix"
-    min="0.01"
-    step="0.01"
-    placeholder="Ex : 250.00"
-    value={offre.prix}
-    onChange={handleChange}
-    className={
-        erreurs.prix
-            ? "input-error"
-            : ""
-    }
-/>
+                                    <input
+                                        type="number"
+                                        name="prix"
+                                        min="0.01"
+                                        step="0.01"
+                                        placeholder="Ex : 250.00"
+                                        value={
+                                            offre.prix
+                                        }
+                                        onChange={
+                                            handleChange
+                                        }
+                                        className={
+                                            erreurs.prix
+                                                ? "input-error"
+                                                : ""
+                                        }
+                                    />
 
-<span>€</span>
+                                    <span>
+                                        €
+                                    </span>
 
                                 </div>
 
                                 {erreurs.prix && (
+
                                     <small className="error-message">
                                         {erreurs.prix}
                                     </small>
+
                                 )}
 
                             </div>
 
-                            {/* CAPACITE */}
+                            {/* CAPACITÉ */}
 
                             <div className="form-group">
 
@@ -1759,8 +2193,12 @@ function Offres() {
                                         min="1"
                                         step="1"
                                         placeholder="Ex : 20"
-                                        value={offre.capacite}
-                                        onChange={handleChange}
+                                        value={
+                                            offre.capacite
+                                        }
+                                        onChange={
+                                            handleChange
+                                        }
                                         className={
                                             erreurs.capacite
                                                 ? "input-error"
@@ -1775,14 +2213,18 @@ function Offres() {
                                 </div>
 
                                 {erreurs.capacite && (
+
                                     <small className="error-message">
-                                        {erreurs.capacite}
+                                        {
+                                            erreurs.capacite
+                                        }
                                     </small>
+
                                 )}
 
                             </div>
 
-                            {/* DISPONIBILITE */}
+                            {/* DISPONIBILITÉ */}
 
                             <div className="form-group">
 
@@ -1802,8 +2244,12 @@ function Offres() {
                                             undefined
                                         }
                                         placeholder="Ex : 15"
-                                        value={offre.disponibilite}
-                                        onChange={handleChange}
+                                        value={
+                                            offre.disponibilite
+                                        }
+                                        onChange={
+                                            handleChange
+                                        }
                                         className={
                                             erreurs.disponibilite
                                                 ? "input-error"
@@ -1822,14 +2268,18 @@ function Offres() {
                                 </small>
 
                                 {erreurs.disponibilite && (
+
                                     <small className="error-message">
-                                        {erreurs.disponibilite}
+                                        {
+                                            erreurs.disponibilite
+                                        }
                                     </small>
+
                                 )}
 
                             </div>
 
-                            {/* DATE DEBUT */}
+                            {/* DATE DÉBUT */}
 
                             <div className="form-group">
 
@@ -1840,8 +2290,12 @@ function Offres() {
                                 <input
                                     type="date"
                                     name="date_debut"
-                                    value={offre.date_debut}
-                                    onChange={handleChange}
+                                    value={
+                                        offre.date_debut
+                                    }
+                                    onChange={
+                                        handleChange
+                                    }
                                     className={
                                         erreurs.date_debut
                                             ? "input-error"
@@ -1850,9 +2304,13 @@ function Offres() {
                                 />
 
                                 {erreurs.date_debut && (
+
                                     <small className="error-message">
-                                        {erreurs.date_debut}
+                                        {
+                                            erreurs.date_debut
+                                        }
                                     </small>
+
                                 )}
 
                             </div>
@@ -1872,8 +2330,12 @@ function Offres() {
                                         offre.date_debut ||
                                         undefined
                                     }
-                                    value={offre.date_fin}
-                                    onChange={handleChange}
+                                    value={
+                                        offre.date_fin
+                                    }
+                                    onChange={
+                                        handleChange
+                                    }
                                     className={
                                         erreurs.date_fin
                                             ? "input-error"
@@ -1882,16 +2344,22 @@ function Offres() {
                                 />
 
                                 {erreurs.date_fin && (
+
                                     <small className="error-message">
-                                        {erreurs.date_fin}
+                                        {
+                                            erreurs.date_fin
+                                        }
                                     </small>
+
                                 )}
 
                             </div>
 
                         </div>
 
-                        {/* DESCRIPTION */}
+                        {/* =================================================
+                            DESCRIPTION
+                        ================================================= */}
 
                         <div className="form-group description-group">
 
@@ -1903,8 +2371,12 @@ function Offres() {
                                 name="description"
                                 rows="5"
                                 placeholder="Décrivez cette offre touristique..."
-                                value={offre.description}
-                                onChange={handleChange}
+                                value={
+                                    offre.description
+                                }
+                                onChange={
+                                    handleChange
+                                }
                                 className={
                                     erreurs.description
                                         ? "input-error"
@@ -1913,14 +2385,20 @@ function Offres() {
                             />
 
                             {erreurs.description && (
+
                                 <small className="error-message">
-                                    {erreurs.description}
+                                    {
+                                        erreurs.description
+                                    }
                                 </small>
+
                             )}
 
                         </div>
 
-                        {/* IMAGE PRINCIPALE */}
+                        {/* =================================================
+                            IMAGE PRINCIPALE
+                        ================================================= */}
 
                         <div className="upload-zone">
 
@@ -1931,6 +2409,7 @@ function Offres() {
                                 </span>
 
                                 <div>
+
                                     <strong>
                                         Image principale
                                     </strong>
@@ -1938,14 +2417,54 @@ function Offres() {
                                     <small>
                                         JPG, JPEG, PNG ou WEBP — 5 Mo maximum
                                     </small>
+
                                 </div>
 
                             </div>
 
+                            {/* IMAGE ACTUELLE EN MODIFICATION */}
+
+                            {modeModification &&
+                                !image &&
+                                photosExistantes !== null && (
+
+                                    <div className="image-actuelle">
+
+                                        <small>
+                                            Image principale actuelle :
+                                        </small>
+
+                                        {offres
+                                            .find(
+                                                (o) =>
+                                                    o.id_offre ===
+                                                    idModification
+                                            )
+                                            ?.image && (
+
+                                            <img
+                                                src={getImageUrl(
+                                                    offres.find(
+                                                        (o) =>
+                                                            o.id_offre ===
+                                                            idModification
+                                                    )?.image
+                                                )}
+                                                alt="Image actuelle"
+                                            />
+
+                                        )}
+
+                                    </div>
+
+                                )}
+
                             <input
                                 type="file"
                                 accept="image/jpeg,image/jpg,image/png,image/webp"
-                                onChange={handleImage}
+                                onChange={
+                                    handleImage
+                                }
                             />
 
                             {image && (
@@ -1953,16 +2472,19 @@ function Offres() {
                                 <div className="selected-image">
 
                                     <span>
-                                        🖼️ {image.name}
+                                        🖼️{" "}
+                                        {image.name}
                                     </span>
 
                                     <span>
+
                                         {(
                                             image.size /
                                             1024 /
                                             1024
                                         ).toFixed(2)}{" "}
                                         Mo
+
                                     </span>
 
                                 </div>
@@ -1971,15 +2493,21 @@ function Offres() {
 
                             {modeModification &&
                                 !image && (
+
                                     <small className="field-help">
+
                                         Laissez vide pour conserver
-                                        l'image actuelle.
+                                        l'image principale actuelle.
+
                                     </small>
+
                                 )}
 
                         </div>
 
-                        {/* PHOTOS DETAILLEES */}
+                        {/* =================================================
+                            PHOTOS DÉTAILLÉES
+                        ================================================= */}
 
                         <div className="upload-zone">
 
@@ -1996,7 +2524,7 @@ function Offres() {
                                     </strong>
 
                                     <small>
-                                        Jusqu'à 10 photos — 5 Mo maximum par photo
+                                        Maximum 10 photos — 5 Mo maximum par photo
                                     </small>
 
                                 </div>
@@ -2007,13 +2535,18 @@ function Offres() {
                                 type="file"
                                 multiple
                                 accept="image/jpeg,image/jpg,image/png,image/webp"
-                                onChange={handlePhotosDetails}
+                                onChange={
+                                    handlePhotosDetails
+                                }
                             />
 
-                            {/* EXISTANTES */}
+                            {/* =================================================
+                                PHOTOS EXISTANTES
+                            ================================================= */}
 
                             {modeModification &&
-                                photosExistantes.length > 0 && (
+                                photosExistantes.length >
+                                0 && (
 
                                     <div className="photos-existantes">
 
@@ -2034,15 +2567,18 @@ function Offres() {
                                                     >
 
                                                         <img
-                                                            src={
-                                                                `${import.meta.env.VITE_SERVER_URL}/uploads/${photo.chemin_photo}`
-                                                            }
-                                                            alt="Photo détail"
+                                                            src={getImageUrl(
+                                                                photo.chemin_photo
+                                                            )}
+                                                            alt="Photo détaillée"
                                                         />
 
                                                         <button
                                                             type="button"
                                                             className="delete-photo-detail"
+                                                            disabled={
+                                                                chargement
+                                                            }
                                                             onClick={() =>
                                                                 supprimerPhotoExistante(
                                                                     photo.id_photo
@@ -2063,80 +2599,98 @@ function Offres() {
 
                                 )}
 
-                            {/* NOUVELLES */}
+                            {/* =================================================
+                                NOUVELLES PHOTOS
+                            ================================================= */}
 
-                            {photosDetails.length > 0 && (
+                            {photosDetails.length >
+                                0 && (
 
-                                <div className="photos-selectionnees">
+                                    <div className="photos-selectionnees">
 
-                                    <strong>
-                                        Nouvelles photos
-                                    </strong>
+                                        <strong>
+                                            Nouvelles photos
+                                        </strong>
 
-                                    <div className="photos-details-grid">
+                                        <div className="photos-details-grid">
 
-                                        {photosDetails.map(
-                                            (photo, index) => (
+                                            {photosDetails.map(
+                                                (
+                                                    photo,
+                                                    index
+                                                ) => (
 
-                                                <div
-                                                    className="photo-detail-item"
-                                                    key={
-                                                        `${photo.name}-${index}`
-                                                    }
-                                                >
-
-                                                    <img
-                                                        src={
-                                                            URL.createObjectURL(
-                                                                photo
-                                                            )
-                                                        }
-                                                        alt={
-                                                            photo.name
-                                                        }
-                                                    />
-
-                                                    <button
-                                                        type="button"
-                                                        className="delete-photo-detail"
-                                                        onClick={() =>
-                                                            supprimerPhotoSelectionnee(
-                                                                index
-                                                            )
-                                                        }
+                                                    <div
+                                                        className="photo-detail-item"
+                                                        key={`${photo.name}-${index}`}
                                                     >
-                                                        ✕
-                                                    </button>
 
-                                                </div>
+                                                        <img
+                                                            src={URL.createObjectURL(
+                                                                photo
+                                                            )}
+                                                            alt={
+                                                                photo.name
+                                                            }
+                                                        />
 
-                                            )
-                                        )}
+                                                        <button
+                                                            type="button"
+                                                            className="delete-photo-detail"
+                                                            disabled={
+                                                                chargement
+                                                            }
+                                                            onClick={() =>
+                                                                supprimerPhotoSelectionnee(
+                                                                    index
+                                                                )
+                                                            }
+                                                        >
+                                                            ✕
+                                                        </button>
+
+                                                    </div>
+
+                                                )
+                                            )}
+
+                                        </div>
 
                                     </div>
 
-                                </div>
+                                )}
 
-                            )}
+                            {/* COMPTEUR */}
 
                             <small className="field-help">
-                                {photosDetails.length} nouvelle(s)
-                                photo(s) sélectionnée(s).
+
+                                {photosExistantes.length +
+                                    photosDetails.length}{" "}
+
+                                / 10 photo(s) détaillée(s).
+
                             </small>
 
                         </div>
 
-                        {/* ACTIONS */}
+                        {/* =================================================
+                            ACTIONS
+                        ================================================= */}
 
                         <div className="modal-actions">
 
                             <button
                                 type="button"
                                 className="btn-cancel"
-                                disabled={chargement}
+                                disabled={
+                                    chargement
+                                }
                                 onClick={() => {
 
-                                    setModal(false);
+                                    setModal(
+                                        false
+                                    );
+
                                     resetForm();
 
                                 }}
@@ -2147,16 +2701,12 @@ function Offres() {
                             <button
                                 type="button"
                                 className="btn-save"
-                                disabled={chargement}
-                                onClick={(e) => {
-
-                                    console.log(
-                                        "🟢 CLICK SUR PUBLIER"
-                                    );
-
-                                    enregistrerOffre(e);
-
-                                }}
+                                disabled={
+                                    chargement
+                                }
+                                onClick={
+                                    enregistrerOffre
+                                }
                             >
 
                                 {chargement
