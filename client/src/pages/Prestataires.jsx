@@ -597,7 +597,7 @@ setPage(1);
 
 
 
-
+<div className="table-responsive">
 
 <div className="table-container">
 
@@ -955,7 +955,7 @@ Supprimer
 
 
 </div>
-
+</div>
 
 
 

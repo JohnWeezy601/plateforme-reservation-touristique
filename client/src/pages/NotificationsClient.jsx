@@ -1359,7 +1359,7 @@ function NotificationsClient() {
 
                                                         <FaFileDownload />
 
-                                                        Télécharger reçu
+                                                        Télécharger votre reçu
 
                                                     </span>
 

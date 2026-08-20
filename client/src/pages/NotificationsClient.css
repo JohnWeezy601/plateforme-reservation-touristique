@@ -572,3 +572,32 @@ content:"Nouveau";
     background: rgba(37, 99, 235, 0.08);
 
 }
+
+
+.download-recu-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 10px;
+
+    color: #007bff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    text-decoration: underline;
+
+    transition: opacity 0.2s ease;
+}
+
+.download-recu-link:hover {
+    opacity: 0.75;
+}
+
+.download-recu-link svg {
+    font-size: 14px;
+}
