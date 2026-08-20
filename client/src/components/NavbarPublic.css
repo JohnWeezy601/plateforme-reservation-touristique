@@ -4,17 +4,19 @@
 
 .navbar-public {
 
+    width: 100%;
+    min-height: 80px;
     height: 80px;
 
     background: #355C7D;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     padding: 0 50px;
+
+    box-sizing: border-box;
 
     box-shadow:
         0 5px 20px rgba(0, 0, 0, .15);
@@ -22,7 +24,6 @@
     position: relative;
 
     z-index: 1000;
-
 }
 
 
@@ -33,7 +34,6 @@
 .logo-public {
 
     display: flex;
-
     align-items: center;
 
     gap: 10px;
@@ -41,11 +41,11 @@
     color: white;
 
     font-size: 22px;
-
     font-weight: bold;
 
     white-space: nowrap;
 
+    flex-shrink: 0;
 }
 
 
@@ -53,6 +53,7 @@
 
     font-size: 25px;
 
+    flex-shrink: 0;
 }
 
 
@@ -70,16 +71,17 @@
 .navbar-navigation {
 
     display: flex;
-
     align-items: center;
+    justify-content: center;
 
     gap: 25px;
 
     list-style: none;
 
     margin: 0;
-
     padding: 0;
+
+    flex: 1;
 
 }
 
@@ -94,7 +96,6 @@
 .navbar-navigation a {
 
     display: flex;
-
     align-items: center;
 
     gap: 8px;
@@ -104,6 +105,8 @@
     color: white;
 
     font-size: 15px;
+
+    white-space: nowrap;
 
     transition: .2s ease;
 
@@ -140,6 +143,8 @@
 
     white-space: nowrap;
 
+    flex-shrink: 0;
+
 }
 
 
@@ -160,7 +165,11 @@
 
     align-items: center;
 
+    justify-content: flex-end;
+
     gap: 18px;
+
+    flex-shrink: 0;
 
 }
 
@@ -182,8 +191,7 @@
 
 /*
    IMPORTANT :
-   Le bouton reste toujours ☰
-   Il ne devient jamais X.
+   Le bouton reste toujours ☰.
 */
 
 .menu-principal-button {
@@ -191,6 +199,8 @@
     display: flex;
 
     align-items: center;
+
+    justify-content: center;
 
     gap: 8px;
 
@@ -230,7 +240,7 @@
 
 
 /* =========================================================
-   MENU DÉROULANT
+   MENU DÉROULANT PRINCIPAL
 ========================================================= */
 
 .menu-principal {
@@ -256,11 +266,6 @@
 
 }
 
-
-/*
-   Pas de gros background.
-   Chaque élément reste bien visible.
-*/
 
 .menu-principal a {
 
@@ -375,7 +380,7 @@
 
 
 /* =========================================================
-   BOUTONS ICÔNES
+   BOUTONS ICÔNES CLIENT
 ========================================================= */
 
 .navbar-icon-button {
@@ -383,13 +388,11 @@
     position: relative;
 
     width: 38px;
-
     height: 38px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     background: transparent;
@@ -406,12 +409,10 @@
 
     transition: .2s ease;
 
+    flex-shrink: 0;
+
 }
 
-
-/*
-   Un peu plus d'espace entre Menu et Notification.
-*/
 
 .notification-button {
 
@@ -446,11 +447,9 @@
     position: absolute;
 
     top: -2px;
-
     right: -2px;
 
     min-width: 17px;
-
     height: 17px;
 
     padding: 0 4px;
@@ -460,7 +459,6 @@
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     background: #dc2626;
@@ -496,13 +494,11 @@
 .profil-button {
 
     width: 40px;
-
     height: 40px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     background: transparent;
@@ -516,6 +512,8 @@
     border-radius: 50%;
 
     font-size: 20px;
+
+    flex-shrink: 0;
 
 }
 
@@ -531,7 +529,6 @@
 .profil-photo {
 
     width: 40px;
-
     height: 40px;
 
     border-radius: 50%;
@@ -668,7 +665,6 @@
     inset: 0;
 
     width: 100%;
-
     height: 100%;
 
     background:
@@ -677,7 +673,6 @@
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     z-index: 5000;
@@ -796,9 +791,7 @@
     position: absolute;
 
     top: 0;
-
     left: 0;
-
     right: 0;
 
     width: 100%;
@@ -812,72 +805,63 @@
 }
 
 
-.navbar-public.navbar-home
-.logo-public {
+.navbar-public.navbar-home .logo-public {
 
     color: white;
 
 }
 
 
-.navbar-public.navbar-home
-.navbar-navigation a {
+.navbar-public.navbar-home .navbar-navigation a {
 
     color: white;
 
 }
 
 
-.navbar-public.navbar-home
-.navbar-navigation a:hover {
+.navbar-public.navbar-home .navbar-navigation a:hover {
 
     color: #D6E4F0;
 
 }
 
 
-.navbar-public.navbar-home
-.menu-principal-button {
+.navbar-public.navbar-home .menu-principal-button {
 
     color: white;
 
 }
 
 
-.navbar-public.navbar-home
-.menu-principal-button:hover {
+.navbar-public.navbar-home .menu-principal-button:hover {
 
     color: #D6E4F0;
 
 }
 
 
-.navbar-public.navbar-home
-.navbar-icon-button {
+.navbar-public.navbar-home .navbar-icon-button {
 
     color: white;
 
 }
 
 
-.navbar-public.navbar-home
-.navbar-icon-button:hover {
+.navbar-public.navbar-home .navbar-icon-button:hover {
 
     color: #facc15;
 
 }
 
 
-.navbar-public.navbar-home
-.profil-button {
+.navbar-public.navbar-home .profil-button {
 
     color: white;
 
 }
 
 
-.navbar-public.navbar-home
-.btn-login-client {
+.navbar-public.navbar-home .btn-login-client {
 
     background:
         rgba(37,99,235,.90);
@@ -917,6 +901,8 @@
 
         font-size: 14px;
 
+        gap: 5px;
+
     }
 
 
@@ -937,23 +923,19 @@
 
 
 /* =========================================================
-   MOBILE
+   TABLETTE PETITE
+   IMPORTANT :
+   On garde la navigation NON CONNECTÉE visible.
 ========================================================= */
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
     .navbar-public {
 
-        min-height: 65px;
-
-        height: auto;
-
-        padding: 10px 15px;
+        padding: 0 18px;
 
     }
 
-
-    /* LOGO */
 
     .logo-public {
 
@@ -971,13 +953,180 @@
     }
 
 
+    .navbar-navigation {
+
+        gap: 10px;
+
+    }
+
+
+    .navbar-navigation a {
+
+        font-size: 13px;
+
+        gap: 4px;
+
+    }
+
+
+    .btn-login-client {
+
+        padding: 10px 13px;
+
+        font-size: 13px;
+
+    }
+
+
+    .client-actions {
+
+        gap: 8px;
+
+    }
+
+
+    .navbar-icon-button {
+
+        width: 35px;
+        height: 35px;
+
+        font-size: 18px;
+
+    }
+
+
+    .profil-button {
+
+        width: 36px;
+        height: 36px;
+
+    }
+
+
+    .profil-photo {
+
+        width: 36px;
+        height: 36px;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .navbar-public {
+
+        min-height: 64px;
+
+        height: auto;
+
+        padding: 9px 12px;
+
+        flex-wrap: nowrap;
+
+    }
+
+
     /* =====================================================
-       CLIENT CONNECTÉ
+       LOGO
+    ===================================================== */
+
+    .logo-public {
+
+        font-size: 16px;
+
+        gap: 6px;
+
+    }
+
+
+    .logo-icon {
+
+        font-size: 20px;
+
+    }
+
+
+    /*
+       Le texte du logo peut se réduire mais
+       reste visible.
+    */
+
+    .logo-text {
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        max-width: 180px;
+
+    }
+
+
+    /* =====================================================
+       UTILISATEUR NON CONNECTÉ
+       
+       ON NE CACHE PLUS navbar-navigation.
+       
+       Les liens restent visibles.
+    ===================================================== */
+
+    .navbar-navigation {
+
+        display: flex;
+
+        flex: 1;
+
+        justify-content: flex-end;
+
+        gap: 8px;
+
+        margin-left: 12px;
+
+    }
+
+
+    .navbar-navigation a {
+
+        font-size: 12px;
+
+        gap: 4px;
+
+    }
+
+
+    .navbar-navigation a svg {
+
+        font-size: 13px;
+
+    }
+
+
+    .btn-login-client {
+
+        padding: 8px 10px;
+
+        font-size: 11px;
+
+        border-radius: 8px;
+
+        margin-left: 8px;
+
+    }
+
+
+    /* =====================================================
+       UTILISATEUR CONNECTÉ
     ===================================================== */
 
     .client-actions {
 
-        gap: 5px;
+        gap: 4px;
 
     }
 
@@ -986,7 +1135,7 @@
 
         font-size: 0;
 
-        padding: 8px;
+        padding: 7px;
 
     }
 
@@ -998,42 +1147,38 @@
     }
 
 
-    /*
-       Espace supplémentaire entre menu et notification.
-    */
-
     .notification-button {
 
-        margin-left: 10px;
+        margin-left: 7px;
 
     }
 
 
     .navbar-icon-button {
 
-        width: 36px;
+        width: 34px;
 
-        height: 36px;
+        height: 34px;
 
-        font-size: 18px;
+        font-size: 17px;
 
     }
 
 
     .profil-button {
 
-        width: 36px;
+        width: 34px;
 
-        height: 36px;
+        height: 34px;
 
     }
 
 
     .profil-photo {
 
-        width: 36px;
+        width: 34px;
 
-        height: 36px;
+        height: 34px;
 
     }
 
@@ -1046,19 +1191,21 @@
 
         position: fixed;
 
-        top: 65px;
+        top: 64px;
 
-        left: 15px;
+        left: 12px;
 
-        right: 15px;
+        right: 12px;
 
         width: auto;
+
+        max-width: none;
 
         transform: none;
 
         padding: 5px;
 
-        max-width: none;
+        box-sizing: border-box;
 
     }
 
@@ -1080,7 +1227,7 @@
 
         position: fixed;
 
-        top: 65px;
+        top: 64px;
 
         right: 10px;
 
@@ -1090,30 +1237,15 @@
 
 
     /* =====================================================
-       NAVIGATION NON CONNECTÉE
-    ===================================================== */
-
-    .navbar-navigation {
-
-        display: none;
-
-    }
-
-
-    .btn-login-client {
-
-        padding: 9px 13px;
-
-        font-size: 12px;
-
-        border-radius: 8px;
-
-    }
-
-
-    /* =====================================================
        MODALE
     ===================================================== */
+
+    .modal-photo {
+
+        padding: 15px;
+
+    }
+
 
     .modal-photo-content {
 
@@ -1121,16 +1253,19 @@
 
         max-width: 350px;
 
+        padding: 25px 20px;
+
     }
 
 }
 
 
 /* =========================================================
-   PETIT TÉLÉPHONE
+   MOBILE ÉTROIT
+   600px
 ========================================================= */
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
 
     .navbar-public {
 
@@ -1153,9 +1288,56 @@
     }
 
 
+    .logo-text {
+
+        max-width: 145px;
+
+    }
+
+
     /*
-       On garde seulement le logo + icônes
-       pour éviter que la navbar soit trop longue.
+       Navigation non connecté :
+       on garde les textes mais on réduit encore.
+    */
+
+    .navbar-navigation {
+
+        gap: 5px;
+
+        margin-left: 8px;
+
+    }
+
+
+    .navbar-navigation a {
+
+        font-size: 10px;
+
+        gap: 3px;
+
+    }
+
+
+    .navbar-navigation a svg {
+
+        font-size: 11px;
+
+    }
+
+
+    .btn-login-client {
+
+        padding: 7px 8px;
+
+        font-size: 10px;
+
+        margin-left: 5px;
+
+    }
+
+
+    /*
+       Client connecté
     */
 
     .client-actions {
@@ -1165,27 +1347,20 @@
     }
 
 
-    .notification-button {
-
-        margin-left: 9px;
-
-    }
-
-
     .navbar-icon-button {
 
-        width: 34px;
+        width: 32px;
 
-        height: 34px;
+        height: 32px;
 
-        font-size: 17px;
+        font-size: 16px;
 
     }
 
 
     .menu-principal-button {
 
-        padding: 7px;
+        padding: 6px;
 
     }
 
@@ -1197,42 +1372,206 @@
     }
 
 
+    .notification-button {
+
+        margin-left: 5px;
+
+    }
+
+
     .profil-button {
 
-        width: 34px;
+        width: 32px;
 
-        height: 34px;
+        height: 32px;
 
     }
 
 
     .profil-photo {
 
-        width: 34px;
+        width: 32px;
 
-        height: 34px;
+        height: 32px;
+
+    }
+
+}
+
+
+/* =========================================================
+   PETIT TÉLÉPHONE
+   480px
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .navbar-public {
+
+        min-height: 60px;
+
+        padding: 7px 8px;
+
+    }
+
+
+    /* =====================================================
+       LOGO
+    ===================================================== */
+
+    .logo-public {
+
+        font-size: 13px;
+
+        gap: 4px;
+
+    }
+
+
+    .logo-icon {
+
+        font-size: 17px;
+
+    }
+
+
+    .logo-text {
+
+        max-width: 105px;
+
+    }
+
+
+    /* =====================================================
+       NON CONNECTÉ
+       
+       Les 5 liens restent présents.
+       On passe progressivement aux icônes + textes courts.
+    ===================================================== */
+
+    .navbar-navigation {
+
+        gap: 4px;
+
+        margin-left: 5px;
+
+    }
+
+
+    .navbar-navigation a {
+
+        font-size: 9px;
+
+        gap: 2px;
+
+    }
+
+
+    .navbar-navigation a svg {
+
+        font-size: 10px;
+
+    }
+
+
+    .btn-login-client {
+
+        padding: 6px 7px;
+
+        font-size: 9px;
+
+        border-radius: 7px;
+
+        margin-left: 4px;
+
+    }
+
+
+    /* =====================================================
+       CONNECTÉ
+    ===================================================== */
+
+    .client-actions {
+
+        gap: 1px;
+
+    }
+
+
+    .navbar-icon-button {
+
+        width: 30px;
+
+        height: 30px;
+
+        font-size: 15px;
+
+    }
+
+
+    .menu-principal-button {
+
+        padding: 5px;
+
+    }
+
+
+    .menu-principal-button svg {
+
+        font-size: 19px;
+
+    }
+
+
+    .notification-button {
+
+        margin-left: 4px;
+
+    }
+
+
+    .profil-button {
+
+        width: 30px;
+
+        height: 30px;
+
+    }
+
+
+    .profil-photo {
+
+        width: 30px;
+
+        height: 30px;
 
     }
 
 
     .notification-badge {
 
-        min-width: 15px;
+        min-width: 14px;
 
-        height: 15px;
+        height: 14px;
 
-        font-size: 9px;
+        font-size: 8px;
+
+        border-width: 1px;
 
     }
 
+
+    /* =====================================================
+       MENUS
+    ===================================================== */
 
     .menu-principal {
 
         top: 60px;
 
-        left: 10px;
+        left: 8px;
 
-        right: 10px;
+        right: 8px;
 
     }
 
@@ -1241,7 +1580,9 @@
 
         top: 60px;
 
-        right: 8px;
+        right: 7px;
+
+        width: 200px;
 
     }
 
@@ -1249,24 +1590,70 @@
 
 
 /* =========================================================
-   TRÈS PETIT ÉCRAN
+   TRÈS PETIT TÉLÉPHONE
+   400px
 ========================================================= */
 
-@media (max-width: 360px) {
+@media (max-width: 400px) {
 
-    .logo-text {
+    .logo-public {
 
-        font-size: 14px;
+        font-size: 12px;
 
     }
 
 
     .logo-icon {
 
-        font-size: 18px;
+        font-size: 16px;
 
     }
 
+
+    .logo-text {
+
+        max-width: 90px;
+
+    }
+
+
+    /* NON CONNECTÉ */
+
+    .navbar-navigation {
+
+        gap: 3px;
+
+        margin-left: 3px;
+
+    }
+
+
+    .navbar-navigation a {
+
+        font-size: 8px;
+
+        gap: 1px;
+
+    }
+
+
+    .navbar-navigation a svg {
+
+        font-size: 9px;
+
+    }
+
+
+    .btn-login-client {
+
+        padding: 5px 6px;
+
+        font-size: 8px;
+
+    }
+
+
+    /* CONNECTÉ */
 
     .client-actions {
 
@@ -1275,36 +1662,221 @@
     }
 
 
-    .notification-button {
+    .navbar-icon-button {
 
-        margin-left: 7px;
+        width: 28px;
+
+        height: 28px;
+
+        font-size: 14px;
 
     }
 
 
-    .navbar-icon-button {
+    .menu-principal-button {
 
-        width: 31px;
+        padding: 4px;
 
-        height: 31px;
+    }
+
+
+    .menu-principal-button svg {
+
+        font-size: 18px;
+
+    }
+
+
+    .notification-button {
+
+        margin-left: 3px;
 
     }
 
 
     .profil-button {
 
-        width: 31px;
+        width: 28px;
 
-        height: 31px;
+        height: 28px;
 
     }
 
 
     .profil-photo {
 
-        width: 31px;
+        width: 28px;
 
-        height: 31px;
+        height: 28px;
+
+    }
+
+}
+
+
+/* =========================================================
+   ÉCRAN EXTRÊMEMENT PETIT
+   360px
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .navbar-public {
+
+        padding: 6px 6px;
+
+    }
+
+
+    .logo-public {
+
+        font-size: 11px;
+
+    }
+
+
+    .logo-icon {
+
+        font-size: 15px;
+
+    }
+
+
+    .logo-text {
+
+        max-width: 75px;
+
+    }
+
+
+    /*
+       NON CONNECTÉ :
+       Les liens restent affichés.
+    */
+
+    .navbar-navigation {
+
+        gap: 2px;
+
+        margin-left: 2px;
+
+    }
+
+
+    .navbar-navigation a {
+
+        font-size: 7px;
+
+        gap: 1px;
+
+    }
+
+
+    .navbar-navigation a svg {
+
+        font-size: 8px;
+
+    }
+
+
+    .btn-login-client {
+
+        padding: 5px;
+
+        font-size: 7px;
+
+        margin-left: 2px;
+
+        border-radius: 6px;
+
+    }
+
+
+    /*
+       CONNECTÉ
+    */
+
+    .navbar-icon-button {
+
+        width: 26px;
+
+        height: 26px;
+
+        font-size: 13px;
+
+    }
+
+
+    .menu-principal-button {
+
+        padding: 3px;
+
+    }
+
+
+    .menu-principal-button svg {
+
+        font-size: 17px;
+
+    }
+
+
+    .notification-button {
+
+        margin-left: 2px;
+
+    }
+
+
+    .profil-button {
+
+        width: 26px;
+
+        height: 26px;
+
+    }
+
+
+    .profil-photo {
+
+        width: 26px;
+
+        height: 26px;
+
+    }
+
+
+    .notification-badge {
+
+        min-width: 12px;
+
+        height: 12px;
+
+        font-size: 7px;
+
+        padding: 0 2px;
+
+    }
+
+
+    .menu-principal {
+
+        top: 55px;
+
+        left: 6px;
+
+        right: 6px;
+
+    }
+
+
+    .profil-menu {
+
+        top: 55px;
+
+        right: 5px;
+
+        width: 190px;
 
     }
 
