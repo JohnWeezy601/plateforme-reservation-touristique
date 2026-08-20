@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
@@ -9,11 +8,7 @@ import {
     FaCheckCircle,
     FaArrowLeft,
     FaHome,
-    FaListAlt,
-    FaMobileAlt,
-    FaUniversity,
-    FaPaypal,
-    FaLock
+    FaListAlt
 } from "react-icons/fa";
 
 import "./PaiementPublic.css";
@@ -30,21 +25,18 @@ function PaiementPublic() {
 
     const navigate = useNavigate();
 
+    console.log(
+        "ID RESERVATION PAIEMENT :",
+        id_reservation
+    );
 
-    // =========================================================
-    // ÉTATS
-    // =========================================================
 
     const [reservation, setReservation] = useState(null);
 
     const [preuve, setPreuve] = useState(null);
 
+    // NOUVEAU : état du paiement réussi
     const [paiementSucces, setPaiementSucces] = useState(false);
-
-    const [chargement, setChargement] = useState(true);
-
-    const [erreur, setErreur] = useState("");
-
 
     const [form, setForm] = useState({
 
@@ -52,46 +44,22 @@ function PaiementPublic() {
 
         mode_paiement: "Carte bancaire",
 
-        // =========================
-        // CARTE BANCAIRE
-        // =========================
-
-        nom_titulaire: "",
-
-        numero_carte: "",
-
-        date_expiration: "",
-
-        cvv: "",
-
-
-        // =========================
-        // MOBILE MONEY
-        // =========================
-
+        // Mobile Money
         operateur: "",
-
         numero_destinataire: "",
-
         nom_destinataire: "",
 
-
-        // =========================
-        // VIREMENT
-        // =========================
-
+        // Virement
         banque: "",
-
         compte: "",
-
         nom_compte: ""
 
     });
 
 
-    // =========================================================
-    // CHARGER LA RÉSERVATION
-    // =========================================================
+    // =================================
+    // Charger réservation
+    // =================================
 
     useEffect(() => {
 
@@ -99,410 +67,81 @@ function PaiementPublic() {
 
             try {
 
-                setChargement(true);
-
-                setErreur("");
-
-
                 const res = await api.get(
                     `/reservations/${id_reservation}`
                 );
 
-
-                console.log(
-                    "Réservation paiement :",
-                    res.data
-                );
-
-
                 setReservation(res.data);
 
-
-                /*
-                 * On utilise montant_total en priorité.
-                 * Si montant_total n'existe pas,
-                 * on utilise prix.
-                 */
-
-                const montantReservation =
-                    res.data.montant_total ??
-                    res.data.prix ??
-                    "";
-
-
                 setForm(prev => ({
-
                     ...prev,
-
-                    montant: montantReservation
-
+                    montant: res.data.montant_total
                 }));
 
             }
 
             catch (error) {
 
-                console.error(
+                console.log(
                     "Erreur chargement réservation :",
                     error
                 );
-
-
-                setErreur(
-                    "Impossible de charger les informations de la réservation."
-                );
-
-            }
-
-            finally {
-
-                setChargement(false);
 
             }
 
         };
 
-
-        if (id_reservation) {
-
-            chargerReservation();
-
-        }
+        chargerReservation();
 
     }, [id_reservation]);
 
 
-    // =========================================================
-    // MODIFICATION FORMULAIRE
-    // =========================================================
+    // =================================
+    // Modifier champs formulaire
+    // =================================
 
     const handleChange = (e) => {
 
-        const {
-            name,
-            value
-        } = e.target;
-
-
-        setForm(prev => ({
-
-            ...prev,
-
-            [name]: value
-
-        }));
-
-
-        setErreur("");
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        });
 
     };
 
 
-    // =========================================================
-    // CHANGER MODE PAIEMENT
-    // =========================================================
-
-    const changerModePaiement = (mode) => {
-
-        setForm(prev => ({
-
-            ...prev,
-
-            mode_paiement: mode
-
-        }));
-
-
-        setErreur("");
-
-    };
-
-
-    // =========================================================
-    // CHOISIR OPÉRATEUR
-    // =========================================================
+    // =================================
+    // Choisir opérateur Mobile Money
+    // =================================
 
     const choisirOperateur = (operateur) => {
 
-        setForm(prev => ({
+        setForm({
+            ...form,
 
-            ...prev,
-
-            operateur,
+            operateur: operateur,
 
             numero_destinataire: "",
 
             nom_destinataire: ""
 
-        }));
-
-
-        setErreur("");
+        });
 
     };
 
 
-    // =========================================================
-    // OBTENIR LOGO OPÉRATEUR
-    // =========================================================
-
-    const getLogoOperateur = () => {
-
-        if (form.operateur === "Orange Money") {
-
-            return orangeMoney;
-
-        }
-
-        if (form.operateur === "MVola") {
-
-            return mvola;
-
-        }
-
-        if (form.operateur === "Airtel Money") {
-
-            return airtelMoney;
-
-        }
-
-        return null;
-
-    };
-
-
-    // =========================================================
-    // FORMATER MONTANT
-    // =========================================================
-
-    const formaterMontant = (montant) => {
-
-        if (
-            montant === null ||
-            montant === undefined ||
-            montant === ""
-        ) {
-
-            return "0";
-
-        }
-
-
-        return Number(montant).toLocaleString(
-            "fr-FR"
-        );
-
-    };
-
-
-    // =========================================================
-    // VALIDATION
-    // =========================================================
-
-    const validerFormulaire = () => {
-
-        if (!form.montant || Number(form.montant) <= 0) {
-
-            setErreur(
-                "Veuillez indiquer un montant valide."
-            );
-
-            return false;
-
-        }
-
-
-        // =========================
-        // CARTE BANCAIRE
-        // =========================
-
-        if (
-            form.mode_paiement === "Carte bancaire"
-        ) {
-
-            if (!form.nom_titulaire.trim()) {
-
-                setErreur(
-                    "Veuillez saisir le nom du titulaire de la carte."
-                );
-
-                return false;
-
-            }
-
-
-            if (!form.numero_carte.trim()) {
-
-                setErreur(
-                    "Veuillez saisir le numéro de carte."
-                );
-
-                return false;
-
-            }
-
-
-            if (!form.date_expiration.trim()) {
-
-                setErreur(
-                    "Veuillez saisir la date d'expiration."
-                );
-
-                return false;
-
-            }
-
-
-            if (!form.cvv.trim()) {
-
-                setErreur(
-                    "Veuillez saisir le CVV."
-                );
-
-                return false;
-
-            }
-
-        }
-
-
-        // =========================
-        // MOBILE MONEY
-        // =========================
-
-        if (
-            form.mode_paiement === "Mobile Money"
-        ) {
-
-            if (!form.operateur) {
-
-                setErreur(
-                    "Veuillez choisir un opérateur Mobile Money."
-                );
-
-                return false;
-
-            }
-
-
-            if (
-                !form.numero_destinataire.trim()
-            ) {
-
-                setErreur(
-                    "Veuillez saisir le numéro destinataire."
-                );
-
-                return false;
-
-            }
-
-
-            if (
-                !form.nom_destinataire.trim()
-            ) {
-
-                setErreur(
-                    "Veuillez saisir le nom du destinataire."
-                );
-
-                return false;
-
-            }
-
-        }
-
-
-        // =========================
-        // VIREMENT
-        // =========================
-
-        if (
-            form.mode_paiement === "Virement"
-        ) {
-
-            if (!form.banque.trim()) {
-
-                setErreur(
-                    "Veuillez saisir le nom de la banque."
-                );
-
-                return false;
-
-            }
-
-
-            if (!form.compte.trim()) {
-
-                setErreur(
-                    "Veuillez saisir le numéro du compte."
-                );
-
-                return false;
-
-            }
-
-
-            if (!form.nom_compte.trim()) {
-
-                setErreur(
-                    "Veuillez saisir le titulaire du compte."
-                );
-
-                return false;
-
-            }
-
-        }
-
-
-        // =========================
-        // PREUVE
-        // =========================
-
-        if (!preuve) {
-
-            setErreur(
-                "Veuillez sélectionner une preuve de paiement."
-            );
-
-            return false;
-
-        }
-
-
-        return true;
-
-    };
-
-
-    // =========================================================
-    // ENVOYER PAIEMENT
-    // =========================================================
+    // =================================
+    // Envoyer paiement
+    // =================================
 
     const envoyerPaiement = async (e) => {
 
         e.preventDefault();
 
-
-        setErreur("");
-
-
-        if (!validerFormulaire()) {
-
-            return;
-
-        }
-
-
         try {
 
             const data = new FormData();
 
-
-            // =========================
-            // INFORMATIONS PRINCIPALES
-            // =========================
 
             data.append(
                 "id_reservation",
@@ -528,33 +167,11 @@ function PaiementPublic() {
             );
 
 
-            // =========================
-            // CARTE BANCAIRE
-            // =========================
+            // -----------------------------
+            // Mobile Money
+            // -----------------------------
 
-            if (
-                form.mode_paiement === "Carte bancaire"
-            ) {
-
-                /*
-                 * Ces données servent uniquement
-                 * à la simulation académique.
-                 *
-                 * On ne les envoie pas au backend
-                 * pour éviter de stocker des données
-                 * bancaires sensibles.
-                 */
-
-            }
-
-
-            // =========================
-            // MOBILE MONEY
-            // =========================
-
-            if (
-                form.mode_paiement === "Mobile Money"
-            ) {
+            if (form.mode_paiement === "Mobile Money") {
 
                 data.append(
                     "operateur",
@@ -576,13 +193,11 @@ function PaiementPublic() {
             }
 
 
-            // =========================
-            // VIREMENT
-            // =========================
+            // -----------------------------
+            // Virement
+            // -----------------------------
 
-            if (
-                form.mode_paiement === "Virement"
-            ) {
+            if (form.mode_paiement === "Virement") {
 
                 data.append(
                     "banque",
@@ -604,152 +219,63 @@ function PaiementPublic() {
             }
 
 
-            // =========================
-            // PREUVE
-            // =========================
+            // -----------------------------
+            // Preuve paiement
+            // -----------------------------
 
-            data.append(
-                "preuve",
-                preuve
-            );
+            if (preuve) {
+
+                data.append(
+                    "preuve",
+                    preuve
+                );
+
+            }
 
 
-            console.log(
-                "Envoi paiement..."
-            );
-
-
-            // =========================
-            // API
-            // =========================
+            // -----------------------------
+            // ENVOI API
+            // -----------------------------
 
             await api.post(
                 "/paiements",
                 data,
                 {
                     headers: {
-                        "Content-Type":
-                            "multipart/form-data"
+                        "Content-Type": "multipart/form-data"
                     }
                 }
             );
 
 
-            // =========================
-            // SUCCÈS
-            // =========================
+            // =================================
+            // PAIEMENT RÉUSSI
+            // =================================
 
             setPaiementSucces(true);
+
 
         }
 
         catch (error) {
 
-            console.error(
+            console.log(
                 "Erreur paiement :",
                 error
             );
 
-
-            if (
-                error.response?.data?.message
-            ) {
-
-                setErreur(
-                    error.response.data.message
-                );
-
-            }
-
-            else {
-
-                setErreur(
-                    "Une erreur est survenue lors de l'envoi du paiement."
-                );
-
-            }
+            alert(
+                "Erreur lors du paiement"
+            );
 
         }
 
     };
 
 
-    // =========================================================
-    // CHARGEMENT
-    // =========================================================
-
-    if (chargement) {
-
-        return (
-
-            <div className="paiement-public-page">
-
-                <div className="paiement-box paiement-loading">
-
-                    <div className="paiement-loader"></div>
-
-                    <h2>
-                        Chargement de votre réservation...
-                    </h2>
-
-                </div>
-
-            </div>
-
-        );
-
-    }
-
-
-    // =========================================================
-    // ERREUR CHARGEMENT
-    // =========================================================
-
-    if (
-        erreur &&
-        !reservation
-    ) {
-
-        return (
-
-            <div className="paiement-public-page">
-
-                <div className="paiement-box paiement-error">
-
-                    <div className="paiement-error-icon">
-                        ⚠️
-                    </div>
-
-                    <h2>
-                        Impossible de continuer
-                    </h2>
-
-                    <p>
-                        {erreur}
-                    </p>
-
-                    <button
-                        type="button"
-                        onClick={() =>
-                            navigate(-1)
-                        }
-                    >
-                        <FaArrowLeft />
-                        Retour
-                    </button>
-
-                </div>
-
-            </div>
-
-        );
-
-    }
-
-
-    // =========================================================
-    // PAIEMENT RÉUSSI
-    // =========================================================
+    // =================================
+    // AFFICHAGE SUCCÈS
+    // =================================
 
     if (paiementSucces) {
 
@@ -759,6 +285,8 @@ function PaiementPublic() {
 
                 <div className="paiement-success-page">
 
+                    {/* Cercle vert */}
+
                     <div className="success-icon">
 
                         <FaCheckCircle />
@@ -766,10 +294,14 @@ function PaiementPublic() {
                     </div>
 
 
+                    {/* Titre */}
+
                     <h1>
-                        Paiement envoyé avec succès !
+                        Paiement effectué avec succès !
                     </h1>
 
+
+                    {/* Message */}
 
                     <p className="success-message">
 
@@ -777,13 +309,13 @@ function PaiementPublic() {
 
                         <br />
 
-                        Votre demande est maintenant
-                        <strong>
-                            {" "}en attente de validation.
-                        </strong>
+                        Votre demande de paiement est maintenant
+                        <strong> en attente de validation.</strong>
 
                     </p>
 
+
+                    {/* Informations réservation */}
 
                     {reservation && (
 
@@ -809,10 +341,7 @@ function PaiementPublic() {
                                 </span>
 
                                 <strong>
-                                    {
-                                        reservation.titre ||
-                                        "Offre touristique"
-                                    }
+                                    {reservation.titre}
                                 </strong>
 
                             </div>
@@ -826,11 +355,7 @@ function PaiementPublic() {
 
                                 <strong className="success-price">
 
-                                    {
-                                        formaterMontant(
-                                            form.montant
-                                        )
-                                    } Ar
+                                    {Number(form.montant).toLocaleString("fr-FR")} Ar
 
                                 </strong>
 
@@ -841,15 +366,14 @@ function PaiementPublic() {
                     )}
 
 
+                    {/* Actions */}
+
                     <div className="success-actions">
 
                         <button
                             className="success-primary"
-                            type="button"
                             onClick={() =>
-                                navigate(
-                                    "/mes-reservations"
-                                )
+                                navigate("/mes-reservations")
                             }
                         >
 
@@ -862,7 +386,6 @@ function PaiementPublic() {
 
                         <button
                             className="success-secondary"
-                            type="button"
                             onClick={() =>
                                 navigate("/")
                             }
@@ -892,9 +415,9 @@ function PaiementPublic() {
     }
 
 
-    // =========================================================
-    // FORMULAIRE PRINCIPAL
-    // =========================================================
+    // =================================
+    // AFFICHAGE FORMULAIRE
+    // =================================
 
     return (
 
@@ -902,14 +425,8 @@ function PaiementPublic() {
 
             <div className="paiement-box">
 
-
-                {/* =================================================
-                    RETOUR
-                ================================================= */}
-
                 <button
                     className="btn-retour"
-                    type="button"
                     onClick={() => navigate(-1)}
                     title="Retour à la réservation"
                 >
@@ -919,755 +436,385 @@ function PaiementPublic() {
                 </button>
 
 
-                {/* =================================================
-                    TITRE
-                ================================================= */}
-
-                <div className="paiement-title">
-
-                    <div className="paiement-title-icon">
-
-                        <FaCreditCard />
-
-                    </div>
-
-                    <div>
-
-                        <h1>
-                            Effectuer votre paiement
-                        </h1>
-
-                        <p>
-                            Finalisez votre réservation
-                            en toute sécurité.
-                        </p>
-
-                    </div>
-
-                </div>
+                <h1>
+                    💳 Effectuer votre paiement
+                </h1>
 
 
-                {/* =================================================
-                    RÉSUMÉ
-                ================================================= */}
+                {/* =============================
+                    RESUME RESERVATION
+                ============================= */}
 
                 {reservation && (
 
                     <div className="resume-reservation">
 
-                        <div className="resume-header">
-
-                            <h2>
-                                Résumé réservation
-                            </h2>
-
-                        </div>
+                        <h2>
+                            Résumé réservation
+                        </h2>
 
 
-                        <div className="resume-line">
+                        <p>
 
-                            <span>
-                                🎒 Offre
-                            </span>
+                            🎒 Offre :
 
                             <strong>
-                                {
-                                    reservation.titre ||
-                                    "Offre touristique"
-                                }
+                                {reservation.titre}
                             </strong>
 
-                        </div>
+                        </p>
 
 
-                        <div className="resume-line">
+                        <p>
 
-                            <span>
-                                📍 Destination
-                            </span>
+                            📍 Destination :
 
-                            <strong>
-                                {
-                                    reservation.destination ||
-                                    reservation.nom_destination ||
-                                    "Non renseignée"
-                                }
-                            </strong>
+                            {reservation.destination}
 
-                        </div>
+                        </p>
 
 
-                        <div className="resume-line resume-total">
+                        <p>
 
-                            <span>
-                                💰 Montant
-                            </span>
+                            💰 Montant :
 
                             <strong>
 
-                                {
-                                    formaterMontant(
-                                        form.montant
-                                    )
-                                } Ar
+                                {Number(reservation.prix).toLocaleString("fr-FR")} Ar
 
                             </strong>
 
-                        </div>
+                        </p>
 
                     </div>
 
                 )}
 
 
-                {/* =================================================
-                    ERREUR FORMULAIRE
-                ================================================= */}
+                <div className="formulaire-scroll">
 
-                {erreur && (
+                    <form onSubmit={envoyerPaiement}>
 
-                    <div className="paiement-error-message">
+                        {/* =============================
+                            MODE DE PAIEMENT
+                        ============================= */}
 
-                        ⚠️ {erreur}
-
-                    </div>
-
-                )}
-
-
-                {/* =================================================
-                    FORMULAIRE
-                ================================================= */}
-
-                <form
-                    onSubmit={envoyerPaiement}
-                    className="paiement-form"
-                >
-
-
-                    {/* =================================================
-                        MODE DE PAIEMENT
-                    ================================================= */}
-
-                    <div className="mode-paiement-section">
-
-                        <label className="section-label">
+                        <label>
                             Mode de paiement
                         </label>
 
 
-                        <div className="modes-paiement">
-
-
-                            {/* CARTE */}
-
-                            <button
-                                type="button"
-                                className={
-                                    form.mode_paiement ===
-                                    "Carte bancaire"
-                                        ? "mode-paiement active"
-                                        : "mode-paiement"
-                                }
-                                onClick={() =>
-                                    changerModePaiement(
-                                        "Carte bancaire"
-                                    )
-                                }
-                            >
+                        <select
+                            name="mode_paiement"
+                            value={form.mode_paiement}
+                            onChange={handleChange}
+                        >
 
-                                <FaCreditCard />
+                            <option value="Carte bancaire">
+                                Carte bancaire
+                            </option>
 
-                                <span>
-                                    Carte bancaire
-                                </span>
+                            <option value="Mobile Money">
+                                Mobile Money
+                            </option>
 
-                            </button>
+                            <option value="PayPal">
+                                PayPal
+                            </option>
 
+                            <option value="Virement">
+                                Virement
+                            </option>
 
-                            {/* MOBILE MONEY */}
+                        </select>
 
-                            <button
-                                type="button"
-                                className={
-                                    form.mode_paiement ===
-                                    "Mobile Money"
-                                        ? "mode-paiement active"
-                                        : "mode-paiement"
-                                }
-                                onClick={() =>
-                                    changerModePaiement(
-                                        "Mobile Money"
-                                    )
-                                }
-                            >
 
-                                <FaMobileAlt />
+                        {/* =============================
+                            MOBILE MONEY
+                        ============================= */}
 
-                                <span>
-                                    Mobile Money
-                                </span>
+                        {form.mode_paiement === "Mobile Money" && (
 
-                            </button>
+                            <div className="info-paiement">
 
+                                <h3>
+                                    📱 Paiement Mobile Money
+                                </h3>
 
-                            {/* PAYPAL */}
 
-                            <button
-                                type="button"
-                                className={
-                                    form.mode_paiement ===
-                                    "PayPal"
-                                        ? "mode-paiement active"
-                                        : "mode-paiement"
-                                }
-                                onClick={() =>
-                                    changerModePaiement(
-                                        "PayPal"
-                                    )
-                                }
-                            >
+                                <label>
+                                    Choisir un opérateur
+                                </label>
 
-                                <FaPaypal />
 
-                                <span>
-                                    PayPal
-                                </span>
+                                {!form.operateur && (
 
-                            </button>
+                                    <div className="operateurs-mobile">
 
+                                        <div
+                                            className="operateur-card"
+                                            onClick={() =>
+                                                choisirOperateur("Orange Money")
+                                            }
+                                        >
 
-                            {/* VIREMENT */}
+                                            <img
+                                                src={orangeMoney}
+                                                alt="Orange Money"
+                                            />
 
-                            <button
-                                type="button"
-                                className={
-                                    form.mode_paiement ===
-                                    "Virement"
-                                        ? "mode-paiement active"
-                                        : "mode-paiement"
-                                }
-                                onClick={() =>
-                                    changerModePaiement(
-                                        "Virement"
-                                    )
-                                }
-                            >
+                                            <span>
+                                                Orange Money
+                                            </span>
 
-                                <FaUniversity />
+                                        </div>
 
-                                <span>
-                                    Virement
-                                </span>
 
-                            </button>
+                                        <div
+                                            className="operateur-card"
+                                            onClick={() =>
+                                                choisirOperateur("MVola")
+                                            }
+                                        >
 
-                        </div>
+                                            <img
+                                                src={mvola}
+                                                alt="MVola"
+                                            />
 
-                    </div>
+                                            <span>
+                                                MVola
+                                            </span>
 
+                                        </div>
 
-                    {/* =================================================
-                        CARTE BANCAIRE
-                    ================================================= */}
 
-                    {form.mode_paiement ===
-                        "Carte bancaire" && (
+                                        <div
+                                            className="operateur-card"
+                                            onClick={() =>
+                                                choisirOperateur("Airtel Money")
+                                            }
+                                        >
 
-                        <div className="info-paiement carte-section">
+                                            <img
+                                                src={airtelMoney}
+                                                alt="Airtel Money"
+                                            />
 
-                            <div className="payment-section-title">
+                                            <span>
+                                                Airtel Money
+                                            </span>
 
-                                <FaCreditCard />
+                                        </div>
 
-                                <div>
+                                    </div>
 
-                                    <h3>
-                                        Paiement carte bancaire
-                                    </h3>
+                                )}
 
-                                    <p>
-                                        Paiement sécurisé par carte bancaire.
-                                    </p>
 
-                                </div>
+                                {form.operateur && (
 
-                            </div>
-
-
-                            <div className="simulation-message">
-
-                                <FaLock />
-
-                                <span>
-                                    Mode simulation pour projet académique.
-                                    Aucune donnée bancaire réelle n'est traitée.
-                                </span>
-
-                            </div>
-
-
-                            <label>
-                                Nom du titulaire
-                            </label>
-
-                            <input
-                                type="text"
-                                name="nom_titulaire"
-                                placeholder="Nom du titulaire de la carte"
-                                value={
-                                    form.nom_titulaire
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                autoComplete="off"
-                            />
-
-
-                            <label>
-                                Numéro de carte
-                            </label>
-
-                            <input
-                                type="text"
-                                name="numero_carte"
-                                placeholder="0000 0000 0000 0000"
-                                value={
-                                    form.numero_carte
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                maxLength={19}
-                                inputMode="numeric"
-                                autoComplete="off"
-                            />
-
-
-                            <div className="card-fields-row">
-
-                                <div>
-
-                                    <label>
-                                        Date d'expiration
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="date_expiration"
-                                        placeholder="MM/AA"
-                                        value={
-                                            form.date_expiration
-                                        }
-                                        onChange={
-                                            handleChange
-                                        }
-                                        maxLength={5}
-                                        autoComplete="off"
-                                    />
-
-                                </div>
-
-
-                                <div>
-
-                                    <label>
-                                        CVV
-                                    </label>
-
-                                    <input
-                                        type="password"
-                                        name="cvv"
-                                        placeholder="123"
-                                        value={
-                                            form.cvv
-                                        }
-                                        onChange={
-                                            handleChange
-                                        }
-                                        maxLength={4}
-                                        inputMode="numeric"
-                                        autoComplete="off"
-                                    />
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    )}
-
-
-                    {/* =================================================
-                        MOBILE MONEY
-                    ================================================= */}
-
-                    {form.mode_paiement ===
-                        "Mobile Money" && (
-
-                        <div className="info-paiement mobile-section">
-
-                            <div className="payment-section-title">
-
-                                <FaMobileAlt />
-
-                                <div>
-
-                                    <h3>
-                                        Paiement Mobile Money
-                                    </h3>
-
-                                    <p>
-                                        Sélectionnez votre opérateur.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-                            {!form.operateur && (
-
-                                <div className="operateurs-mobile">
-
-
-                                    <button
-                                        type="button"
-                                        className="operateur-card"
-                                        onClick={() =>
-                                            choisirOperateur(
-                                                "Orange Money"
-                                            )
-                                        }
-                                    >
-
-                                        <img
-                                            src={orangeMoney}
-                                            alt="Orange Money"
-                                        />
-
-                                        <span>
-                                            Orange Money
-                                        </span>
-
-                                    </button>
-
-
-                                    <button
-                                        type="button"
-                                        className="operateur-card"
-                                        onClick={() =>
-                                            choisirOperateur(
-                                                "MVola"
-                                            )
-                                        }
-                                    >
-
-                                        <img
-                                            src={mvola}
-                                            alt="MVola"
-                                        />
-
-                                        <span>
-                                            MVola
-                                        </span>
-
-                                    </button>
-
-
-                                    <button
-                                        type="button"
-                                        className="operateur-card"
-                                        onClick={() =>
-                                            choisirOperateur(
-                                                "Airtel Money"
-                                            )
-                                        }
-                                    >
-
-                                        <img
-                                            src={airtelMoney}
-                                            alt="Airtel Money"
-                                        />
-
-                                        <span>
-                                            Airtel Money
-                                        </span>
-
-                                    </button>
-
-                                </div>
-
-                            )}
-
-
-                            {form.operateur && (
-
-                                <div className="operateur-info">
-
-                                    {getLogoOperateur() && (
+                                    <div className="operateur-info">
 
                                         <img
                                             src={
-                                                getLogoOperateur()
+                                                form.operateur === "Orange Money"
+                                                    ? orangeMoney
+                                                    : form.operateur === "MVola"
+                                                        ? mvola
+                                                        : airtelMoney
                                             }
-                                            alt={
-                                                form.operateur
-                                            }
+                                            alt={form.operateur}
                                             className="logo-operateur-selectionne"
                                         />
 
-                                    )}
+
+                                        <h4>
+                                            {form.operateur}
+                                        </h4>
 
 
-                                    <h4>
-                                        {form.operateur}
-                                    </h4>
+                                        <label>
+                                            Numéro destinataire
+                                        </label>
 
 
-                                    <label>
-                                        Numéro destinataire
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="numero_destinataire"
-                                        placeholder="034 XX XXX XX"
-                                        value={
-                                            form.numero_destinataire
-                                        }
-                                        onChange={
-                                            handleChange
-                                        }
-                                        inputMode="tel"
-                                    />
+                                        <input
+                                            type="text"
+                                            name="numero_destinataire"
+                                            placeholder="034 XX XXX XX"
+                                            value={form.numero_destinataire}
+                                            onChange={handleChange}
+                                        />
 
 
-                                    <label>
-                                        Nom du destinataire
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="nom_destinataire"
-                                        placeholder="Nom du bénéficiaire"
-                                        value={
-                                            form.nom_destinataire
-                                        }
-                                        onChange={
-                                            handleChange
-                                        }
-                                    />
+                                        <label>
+                                            Nom du destinataire
+                                        </label>
 
 
-                                    <button
-                                        type="button"
-                                        className="changer-operateur"
-                                        onClick={() =>
-                                            choisirOperateur("")
-                                        }
-                                    >
-
-                                        Changer d'opérateur
-
-                                    </button>
-
-                                </div>
-
-                            )}
-
-                        </div>
-
-                    )}
+                                        <input
+                                            type="text"
+                                            name="nom_destinataire"
+                                            placeholder="Nom du bénéficiaire"
+                                            value={form.nom_destinataire}
+                                            onChange={handleChange}
+                                        />
 
 
-                    {/* =================================================
-                        PAYPAL
-                    ================================================= */}
+                                        <button
+                                            type="button"
+                                            className="changer-operateur"
+                                            onClick={() =>
+                                                choisirOperateur("")
+                                            }
+                                        >
 
-                    {form.mode_paiement ===
-                        "PayPal" && (
+                                            Changer d'opérateur
 
-                        <div className="info-paiement paypal-section">
+                                        </button>
 
-                            <div className="payment-section-title">
+                                    </div>
 
-                                <FaPaypal />
-
-                                <div>
-
-                                    <h3>
-                                        Paiement PayPal
-                                    </h3>
-
-                                    <p>
-                                        Utilisez les informations
-                                        PayPal indiquées ci-dessous.
-                                    </p>
-
-                                </div>
+                                )}
 
                             </div>
 
-
-                            <div className="paypal-box">
-
-                                <div className="paypal-icon">
-                                    <FaPaypal />
-                                </div>
-
-                                <div>
-
-                                    <span>
-                                        Compte PayPal
-                                    </span>
-
-                                    <strong>
-                                        plateforme.touristique@email.com
-                                    </strong>
-
-                                </div>
-
-                            </div>
+                        )}
 
 
-                            <p className="paypal-note">
+                        {/* =============================
+                            VIREMENT BANCAIRE
+                        ============================= */}
 
-                                Après avoir effectué le paiement,
-                                veuillez joindre votre preuve de paiement.
+                        {form.mode_paiement === "Virement" && (
 
-                            </p>
+                            <div className="info-paiement">
 
-                        </div>
+                                <h3>
+                                    🏦 Informations bancaires
+                                </h3>
 
-                    )}
+
+                                <label>
+                                    Banque
+                                </label>
 
 
-                    {/* =================================================
-                        VIREMENT
-                    ================================================= */}
+                                <input
+                                    type="text"
+                                    name="banque"
+                                    placeholder="Nom de la banque"
+                                    value={form.banque}
+                                    onChange={handleChange}
+                                />
 
-                    {form.mode_paiement ===
-                        "Virement" && (
 
-                        <div className="info-paiement virement-section">
+                                <label>
+                                    Compte bancaire
+                                </label>
 
-                            <div className="payment-section-title">
 
-                                <FaUniversity />
+                                <input
+                                    type="text"
+                                    name="compte"
+                                    placeholder="Numéro du compte"
+                                    value={form.compte}
+                                    onChange={handleChange}
+                                />
 
-                                <div>
 
-                                    <h3>
-                                        Virement bancaire
-                                    </h3>
+                                <label>
+                                    Titulaire du compte
+                                </label>
 
-                                    <p>
-                                        Effectuez le virement puis
-                                        joignez votre justificatif.
-                                    </p>
 
-                                </div>
+                                <input
+                                    type="text"
+                                    name="nom_compte"
+                                    placeholder="Nom du titulaire"
+                                    value={form.nom_compte}
+                                    onChange={handleChange}
+                                />
 
                             </div>
 
-
-                            <label>
-                                Banque
-                            </label>
-
-                            <input
-                                type="text"
-                                name="banque"
-                                placeholder="Nom de la banque"
-                                value={
-                                    form.banque
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
+                        )}
 
 
-                            <label>
-                                Compte bancaire
-                            </label>
+                        {/* =============================
+                            CARTE BANCAIRE
+                        ============================= */}
 
-                            <input
-                                type="text"
-                                name="compte"
-                                placeholder="Numéro du compte"
-                                value={
-                                    form.compte
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
+                        {form.mode_paiement === "Carte bancaire" && (
 
+                            <div className="info-paiement">
 
-                            <label>
-                                Titulaire du compte
-                            </label>
+                                <h3>
+                                    💳 Paiement carte bancaire
+                                </h3>
 
-                            <input
-                                type="text"
-                                name="nom_compte"
-                                placeholder="Nom du titulaire"
-                                value={
-                                    form.nom_compte
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
+                                <p>
+                                    Paiement sécurisé par carte bancaire.
+                                </p>
 
-                        </div>
+                                <p>
+                                    <i>
+                                        Mode simulation pour projet académique.
+                                    </i>
+                                </p>
 
-                    )}
+                            </div>
+
+                        )}
 
 
-                    {/* =================================================
-                        MONTANT
-                    ================================================= */}
+                        {/* =============================
+                            PAYPAL
+                        ============================= */}
 
-                    <div className="montant-section">
+                        {form.mode_paiement === "PayPal" && (
+
+                            <div className="info-paiement">
+
+                                <h3>
+                                    🅿️ Paiement PayPal
+                                </h3>
+
+                                <p>
+                                    Compte PayPal :
+                                </p>
+
+                                <p>
+                                    plateforme.touristique@email.com
+                                </p>
+
+                            </div>
+
+                        )}
+
+
+                        {/* =============================
+                            MONTANT
+                        ============================= */}
 
                         <label>
                             Montant payé
                         </label>
 
-                        <div className="montant-input-wrapper">
 
-                            <input
-                                type="number"
-                                name="montant"
-                                value={
-                                    form.montant
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                min="1"
-                                required
-                            />
-
-                            <span>
-                                Ar
-                            </span>
-
-                        </div>
-
-                    </div>
+                        <input
+                            type="number"
+                            name="montant"
+                            value={form.montant}
+                            onChange={handleChange}
+                            required
+                        />
 
 
-                    {/* =================================================
-                        PREUVE
-                    ================================================= */}
-
-                    <div className="preuve-section">
+                        {/* =============================
+                            PREUVE
+                        ============================= */}
 
                         <label>
                             Preuve de paiement
@@ -1678,34 +825,12 @@ function PaiementPublic() {
 
                             <FaUpload />
 
-                            <div className="upload-text">
-
-                                <strong>
-                                    Sélectionner une preuve
-                                </strong>
-
-                                <span>
-                                    JPG, PNG ou PDF
-                                </span>
-
-                            </div>
-
-
                             <input
                                 type="file"
                                 accept="image/*,.pdf"
-                                onChange={(e) => {
-
-                                    const fichier =
-                                        e.target.files?.[0];
-
-                                    setPreuve(
-                                        fichier || null
-                                    );
-
-                                    setErreur("");
-
-                                }}
+                                onChange={(e) =>
+                                    setPreuve(e.target.files[0])
+                                }
                             />
 
                         </div>
@@ -1720,25 +845,19 @@ function PaiementPublic() {
                                     <FaCheckCircle />
 
                                     <span>
-                                        {preuve.name}
+                                        Preuve sélectionnée : {preuve.name}
                                     </span>
 
                                 </div>
 
 
-                                {preuve.type.startsWith(
-                                    "image/"
-                                ) && (
+                                {preuve.type.startsWith("image/") && (
 
                                     <div className="preuve-preview">
 
                                         <img
-                                            src={
-                                                URL.createObjectURL(
-                                                    preuve
-                                                )
-                                            }
-                                            alt="Aperçu de la preuve"
+                                            src={URL.createObjectURL(preuve)}
+                                            alt="Aperçu de la preuve de paiement"
                                         />
 
                                     </div>
@@ -1749,46 +868,23 @@ function PaiementPublic() {
 
                         )}
 
-                    </div>
 
+                        {/* =============================
+                            BOUTON
+                        ============================= */}
 
-                    {/* =================================================
-                        BOUTON
-                    ================================================= */}
-
-                    <button
-                        type="submit"
-                        className="btn-envoyer-paiement"
-                    >
-
-                        {form.mode_paiement ===
-                            "Mobile Money" ? (
-
-                            <FaMobileAlt />
-
-                        ) : form.mode_paiement ===
-                            "Virement" ? (
-
-                            <FaUniversity />
-
-                        ) : form.mode_paiement ===
-                            "PayPal" ? (
-
-                            <FaPaypal />
-
-                        ) : (
+                        <button type="submit">
 
                             <FaCreditCard />
 
-                        )}
+                            Envoyer le paiement
+
+                        </button>
 
 
-                        Envoyer le paiement
+                    </form>
 
-                    </button>
-
-
-                </form>
+                </div>
 
             </div>
 
