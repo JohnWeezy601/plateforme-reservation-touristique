@@ -356,7 +356,7 @@ function Utilisateurs() {
             {/* =================================================
                 TABLEAU
             ================================================= */}
-
+             <div className="table-responsive">
             <div className="table-container">
 
                 <table>
@@ -529,6 +529,7 @@ function Utilisateurs() {
 
                 </table>
 
+            </div>
             </div>
 
 

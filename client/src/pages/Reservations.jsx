@@ -508,7 +508,7 @@ Confirmées
 
 {/* TABLEAU */}
 
-
+<div className="table-responsive">
 <div className="reservation-table-card">
 
 
@@ -1055,6 +1055,7 @@ Supprimer
 
 
 </table>
+</div>
 
 <div className="pagination">
 

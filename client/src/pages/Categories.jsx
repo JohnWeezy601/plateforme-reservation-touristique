@@ -427,7 +427,7 @@ Gérez les catégories touristiques.
 
 
 
-
+<div className="table-responsive">
 <div className="categorie-table-card">
 
 <div className="categorie-toolbar">
@@ -643,7 +643,7 @@ onClick={()=>supprimerCategorie(item.id_categorie)}
 
 </table>
 
-
+</div>
 
 
 
