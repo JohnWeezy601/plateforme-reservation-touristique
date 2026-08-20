@@ -1405,44 +1405,47 @@
 
 
 /* =========================================================
-   RESPONSIVE TABLET
+   RESPONSIVE TABLETTE
 ========================================================= */
 
 @media (max-width: 1000px) {
 
-    .hero-content h1 {
-        font-size: 45px;
+    .home-hero {
+        min-height: 650px;
+        padding: 90px 30px;
     }
 
+    .hero-content h1 {
+        font-size: 46px;
+    }
+
+    .hero-content p {
+        font-size: 18px;
+    }
 
     .destination-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
     }
-
 
     .offers-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
     }
-
 
     .advantages-container {
         grid-template-columns: 1fr;
-
-        gap: 40px;
+        gap: 45px;
     }
-
 
     .ia-content {
         grid-template-columns: auto 1fr;
     }
 
-
     .ia-button {
         grid-column: 2;
-
         justify-self: start;
     }
-
 }
 
 
@@ -1452,37 +1455,117 @@
 
 @media (max-width: 700px) {
 
+    /* =====================================================
+       PAGE
+    ===================================================== */
+
+    .home-page {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
     .home-hero {
-        min-height: 700px;
 
-        padding: 80px 20px;
+        min-height: 650px;
 
-        background-position: center;
+        padding: 80px 22px 70px;
+
+        background-position: center center;
+
+        justify-content: center;
+    }
+
+
+    .hero-content {
+
+        width: 100%;
+        max-width: 100%;
+    }
+
+
+    .hero-badge {
+
+        max-width: 100%;
+
+        padding: 9px 15px;
+
+        margin-bottom: 22px;
+
+        font-size: 12px;
+
+        text-align: center;
     }
 
 
     .hero-content h1 {
-        font-size: 35px;
 
-        letter-spacing: -0.5px;
+        font-size: 36px;
+
+        line-height: 1.15;
+
+        letter-spacing: -0.7px;
+    }
+
+
+    .hero-content h1 span {
+
+        margin-top: 6px;
     }
 
 
     .hero-content p {
+
+        max-width: 100%;
+
+        margin: 20px auto;
+
         font-size: 16px;
+
+        line-height: 1.65;
     }
 
 
+    /* =====================================================
+       BOUTONS HERO
+    ===================================================== */
+
     .hero-buttons {
+
+        width: 100%;
+
         flex-direction: column;
 
         align-items: stretch;
+
+        gap: 12px;
+
+        margin-top: 25px;
+    }
+
+
+    .hero-buttons a {
+
+        width: 100%;
     }
 
 
     .hero-primary-btn,
     .hero-secondary-btn {
+
         width: 100%;
+
+        min-height: 52px;
+
+        padding: 14px 20px;
+
+        font-size: 15px;
+
+        box-sizing: border-box;
     }
 
 
@@ -1493,20 +1576,60 @@
     .destinations-section,
     .offers-section,
     .steps-section {
-        padding: 90px 20px 50px;
+
+        width: 100%;
+
+        box-sizing: border-box;
+
+        padding: 75px 20px 50px;
     }
 
 
     .section-heading {
+
+        display: flex;
+
         flex-direction: column;
 
         align-items: flex-start;
+
+        gap: 15px;
+
+        margin-bottom: 30px;
     }
 
 
     .section-heading h2,
     .section-title-center h2 {
+
         font-size: 30px;
+
+        line-height: 1.25;
+
+        margin: 8px 0;
+    }
+
+
+    .section-heading p,
+    .section-title-center p {
+
+        font-size: 14px;
+
+        line-height: 1.65;
+    }
+
+
+    .section-label {
+
+        font-size: 10px;
+
+        letter-spacing: 1.7px;
+    }
+
+
+    .see-all-link {
+
+        font-size: 14px;
     }
 
 
@@ -1515,12 +1638,58 @@
     ===================================================== */
 
     .destination-grid {
+
         grid-template-columns: 1fr;
+
+        gap: 20px;
     }
 
 
     .destination-card {
-        min-height: 350px;
+
+        width: 100%;
+
+        min-height: 390px;
+
+        border-radius: 18px;
+    }
+
+
+    .destination-content {
+
+        left: 20px;
+
+        right: 20px;
+
+        bottom: 20px;
+    }
+
+
+    .destination-content h3 {
+
+        font-size: 25px;
+
+        margin: 8px 0;
+    }
+
+
+    .destination-content p {
+
+        font-size: 13px;
+
+        line-height: 1.55;
+    }
+
+
+    .destination-location {
+
+        font-size: 12px;
+    }
+
+
+    .destination-link {
+
+        font-size: 14px;
     }
 
 
@@ -1528,8 +1697,103 @@
        OFFRES
     ===================================================== */
 
+    .offers-section {
+
+        padding-top: 55px;
+    }
+
+
     .offers-grid {
+
         grid-template-columns: 1fr;
+
+        gap: 22px;
+    }
+
+
+    .offer-card {
+
+        width: 100%;
+
+        border-radius: 18px;
+    }
+
+
+    .offer-image {
+
+        height: 230px;
+    }
+
+
+    .offer-content {
+
+        padding: 22px;
+    }
+
+
+    .offer-location {
+
+        font-size: 12px;
+    }
+
+
+    .offer-content h3 {
+
+        min-height: auto;
+
+        margin: 10px 0;
+
+        font-size: 20px;
+
+        line-height: 1.4;
+    }
+
+
+    .offer-info {
+
+        gap: 8px;
+
+        margin-top: 14px;
+    }
+
+
+    .offer-info span {
+
+        padding: 7px 10px;
+
+        font-size: 11px;
+    }
+
+
+    .offer-bottom {
+
+        margin-top: 20px;
+
+        padding-top: 18px;
+
+        gap: 15px;
+    }
+
+
+    .offer-price small {
+
+        font-size: 11px;
+    }
+
+
+    .offer-price strong {
+
+        font-size: 19px;
+    }
+
+
+    .offer-button {
+
+        min-height: 42px;
+
+        padding: 10px 15px;
+
+        font-size: 13px;
     }
 
 
@@ -1538,26 +1802,152 @@
     ===================================================== */
 
     .advantages-section {
+
+        margin-top: 40px;
+
         padding: 70px 20px;
     }
 
 
+    .advantages-container {
+
+        width: 100%;
+
+        grid-template-columns: 1fr;
+
+        gap: 40px;
+    }
+
+
     .advantages-intro h2 {
+
         font-size: 34px;
+
+        line-height: 1.25;
+    }
+
+
+    .advantages-intro p {
+
+        max-width: 100%;
+
+        font-size: 14px;
+
+        line-height: 1.7;
+    }
+
+
+    .advantages-button {
+
+        min-height: 48px;
+
+        padding: 12px 18px;
+
+        font-size: 14px;
     }
 
 
     .advantages-grid {
+
         grid-template-columns: 1fr;
+
+        gap: 15px;
+    }
+
+
+    .advantage-card {
+
+        padding: 22px;
+
+        border-radius: 16px;
+    }
+
+
+    .advantage-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        font-size: 23px;
+    }
+
+
+    .advantage-card h3 {
+
+        font-size: 18px;
+    }
+
+
+    .advantage-card p {
+
+        font-size: 14px;
+
+        line-height: 1.65;
     }
 
 
     /* =====================================================
-       ÉTAPES
+       COMMENT ÇA MARCHE
     ===================================================== */
 
+    .steps-section {
+
+        padding-top: 75px;
+
+        padding-bottom: 60px;
+    }
+
+
     .steps-grid {
+
         grid-template-columns: 1fr;
+
+        gap: 20px;
+    }
+
+
+    .step-card {
+
+        padding: 32px 24px;
+
+        border-radius: 17px;
+    }
+
+
+    .step-number {
+
+        top: 18px;
+
+        right: 18px;
+
+        font-size: 28px;
+    }
+
+
+    .step-icon {
+
+        width: 68px;
+
+        height: 68px;
+
+        margin: 8px auto 20px;
+
+        font-size: 29px;
+    }
+
+
+    .step-card h3 {
+
+        font-size: 18px;
+    }
+
+
+    .step-card p {
+
+        font-size: 14px;
+
+        line-height: 1.65;
     }
 
 
@@ -1566,30 +1956,68 @@
     ===================================================== */
 
     .ia-section {
+
+        width: 100%;
+
+        box-sizing: border-box;
+
         padding: 0 20px;
 
-        margin-bottom: 60px;
+        margin: 30px auto 60px;
     }
 
 
     .ia-content {
+
         grid-template-columns: 1fr;
+
+        gap: 20px;
+
+        padding: 30px 22px;
 
         text-align: center;
 
-        padding: 30px 20px;
+        border-radius: 19px;
     }
 
 
     .ia-icon {
-        margin: auto;
+
+        width: 65px;
+
+        height: 65px;
+
+        margin: 0 auto;
+
+        font-size: 29px;
+    }
+
+
+    .ia-content h2 {
+
+        font-size: 23px;
+    }
+
+
+    .ia-content p {
+
+        font-size: 14px;
+
+        line-height: 1.65;
     }
 
 
     .ia-button {
+
         grid-column: auto;
 
         justify-self: center;
+
+        min-height: 46px;
+
+        padding: 12px 18px;
+
+        font-size: 13px;
     }
 
 
@@ -1598,191 +2026,423 @@
     ===================================================== */
 
     .home-contact {
-        min-height: 470px;
+
+        min-height: 500px;
+
+        padding: 20px;
+    }
+
+
+    .contact-content {
+
+        width: 100%;
+
+        box-sizing: border-box;
+
+        padding: 50px 10px;
+    }
+
+
+    .contact-label {
+
+        font-size: 10px;
     }
 
 
     .contact-content h2 {
-        font-size: 34px;
+
+        font-size: 35px;
+
+        line-height: 1.25;
+    }
+
+
+    .contact-content p {
+
+        font-size: 15px;
+
+        line-height: 1.7;
     }
 
 
     .contact-buttons {
+
+        width: 100%;
+
         flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 12px;
     }
 
 
     .contact-primary,
-    .contact-secondary {
-        width: 100%;
-    }
+    .contact-secondary,
+    .contact-chatbot {
 
+        width: 100%;
+
+        min-height: 50px;
+
+        box-sizing: border-box;
+
+        padding: 13px 18px;
+
+        font-size: 14px;
+    }
 }
 
 
 /* =========================================================
-   PETITS ÉCRANS
+   PETITS TÉLÉPHONES
 ========================================================= */
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
+
+    /* =====================================================
+       HERO
+    ===================================================== */
 
     .home-hero {
-        min-height: 680px;
 
-        padding: 70px 18px;
-    }
+        min-height: 620px;
 
-
-    .hero-content h1 {
-        font-size: 30px;
+        padding: 70px 18px 60px;
     }
 
 
     .hero-badge {
+
         font-size: 11px;
+
+        padding: 8px 13px;
+    }
+
+
+    .hero-content h1 {
+
+        font-size: 31px;
+
+        line-height: 1.15;
+    }
+
+
+    .hero-content p {
+
+        font-size: 15px;
+
+        margin: 18px auto;
+    }
+
+
+    .hero-primary-btn,
+    .hero-secondary-btn {
+
+        min-height: 50px;
+
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       SECTIONS
+    ===================================================== */
+
+    .destinations-section,
+    .offers-section,
+    .steps-section {
+
+        padding-left: 18px;
+
+        padding-right: 18px;
+    }
+
+
+    .section-heading h2,
+    .section-title-center h2 {
+
+        font-size: 27px;
+    }
+
+
+    .section-heading p,
+    .section-title-center p {
+
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       DESTINATIONS
+    ===================================================== */
+
+    .destination-card {
+
+        min-height: 350px;
+
+        border-radius: 17px;
+    }
+
+
+    .destination-content {
+
+        left: 18px;
+
+        right: 18px;
+
+        bottom: 18px;
     }
 
 
     .destination-content h3 {
-        font-size: 24px;
+
+        font-size: 23px;
+    }
+
+
+    .destination-content p {
+
+        font-size: 12px;
+    }
+
+
+    /* =====================================================
+       OFFRES
+    ===================================================== */
+
+    .offer-image {
+
+        height: 210px;
+    }
+
+
+    .offer-content {
+
+        padding: 20px;
     }
 
 
     .offer-content h3 {
-        font-size: 17px;
+
+        font-size: 18px;
+    }
+
+
+    .offer-info span {
+
+        font-size: 10px;
+
+        padding: 6px 9px;
     }
 
 
     .offer-bottom {
+
         flex-direction: column;
 
         align-items: stretch;
+
+        gap: 15px;
     }
 
 
     .offer-button {
-        justify-content: center;
-
-        text-align: center;
-    }
-
-}
-
-
-
-/* =========================================================
-   BOUTON ASSISTANT CHATBOT
-========================================================= */
-
-.contact-chatbot {
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 9px;
-
-    padding: 14px 24px;
-
-    border: 1px solid rgba(255, 255, 255, 0.35);
-
-    border-radius: 12px;
-
-    background: rgba(255, 255, 255, 0.12);
-
-    color: white;
-
-    font-size: 15px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.25s ease,
-        background 0.25s ease,
-        box-shadow 0.25s ease;
-
-    backdrop-filter: blur(8px);
-
-    -webkit-backdrop-filter: blur(8px);
-
-}
-
-
-.contact-chatbot svg {
-
-    font-size: 18px;
-
-}
-
-
-.contact-chatbot:hover {
-
-    background: rgba(255, 255, 255, 0.22);
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.18);
-
-}
-
-
-.contact-chatbot:active {
-
-    transform: translateY(0);
-
-}
-
-
-@media (max-width: 768px) {
-
-    .contact-buttons {
-
-        display: flex;
-
-        flex-wrap: wrap;
-
-        justify-content: center;
-
-        gap: 10px;
-
-    }
-
-
-    .contact-chatbot,
-    .contact-primary,
-    .contact-secondary {
-
-        padding: 11px 16px;
-
-        font-size: 13px;
-
-    }
-
-}
-
-
-@media (max-width: 480px) {
-
-    .contact-buttons {
-
-        flex-direction: column;
-
-        align-items: stretch;
-
-    }
-
-
-    .contact-chatbot,
-    .contact-primary,
-    .contact-secondary {
 
         width: 100%;
 
+        box-sizing: border-box;
+
+        justify-content: center;
+
+        min-height: 44px;
     }
 
+
+    /* =====================================================
+       AVANTAGES
+    ===================================================== */
+
+    .advantages-section {
+
+        padding: 60px 18px;
+    }
+
+
+    .advantages-intro h2 {
+
+        font-size: 30px;
+    }
+
+
+    .advantage-card {
+
+        padding: 20px;
+    }
+
+
+    /* =====================================================
+       IA
+    ===================================================== */
+
+    .ia-section {
+
+        padding: 0 18px;
+    }
+
+
+    .ia-content {
+
+        padding: 27px 18px;
+    }
+
+
+    .ia-content h2 {
+
+        font-size: 21px;
+    }
+
+
+    /* =====================================================
+       CONTACT
+    ===================================================== */
+
+    .home-contact {
+
+        min-height: 520px;
+
+        padding: 18px;
+    }
+
+
+    .contact-content {
+
+        padding: 45px 5px;
+    }
+
+
+    .contact-content h2 {
+
+        font-size: 30px;
+    }
+
+
+    .contact-content p {
+
+        font-size: 14px;
+    }
+
+
+    .contact-primary,
+    .contact-secondary,
+    .contact-chatbot {
+
+        min-height: 48px;
+
+        font-size: 13px;
+
+        padding: 12px 15px;
+    }
+}
+
+
+/* =========================================================
+   TRÈS PETITS TÉLÉPHONES
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .home-hero {
+
+        min-height: 600px;
+
+        padding: 60px 15px;
+    }
+
+
+    .hero-content h1 {
+
+        font-size: 28px;
+    }
+
+
+    .hero-content p {
+
+        font-size: 14px;
+    }
+
+
+    .destinations-section,
+    .offers-section,
+    .steps-section {
+
+        padding-left: 15px;
+
+        padding-right: 15px;
+    }
+
+
+    .section-heading h2,
+    .section-title-center h2 {
+
+        font-size: 25px;
+    }
+
+
+    .destination-card {
+
+        min-height: 330px;
+    }
+
+
+    .destination-content h3 {
+
+        font-size: 21px;
+    }
+
+
+    .offer-image {
+
+        height: 190px;
+    }
+
+
+    .offer-content {
+
+        padding: 18px;
+    }
+
+
+    .offer-content h3 {
+
+        font-size: 17px;
+    }
+
+
+    .advantages-section {
+
+        padding-left: 15px;
+
+        padding-right: 15px;
+    }
+
+
+    .advantages-intro h2 {
+
+        font-size: 28px;
+    }
+
+
+    .ia-section {
+
+        padding-left: 15px;
+
+        padding-right: 15px;
+    }
+
+
+    .contact-content h2 {
+
+        font-size: 27px;
+    }
 }
