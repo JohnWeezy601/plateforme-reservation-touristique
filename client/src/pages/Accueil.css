@@ -1,4 +1,29 @@
 /* =========================================================
+   RESET LOCAL - ÉVITE LES DÉBORDEMENTS
+========================================================= */
+
+.home-page,
+.home-page * {
+    box-sizing: border-box;
+}
+
+.home-page {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.home-page img {
+    max-width: 100%;
+}
+
+.home-page button,
+.home-page a {
+    max-width: 100%;
+}
+
+
+/* =========================================================
    PAGE ACCUEIL
 ========================================================= */
 
@@ -65,11 +90,11 @@
 
     z-index: 2;
 
+    width: 100%;
     max-width: 900px;
 
     text-align: center;
 }
-
 
 .hero-badge {
     display: inline-flex;
@@ -92,23 +117,21 @@
     backdrop-filter: blur(10px);
 
     font-size: 13px;
-
     font-weight: 600;
 }
-
 
 .hero-content h1 {
     margin: 0;
 
     font-size: 58px;
-
     line-height: 1.08;
 
     font-weight: 800;
 
     letter-spacing: -1.5px;
-}
 
+    overflow-wrap: break-word;
+}
 
 .hero-content h1 span {
     display: block;
@@ -118,8 +141,8 @@
     color: #38bdf8;
 }
 
-
 .hero-content p {
+    width: 100%;
     max-width: 700px;
 
     margin: 25px auto;
@@ -127,8 +150,9 @@
     color: #e2e8f0;
 
     font-size: 19px;
-
     line-height: 1.7;
+
+    overflow-wrap: break-word;
 }
 
 
@@ -146,11 +170,9 @@
     margin-top: 30px;
 }
 
-
 .hero-buttons a {
     text-decoration: none;
 }
-
 
 .hero-primary-btn,
 .hero-secondary-btn {
@@ -166,14 +188,14 @@
     border-radius: 12px;
 
     font-size: 15px;
-
     font-weight: 600;
 
     cursor: pointer;
 
     transition: 0.3s;
-}
 
+    max-width: 100%;
+}
 
 .hero-primary-btn {
     border: none;
@@ -183,13 +205,11 @@
     color: white;
 }
 
-
 .hero-primary-btn span {
     display: flex;
 
     transition: 0.3s;
 }
-
 
 .hero-primary-btn:hover {
     background: #1d4ed8;
@@ -197,11 +217,9 @@
     transform: translateY(-3px);
 }
 
-
 .hero-primary-btn:hover span {
     transform: translateX(5px);
 }
-
 
 .hero-secondary-btn {
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -212,7 +230,6 @@
 
     backdrop-filter: blur(8px);
 }
-
 
 .hero-secondary-btn:hover {
     background: white;
@@ -230,6 +247,7 @@
 .destinations-section,
 .offers-section,
 .steps-section {
+    width: 100%;
     max-width: 1200px;
 
     margin: auto;
@@ -237,19 +255,16 @@
     padding: 110px 30px 60px;
 }
 
-
 .section-heading {
     display: flex;
 
     justify-content: space-between;
-
     align-items: flex-end;
 
     gap: 30px;
 
     margin-bottom: 40px;
 }
-
 
 .section-label {
     color: #2563eb;
@@ -261,7 +276,6 @@
     letter-spacing: 2px;
 }
 
-
 .section-heading h2,
 .section-title-center h2 {
     margin: 10px 0;
@@ -271,8 +285,9 @@
     font-size: 38px;
 
     line-height: 1.2;
-}
 
+    overflow-wrap: break-word;
+}
 
 .section-heading p,
 .section-title-center p {
@@ -283,8 +298,9 @@
     font-size: 15px;
 
     line-height: 1.7;
-}
 
+    overflow-wrap: break-word;
+}
 
 .see-all-link {
     display: inline-flex;
@@ -306,7 +322,6 @@
     transition: 0.3s;
 }
 
-
 .see-all-link:hover {
     color: #1d4ed8;
 
@@ -326,18 +341,20 @@
     flex-direction: column;
 
     justify-content: center;
-
     align-items: center;
 
     gap: 15px;
 
     color: #64748b;
-}
 
+    text-align: center;
+}
 
 .loading-spinner {
     width: 42px;
     height: 42px;
+
+    flex-shrink: 0;
 
     border: 4px solid #dbeafe;
 
@@ -348,9 +365,7 @@
     animation: spin 0.8s linear infinite;
 }
 
-
 @keyframes spin {
-
     from {
         transform: rotate(0deg);
     }
@@ -358,7 +373,6 @@
     to {
         transform: rotate(360deg);
     }
-
 }
 
 
@@ -368,6 +382,8 @@
 
 .error-container,
 .empty-container {
+    width: 100%;
+
     min-height: 220px;
 
     display: flex;
@@ -375,7 +391,6 @@
     flex-direction: column;
 
     justify-content: center;
-
     align-items: center;
 
     gap: 10px;
@@ -391,16 +406,16 @@
     text-align: center;
 }
 
-
 .error-container span,
 .empty-container span {
     font-size: 35px;
 }
 
-
 .error-container p,
 .empty-container p {
     margin: 0;
+
+    overflow-wrap: break-word;
 }
 
 
@@ -409,6 +424,8 @@
 ========================================================= */
 
 .destination-grid {
+    width: 100%;
+
     display: grid;
 
     grid-template-columns: repeat(4, 1fr);
@@ -416,10 +433,10 @@
     gap: 20px;
 }
 
-
 .destination-card {
     position: relative;
 
+    min-width: 0;
     min-height: 390px;
 
     overflow: hidden;
@@ -435,14 +452,12 @@
     transition: 0.4s;
 }
 
-
 .destination-card:hover {
     transform: translateY(-8px);
 
     box-shadow:
         0 20px 40px rgba(15, 23, 42, 0.2);
 }
-
 
 .destination-image {
     position: absolute;
@@ -459,11 +474,9 @@
     transition: 0.5s;
 }
 
-
 .destination-card:hover .destination-image {
     transform: scale(1.07);
 }
-
 
 .destination-no-image {
     position: absolute;
@@ -473,7 +486,6 @@
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     background:
@@ -487,7 +499,6 @@
 
     font-size: 55px;
 }
-
 
 .destination-overlay {
     position: absolute;
@@ -504,7 +515,6 @@
         );
 }
 
-
 .destination-content {
     position: absolute;
 
@@ -513,8 +523,9 @@
     left: 22px;
     right: 22px;
     bottom: 22px;
-}
 
+    min-width: 0;
+}
 
 .destination-location {
     display: flex;
@@ -528,15 +539,15 @@
     color: #e2e8f0;
 }
 
-
 .destination-content h3 {
     margin: 8px 0;
 
     font-size: 26px;
 
     color: white;
-}
 
+    overflow-wrap: break-word;
+}
 
 .destination-content p {
     margin: 0 0 15px;
@@ -555,7 +566,6 @@
 
     overflow: hidden;
 }
-
 
 .destination-link {
     display: inline-flex;
@@ -580,8 +590,9 @@
     padding-top: 50px;
 }
 
-
 .offers-grid {
+    width: 100%;
+
     display: grid;
 
     grid-template-columns: repeat(3, 1fr);
@@ -589,8 +600,9 @@
     gap: 25px;
 }
 
-
 .offer-card {
+    min-width: 0;
+
     overflow: hidden;
 
     background: white;
@@ -602,7 +614,6 @@
 
     transition: 0.3s;
 }
-
 
 .offer-card:hover {
     transform: translateY(-7px);
@@ -619,13 +630,13 @@
 .offer-image {
     position: relative;
 
+    width: 100%;
     height: 220px;
 
     overflow: hidden;
 
     background: #e2e8f0;
 }
-
 
 .offer-image img {
     width: 100%;
@@ -638,11 +649,9 @@
     transition: 0.5s;
 }
 
-
 .offer-card:hover .offer-image img {
     transform: scale(1.06);
 }
-
 
 .offer-no-image {
     width: 100%;
@@ -651,7 +660,6 @@
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     background:
@@ -665,7 +673,6 @@
 
     font-size: 55px;
 }
-
 
 .offer-badge {
     position: absolute;
@@ -694,7 +701,6 @@
     font-weight: 700;
 }
 
-
 .favorite-button {
     position: absolute;
 
@@ -715,7 +721,6 @@
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     font-size: 17px;
@@ -724,7 +729,6 @@
 
     transition: 0.3s;
 }
-
 
 .favorite-button:hover {
     background: #fee2e2;
@@ -740,9 +744,10 @@
 ========================================================= */
 
 .offer-content {
+    min-width: 0;
+
     padding: 23px;
 }
-
 
 .offer-location {
     display: flex;
@@ -756,8 +761,9 @@
     font-size: 12px;
 
     font-weight: 700;
-}
 
+    overflow-wrap: break-word;
+}
 
 .offer-content h3 {
     min-height: 48px;
@@ -769,8 +775,9 @@
     font-size: 19px;
 
     line-height: 1.4;
-}
 
+    overflow-wrap: break-word;
+}
 
 .offer-info {
     display: flex;
@@ -782,8 +789,9 @@
     margin-top: 12px;
 }
 
-
 .offer-info span {
+    max-width: 100%;
+
     padding: 6px 9px;
 
     border-radius: 7px;
@@ -793,8 +801,9 @@
     color: #64748b;
 
     font-size: 10px;
-}
 
+    overflow-wrap: break-word;
+}
 
 .offer-bottom {
     display: flex;
@@ -812,6 +821,9 @@
     border-top: 1px solid #e2e8f0;
 }
 
+.offer-price {
+    min-width: 0;
+}
 
 .offer-price small {
     display: block;
@@ -821,7 +833,6 @@
     font-size: 10px;
 }
 
-
 .offer-price strong {
     display: block;
 
@@ -830,13 +841,15 @@
     color: #0f172a;
 
     font-size: 18px;
-}
 
+    overflow-wrap: break-word;
+}
 
 .offer-button {
     display: inline-flex;
 
     align-items: center;
+    justify-content: center;
 
     gap: 7px;
 
@@ -857,8 +870,9 @@
     white-space: nowrap;
 
     transition: 0.3s;
-}
 
+    flex-shrink: 0;
+}
 
 .offer-button:hover {
     background: #2563eb;
@@ -881,8 +895,8 @@
     color: white;
 }
 
-
 .advantages-container {
+    width: 100%;
     max-width: 1200px;
 
     margin: auto;
@@ -896,11 +910,13 @@
     align-items: center;
 }
 
+.advantages-intro {
+    min-width: 0;
+}
 
 .advantages-intro .section-label {
     color: #38bdf8;
 }
-
 
 .advantages-intro h2 {
     margin: 15px 0;
@@ -908,15 +924,15 @@
     font-size: 42px;
 
     line-height: 1.2;
-}
 
+    overflow-wrap: break-word;
+}
 
 .advantages-intro h2 span {
     display: block;
 
     color: #38bdf8;
 }
-
 
 .advantages-intro p {
     max-width: 480px;
@@ -926,8 +942,9 @@
     line-height: 1.7;
 
     margin-bottom: 30px;
-}
 
+    overflow-wrap: break-word;
+}
 
 .advantages-button {
     display: inline-flex;
@@ -953,15 +970,15 @@
     transition: 0.3s;
 }
 
-
 .advantages-button:hover {
     background: #3b82f6;
 
     transform: translateY(-2px);
 }
 
-
 .advantages-grid {
+    min-width: 0;
+
     display: grid;
 
     grid-template-columns: repeat(2, 1fr);
@@ -969,8 +986,9 @@
     gap: 18px;
 }
 
-
 .advantage-card {
+    min-width: 0;
+
     padding: 25px;
 
     background: rgba(255, 255, 255, 0.06);
@@ -982,13 +1000,11 @@
     transition: 0.3s;
 }
 
-
 .advantage-card:hover {
     background: rgba(255, 255, 255, 0.1);
 
     transform: translateY(-4px);
 }
-
 
 .advantage-icon {
     width: 48px;
@@ -999,7 +1015,6 @@
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     background: rgba(56, 189, 248, 0.12);
@@ -1011,13 +1026,13 @@
     font-size: 23px;
 }
 
-
 .advantage-card h3 {
     margin: 0 0 10px;
 
     font-size: 17px;
-}
 
+    overflow-wrap: break-word;
+}
 
 .advantage-card p {
     margin: 0;
@@ -1027,6 +1042,8 @@
     font-size: 13px;
 
     line-height: 1.6;
+
+    overflow-wrap: break-word;
 }
 
 
@@ -1035,6 +1052,7 @@
 ========================================================= */
 
 .section-title-center {
+    width: 100%;
     max-width: 650px;
 
     margin: 0 auto 50px;
@@ -1042,8 +1060,9 @@
     text-align: center;
 }
 
-
 .steps-grid {
+    width: 100%;
+
     display: grid;
 
     grid-template-columns: repeat(3, 1fr);
@@ -1051,9 +1070,10 @@
     gap: 25px;
 }
 
-
 .step-card {
     position: relative;
+
+    min-width: 0;
 
     padding: 35px 30px;
 
@@ -1069,11 +1089,9 @@
     transition: 0.3s;
 }
 
-
 .step-card:hover {
     transform: translateY(-5px);
 }
-
 
 .step-number {
     position: absolute;
@@ -1088,7 +1106,6 @@
     font-weight: 800;
 }
 
-
 .step-icon {
     width: 65px;
     height: 65px;
@@ -1098,7 +1115,6 @@
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     background: #eff6ff;
@@ -1110,13 +1126,13 @@
     font-size: 28px;
 }
 
-
 .step-card h3 {
     margin: 0 0 10px;
 
     color: #0f172a;
-}
 
+    overflow-wrap: break-word;
+}
 
 .step-card p {
     margin: 0;
@@ -1126,6 +1142,8 @@
     font-size: 14px;
 
     line-height: 1.6;
+
+    overflow-wrap: break-word;
 }
 
 
@@ -1134,6 +1152,7 @@
 ========================================================= */
 
 .ia-section {
+    width: 100%;
     max-width: 1200px;
 
     margin: 30px auto 80px;
@@ -1141,8 +1160,9 @@
     padding: 0 30px;
 }
 
-
 .ia-content {
+    width: 100%;
+
     padding: 35px;
 
     display: grid;
@@ -1165,7 +1185,6 @@
     border: 1px solid #dbeafe;
 }
 
-
 .ia-icon {
     width: 65px;
     height: 65px;
@@ -1173,7 +1192,6 @@
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     border-radius: 17px;
@@ -1186,8 +1204,9 @@
         0 8px 20px rgba(37, 99, 235, 0.1);
 
     font-size: 30px;
-}
 
+    flex-shrink: 0;
+}
 
 .ia-content h2 {
     margin: 8px 0;
@@ -1195,8 +1214,9 @@
     color: #0f172a;
 
     font-size: 24px;
-}
 
+    overflow-wrap: break-word;
+}
 
 .ia-content p {
     margin: 0;
@@ -1206,8 +1226,9 @@
     font-size: 14px;
 
     line-height: 1.6;
-}
 
+    overflow-wrap: break-word;
+}
 
 .ia-button {
     display: inline-flex;
@@ -1233,8 +1254,9 @@
     white-space: nowrap;
 
     transition: 0.3s;
-}
 
+    flex-shrink: 0;
+}
 
 .ia-button:hover {
     background: #1d4ed8;
@@ -1261,7 +1283,6 @@
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     text-align: center;
@@ -1270,7 +1291,6 @@
 
     overflow: hidden;
 }
-
 
 .contact-overlay {
     position: absolute;
@@ -1284,17 +1304,16 @@
         );
 }
 
-
 .contact-content {
     position: relative;
 
     z-index: 2;
 
+    width: 100%;
     max-width: 750px;
 
     padding: 50px 25px;
 }
-
 
 .contact-label {
     color: #38bdf8;
@@ -1306,22 +1325,21 @@
     letter-spacing: 2px;
 }
 
-
 .contact-content h2 {
     margin: 15px 0;
 
     font-size: 43px;
 
     line-height: 1.2;
-}
 
+    overflow-wrap: break-word;
+}
 
 .contact-content h2 span {
     display: block;
 
     color: #38bdf8;
 }
-
 
 .contact-content p {
     margin-bottom: 30px;
@@ -1331,8 +1349,9 @@
     font-size: 16px;
 
     line-height: 1.7;
-}
 
+    overflow-wrap: break-word;
+}
 
 .contact-buttons {
     display: flex;
@@ -1342,18 +1361,16 @@
     gap: 15px;
 }
 
-
 .contact-buttons a {
     text-decoration: none;
 }
 
-
 .contact-primary,
-.contact-secondary {
+.contact-secondary,
+.contact-chatbot {
     display: inline-flex;
 
     justify-content: center;
-
     align-items: center;
 
     gap: 8px;
@@ -1369,8 +1386,9 @@
     cursor: pointer;
 
     transition: 0.3s;
-}
 
+    max-width: 100%;
+}
 
 .contact-primary {
     border: none;
@@ -1380,13 +1398,11 @@
     color: white;
 }
 
-
 .contact-primary:hover {
     background: #1d4ed8;
 
     transform: translateY(-3px);
 }
-
 
 .contact-secondary {
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -1396,16 +1412,32 @@
     color: white;
 }
 
-
 .contact-secondary:hover {
     background: white;
 
     color: #0f172a;
 }
 
+.contact-chatbot {
+    border: 1px solid rgba(56, 189, 248, 0.5);
+
+    background: rgba(56, 189, 248, 0.12);
+
+    color: #38bdf8;
+}
+
+.contact-chatbot:hover {
+    background: #38bdf8;
+
+    color: #0f172a;
+
+    transform: translateY(-3px);
+}
+
 
 /* =========================================================
    RESPONSIVE TABLETTE
+   NE MODIFIE PAS LE DESKTOP
 ========================================================= */
 
 @media (max-width: 1000px) {
@@ -1450,17 +1482,15 @@
 
 
 /* =========================================================
-   RESPONSIVE MOBILE
+   MOBILE
+   700px ET MOINS
 ========================================================= */
 
 @media (max-width: 700px) {
 
-    /* =====================================================
-       PAGE
-    ===================================================== */
-
     .home-page {
         width: 100%;
+        max-width: 100%;
         overflow-x: hidden;
     }
 
@@ -1470,6 +1500,7 @@
     ===================================================== */
 
     .home-hero {
+        width: 100%;
 
         min-height: 650px;
 
@@ -1480,16 +1511,12 @@
         justify-content: center;
     }
 
-
     .hero-content {
-
         width: 100%;
         max-width: 100%;
     }
 
-
     .hero-badge {
-
         max-width: 100%;
 
         padding: 9px 15px;
@@ -1501,9 +1528,7 @@
         text-align: center;
     }
 
-
     .hero-content h1 {
-
         font-size: 36px;
 
         line-height: 1.15;
@@ -1511,15 +1536,11 @@
         letter-spacing: -0.7px;
     }
 
-
     .hero-content h1 span {
-
         margin-top: 6px;
     }
 
-
     .hero-content p {
-
         max-width: 100%;
 
         margin: 20px auto;
@@ -1535,7 +1556,6 @@
     ===================================================== */
 
     .hero-buttons {
-
         width: 100%;
 
         flex-direction: column;
@@ -1547,16 +1567,12 @@
         margin-top: 25px;
     }
 
-
     .hero-buttons a {
-
         width: 100%;
     }
 
-
     .hero-primary-btn,
     .hero-secondary-btn {
-
         width: 100%;
 
         min-height: 52px;
@@ -1576,17 +1592,16 @@
     .destinations-section,
     .offers-section,
     .steps-section {
-
         width: 100%;
+
+        max-width: 100%;
 
         box-sizing: border-box;
 
         padding: 75px 20px 50px;
     }
 
-
     .section-heading {
-
         display: flex;
 
         flex-direction: column;
@@ -1598,10 +1613,8 @@
         margin-bottom: 30px;
     }
 
-
     .section-heading h2,
     .section-title-center h2 {
-
         font-size: 30px;
 
         line-height: 1.25;
@@ -1609,26 +1622,20 @@
         margin: 8px 0;
     }
 
-
     .section-heading p,
     .section-title-center p {
-
         font-size: 14px;
 
         line-height: 1.65;
     }
 
-
     .section-label {
-
         font-size: 10px;
 
         letter-spacing: 1.7px;
     }
 
-
     .see-all-link {
-
         font-size: 14px;
     }
 
@@ -1638,25 +1645,24 @@
     ===================================================== */
 
     .destination-grid {
+        width: 100%;
 
         grid-template-columns: 1fr;
 
         gap: 20px;
     }
 
-
     .destination-card {
-
         width: 100%;
+
+        min-width: 0;
 
         min-height: 390px;
 
         border-radius: 18px;
     }
 
-
     .destination-content {
-
         left: 20px;
 
         right: 20px;
@@ -1664,31 +1670,23 @@
         bottom: 20px;
     }
 
-
     .destination-content h3 {
-
         font-size: 25px;
 
         margin: 8px 0;
     }
 
-
     .destination-content p {
-
         font-size: 13px;
 
         line-height: 1.55;
     }
 
-
     .destination-location {
-
         font-size: 12px;
     }
 
-
     .destination-link {
-
         font-size: 14px;
     }
 
@@ -1698,47 +1696,38 @@
     ===================================================== */
 
     .offers-section {
-
         padding-top: 55px;
     }
 
-
     .offers-grid {
+        width: 100%;
 
         grid-template-columns: 1fr;
 
         gap: 22px;
     }
 
-
     .offer-card {
-
         width: 100%;
+
+        min-width: 0;
 
         border-radius: 18px;
     }
 
-
     .offer-image {
-
         height: 230px;
     }
 
-
     .offer-content {
-
         padding: 22px;
     }
 
-
     .offer-location {
-
         font-size: 12px;
     }
 
-
     .offer-content h3 {
-
         min-height: auto;
 
         margin: 10px 0;
@@ -1748,25 +1737,19 @@
         line-height: 1.4;
     }
 
-
     .offer-info {
-
         gap: 8px;
 
         margin-top: 14px;
     }
 
-
     .offer-info span {
-
         padding: 7px 10px;
 
         font-size: 11px;
     }
 
-
     .offer-bottom {
-
         margin-top: 20px;
 
         padding-top: 18px;
@@ -1774,21 +1757,15 @@
         gap: 15px;
     }
 
-
     .offer-price small {
-
         font-size: 11px;
     }
 
-
     .offer-price strong {
-
         font-size: 19px;
     }
 
-
     .offer-button {
-
         min-height: 42px;
 
         padding: 10px 15px;
@@ -1802,15 +1779,16 @@
     ===================================================== */
 
     .advantages-section {
+        width: 100%;
 
         margin-top: 40px;
 
         padding: 70px 20px;
+
+        box-sizing: border-box;
     }
 
-
     .advantages-container {
-
         width: 100%;
 
         grid-template-columns: 1fr;
@@ -1818,17 +1796,13 @@
         gap: 40px;
     }
 
-
     .advantages-intro h2 {
-
         font-size: 34px;
 
         line-height: 1.25;
     }
 
-
     .advantages-intro p {
-
         max-width: 100%;
 
         font-size: 14px;
@@ -1836,9 +1810,7 @@
         line-height: 1.7;
     }
 
-
     .advantages-button {
-
         min-height: 48px;
 
         padding: 12px 18px;
@@ -1846,25 +1818,19 @@
         font-size: 14px;
     }
 
-
     .advantages-grid {
-
         grid-template-columns: 1fr;
 
         gap: 15px;
     }
 
-
     .advantage-card {
-
         padding: 22px;
 
         border-radius: 16px;
     }
 
-
     .advantage-icon {
-
         width: 50px;
 
         height: 50px;
@@ -1872,15 +1838,11 @@
         font-size: 23px;
     }
 
-
     .advantage-card h3 {
-
         font-size: 18px;
     }
 
-
     .advantage-card p {
-
         font-size: 14px;
 
         line-height: 1.65;
@@ -1892,31 +1854,24 @@
     ===================================================== */
 
     .steps-section {
-
         padding-top: 75px;
 
         padding-bottom: 60px;
     }
 
-
     .steps-grid {
-
         grid-template-columns: 1fr;
 
         gap: 20px;
     }
 
-
     .step-card {
-
         padding: 32px 24px;
 
         border-radius: 17px;
     }
 
-
     .step-number {
-
         top: 18px;
 
         right: 18px;
@@ -1924,9 +1879,7 @@
         font-size: 28px;
     }
 
-
     .step-icon {
-
         width: 68px;
 
         height: 68px;
@@ -1936,15 +1889,11 @@
         font-size: 29px;
     }
 
-
     .step-card h3 {
-
         font-size: 18px;
     }
 
-
     .step-card p {
-
         font-size: 14px;
 
         line-height: 1.65;
@@ -1956,8 +1905,9 @@
     ===================================================== */
 
     .ia-section {
-
         width: 100%;
+
+        max-width: 100%;
 
         box-sizing: border-box;
 
@@ -1966,8 +1916,8 @@
         margin: 30px auto 60px;
     }
 
-
     .ia-content {
+        width: 100%;
 
         grid-template-columns: 1fr;
 
@@ -1980,9 +1930,7 @@
         border-radius: 19px;
     }
 
-
     .ia-icon {
-
         width: 65px;
 
         height: 65px;
@@ -1992,23 +1940,17 @@
         font-size: 29px;
     }
 
-
     .ia-content h2 {
-
         font-size: 23px;
     }
 
-
     .ia-content p {
-
         font-size: 14px;
 
         line-height: 1.65;
     }
 
-
     .ia-button {
-
         grid-column: auto;
 
         justify-self: center;
@@ -2026,47 +1968,42 @@
     ===================================================== */
 
     .home-contact {
+        width: 100%;
 
         min-height: 500px;
 
         padding: 20px;
+
+        box-sizing: border-box;
     }
 
-
     .contact-content {
-
         width: 100%;
+
+        max-width: 100%;
 
         box-sizing: border-box;
 
         padding: 50px 10px;
     }
 
-
     .contact-label {
-
         font-size: 10px;
     }
 
-
     .contact-content h2 {
-
         font-size: 35px;
 
         line-height: 1.25;
     }
 
-
     .contact-content p {
-
         font-size: 15px;
 
         line-height: 1.7;
     }
 
-
     .contact-buttons {
-
         width: 100%;
 
         flex-direction: column;
@@ -2076,11 +2013,13 @@
         gap: 12px;
     }
 
+    .contact-buttons a {
+        width: 100%;
+    }
 
     .contact-primary,
     .contact-secondary,
     .contact-chatbot {
-
         width: 100%;
 
         min-height: 50px;
@@ -2096,97 +2035,69 @@
 
 /* =========================================================
    PETITS TÉLÉPHONES
+   480px ET MOINS
 ========================================================= */
 
 @media (max-width: 480px) {
 
-    /* =====================================================
-       HERO
-    ===================================================== */
-
     .home-hero {
-
         min-height: 620px;
 
         padding: 70px 18px 60px;
     }
 
-
     .hero-badge {
-
         font-size: 11px;
 
         padding: 8px 13px;
     }
 
-
     .hero-content h1 {
-
         font-size: 31px;
 
         line-height: 1.15;
     }
 
-
     .hero-content p {
-
         font-size: 15px;
 
         margin: 18px auto;
     }
 
-
     .hero-primary-btn,
     .hero-secondary-btn {
-
         min-height: 50px;
 
         font-size: 14px;
     }
 
 
-    /* =====================================================
-       SECTIONS
-    ===================================================== */
-
     .destinations-section,
     .offers-section,
     .steps-section {
-
         padding-left: 18px;
 
         padding-right: 18px;
     }
 
-
     .section-heading h2,
     .section-title-center h2 {
-
         font-size: 27px;
     }
 
-
     .section-heading p,
     .section-title-center p {
-
         font-size: 13px;
     }
 
 
-    /* =====================================================
-       DESTINATIONS
-    ===================================================== */
-
     .destination-card {
-
         min-height: 350px;
 
         border-radius: 17px;
     }
 
-
     .destination-content {
-
         left: 18px;
 
         right: 18px;
@@ -2194,51 +2105,34 @@
         bottom: 18px;
     }
 
-
     .destination-content h3 {
-
         font-size: 23px;
     }
 
-
     .destination-content p {
-
         font-size: 12px;
     }
 
 
-    /* =====================================================
-       OFFRES
-    ===================================================== */
-
     .offer-image {
-
         height: 210px;
     }
 
-
     .offer-content {
-
         padding: 20px;
     }
 
-
     .offer-content h3 {
-
         font-size: 18px;
     }
 
-
     .offer-info span {
-
         font-size: 10px;
 
         padding: 6px 9px;
     }
 
-
     .offer-bottom {
-
         flex-direction: column;
 
         align-items: stretch;
@@ -2246,9 +2140,7 @@
         gap: 15px;
     }
 
-
     .offer-button {
-
         width: 100%;
 
         box-sizing: border-box;
@@ -2259,84 +2151,53 @@
     }
 
 
-    /* =====================================================
-       AVANTAGES
-    ===================================================== */
-
     .advantages-section {
-
         padding: 60px 18px;
     }
 
-
     .advantages-intro h2 {
-
         font-size: 30px;
     }
 
-
     .advantage-card {
-
         padding: 20px;
     }
 
 
-    /* =====================================================
-       IA
-    ===================================================== */
-
     .ia-section {
-
         padding: 0 18px;
     }
 
-
     .ia-content {
-
         padding: 27px 18px;
     }
 
-
     .ia-content h2 {
-
         font-size: 21px;
     }
 
 
-    /* =====================================================
-       CONTACT
-    ===================================================== */
-
     .home-contact {
-
         min-height: 520px;
 
         padding: 18px;
     }
 
-
     .contact-content {
-
         padding: 45px 5px;
     }
 
-
     .contact-content h2 {
-
         font-size: 30px;
     }
 
-
     .contact-content p {
-
         font-size: 14px;
     }
-
 
     .contact-primary,
     .contact-secondary,
     .contact-chatbot {
-
         min-height: 48px;
 
         font-size: 13px;
@@ -2348,101 +2209,813 @@
 
 /* =========================================================
    TRÈS PETITS TÉLÉPHONES
+   360px ET MOINS
 ========================================================= */
 
 @media (max-width: 360px) {
 
-    .home-hero {
-
-        min-height: 600px;
-
-        padding: 60px 15px;
+    .home-page {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
+    .home-hero {
+        min-height: 590px;
+
+        padding: 55px 14px 50px;
+
+        background-position: center center;
+    }
+
+    .hero-content {
+        width: 100%;
+
+        max-width: 100%;
+    }
+
+    .hero-badge {
+        max-width: calc(100% - 10px);
+
+        padding: 7px 11px;
+
+        margin-bottom: 18px;
+
+        font-size: 10px;
+
+        gap: 6px;
+    }
 
     .hero-content h1 {
+        font-size: 27px;
 
-        font-size: 28px;
+        line-height: 1.12;
+
+        letter-spacing: -0.5px;
+    }
+
+    .hero-content h1 span {
+        margin-top: 5px;
+    }
+
+    .hero-content p {
+        width: 100%;
+
+        max-width: 100%;
+
+        margin: 17px auto;
+
+        font-size: 13px;
+
+        line-height: 1.6;
     }
 
 
-    .hero-content p {
+    /* =====================================================
+       HERO BUTTONS
+    ===================================================== */
 
-        font-size: 14px;
+    .hero-buttons {
+        width: 100%;
+
+        margin-top: 20px;
+
+        gap: 9px;
+    }
+
+    .hero-buttons a {
+        width: 100%;
+
+        display: block;
+    }
+
+    .hero-primary-btn,
+    .hero-secondary-btn {
+        width: 100%;
+
+        min-height: 47px;
+
+        padding: 11px 13px;
+
+        font-size: 13px;
+
+        border-radius: 9px;
+    }
+
+
+    /* =====================================================
+       SECTIONS
+    ===================================================== */
+
+    .destinations-section,
+    .offers-section,
+    .steps-section {
+        width: 100%;
+
+        max-width: 100%;
+
+        padding: 55px 14px 40px;
+    }
+
+    .section-heading {
+        width: 100%;
+
+        gap: 12px;
+
+        margin-bottom: 25px;
+    }
+
+    .section-label {
+        font-size: 9px;
+
+        letter-spacing: 1.4px;
+    }
+
+    .section-heading h2,
+    .section-title-center h2 {
+        font-size: 23px;
+
+        line-height: 1.22;
+
+        margin: 7px 0;
+    }
+
+    .section-heading p,
+    .section-title-center p {
+        font-size: 12px;
+
+        line-height: 1.6;
+    }
+
+    .see-all-link {
+        font-size: 12px;
+
+        gap: 5px;
+
+        white-space: normal;
+    }
+
+
+    /* =====================================================
+       DESTINATIONS
+    ===================================================== */
+
+    .destination-grid {
+        width: 100%;
+
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+    }
+
+    .destination-card {
+        width: 100%;
+
+        min-width: 0;
+
+        min-height: 315px;
+
+        border-radius: 15px;
+    }
+
+    .destination-content {
+        left: 15px;
+
+        right: 15px;
+
+        bottom: 15px;
+    }
+
+    .destination-location {
+        font-size: 10px;
+
+        gap: 5px;
+    }
+
+    .destination-content h3 {
+        font-size: 20px;
+
+        line-height: 1.2;
+
+        margin: 6px 0;
+    }
+
+    .destination-content p {
+        font-size: 11px;
+
+        line-height: 1.45;
+
+        margin-bottom: 11px;
+    }
+
+    .destination-link {
+        font-size: 12px;
+
+        gap: 5px;
+    }
+
+    .destination-no-image {
+        font-size: 42px;
+    }
+
+
+    /* =====================================================
+       OFFRES
+    ===================================================== */
+
+    .offers-section {
+        padding-top: 45px;
+    }
+
+    .offers-grid {
+        width: 100%;
+
+        grid-template-columns: 1fr;
+
+        gap: 16px;
+    }
+
+    .offer-card {
+        width: 100%;
+
+        border-radius: 15px;
+    }
+
+    .offer-image {
+        width: 100%;
+
+        height: 175px;
+    }
+
+    .offer-content {
+        padding: 16px;
+    }
+
+    .offer-location {
+        font-size: 10px;
+
+        gap: 5px;
+    }
+
+    .offer-content h3 {
+        min-height: auto;
+
+        margin: 7px 0;
+
+        font-size: 16px;
+
+        line-height: 1.35;
+    }
+
+    .offer-info {
+        gap: 5px;
+
+        margin-top: 10px;
+    }
+
+    .offer-info span {
+        padding: 5px 7px;
+
+        font-size: 9px;
+
+        border-radius: 6px;
+    }
+
+    .offer-badge {
+        top: 9px;
+
+        left: 9px;
+
+        max-width: 130px;
+
+        padding: 5px 8px;
+
+        font-size: 8px;
+    }
+
+    .favorite-button {
+        top: 9px;
+
+        right: 9px;
+
+        width: 31px;
+
+        height: 31px;
+
+        font-size: 13px;
+    }
+
+    .offer-bottom {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 11px;
+
+        margin-top: 15px;
+
+        padding-top: 14px;
+    }
+
+    .offer-price small {
+        font-size: 9px;
+    }
+
+    .offer-price strong {
+        font-size: 16px;
+    }
+
+    .offer-button {
+        width: 100%;
+
+        min-height: 40px;
+
+        padding: 9px 12px;
+
+        justify-content: center;
+
+        font-size: 11px;
+
+        border-radius: 8px;
+    }
+
+    .offer-no-image {
+        font-size: 42px;
+    }
+
+
+    /* =====================================================
+       AVANTAGES
+    ===================================================== */
+
+    .advantages-section {
+        width: 100%;
+
+        margin-top: 30px;
+
+        padding: 50px 14px;
+
+        box-sizing: border-box;
+    }
+
+    .advantages-container {
+        width: 100%;
+
+        grid-template-columns: 1fr;
+
+        gap: 30px;
+    }
+
+    .advantages-intro h2 {
+        font-size: 27px;
+
+        line-height: 1.2;
+    }
+
+    .advantages-intro p {
+        width: 100%;
+
+        font-size: 12px;
+
+        line-height: 1.6;
+
+        margin-bottom: 22px;
+    }
+
+    .advantages-button {
+        min-height: 44px;
+
+        padding: 10px 14px;
+
+        font-size: 12px;
+
+        border-radius: 8px;
+    }
+
+    .advantages-grid {
+        grid-template-columns: 1fr;
+
+        gap: 11px;
+    }
+
+    .advantage-card {
+        padding: 17px;
+
+        border-radius: 13px;
+    }
+
+    .advantage-icon {
+        width: 43px;
+
+        height: 43px;
+
+        margin-bottom: 13px;
+
+        font-size: 19px;
+
+        border-radius: 10px;
+    }
+
+    .advantage-card h3 {
+        font-size: 15px;
+
+        margin-bottom: 7px;
+    }
+
+    .advantage-card p {
+        font-size: 11px;
+
+        line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       COMMENT ÇA MARCHE
+    ===================================================== */
+
+    .steps-section {
+        padding-top: 55px;
+
+        padding-bottom: 45px;
+    }
+
+    .section-title-center {
+        width: 100%;
+
+        margin-bottom: 30px;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+    .step-card {
+        padding: 27px 18px;
+
+        border-radius: 14px;
+    }
+
+    .step-number {
+        top: 13px;
+
+        right: 14px;
+
+        font-size: 23px;
+    }
+
+    .step-icon {
+        width: 57px;
+
+        height: 57px;
+
+        margin: 5px auto 15px;
+
+        font-size: 24px;
+    }
+
+    .step-card h3 {
+        font-size: 16px;
+
+        margin-bottom: 7px;
+    }
+
+    .step-card p {
+        font-size: 11px;
+
+        line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       IA
+    ===================================================== */
+
+    .ia-section {
+        width: 100%;
+
+        max-width: 100%;
+
+        box-sizing: border-box;
+
+        padding: 0 14px;
+
+        margin: 25px auto 45px;
+    }
+
+    .ia-content {
+        width: 100%;
+
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+
+        padding: 23px 15px;
+
+        box-sizing: border-box;
+
+        border-radius: 15px;
+    }
+
+    .ia-icon {
+        width: 55px;
+
+        height: 55px;
+
+        margin: 0 auto;
+
+        font-size: 24px;
+
+        border-radius: 13px;
+    }
+
+    .ia-content h2 {
+        font-size: 19px;
+
+        line-height: 1.25;
+
+        margin: 6px 0;
+    }
+
+    .ia-content p {
+        font-size: 11px;
+
+        line-height: 1.55;
+    }
+
+    .ia-button {
+        width: auto;
+
+        min-height: 42px;
+
+        justify-self: center;
+
+        padding: 10px 15px;
+
+        font-size: 11px;
+
+        border-radius: 8px;
+    }
+
+
+    /* =====================================================
+       CONTACT
+    ===================================================== */
+
+    .home-contact {
+        width: 100%;
+
+        min-height: 500px;
+
+        padding: 15px;
+
+        box-sizing: border-box;
+    }
+
+    .contact-content {
+        width: 100%;
+
+        max-width: 100%;
+
+        padding: 40px 3px;
+
+        box-sizing: border-box;
+    }
+
+    .contact-label {
+        font-size: 9px;
+
+        letter-spacing: 1.4px;
+    }
+
+    .contact-content h2 {
+        font-size: 26px;
+
+        line-height: 1.2;
+
+        margin: 12px 0;
+    }
+
+    .contact-content p {
+        font-size: 12px;
+
+        line-height: 1.6;
+
+        margin-bottom: 22px;
+    }
+
+    .contact-buttons {
+        width: 100%;
+
+        gap: 9px;
+    }
+
+    .contact-buttons a {
+        width: 100%;
+    }
+
+    .contact-primary,
+    .contact-secondary,
+    .contact-chatbot {
+        width: 100%;
+
+        min-height: 45px;
+
+        padding: 10px 13px;
+
+        font-size: 12px;
+
+        border-radius: 8px;
+    }
+}
+
+
+/* =========================================================
+   TÉLÉPHONES EXTRÊMEMENT PETITS
+   320px ET MOINS
+========================================================= */
+
+@media (max-width: 320px) {
+
+    .home-hero {
+        min-height: 570px;
+
+        padding: 50px 12px 45px;
+    }
+
+    .hero-badge {
+        font-size: 9px;
+
+        padding: 6px 9px;
+    }
+
+    .hero-content h1 {
+        font-size: 24px;
+    }
+
+    .hero-content p {
+        font-size: 12px;
+
+        line-height: 1.55;
+    }
+
+    .hero-primary-btn,
+    .hero-secondary-btn {
+        min-height: 44px;
+
+        font-size: 12px;
+
+        padding: 10px;
     }
 
 
     .destinations-section,
     .offers-section,
     .steps-section {
+        padding-left: 12px;
 
-        padding-left: 15px;
-
-        padding-right: 15px;
+        padding-right: 12px;
     }
-
 
     .section-heading h2,
     .section-title-center h2 {
+        font-size: 21px;
+    }
 
-        font-size: 25px;
+    .section-heading p,
+    .section-title-center p {
+        font-size: 11px;
+    }
+
+    .see-all-link {
+        font-size: 11px;
     }
 
 
     .destination-card {
-
-        min-height: 330px;
+        min-height: 290px;
     }
 
+    .destination-content {
+        left: 13px;
+
+        right: 13px;
+
+        bottom: 13px;
+    }
 
     .destination-content h3 {
+        font-size: 19px;
+    }
 
-        font-size: 21px;
+    .destination-content p {
+        font-size: 10px;
     }
 
 
     .offer-image {
-
-        height: 190px;
+        height: 160px;
     }
-
 
     .offer-content {
-
-        padding: 18px;
+        padding: 14px;
     }
 
-
     .offer-content h3 {
+        font-size: 15px;
+    }
 
-        font-size: 17px;
+    .offer-info span {
+        font-size: 8px;
+
+        padding: 4px 6px;
+    }
+
+    .offer-price strong {
+        font-size: 15px;
+    }
+
+    .offer-button {
+        font-size: 10px;
+
+        min-height: 38px;
     }
 
 
     .advantages-section {
+        padding-left: 12px;
 
-        padding-left: 15px;
-
-        padding-right: 15px;
+        padding-right: 12px;
     }
 
-
     .advantages-intro h2 {
+        font-size: 25px;
+    }
 
-        font-size: 28px;
+    .advantage-card {
+        padding: 15px;
+    }
+
+    .advantage-card h3 {
+        font-size: 14px;
+    }
+
+    .advantage-card p {
+        font-size: 10px;
     }
 
 
     .ia-section {
+        padding-left: 12px;
 
-        padding-left: 15px;
+        padding-right: 12px;
+    }
 
-        padding-right: 15px;
+    .ia-content {
+        padding: 20px 13px;
+    }
+
+    .ia-content h2 {
+        font-size: 18px;
+    }
+
+    .ia-content p {
+        font-size: 10px;
     }
 
 
-    .contact-content h2 {
+    .home-contact {
+        min-height: 480px;
 
-        font-size: 27px;
+        padding: 12px;
+    }
+
+    .contact-content {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .contact-content h2 {
+        font-size: 24px;
+    }
+
+    .contact-content p {
+        font-size: 11px;
+    }
+
+    .contact-primary,
+    .contact-secondary,
+    .contact-chatbot {
+        min-height: 43px;
+
+        font-size: 11px;
+
+        padding: 10px 11px;
     }
 }

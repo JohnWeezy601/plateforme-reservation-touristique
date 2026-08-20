@@ -3,7 +3,6 @@
 ========================================================= */
 
 .navbar-public {
-
     width: 100%;
     min-height: 80px;
     height: 80px;
@@ -22,8 +21,9 @@
         0 5px 20px rgba(0, 0, 0, .15);
 
     position: relative;
-
     z-index: 1000;
+
+    overflow: visible;
 }
 
 
@@ -32,7 +32,6 @@
 ========================================================= */
 
 .logo-public {
-
     display: flex;
     align-items: center;
 
@@ -48,19 +47,13 @@
     flex-shrink: 0;
 }
 
-
 .logo-icon {
-
     font-size: 25px;
-
     flex-shrink: 0;
 }
 
-
 .logo-text {
-
     color: white;
-
 }
 
 
@@ -69,7 +62,6 @@
 ========================================================= */
 
 .navbar-navigation {
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,18 +75,14 @@
 
     flex: 1;
 
+    min-width: 0;
 }
-
 
 .navbar-navigation li {
-
     list-style: none;
-
 }
 
-
 .navbar-navigation a {
-
     display: flex;
     align-items: center;
 
@@ -109,14 +97,10 @@
     white-space: nowrap;
 
     transition: .2s ease;
-
 }
 
-
 .navbar-navigation a:hover {
-
     color: #D6E4F0;
-
 }
 
 
@@ -125,7 +109,6 @@
 ========================================================= */
 
 .btn-login-client {
-
     background: #294A63;
 
     color: white !important;
@@ -144,14 +127,10 @@
     white-space: nowrap;
 
     flex-shrink: 0;
-
 }
 
-
 .btn-login-client:hover {
-
     background: #223E54;
-
 }
 
 
@@ -160,17 +139,13 @@
 ========================================================= */
 
 .client-actions {
-
     display: flex;
-
     align-items: center;
-
     justify-content: flex-end;
 
     gap: 18px;
 
     flex-shrink: 0;
-
 }
 
 
@@ -179,27 +154,15 @@
 ========================================================= */
 
 .menu-principal-container {
-
     position: relative;
 
     display: flex;
-
     align-items: center;
-
 }
 
-
-/*
-   IMPORTANT :
-   Le bouton reste toujours ☰.
-*/
-
 .menu-principal-button {
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 8px;
@@ -221,21 +184,14 @@
     white-space: nowrap;
 
     transition: .2s ease;
-
 }
-
 
 .menu-principal-button svg {
-
     font-size: 21px;
-
 }
 
-
 .menu-principal-button:hover {
-
     color: #D6E4F0;
-
 }
 
 
@@ -244,7 +200,6 @@
 ========================================================= */
 
 .menu-principal {
-
     position: absolute;
 
     top: calc(100% + 12px);
@@ -263,14 +218,10 @@
 
     animation:
         menuPrincipalDown .2s ease;
-
 }
 
-
 .menu-principal a {
-
     display: flex;
-
     align-items: center;
 
     gap: 12px;
@@ -301,52 +252,36 @@
         0 4px 12px rgba(0,0,0,.12);
 
     transition: .2s ease;
-
 }
-
 
 .menu-principal a:last-child {
-
     margin-bottom: 0;
-
 }
 
-
 .menu-principal a svg {
-
     color: #355C7D;
 
     font-size: 16px;
 
     flex-shrink: 0;
-
 }
 
-
 .menu-principal a:hover {
-
     background: #eef5fa;
 
     color: #294A63;
 
     transform: translateX(2px);
-
 }
-
 
 .menu-principal a:hover svg {
-
     color: #294A63;
-
 }
 
-
 .menu-principal a.active {
-
     background: #e5eff6;
 
     color: #294A63;
-
 }
 
 
@@ -357,23 +292,19 @@
 @keyframes menuPrincipalDown {
 
     from {
-
         opacity: 0;
 
         transform:
             translateX(-50%)
             translateY(-8px);
-
     }
 
     to {
-
         opacity: 1;
 
         transform:
             translateX(-50%)
             translateY(0);
-
     }
 
 }
@@ -391,7 +322,6 @@
     height: 38px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
@@ -410,31 +340,21 @@
     transition: .2s ease;
 
     flex-shrink: 0;
-
 }
-
 
 .notification-button {
-
     margin-left: 8px;
-
 }
 
-
 .navbar-icon-button:hover {
-
     color: #D6E4F0;
 
     background:
         rgba(255,255,255,.08);
-
 }
 
-
 .history-button {
-
     margin-left: 0;
-
 }
 
 
@@ -457,7 +377,6 @@
     box-sizing: border-box;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
@@ -472,7 +391,6 @@
     font-weight: bold;
 
     border: 2px solid #355C7D;
-
 }
 
 
@@ -485,11 +403,8 @@
     position: relative;
 
     display: flex;
-
     align-items: center;
-
 }
-
 
 .profil-button {
 
@@ -497,7 +412,6 @@
     height: 40px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
@@ -514,17 +428,13 @@
     font-size: 20px;
 
     flex-shrink: 0;
-
 }
-
 
 .profil-button:hover {
 
     background:
         rgba(255,255,255,.08);
-
 }
-
 
 .profil-photo {
 
@@ -536,7 +446,6 @@
     object-fit: cover;
 
     border: 2px solid white;
-
 }
 
 
@@ -559,9 +468,7 @@
     background: transparent;
 
     z-index: 3000;
-
 }
-
 
 .profil-menu button {
 
@@ -570,7 +477,6 @@
     box-sizing: border-box;
 
     display: flex;
-
     align-items: center;
 
     gap: 11px;
@@ -601,30 +507,21 @@
         0 4px 12px rgba(0,0,0,.12);
 
     transition: .2s ease;
-
 }
-
 
 .profil-menu button:last-child {
-
     margin-bottom: 0;
-
 }
-
 
 .profil-menu button svg {
 
     color: #355C7D;
 
     flex-shrink: 0;
-
 }
 
-
 .profil-menu button:hover {
-
     background: #eef5fa;
-
 }
 
 
@@ -633,24 +530,16 @@
 ========================================================= */
 
 .profil-menu button.logout {
-
     color: #dc2626;
-
 }
-
 
 .profil-menu button.logout svg {
-
     color: #dc2626;
-
 }
 
-
 .profil-menu button.logout:hover {
-
     background:
         rgba(220,38,38,.08);
-
 }
 
 
@@ -680,9 +569,7 @@
     padding: 20px;
 
     box-sizing: border-box;
-
 }
-
 
 .modal-photo-content {
 
@@ -699,18 +586,14 @@
     text-align: center;
 
     box-sizing: border-box;
-
 }
-
 
 .modal-photo-content h3 {
 
     margin-top: 0;
 
     color: #334155;
-
 }
-
 
 .modal-photo-content input {
 
@@ -719,9 +602,7 @@
     margin: 20px 0;
 
     box-sizing: border-box;
-
 }
-
 
 .modal-actions {
 
@@ -730,9 +611,7 @@
     justify-content: center;
 
     gap: 15px;
-
 }
-
 
 .btn-save-photo {
 
@@ -747,16 +626,11 @@
     border: none;
 
     cursor: pointer;
-
 }
-
 
 .btn-save-photo:hover {
-
     background: #294A63;
-
 }
-
 
 .btn-cancel-photo {
 
@@ -771,14 +645,10 @@
     border: none;
 
     cursor: pointer;
-
 }
 
-
 .btn-cancel-photo:hover {
-
     background: #b91c1c;
-
 }
 
 
@@ -801,65 +671,39 @@
     box-shadow: none;
 
     z-index: 10000;
-
 }
-
 
 .navbar-public.navbar-home .logo-public {
-
     color: white;
-
 }
-
 
 .navbar-public.navbar-home .navbar-navigation a {
-
     color: white;
-
 }
-
 
 .navbar-public.navbar-home .navbar-navigation a:hover {
-
     color: #D6E4F0;
-
 }
-
 
 .navbar-public.navbar-home .menu-principal-button {
-
     color: white;
-
 }
-
 
 .navbar-public.navbar-home .menu-principal-button:hover {
-
     color: #D6E4F0;
-
 }
-
 
 .navbar-public.navbar-home .navbar-icon-button {
-
     color: white;
-
 }
-
 
 .navbar-public.navbar-home .navbar-icon-button:hover {
-
     color: #facc15;
-
 }
-
 
 .navbar-public.navbar-home .profil-button {
-
     color: white;
-
 }
-
 
 .navbar-public.navbar-home .btn-login-client {
 
@@ -873,241 +717,198 @@
 
     backdrop-filter:
         blur(8px);
-
 }
 
 
 /* =========================================================
    TABLETTE
+   DESKTOP NON MODIFIÉ
 ========================================================= */
 
 @media (max-width: 1100px) {
 
     .navbar-public {
-
         padding: 0 25px;
-
     }
-
 
     .navbar-navigation {
-
         gap: 15px;
-
     }
-
 
     .navbar-navigation a {
-
         font-size: 14px;
-
         gap: 5px;
-
     }
-
 
     .logo-public {
-
         font-size: 19px;
-
     }
-
 
     .client-actions {
-
         gap: 14px;
-
     }
-
 }
 
 
 /* =========================================================
    TABLETTE PETITE
-   IMPORTANT :
-   On garde la navigation NON CONNECTÉE visible.
 ========================================================= */
 
 @media (max-width: 900px) {
 
     .navbar-public {
-
         padding: 0 18px;
-
     }
-
 
     .logo-public {
-
         font-size: 17px;
-
         gap: 7px;
-
     }
-
 
     .logo-icon {
-
         font-size: 21px;
-
     }
-
 
     .navbar-navigation {
-
         gap: 10px;
-
     }
-
 
     .navbar-navigation a {
-
         font-size: 13px;
-
         gap: 4px;
-
     }
-
 
     .btn-login-client {
-
         padding: 10px 13px;
-
         font-size: 13px;
-
     }
-
 
     .client-actions {
-
         gap: 8px;
-
     }
-
 
     .navbar-icon-button {
-
         width: 35px;
         height: 35px;
-
         font-size: 18px;
-
     }
-
 
     .profil-button {
-
         width: 36px;
         height: 36px;
-
     }
-
 
     .profil-photo {
-
         width: 36px;
         height: 36px;
-
     }
-
 }
 
 
 /* =========================================================
    MOBILE
-========================================================= */
+   ========================================================= */
 
 @media (max-width: 768px) {
 
+    /*
+       IMPORTANT :
+       On passe à une vraie structure mobile.
+
+       Ligne 1 :
+       LOGO                    PROFIL / ACTIONS
+
+       Ligne 2 :
+       NAVIGATION
+    */
+
     .navbar-public {
 
-        min-height: 64px;
+        width: 100%;
 
+        min-height: 0;
         height: auto;
 
         padding: 9px 12px;
 
-        flex-wrap: nowrap;
+        display: flex;
 
+        flex-wrap: wrap;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        box-sizing: border-box;
+
+        overflow: visible;
     }
 
 
     /* =====================================================
-       LOGO
+       LOGO MOBILE
     ===================================================== */
 
     .logo-public {
+
+        flex: 1 1 auto;
+
+        min-width: 0;
 
         font-size: 16px;
 
         gap: 6px;
 
+        overflow: hidden;
     }
-
 
     .logo-icon {
-
         font-size: 20px;
 
+        flex-shrink: 0;
     }
 
-
-    /*
-       Le texte du logo peut se réduire mais
-       reste visible.
-    */
-
     .logo-text {
+
+        max-width: none;
+
+        min-width: 0;
 
         overflow: hidden;
 
         text-overflow: ellipsis;
 
-        max-width: 180px;
-
+        white-space: nowrap;
     }
 
 
     /* =====================================================
-       UTILISATEUR NON CONNECTÉ
-       
-       ON NE CACHE PLUS navbar-navigation.
-       
-       Les liens restent visibles.
+       ACTIONS CONNECTÉES
+       RESTENT SUR LA PREMIÈRE LIGNE
     ===================================================== */
 
-    .navbar-navigation {
+    .client-actions {
+
+        flex: 0 0 auto;
 
         display: flex;
 
-        flex: 1;
-
-        justify-content: flex-end;
-
-        gap: 8px;
-
-        margin-left: 12px;
-
-    }
-
-
-    .navbar-navigation a {
-
-        font-size: 12px;
+        align-items: center;
 
         gap: 4px;
 
+        margin-left: 8px;
     }
 
 
-    .navbar-navigation a svg {
-
-        font-size: 13px;
-
-    }
-
+    /* =====================================================
+       BOUTON CONNEXION
+       RESTE SUR LA PREMIÈRE LIGNE
+    ===================================================== */
 
     .btn-login-client {
+
+        flex: 0 0 auto;
 
         padding: 8px 10px;
 
@@ -1116,70 +917,126 @@
         border-radius: 8px;
 
         margin-left: 8px;
-
     }
 
 
     /* =====================================================
-       UTILISATEUR CONNECTÉ
+       NAVIGATION
+       DEUXIÈME LIGNE
     ===================================================== */
 
-    .client-actions {
+    .navbar-navigation {
+
+        order: 10;
+
+        flex: 0 0 100%;
+
+        width: 100%;
+
+        min-width: 0;
+
+        margin: 9px 0 0 0;
+
+        padding: 7px 0 2px;
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        align-items: center;
+
+        gap: 6px 12px;
+
+        box-sizing: border-box;
+
+        border-top:
+            1px solid rgba(255,255,255,.15);
+    }
+
+
+    .navbar-navigation li {
+
+        flex: 0 0 auto;
+
+        min-width: 0;
+    }
+
+
+    .navbar-navigation a {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
 
         gap: 4px;
 
+        font-size: 12px;
+
+        white-space: nowrap;
+
+        padding: 3px 0;
     }
 
+
+    .navbar-navigation a svg {
+
+        font-size: 13px;
+
+        flex-shrink: 0;
+    }
+
+
+    /* =====================================================
+       MENU PRINCIPAL
+    ===================================================== */
 
     .menu-principal-button {
 
         font-size: 0;
 
         padding: 7px;
-
     }
-
 
     .menu-principal-button svg {
-
         font-size: 21px;
-
     }
 
 
-    .notification-button {
-
-        margin-left: 7px;
-
-    }
-
+    /* =====================================================
+       ICÔNES
+    ===================================================== */
 
     .navbar-icon-button {
 
         width: 34px;
-
         height: 34px;
 
         font-size: 17px;
-
     }
 
+    .notification-button {
+        margin-left: 4px;
+    }
+
+
+    /* =====================================================
+       PROFIL
+    ===================================================== */
 
     .profil-button {
 
         width: 34px;
-
         height: 34px;
-
     }
-
 
     .profil-photo {
 
         width: 34px;
-
         height: 34px;
-
     }
 
 
@@ -1194,7 +1051,6 @@
         top: 64px;
 
         left: 12px;
-
         right: 12px;
 
         width: auto;
@@ -1206,16 +1062,6 @@
         padding: 5px;
 
         box-sizing: border-box;
-
-    }
-
-
-    .menu-principal a {
-
-        padding: 13px 15px;
-
-        font-size: 14px;
-
     }
 
 
@@ -1233,6 +1079,9 @@
 
         width: 210px;
 
+        max-width: calc(100vw - 20px);
+
+        box-sizing: border-box;
     }
 
 
@@ -1241,11 +1090,8 @@
     ===================================================== */
 
     .modal-photo {
-
         padding: 15px;
-
     }
-
 
     .modal-photo-content {
 
@@ -1254,9 +1100,7 @@
         max-width: 350px;
 
         padding: 25px 20px;
-
     }
-
 }
 
 
@@ -1270,42 +1114,25 @@
     .navbar-public {
 
         padding: 8px 10px;
-
     }
 
 
     .logo-public {
-
         font-size: 15px;
-
     }
-
 
     .logo-icon {
-
         font-size: 19px;
-
     }
 
-
-    .logo-text {
-
-        max-width: 145px;
-
-    }
-
-
-    /*
-       Navigation non connecté :
-       on garde les textes mais on réduit encore.
-    */
 
     .navbar-navigation {
 
-        gap: 5px;
+        gap: 5px 9px;
 
-        margin-left: 8px;
+        margin-top: 8px;
 
+        padding-top: 6px;
     }
 
 
@@ -1314,14 +1141,11 @@
         font-size: 10px;
 
         gap: 3px;
-
     }
 
 
     .navbar-navigation a svg {
-
         font-size: 11px;
-
     }
 
 
@@ -1332,70 +1156,50 @@
         font-size: 10px;
 
         margin-left: 5px;
-
     }
 
 
-    /*
-       Client connecté
-    */
-
     .client-actions {
-
         gap: 2px;
-
     }
 
 
     .navbar-icon-button {
 
         width: 32px;
-
         height: 32px;
 
         font-size: 16px;
-
     }
 
 
     .menu-principal-button {
-
         padding: 6px;
-
     }
 
 
     .menu-principal-button svg {
-
         font-size: 20px;
-
     }
 
 
     .notification-button {
-
-        margin-left: 5px;
-
+        margin-left: 3px;
     }
 
 
     .profil-button {
 
         width: 32px;
-
         height: 32px;
-
     }
 
 
     .profil-photo {
 
         width: 32px;
-
         height: 32px;
-
     }
-
 }
 
 
@@ -1408,15 +1212,12 @@
 
     .navbar-public {
 
-        min-height: 60px;
-
         padding: 7px 8px;
-
     }
 
 
     /* =====================================================
-       LOGO
+       PREMIÈRE LIGNE
     ===================================================== */
 
     .logo-public {
@@ -1425,36 +1226,33 @@
 
         gap: 4px;
 
+        min-width: 0;
     }
 
 
     .logo-icon {
-
         font-size: 17px;
-
     }
 
 
     .logo-text {
-
-        max-width: 105px;
-
+        max-width: 150px;
     }
 
 
     /* =====================================================
-       NON CONNECTÉ
-       
-       Les 5 liens restent présents.
-       On passe progressivement aux icônes + textes courts.
+       NAVIGATION
+       Elle peut maintenant revenir à la ligne
+       naturellement.
     ===================================================== */
 
     .navbar-navigation {
 
-        gap: 4px;
+        gap: 4px 8px;
 
-        margin-left: 5px;
+        margin-top: 7px;
 
+        padding-top: 6px;
     }
 
 
@@ -1464,15 +1262,18 @@
 
         gap: 2px;
 
+        padding: 2px 0;
     }
 
 
     .navbar-navigation a svg {
-
         font-size: 10px;
-
     }
 
+
+    /* =====================================================
+       CONNEXION
+    ===================================================== */
 
     .btn-login-client {
 
@@ -1483,7 +1284,6 @@
         border-radius: 7px;
 
         margin-left: 4px;
-
     }
 
 
@@ -1494,57 +1294,44 @@
     .client-actions {
 
         gap: 1px;
-
     }
 
 
     .navbar-icon-button {
 
         width: 30px;
-
         height: 30px;
 
         font-size: 15px;
-
     }
 
 
     .menu-principal-button {
-
         padding: 5px;
-
     }
 
 
     .menu-principal-button svg {
-
         font-size: 19px;
-
     }
 
 
     .notification-button {
-
-        margin-left: 4px;
-
+        margin-left: 3px;
     }
 
 
     .profil-button {
 
         width: 30px;
-
         height: 30px;
-
     }
 
 
     .profil-photo {
 
         width: 30px;
-
         height: 30px;
-
     }
 
 
@@ -1557,7 +1344,6 @@
         font-size: 8px;
 
         border-width: 1px;
-
     }
 
 
@@ -1572,7 +1358,6 @@
         left: 8px;
 
         right: 8px;
-
     }
 
 
@@ -1584,8 +1369,8 @@
 
         width: 200px;
 
+        max-width: calc(100vw - 14px);
     }
-
 }
 
 
@@ -1596,35 +1381,45 @@
 
 @media (max-width: 400px) {
 
+    .navbar-public {
+
+        padding: 6px 6px;
+    }
+
+
+    /* =====================================================
+       LOGO
+    ===================================================== */
+
     .logo-public {
 
         font-size: 12px;
 
+        gap: 3px;
     }
 
 
     .logo-icon {
-
         font-size: 16px;
-
     }
 
 
     .logo-text {
-
-        max-width: 90px;
-
+        max-width: 125px;
     }
 
 
-    /* NON CONNECTÉ */
+    /* =====================================================
+       NAVIGATION
+    ===================================================== */
 
     .navbar-navigation {
 
-        gap: 3px;
+        gap: 3px 6px;
 
-        margin-left: 3px;
+        margin-top: 6px;
 
+        padding-top: 5px;
     }
 
 
@@ -1633,16 +1428,17 @@
         font-size: 8px;
 
         gap: 1px;
-
     }
 
 
     .navbar-navigation a svg {
-
         font-size: 9px;
-
     }
 
+
+    /* =====================================================
+       CONNEXION
+    ===================================================== */
 
     .btn-login-client {
 
@@ -1650,67 +1446,57 @@
 
         font-size: 8px;
 
+        border-radius: 6px;
+
+        margin-left: 3px;
     }
 
 
-    /* CONNECTÉ */
+    /* =====================================================
+       CONNECTÉ
+    ===================================================== */
 
     .client-actions {
-
         gap: 0;
-
     }
 
 
     .navbar-icon-button {
 
         width: 28px;
-
         height: 28px;
 
         font-size: 14px;
-
     }
 
 
     .menu-principal-button {
-
         padding: 4px;
-
     }
 
 
     .menu-principal-button svg {
-
         font-size: 18px;
-
     }
 
 
     .notification-button {
-
-        margin-left: 3px;
-
+        margin-left: 2px;
     }
 
 
     .profil-button {
 
         width: 28px;
-
         height: 28px;
-
     }
 
 
     .profil-photo {
 
         width: 28px;
-
         height: 28px;
-
     }
-
 }
 
 
@@ -1723,43 +1509,43 @@
 
     .navbar-public {
 
-        padding: 6px 6px;
-
+        padding: 6px 5px;
     }
 
+
+    /* =====================================================
+       LOGO
+    ===================================================== */
 
     .logo-public {
 
         font-size: 11px;
 
+        gap: 3px;
     }
 
 
     .logo-icon {
-
         font-size: 15px;
-
     }
 
 
     .logo-text {
-
-        max-width: 75px;
-
+        max-width: 105px;
     }
 
 
-    /*
-       NON CONNECTÉ :
-       Les liens restent affichés.
-    */
+    /* =====================================================
+       NAVIGATION
+    ===================================================== */
 
     .navbar-navigation {
 
-        gap: 2px;
+        gap: 2px 5px;
 
-        margin-left: 2px;
+        margin-top: 5px;
 
+        padding-top: 4px;
     }
 
 
@@ -1768,81 +1554,69 @@
         font-size: 7px;
 
         gap: 1px;
-
     }
 
 
     .navbar-navigation a svg {
-
         font-size: 8px;
-
     }
 
 
+    /* =====================================================
+       CONNEXION
+    ===================================================== */
+
     .btn-login-client {
 
-        padding: 5px;
+        padding: 4px 5px;
 
         font-size: 7px;
 
         margin-left: 2px;
 
-        border-radius: 6px;
-
+        border-radius: 5px;
     }
 
 
-    /*
+    /* =====================================================
        CONNECTÉ
-    */
+    ===================================================== */
 
     .navbar-icon-button {
 
         width: 26px;
-
         height: 26px;
 
         font-size: 13px;
-
     }
 
 
     .menu-principal-button {
-
         padding: 3px;
-
     }
 
 
     .menu-principal-button svg {
-
         font-size: 17px;
-
     }
 
 
     .notification-button {
-
-        margin-left: 2px;
-
+        margin-left: 1px;
     }
 
 
     .profil-button {
 
         width: 26px;
-
         height: 26px;
-
     }
 
 
     .profil-photo {
 
         width: 26px;
-
         height: 26px;
-
     }
 
 
@@ -1855,7 +1629,6 @@
         font-size: 7px;
 
         padding: 0 2px;
-
     }
 
 
@@ -1863,10 +1636,9 @@
 
         top: 55px;
 
-        left: 6px;
+        left: 5px;
 
-        right: 6px;
-
+        right: 5px;
     }
 
 
@@ -1878,6 +1650,34 @@
 
         width: 190px;
 
+        max-width: calc(100vw - 10px);
     }
+}
 
+
+/* =========================================================
+   PROTECTION GLOBALE CONTRE LE DÉBORDEMENT HORIZONTAL
+========================================================= */
+
+html,
+body {
+
+    width: 100%;
+
+    max-width: 100%;
+
+    overflow-x: hidden;
+}
+
+
+/*
+   Empêche également les éléments enfants
+   de créer une largeur supérieure à l'écran.
+*/
+
+.navbar-public *,
+.navbar-public *::before,
+.navbar-public *::after {
+
+    box-sizing: border-box;
 }
