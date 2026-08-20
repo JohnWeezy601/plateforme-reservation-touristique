@@ -12,7 +12,9 @@ import {
 
 import "./AvisPublic.css";
 
+
 function AvisPublic() {
+
 
     const [avis, setAvis] = useState([]);
 
@@ -28,6 +30,7 @@ function AvisPublic() {
 
     const [texteEdition, setTexteEdition] = useState("");
 
+
     // ==================================
     // AJOUT NOUVEL AVIS + PHOTOS
     // ==================================
@@ -38,10 +41,12 @@ function AvisPublic() {
 
     const [photosAvis, setPhotosAvis] = useState([]);
 
+
     const utilisateur =
         JSON.parse(
             localStorage.getItem("utilisateur")
         );
+
 
     // ==================================
     // URL DES PHOTOS D'AVIS
@@ -52,6 +57,7 @@ function AvisPublic() {
         if (!photo) {
             return "";
         }
+
 
         // ==================================
         // Photo Cloudinary
@@ -66,31 +72,6 @@ function AvisPublic() {
 
         }
 
-        // ==================================
-// URL PHOTO PROFIL UTILISATEUR
-// ==================================
-
-const getPhotoProfilUrl = (photo) => {
-
-    if (!photo) {
-        return "";
-    }
-
-    // Photo Cloudinary
-    if (
-        photo.startsWith("http://") ||
-        photo.startsWith("https://")
-    ) {
-        return photo;
-    }
-
-    // Ancienne photo locale
-    return (
-        import.meta.env.VITE_SERVER_URL +
-        "/uploads/" +
-        photo
-    );
-};
 
         // ==================================
         // Photo locale
@@ -104,6 +85,45 @@ const getPhotoProfilUrl = (photo) => {
 
     };
 
+
+    // ==================================
+    // URL PHOTO PROFIL UTILISATEUR
+    // ==================================
+
+    const getPhotoProfilUrl = (photo) => {
+
+        if (!photo) {
+            return "";
+        }
+
+
+        // ==================================
+        // Photo Cloudinary
+        // ==================================
+
+        if (
+            photo.startsWith("http://") ||
+            photo.startsWith("https://")
+        ) {
+
+            return photo;
+
+        }
+
+
+        // ==================================
+        // Ancienne photo locale
+        // ==================================
+
+        return (
+            import.meta.env.VITE_SERVER_URL +
+            "/uploads/" +
+            photo
+        );
+
+    };
+
+
     // ==================================
     // CHARGER LES AVIS + TOUTES LES PHOTOS
     // ==================================
@@ -114,6 +134,7 @@ const getPhotoProfilUrl = (photo) => {
 
             setLoading(true);
 
+
             // ==================================
             // 1 - Récupérer les avis
             // ==================================
@@ -121,6 +142,7 @@ const getPhotoProfilUrl = (photo) => {
             const res = await api.get("/avis");
 
             const avisRecus = res.data;
+
 
             // ==================================
             // 2 - Récupérer les photos de
@@ -140,6 +162,7 @@ const getPhotoProfilUrl = (photo) => {
                                         "/avis-photo/" +
                                         a.id_avis
                                     );
+
 
                                 return {
 
@@ -166,6 +189,7 @@ const getPhotoProfilUrl = (photo) => {
                                     photoError
                                 );
 
+
                                 return {
 
                                     ...a,
@@ -181,10 +205,12 @@ const getPhotoProfilUrl = (photo) => {
 
                 );
 
+
             console.log(
                 "AVIS AVEC PHOTOS :",
                 avisAvecPhotos
             );
+
 
             setAvis(avisAvecPhotos);
 
@@ -206,11 +232,13 @@ const getPhotoProfilUrl = (photo) => {
 
     };
 
+
     useEffect(() => {
 
         chargerAvis();
 
     }, []);
+
 
     // ==================================
     // AJOUTER UN AVIS AVEC PHOTOS
@@ -228,6 +256,7 @@ const getPhotoProfilUrl = (photo) => {
 
         }
 
+
         if (!nouveauCommentaire.trim()) {
 
             alert(
@@ -238,12 +267,14 @@ const getPhotoProfilUrl = (photo) => {
 
         }
 
+
         try {
 
             console.log(
                 "Utilisateur connecté :",
                 utilisateur
             );
+
 
             // ==================================
             // 1 - CREER L'AVIS
@@ -261,13 +292,16 @@ const getPhotoProfilUrl = (photo) => {
                 }
             );
 
+
             console.log(
                 "Réponse création avis :",
                 res.data
             );
 
+
             const idAvis =
                 res.data.id_avis;
+
 
             if (!idAvis) {
 
@@ -278,6 +312,7 @@ const getPhotoProfilUrl = (photo) => {
                 return;
 
             }
+
 
             // ==================================
             // 2 - ENVOYER LES PHOTOS
@@ -290,13 +325,16 @@ const getPhotoProfilUrl = (photo) => {
                     photosAvis
                 );
 
+
                 const formData =
                     new FormData();
+
 
                 formData.append(
                     "id_avis",
                     idAvis
                 );
+
 
                 photosAvis.forEach(
                     (photo) => {
@@ -308,6 +346,7 @@ const getPhotoProfilUrl = (photo) => {
 
                     }
                 );
+
 
                 const photoResponse =
                     await api.post(
@@ -321,12 +360,14 @@ const getPhotoProfilUrl = (photo) => {
                         }
                     );
 
+
                 console.log(
                     "Réponse ajout photos :",
                     photoResponse.data
                 );
 
             }
+
 
             // ==================================
             // 3 - NETTOYAGE
@@ -337,6 +378,7 @@ const getPhotoProfilUrl = (photo) => {
             setPhotosAvis([]);
 
             setNoteAvis(5);
+
 
             // ==================================
             // 4 - RECHARGER AVIS + PHOTOS
@@ -353,6 +395,7 @@ const getPhotoProfilUrl = (photo) => {
                 error
             );
 
+
             if (
                 error.response?.status === 401
             ) {
@@ -366,6 +409,7 @@ const getPhotoProfilUrl = (photo) => {
         }
 
     };
+
 
     // ==================================
     // LIKE AVIS
@@ -383,6 +427,7 @@ const getPhotoProfilUrl = (photo) => {
 
         }
 
+
         try {
 
             await api.post(
@@ -394,6 +439,7 @@ const getPhotoProfilUrl = (photo) => {
                         utilisateur.id_utilisateur
                 }
             );
+
 
             chargerAvis();
 
@@ -408,6 +454,7 @@ const getPhotoProfilUrl = (photo) => {
         }
 
     };
+
 
     // ==================================
     // LIKE REPONSE
@@ -425,6 +472,7 @@ const getPhotoProfilUrl = (photo) => {
 
         }
 
+
         try {
 
             await api.post(
@@ -436,6 +484,7 @@ const getPhotoProfilUrl = (photo) => {
                         utilisateur.id_utilisateur
                 }
             );
+
 
             chargerAvis();
 
@@ -450,6 +499,7 @@ const getPhotoProfilUrl = (photo) => {
         }
 
     };
+
 
     // ==================================
     // ENVOYER UNE REPONSE
@@ -467,11 +517,13 @@ const getPhotoProfilUrl = (photo) => {
 
         }
 
+
         if (!texteReponse.trim()) {
 
             return;
 
         }
+
 
         try {
 
@@ -487,6 +539,7 @@ const getPhotoProfilUrl = (photo) => {
                         texteReponse
                 }
             );
+
 
             setTexteReponse("");
 
@@ -506,6 +559,7 @@ const getPhotoProfilUrl = (photo) => {
 
     };
 
+
     // ==================================
     // SUPPRIMER UN AVIS
     // ==================================
@@ -524,6 +578,7 @@ const getPhotoProfilUrl = (photo) => {
                     "/avis/" + id
                 );
 
+
                 chargerAvis();
 
             }
@@ -536,6 +591,7 @@ const getPhotoProfilUrl = (photo) => {
         }
 
     };
+
 
     // ==================================
     // MODIFIER UN AVIS
@@ -555,6 +611,7 @@ const getPhotoProfilUrl = (photo) => {
                 }
             );
 
+
             setEdition(null);
 
             setTexteEdition("");
@@ -573,6 +630,7 @@ const getPhotoProfilUrl = (photo) => {
 
     };
 
+
     // ==================================
     // PARTAGER UN AVIS
     // ==================================
@@ -581,6 +639,7 @@ const getPhotoProfilUrl = (photo) => {
 
         const url =
             window.location.href;
+
 
         if (
             navigator.share
@@ -611,6 +670,7 @@ const getPhotoProfilUrl = (photo) => {
 
     };
 
+
     // ==================================
     // COPIER LE LIEN
     // ==================================
@@ -621,11 +681,13 @@ const getPhotoProfilUrl = (photo) => {
             window.location.href
         );
 
+
         alert(
             "Lien copié"
         );
 
     };
+
 
     // ==================================
     // FORMAT DATE
@@ -640,6 +702,7 @@ const getPhotoProfilUrl = (photo) => {
 
     };
 
+
     // ==================================
     // LOADING
     // ==================================
@@ -647,12 +710,17 @@ const getPhotoProfilUrl = (photo) => {
     if (loading) {
 
         return (
+
             <div className="avis-loading">
+
                 Chargement...
+
             </div>
+
         );
 
     }
+
 
     // ==================================
     // RENDER
@@ -662,13 +730,16 @@ const getPhotoProfilUrl = (photo) => {
 
         <div className="avis-public-page">
 
+
             <h1>
                 ⭐ Avis des voyageurs
             </h1>
 
+
             <p className="avis-intro">
                 Les expériences partagées par notre communauté.
             </p>
+
 
             {/* ===========================
                 CREATION AVIS
@@ -676,11 +747,14 @@ const getPhotoProfilUrl = (photo) => {
 
             <div className="create-post">
 
+
                 <div className="post-input-area">
+
 
                     <div className="mini-avatar">
                         👤
                     </div>
+
 
                     <textarea
                         placeholder="Partagez votre expérience..."
@@ -694,15 +768,20 @@ const getPhotoProfilUrl = (photo) => {
                         }
                     />
 
+
                 </div>
+
 
                 <div className="post-options">
 
+
                     <div className="rating-box">
+
 
                         <span>
                             Note :
                         </span>
+
 
                         <select
                             value={noteAvis}
@@ -737,11 +816,14 @@ const getPhotoProfilUrl = (photo) => {
 
                         </select>
 
+
                     </div>
+
 
                     <label className="photo-button">
 
                         📷 Ajouter des photos
+
 
                         <input
                             type="file"
@@ -755,6 +837,7 @@ const getPhotoProfilUrl = (photo) => {
                                         e.target.files
                                     );
 
+
                                 setPhotosAvis(
                                     (ancienne) => [
                                         ...ancienne,
@@ -762,14 +845,18 @@ const getPhotoProfilUrl = (photo) => {
                                     ]
                                 );
 
+
                                 e.target.value = "";
 
                             }}
                         />
 
+
                     </label>
 
+
                 </div>
+
 
                 {/* ===========================
                     APERCU PHOTOS
@@ -780,6 +867,7 @@ const getPhotoProfilUrl = (photo) => {
 
                     <div className="preview-container">
 
+
                         {
                             photosAvis.map(
                                 (photo, index) => (
@@ -789,6 +877,7 @@ const getPhotoProfilUrl = (photo) => {
                                         key={index}
                                     >
 
+
                                         <img
                                             src={
                                                 URL.createObjectURL(
@@ -797,6 +886,7 @@ const getPhotoProfilUrl = (photo) => {
                                             }
                                             alt="aperçu"
                                         />
+
 
                                         <button
                                             type="button"
@@ -811,8 +901,11 @@ const getPhotoProfilUrl = (photo) => {
 
                                             }}
                                         >
+
                                             ×
+
                                         </button>
+
 
                                     </div>
 
@@ -820,10 +913,14 @@ const getPhotoProfilUrl = (photo) => {
                             )
                         }
 
+
                     </div>
+
                 }
 
+
                 <div className="publish-zone">
+
 
                     <span>
 
@@ -837,21 +934,28 @@ const getPhotoProfilUrl = (photo) => {
 
                     </span>
 
+
                     <button
                         onClick={ajouterAvis}
                     >
+
                         Publier
+
                     </button>
+
 
                 </div>
 
+
             </div>
+
 
             {/* ===========================
                 FEED
             =========================== */}
 
             <div className="facebook-feed">
+
 
                 {
                     avis.map(
@@ -862,53 +966,75 @@ const getPhotoProfilUrl = (photo) => {
                                 key={a.id_avis}
                             >
 
+
                                 {/* ===========================
                                     HEADER
                                 =========================== */}
 
                                 <div className="post-header">
 
+
                                     {
-    a.photo ?
+                                        a.photo ?
 
-        <img
-            src={getPhotoProfilUrl(a.photo)}
-            alt="profil"
-        />
+                                            <img
+                                                src={
+                                                    getPhotoProfilUrl(
+                                                        a.photo
+                                                    )
+                                                }
+                                                alt="profil"
+                                            />
 
-        :
+                                            :
 
-        <div className="avatar">
-            👤
-        </div>
-}
+                                            <div className="avatar">
+                                                👤
+                                            </div>
+                                    }
+
+
                                     <div>
 
+
                                         <h3>
+
                                             {a.nom}{" "}
+
                                             {a.prenom}
+
                                         </h3>
+
 
                                         {
                                             a.role ===
                                             "Administrateur"
                                             &&
+
                                             <span className="admin-badge">
+
                                                 🛡 Administrateur
+
                                             </span>
                                         }
 
+
                                         <small>
+
                                             {
                                                 date(
                                                     a.date_avis
                                                 )
                                             }
+
                                         </small>
+
 
                                     </div>
 
+
                                     <div className="menu-zone">
+
 
                                         <FaEllipsisH
                                             className="menu-icon"
@@ -924,16 +1050,19 @@ const getPhotoProfilUrl = (photo) => {
                                             }
                                         />
 
+
                                         {
                                             menu ===
                                             a.id_avis &&
 
                                             <div className="menu-popup">
 
+
                                                 {
                                                     utilisateur?.id_utilisateur ===
                                                     a.id_utilisateur
                                                     &&
+
                                                     <>
 
                                                         <span
@@ -943,9 +1072,11 @@ const getPhotoProfilUrl = (photo) => {
                                                                     a.id_avis
                                                                 );
 
+
                                                                 setTexteEdition(
                                                                     a.commentaire
                                                                 );
+
 
                                                                 setMenu(
                                                                     null
@@ -953,8 +1084,11 @@ const getPhotoProfilUrl = (photo) => {
 
                                                             }}
                                                         >
+
                                                             Modifier
+
                                                         </span>
+
 
                                                         <span
                                                             onClick={() =>
@@ -963,24 +1097,33 @@ const getPhotoProfilUrl = (photo) => {
                                                                 )
                                                             }
                                                         >
+
                                                             Supprimer
+
                                                         </span>
 
+
                                                     </>
+
                                                 }
+
 
                                             </div>
                                         }
 
+
                                     </div>
 
+
                                 </div>
+
 
                                 {/* ===========================
                                     NOTE
                                 =========================== */}
 
                                 <div className="stars">
+
 
                                     {
                                         [1, 2, 3, 4, 5]
@@ -1002,7 +1145,9 @@ const getPhotoProfilUrl = (photo) => {
                                             )
                                     }
 
+
                                 </div>
+
 
                                 {/* ===========================
                                     COMMENTAIRE
@@ -1016,6 +1161,7 @@ const getPhotoProfilUrl = (photo) => {
 
                                         <div className="edition-zone">
 
+
                                             <textarea
                                                 value={
                                                     texteEdition
@@ -1028,6 +1174,7 @@ const getPhotoProfilUrl = (photo) => {
                                                 }
                                             />
 
+
                                             <button
                                                 onClick={() =>
                                                     modifierAvis(
@@ -1035,19 +1182,25 @@ const getPhotoProfilUrl = (photo) => {
                                                     )
                                                 }
                                             >
+
                                                 Enregistrer
+
                                             </button>
+
 
                                         </div>
 
                                         :
 
                                         <p className="message">
+
                                             {
                                                 a.commentaire
                                             }
+
                                         </p>
                                 }
+
 
                                 {/* ===========================
                                     TOUTES LES PHOTOS DE L'AVIS
@@ -1058,6 +1211,7 @@ const getPhotoProfilUrl = (photo) => {
                                     a.photos.length > 0 &&
 
                                     <div className="avis-photos">
+
 
                                         {
                                             a.photos.map(
@@ -1080,6 +1234,7 @@ const getPhotoProfilUrl = (photo) => {
                                                                 photo.photo
                                                             );
 
+
                                                             e.currentTarget.style.display =
                                                                 "none";
 
@@ -1090,14 +1245,17 @@ const getPhotoProfilUrl = (photo) => {
                                             )
                                         }
 
+
                                     </div>
                                 }
+
 
                                 {/* ===========================
                                     ACTIONS
                                 =========================== */}
 
                                 <div className="actions">
+
 
                                     <span
                                         onClick={() =>
@@ -1106,8 +1264,11 @@ const getPhotoProfilUrl = (photo) => {
                                             )
                                         }
                                     >
+
                                         👍 J'aime
+
                                     </span>
+
 
                                     <span
                                         onClick={() =>
@@ -1116,43 +1277,59 @@ const getPhotoProfilUrl = (photo) => {
                                             )
                                         }
                                     >
+
                                         💬 Répondre
+
                                     </span>
+
 
                                     <span
                                         onClick={() =>
                                             partager(a)
                                         }
                                     >
+
                                         ↗ Partager
+
                                     </span>
+
 
                                     <span
                                         onClick={
                                             copier
                                         }
                                     >
+
                                         🔗 Copier
+
                                     </span>
 
+
                                 </div>
+
 
                                 <div className="likes-count">
 
                                     👍{" "}
+
                                     {
                                         a.nombre_likes ||
                                         0
-                                    }{" "}
+                                    }
+
+                                    {" "}
+
                                     J'aime
 
                                 </div>
+
 
                                 {/* ===========================
                                     REPONSES
                                 =========================== */}
 
                                 <div className="comments">
+
 
                                     {
                                         a.reponses?.map(
@@ -1165,39 +1342,54 @@ const getPhotoProfilUrl = (photo) => {
                                                     }
                                                 >
 
+
                                                     {
-    r.photo ?
+                                                        r.photo ?
 
-        <img
-            src={getPhotoProfilUrl(r.photo)}
-            alt="profil"
-        />
+                                                            <img
+                                                                src={
+                                                                    getPhotoProfilUrl(
+                                                                        r.photo
+                                                                    )
+                                                                }
+                                                                alt="profil"
+                                                            />
 
-        :
+                                                            :
 
-        <div className="avatar-small">
-            👤
-        </div>
-}
+                                                            <div className="avatar-small">
+                                                                👤
+                                                            </div>
+                                                    }
+
 
                                                     <div className="reply-content">
 
+
                                                         <strong>
+
                                                             {
                                                                 r.nom
                                                             }{" "}
+
                                                             {
                                                                 r.prenom
                                                             }
+
                                                         </strong>
 
+
                                                         <p>
+
                                                             {
                                                                 r.reponse
                                                             }
+
                                                         </p>
 
+
                                                         <div className="reply-actions">
+
 
                                                             <span
                                                                 onClick={() =>
@@ -1206,21 +1398,33 @@ const getPhotoProfilUrl = (photo) => {
                                                                     )
                                                                 }
                                                             >
+
                                                                 👍 J'aime
+
                                                             </span>
+
 
                                                         </div>
 
+
                                                         <small>
+
                                                             👍{" "}
+
                                                             {
                                                                 r.nombre_likes ||
                                                                 0
-                                                            }{" "}
+                                                            }
+
+                                                            {" "}
+
                                                             J'aime
+
                                                         </small>
 
+
                                                     </div>
+
 
                                                 </div>
 
@@ -1228,7 +1432,9 @@ const getPhotoProfilUrl = (photo) => {
                                         )
                                     }
 
+
                                 </div>
+
 
                                 {/* ===========================
                                     REPONSE
@@ -1239,6 +1445,7 @@ const getPhotoProfilUrl = (photo) => {
                                     a.id_avis &&
 
                                     <div className="reply-box">
+
 
                                         <input
                                             type="text"
@@ -1254,6 +1461,7 @@ const getPhotoProfilUrl = (photo) => {
                                             }
                                         />
 
+
                                         <button
                                             onClick={() =>
                                                 envoyerReponse(
@@ -1261,11 +1469,15 @@ const getPhotoProfilUrl = (photo) => {
                                                 )
                                             }
                                         >
+
                                             Publier
+
                                         </button>
+
 
                                     </div>
                                 }
+
 
                             </div>
 
@@ -1273,12 +1485,15 @@ const getPhotoProfilUrl = (photo) => {
                     )
                 }
 
+
             </div>
+
 
         </div>
 
     );
 
 }
+
 
 export default AvisPublic;

@@ -12,6 +12,7 @@ function MesReservations() {
 
 
     const [reservations, setReservations] = useState([]);
+    const [photosOffres, setPhotosOffres] = useState({});
 
     const [paiements, setPaiements] = useState([]);
 
@@ -54,10 +55,76 @@ function MesReservations() {
 
     };
 
+    // =====================================================
+// CHARGER TOUTES LES PHOTOS DES OFFRES
+// =====================================================
+
+const chargerPhotosOffres = async (reservations) => {
+
+    try {
+
+        const photosParOffre = {};
+
+        const offresUniques = [
+            ...new Set(
+                reservations
+                    .map(reservation => reservation.id_offre)
+                    .filter(Boolean)
+            )
+        ];
+
+        await Promise.all(
+
+            offresUniques.map(
+                async (idOffre) => {
+
+                    try {
+
+                        const res = await api.get(
+                            `/offres/${idOffre}/photos`
+                        );
+
+                        photosParOffre[idOffre] =
+                            Array.isArray(res.data)
+                                ? res.data
+                                : [];
+
+                    }
+                    catch (error) {
+
+                        console.log(
+                            `Erreur photos offre ${idOffre} :`,
+                            error.response?.data ||
+                            error
+                        );
+
+                        photosParOffre[idOffre] = [];
+
+                    }
+
+                }
+            )
+
+        );
+
+        setPhotosOffres(photosParOffre);
+
+    }
+    catch (error) {
+
+        console.log(
+            "Erreur récupération photos offres :",
+            error
+        );
+
+    }
+
+};
 
     // =====================================================
     // CHARGER RESERVATIONS + PAIEMENTS
     // =====================================================
+    
 
     useEffect(() => {
 
@@ -154,9 +221,13 @@ function MesReservations() {
                     );
 
 
-                setReservations(
-                    reservationsVisibles
-                );
+              setReservations(
+    reservationsVisibles
+);
+
+chargerPhotosOffres(
+    reservationsVisibles
+);
 
 
                 // =================================================
@@ -743,38 +814,92 @@ function MesReservations() {
 
                                                 <div className="reservation-image">
 
+    {
+        photosOffres[reservation.id_offre]?.length > 0 ? (
 
-                                                    {
+            <div className="reservation-photos">
 
-                                                        reservation.image ? (
+                {
+                    photosOffres[
+                        reservation.id_offre
+                    ].map(
+                        (photo, index) => {
 
-                                                            <img
+                            const nomPhoto =
+                                typeof photo === "string"
+                                    ? photo
+                                    : photo.photo ||
+                                      photo.nom_photo ||
+                                      photo.image;
 
-                                                                src={
-                                                                    `${import.meta.env.VITE_SERVER_URL}/uploads/${reservation.image}`
-                                                                }
+                            return (
 
-                                                                alt={
-                                                                    reservation.titre ||
-                                                                    "Offre touristique"
-                                                                }
+                                <img
+                                    key={
+                                        photo.id_photo ||
+                                        photo.id ||
+                                        index
+                                    }
 
-                                                            />
+                                    src={
+                                        nomPhoto?.startsWith("http://") ||
+                                        nomPhoto?.startsWith("https://")
+                                            ? nomPhoto
+                                            : `${import.meta.env.VITE_SERVER_URL}/uploads/${nomPhoto}`
+                                    }
 
-                                                        ) : (
+                                    alt={
+                                        reservation.titre ||
+                                        "Photo de l'offre"
+                                    }
 
-                                                            <div className="reservation-no-image">
+                                    onError={(e) => {
 
-                                                                🏝️
+                                        console.log(
+                                            "Erreur chargement photo offre :",
+                                            nomPhoto
+                                        );
 
-                                                            </div>
+                                        e.currentTarget.style.display =
+                                            "none";
 
-                                                        )
+                                    }}
+                                />
 
-                                                    }
+                            );
 
+                        }
+                    )
 
-                                                </div>
+                }
+
+            </div>
+
+        ) : reservation.image ? (
+
+            <img
+                src={
+                    `${import.meta.env.VITE_SERVER_URL}/uploads/${reservation.image}`
+                }
+
+                alt={
+                    reservation.titre ||
+                    "Offre touristique"
+                }
+            />
+
+        ) : (
+
+            <div className="reservation-no-image">
+
+                🏝️
+
+            </div>
+
+        )
+    }
+
+</div>
 
 
                                                 {/* INFORMATIONS */}
