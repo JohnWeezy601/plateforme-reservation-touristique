@@ -19,7 +19,6 @@ body,
 }
 
 
-
 body {
 
     font-family: "Segoe UI",
@@ -29,6 +28,45 @@ body {
     background: #f4f7fb;
 
     color: #1f2937;
+
+}
+
+
+/* ===========================
+   PROTECTION RESPONSIVE
+=========================== */
+
+html,
+body {
+
+    max-width: 100%;
+    overflow-x: hidden;
+
+}
+
+
+img {
+
+    max-width: 100%;
+    height: auto;
+
+}
+
+
+video,
+iframe {
+
+    max-width: 100%;
+
+}
+
+
+input,
+select,
+textarea,
+button {
+
+    max-width: 100%;
 
 }
 
@@ -47,7 +85,6 @@ a {
 }
 
 
-
 /* ===========================
    BOUTONS
 =========================== */
@@ -62,7 +99,6 @@ button {
     border: none;
 
 }
-
 
 
 /* ===========================
@@ -81,7 +117,6 @@ textarea {
 }
 
 
-
 /* ===========================
    TABLES GLOBAL
 =========================== */
@@ -91,25 +126,25 @@ table {
 
     border-collapse: collapse;
 
-    width:100%;
+    width: 100%;
 
 }
-
 
 
 /* ===========================
    DASHBOARD
 =========================== */
 
+
 .dashboard-content {
 
-    margin-left:240px;
+    margin-left: 240px;
 
-    margin-top:70px;
+    margin-top: 70px;
 
-    padding:30px;
+    padding: 30px;
 
-    min-height:calc(100vh - 70px);
+    min-height: calc(100vh - 70px);
 
 }
 
@@ -123,10 +158,9 @@ h1,
 h2,
 h3 {
 
-    color:#1e293b;
+    color: #1e293b;
 
 }
-
 
 
 /* ===========================
@@ -136,22 +170,396 @@ h3 {
 
 ::-webkit-scrollbar {
 
-    width:8px;
+    width: 8px;
 
 }
 
 
 ::-webkit-scrollbar-thumb {
 
-    background:#cbd5e1;
+    background: #cbd5e1;
 
-    border-radius:10px;
+    border-radius: 10px;
 
 }
 
 
 ::-webkit-scrollbar-thumb:hover {
 
-    background:#94a3b8;
+    background: #94a3b8;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE GLOBAL
+   IMPORTANT :
+   On ne modifie PAS les CSS des pages.
+   Ces règles servent uniquement à adapter l'application.
+========================================================= */
+
+
+/* =========================================================
+   TABLETTE
+   769px - 1024px
+========================================================= */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    html,
+    body,
+    #root {
+
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+
+    }
+
+
+    .dashboard-content {
+
+        margin-left: 200px;
+
+        padding: 20px;
+
+    }
+
+
+    img {
+
+        max-width: 100%;
+        height: auto;
+
+    }
+
+
+    table {
+
+        max-width: 100%;
+
+    }
+
+}
+
+
+/* =========================================================
+   GRAND TELEPHONE
+   481px - 768px
+========================================================= */
+
+@media (min-width: 481px) and (max-width: 768px) {
+
+    html,
+    body,
+    #root {
+
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: hidden;
+
+    }
+
+
+    body {
+
+        min-width: 0;
+
+    }
+
+
+    .dashboard-content {
+
+        margin-left: 0;
+
+        margin-top: 70px;
+
+        padding: 20px;
+
+        width: 100%;
+
+        max-width: 100%;
+
+    }
+
+
+    img {
+
+        max-width: 100%;
+
+        height: auto;
+
+    }
+
+
+    input,
+    select,
+    textarea,
+    button {
+
+        max-width: 100%;
+
+    }
+
+
+    table {
+
+        width: 100%;
+
+    }
+
+
+    h1,
+    h2,
+    h3 {
+
+        max-width: 100%;
+
+        overflow-wrap: break-word;
+
+    }
+
+}
+
+
+/* =========================================================
+   TELEPHONE STANDARD
+   376px - 480px
+========================================================= */
+
+@media (min-width: 376px) and (max-width: 480px) {
+
+    html,
+    body,
+    #root {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        overflow-x: hidden;
+
+    }
+
+
+    body {
+
+        min-width: 0;
+
+    }
+
+
+    .dashboard-content {
+
+        margin-left: 0;
+
+        margin-top: 70px;
+
+        padding: 15px;
+
+        width: 100%;
+
+        max-width: 100%;
+
+    }
+
+
+    img {
+
+        max-width: 100%;
+
+        height: auto;
+
+    }
+
+
+    input,
+    select,
+    textarea,
+    button {
+
+        max-width: 100%;
+
+    }
+
+
+    table {
+
+        width: 100%;
+
+        max-width: 100%;
+
+    }
+
+
+    h1,
+    h2,
+    h3 {
+
+        max-width: 100%;
+
+        overflow-wrap: break-word;
+
+    }
+
+
+    p,
+    span,
+    strong,
+    small {
+
+        overflow-wrap: break-word;
+
+    }
+
+}
+
+
+/* =========================================================
+   TRES PETIT TELEPHONE
+   320px - 375px
+========================================================= */
+
+@media (min-width: 320px) and (max-width: 375px) {
+
+    html,
+    body,
+    #root {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        overflow-x: hidden;
+
+    }
+
+
+    body {
+
+        min-width: 0;
+
+    }
+
+
+    .dashboard-content {
+
+        margin-left: 0;
+
+        margin-top: 70px;
+
+        padding: 10px;
+
+        width: 100%;
+
+        max-width: 100%;
+
+    }
+
+
+    img {
+
+        max-width: 100%;
+
+        height: auto;
+
+    }
+
+
+    input,
+    select,
+    textarea,
+    button {
+
+        max-width: 100%;
+
+    }
+
+
+    table {
+
+        width: 100%;
+
+        max-width: 100%;
+
+    }
+
+
+    h1,
+    h2,
+    h3 {
+
+        max-width: 100%;
+
+        overflow-wrap: break-word;
+
+        word-break: break-word;
+
+    }
+
+
+    p,
+    span,
+    strong,
+    small {
+
+        overflow-wrap: break-word;
+
+        word-break: break-word;
+
+    }
+
+}
+
+
+/* =========================================================
+   TRES PETIT ECRAN
+   Moins de 320px
+   Sécurité supplémentaire
+========================================================= */
+
+@media (max-width: 319px) {
+
+    html,
+    body,
+    #root {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        overflow-x: hidden;
+
+    }
+
+
+    body {
+
+        min-width: 0;
+
+    }
+
+
+    .dashboard-content {
+
+        margin-left: 0;
+
+        margin-top: 70px;
+
+        padding: 8px;
+
+        width: 100%;
+
+    }
+
+
+    img {
+
+        max-width: 100%;
+
+        height: auto;
+
+    }
 
 }
