@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -600,10 +600,10 @@ return (
                                     );
 
 
-                                const image =
-                                    recommandation.image
-                                        ? `${import.meta.env.VITE_SERVER_URL}/uploads/${recommandation.image}`
-                                        : null;
+                               const image =
+    recommandation.image
+        ? recommandation.image
+        : null;
 
 
                                 return (

@@ -67,6 +67,32 @@ function AvisPublic() {
         }
 
         // ==================================
+// URL PHOTO PROFIL UTILISATEUR
+// ==================================
+
+const getPhotoProfilUrl = (photo) => {
+
+    if (!photo) {
+        return "";
+    }
+
+    // Photo Cloudinary
+    if (
+        photo.startsWith("http://") ||
+        photo.startsWith("https://")
+    ) {
+        return photo;
+    }
+
+    // Ancienne photo locale
+    return (
+        import.meta.env.VITE_SERVER_URL +
+        "/uploads/" +
+        photo
+    );
+};
+
+        // ==================================
         // Photo locale
         // ==================================
 
@@ -843,24 +869,19 @@ function AvisPublic() {
                                 <div className="post-header">
 
                                     {
-                                        a.photo ?
+    a.photo ?
 
-                                            <img
-                                                src={
-                                                    import.meta.env.VITE_SERVER_URL +
-                                                    "/uploads/" +
-                                                    a.photo
-                                                }
-                                                alt="profil"
-                                            />
+        <img
+            src={getPhotoProfilUrl(a.photo)}
+            alt="profil"
+        />
 
-                                            :
+        :
 
-                                            <div className="avatar">
-                                                👤
-                                            </div>
-                                    }
-
+        <div className="avatar">
+            👤
+        </div>
+}
                                     <div>
 
                                         <h3>
@@ -1145,23 +1166,19 @@ function AvisPublic() {
                                                 >
 
                                                     {
-                                                        r.photo ?
+    r.photo ?
 
-                                                            <img
-                                                                src={
-                                                                    import.meta.env.VITE_SERVER_URL +
-                                                                    "/uploads/" +
-                                                                    r.photo
-                                                                }
-                                                                alt="profil"
-                                                            />
+        <img
+            src={getPhotoProfilUrl(r.photo)}
+            alt="profil"
+        />
 
-                                                            :
+        :
 
-                                                            <div className="avatar-small">
-                                                                👤
-                                                            </div>
-                                                    }
+        <div className="avatar-small">
+            👤
+        </div>
+}
 
                                                     <div className="reply-content">
 
