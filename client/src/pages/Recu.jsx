@@ -162,17 +162,15 @@ function Recu() {
 
                         <div className="photo-zone">
 
-                            <img
-                                src={
-                                    recu.photo
-                                        ?
-                                        `${import.meta.env.VITE_SERVER_URL}/uploads/${recu.photo}`
-                                        :
-                                        "/avatar.png"
-                                }
-                                alt="Photo client"
-                                className="photo-client"
-                            />
+                           <img
+    src={
+        recu.photo
+            ? recu.photo
+            : "/avatar.png"
+    }
+    alt="Photo client"
+    className="photo-client"
+/>
 
                         </div>
 

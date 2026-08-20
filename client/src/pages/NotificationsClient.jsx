@@ -641,30 +641,25 @@ function NotificationsClient() {
         };
 
 
-    // =====================================================
-    // TÉLÉCHARGER REÇU
-    // =====================================================
+   // =====================================================
+// TÉLÉCHARGER REÇU
+// =====================================================
 
-    const telechargerRecu =
-        (lien) => {
+const telechargerRecu = (lien) => {
 
-            if (!lien) {
+    if (!lien) {
+        console.log("Aucun lien de reçu disponible");
+        return;
+    }
 
-                return;
+    console.log("Lien du reçu :", lien);
 
-            }
+    window.open(
+        lien,
+        "_blank"
+    );
 
-
-            const id =
-                lien.split("/").pop();
-
-
-            window.open(
-                `/recu/${id}`,
-                "_blank"
-            );
-
-        };
+};
 
 
     // =====================================================
