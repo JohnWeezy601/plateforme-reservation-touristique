@@ -23,16 +23,11 @@ import "./NotificationsClient.css";
 
 function NotificationsClient() {
 
-
     const navigate = useNavigate();
 
+    const [notifications, setNotifications] = useState([]);
 
-    const [notifications, setNotifications] =
-        useState([]);
-
-
-    const [afficherToutes, setAfficherToutes] =
-        useState(false);
+    const [afficherToutes, setAfficherToutes] = useState(false);
 
 
     // =====================================================
@@ -43,7 +38,6 @@ function NotificationsClient() {
         JSON.parse(
             localStorage.getItem("utilisateur")
         );
-
 
     const utilisateur =
         dataUtilisateur?.utilisateur
@@ -72,7 +66,7 @@ function NotificationsClient() {
 
 
     // =====================================================
-    // DÉTERMINER SI C'EST UNE NOTIFICATION DE PAIEMENT
+    // NOTIFICATION DE PAIEMENT
     // =====================================================
 
     const estNotificationPaiement = (n) => {
@@ -86,26 +80,19 @@ function NotificationsClient() {
         const type =
             normaliserTexte(n.type);
 
-
         return (
-
             type === "paiement"
-
             ||
-
             titre.includes("paiement")
-
             ||
-
             message.includes("paiement")
-
         );
 
     };
 
 
     // =====================================================
-    // DÉTERMINER SI LE PAIEMENT EST ÉCHOUÉ / NON VALIDÉ
+    // PAIEMENT ÉCHOUÉ / NON VALIDÉ
     // =====================================================
 
     const paiementEstEchoue = (n) => {
@@ -116,46 +103,23 @@ function NotificationsClient() {
         const message =
             normaliserTexte(n.message);
 
-
         return (
 
             titre.includes("echou")
-
             ||
-
             titre.includes("echec")
-
             ||
-
             titre.includes("non valide")
-
             ||
-
             titre.includes("non validee")
-
             ||
-
-            titre.includes("non valide")
-
-            ||
-
             message.includes("echou")
-
             ||
-
             message.includes("echec")
-
             ||
-
             message.includes("non valide")
-
             ||
-
             message.includes("non validee")
-
-            ||
-
-            message.includes("non valide")
 
         );
 
@@ -163,7 +127,7 @@ function NotificationsClient() {
 
 
     // =====================================================
-    // DÉTERMINER SI LE PAIEMENT EST VALIDÉ
+    // PAIEMENT VALIDÉ
     // =====================================================
 
     const paiementEstValide = (n) => {
@@ -175,11 +139,8 @@ function NotificationsClient() {
             normaliserTexte(n.message);
 
 
-        // -------------------------------------------------
-        // IMPORTANT :
-        // "non valide" ne doit JAMAIS être considéré
-        // comme "valide".
-        // -------------------------------------------------
+        // "Paiement non validé" ou "Paiement échoué"
+        // ne doit jamais être considéré comme validé.
 
         if (
             paiementEstEchoue(n)
@@ -193,38 +154,22 @@ function NotificationsClient() {
         return (
 
             titre.includes("paiement valide")
-
             ||
-
             titre.includes("paiement paye")
-
             ||
-
-            titre.includes("paiement paye")
-
+            titre.includes("paiement payé")
             ||
-
             titre.includes("paiement confirme")
-
             ||
-
             message.includes("paiement est confirme")
-
             ||
-
             message.includes("paiement confirme")
-
             ||
-
             message.includes("paiement valide")
-
             ||
-
             message.includes("paiement paye")
-
             ||
-
-            message.includes("paiement paye")
+            message.includes("paiement payé")
 
         );
 
@@ -232,7 +177,7 @@ function NotificationsClient() {
 
 
     // =====================================================
-    // DÉTERMINER SI UNE NOTIFICATION DOIT ÊTRE AFFICHÉE
+    // NOTIFICATION À AFFICHER
     // =====================================================
 
     const notificationDoitEtreAffichee = (n) => {
@@ -248,44 +193,12 @@ function NotificationsClient() {
 
 
         // =================================================
-        // PAIEMENTS
+        // PAIEMENT
         // =================================================
 
         if (
             estNotificationPaiement(n)
         ) {
-
-            // -------------------------------------------------
-            // Les paiements validés sont affichés
-            // -------------------------------------------------
-
-            if (
-                paiementEstValide(n)
-            ) {
-
-                return true;
-
-            }
-
-
-            // -------------------------------------------------
-            // Les paiements échoués / non validés sont affichés
-            // afin que le client puisse aller dans
-            // "Mes réservations".
-            // -------------------------------------------------
-
-            if (
-                paiementEstEchoue(n)
-            ) {
-
-                return true;
-
-            }
-
-
-            // -------------------------------------------------
-            // Autres notifications de paiement
-            // -------------------------------------------------
 
             return true;
 
@@ -293,34 +206,25 @@ function NotificationsClient() {
 
 
         // =================================================
-        // RESERVATIONS
+        // RÉSERVATION
         // =================================================
 
         if (
 
             type === "reservation"
-
             ||
-
             titre.includes("reservation")
-
             ||
-
             message.includes("reservation")
 
         ) {
 
-
-            // ---------------------------------------------
-            // RESERVATION CONFIRMEE PAR ADMIN
-            // ---------------------------------------------
+            // Réservation confirmée
 
             if (
 
                 titre.includes("confirm")
-
                 ||
-
                 message.includes("confirm")
 
             ) {
@@ -330,16 +234,12 @@ function NotificationsClient() {
             }
 
 
-            // ---------------------------------------------
-            // RESERVATION REJETEE PAR ADMIN
-            // ---------------------------------------------
+            // Réservation rejetée
 
             if (
 
                 titre.includes("rejet")
-
                 ||
-
                 message.includes("rejet")
 
             ) {
@@ -349,16 +249,12 @@ function NotificationsClient() {
             }
 
 
-            // ---------------------------------------------
-            // RESERVATION ANNULEE
-            // ---------------------------------------------
+            // Réservation annulée
 
             if (
 
                 titre.includes("annul")
-
                 ||
-
                 message.includes("annul")
 
             ) {
@@ -368,24 +264,14 @@ function NotificationsClient() {
             }
 
 
-            // ---------------------------------------------
-            // TOUTE AUTRE NOTIFICATION DE RESERVATION
-            //
-            // Exemple :
-            // Nouvelle réservation
-            // Réservation en attente
-            // Demande reçue
-            //
-            // NE PAS AFFICHER
-            // ---------------------------------------------
-
+            // Autres notifications de réservation
             return false;
 
         }
 
 
         // =================================================
-        // AVIS ET AUTRES NOTIFICATIONS ADMIN
+        // AVIS ET AUTRES
         // =================================================
 
         return true;
@@ -394,7 +280,7 @@ function NotificationsClient() {
 
 
     // =====================================================
-    // CHARGER NOTIFICATIONS
+    // CHARGER LES NOTIFICATIONS
     // =====================================================
 
     const chargerNotifications = async () => {
@@ -412,25 +298,15 @@ function NotificationsClient() {
 
             const res =
                 await api.get(
-
                     `/notifications/utilisateur/${utilisateur.id_utilisateur}`
-
                 );
 
 
             console.log(
                 "Notifications reçues du serveur :",
-                JSON.stringify(
-                    res.data,
-                    null,
-                    2
-                )
+                res.data
             );
 
-
-            // =================================================
-            // FILTRER
-            // =================================================
 
             const notificationsVisibles =
                 Array.isArray(res.data)
@@ -438,12 +314,10 @@ function NotificationsClient() {
                     ?
 
                     res.data.filter(
-
                         notification =>
                             notificationDoitEtreAffichee(
                                 notification
                             )
-
                     )
 
                     :
@@ -452,12 +326,8 @@ function NotificationsClient() {
 
 
             console.log(
-                "Notifications affichées au client :",
-                JSON.stringify(
-                    notificationsVisibles,
-                    null,
-                    2
-                )
+                "Notifications affichées :",
+                notificationsVisibles
             );
 
 
@@ -484,21 +354,15 @@ function NotificationsClient() {
 
     useEffect(() => {
 
-
         chargerNotifications();
 
 
         const interval =
             setInterval(
-
                 () => {
-
                     chargerNotifications();
-
                 },
-
                 2000
-
             );
 
 
@@ -524,10 +388,7 @@ function NotificationsClient() {
 
         return () => {
 
-            clearInterval(
-                interval
-            );
-
+            clearInterval(interval);
 
             document.removeEventListener(
                 "visibilitychange",
@@ -545,50 +406,31 @@ function NotificationsClient() {
 
     const marquerCommeLu = (id) => {
 
-
-        // Mise à jour immédiate
-
         setNotifications(
-
             prev =>
-
                 prev.map(
-
                     n =>
-
                         n.id_notification === id
-
                             ?
-
                             {
                                 ...n,
                                 lu: 1
                             }
-
                             :
-
                             n
-
                 )
-
         );
 
-
-        // Mise à jour base de données
 
         api.put(
             `/notifications/lu/${id}`
         )
-
             .catch(
-
                 error =>
-
                     console.log(
                         "Erreur lecture :",
                         error
                     )
-
             );
 
     };
@@ -609,18 +451,11 @@ function NotificationsClient() {
 
 
                 setNotifications(
-
                     prev =>
-
                         prev.filter(
-
                             n =>
-
-                                n.id_notification !==
-                                id
-
+                                n.id_notification !== id
                         )
-
                 );
 
             }
@@ -641,25 +476,162 @@ function NotificationsClient() {
         };
 
 
-   // =====================================================
-// TÉLÉCHARGER REÇU
-// =====================================================
+    // =====================================================
+    // CONSTRUIRE L'URL DU REÇU
+    // =====================================================
 
-const telechargerRecu = (lien) => {
+    const construireUrlRecu = (lien) => {
 
-    if (!lien) {
-        console.log("Aucun lien de reçu disponible");
-        return;
-    }
+        if (!lien) {
+            return null;
+        }
 
-    console.log("Lien du reçu :", lien);
 
-    window.open(
-        lien,
-        "_blank"
-    );
+        // -------------------------------------------------
+        // Si le backend a déjà enregistré une URL complète
+        // -------------------------------------------------
 
-};
+        if (
+            lien.startsWith("http://")
+            ||
+            lien.startsWith("https://")
+        ) {
+
+            return lien;
+
+        }
+
+
+        // -------------------------------------------------
+        // URL du backend
+        // Exemple :
+        // VITE_API_URL=http://localhost:8081/api
+        // -------------------------------------------------
+
+        const baseUrl =
+            import.meta.env.VITE_API_URL
+                ?.
+                replace(/\/$/, "");
+
+
+        if (!baseUrl) {
+
+            console.error(
+                "VITE_API_URL n'est pas défini."
+            );
+
+            return lien;
+
+        }
+
+
+        // -------------------------------------------------
+        // Éviter /api/api
+        // -------------------------------------------------
+
+        if (
+            lien.startsWith("/api/")
+        ) {
+
+            const baseSansApi =
+                baseUrl.replace(
+                    /\/api$/,
+                    ""
+                );
+
+            return (
+                baseSansApi +
+                lien
+            );
+
+        }
+
+
+        // -------------------------------------------------
+        // Lien commençant par /
+        // -------------------------------------------------
+
+        if (
+            lien.startsWith("/")
+        ) {
+
+            return (
+                baseUrl +
+                lien
+            );
+
+        }
+
+
+        return (
+            baseUrl +
+            "/" +
+            lien
+        );
+
+    };
+
+
+    // =====================================================
+    // TÉLÉCHARGER / OUVRIR LE REÇU
+    // =====================================================
+
+    const telechargerRecu = (lien) => {
+
+        if (!lien) {
+
+            console.log(
+                "Aucun lien de reçu disponible."
+            );
+
+            return;
+
+        }
+
+
+        const urlRecu =
+            construireUrlRecu(lien);
+
+
+        console.log(
+            "Lien enregistré dans notification :",
+            lien
+        );
+
+
+        console.log(
+            "URL finale du reçu :",
+            urlRecu
+        );
+
+
+        if (!urlRecu) {
+
+            alert(
+                "Le lien du reçu est indisponible."
+            );
+
+            return;
+
+        }
+
+
+        // -------------------------------------------------
+        // Ouvre directement la route backend :
+        //
+        // http://localhost:8081/api/recu/5
+        //
+        // Le backend retourne ensuite les données
+        // du reçu.
+        // -------------------------------------------------
+
+        window.open(
+            urlRecu,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+    };
 
 
     // =====================================================
@@ -685,10 +657,6 @@ const telechargerRecu = (lien) => {
             }
 
 
-            // =================================================
-            // NORMALISATION
-            // =================================================
-
             const titre =
                 normaliserTexte(
                     n.titre
@@ -713,15 +681,9 @@ const telechargerRecu = (lien) => {
 
             if (
 
-                titre.includes(
-                    "avis"
-                )
-
+                titre.includes("avis")
                 ||
-
-                message.includes(
-                    "avis"
-                )
+                message.includes("avis")
 
             ) {
 
@@ -741,9 +703,7 @@ const telechargerRecu = (lien) => {
             if (
 
                 estNotificationPaiement(n)
-
                 &&
-
                 paiementEstEchoue(n)
 
             ) {
@@ -771,9 +731,7 @@ const telechargerRecu = (lien) => {
             if (
 
                 estNotificationPaiement(n)
-
                 &&
-
                 paiementEstValide(n)
 
             ) {
@@ -784,13 +742,8 @@ const telechargerRecu = (lien) => {
                 );
 
 
-                // -------------------------------------------------
-                // Le clic sur la notification peut rester sans
-                // redirection particulière.
-                //
-                // Le bouton "Télécharger reçu" est disponible
-                // directement dans la notification.
-                // -------------------------------------------------
+                // Le bouton "Télécharger reçu"
+                // gère directement le reçu.
 
                 return;
 
@@ -798,173 +751,100 @@ const telechargerRecu = (lien) => {
 
 
             // =================================================
-            // RESERVATION ANNULEE
+            // RÉSERVATION ANNULÉE
             // =================================================
 
             if (
 
                 (
-
                     type === "reservation"
-
                     ||
-
-                    titre.includes(
-                        "reservation"
-                    )
-
+                    titre.includes("reservation")
                     ||
-
-                    message.includes(
-                        "reservation"
-                    )
-
+                    message.includes("reservation")
                 )
 
                 &&
 
                 (
-
-                    titre.includes(
-                        "annul"
-                    )
-
+                    titre.includes("annul")
                     ||
-
-                    message.includes(
-                        "annul"
-                    )
-
+                    message.includes("annul")
                 )
 
             ) {
-
-                console.log(
-                    "Réservation annulée :",
-                    n
-                );
-
 
                 navigate(
                     "/mes-reservations"
                 );
 
-
                 return;
 
             }
 
 
             // =================================================
-            // RESERVATION REJETEE
+            // RÉSERVATION REJETÉE
             // =================================================
 
             if (
 
                 (
-
                     type === "reservation"
-
                     ||
-
-                    titre.includes(
-                        "reservation"
-                    )
-
+                    titre.includes("reservation")
                     ||
-
-                    message.includes(
-                        "reservation"
-                    )
-
+                    message.includes("reservation")
                 )
 
                 &&
 
                 (
-
-                    titre.includes(
-                        "rejet"
-                    )
-
+                    titre.includes("rejet")
                     ||
-
-                    message.includes(
-                        "rejet"
-                    )
-
+                    message.includes("rejet")
                 )
 
             ) {
-
-                console.log(
-                    "Réservation rejetée :",
-                    n
-                );
-
 
                 navigate(
                     "/mes-reservations"
                 );
 
-
                 return;
 
             }
 
 
             // =================================================
-            // RESERVATION CONFIRMEE
+            // RÉSERVATION CONFIRMÉE
             // =================================================
 
             if (
 
                 (
-
                     type === "reservation"
-
                     ||
-
-                    titre.includes(
-                        "reservation"
-                    )
-
+                    titre.includes("reservation")
                     ||
-
-                    message.includes(
-                        "reservation"
-                    )
-
+                    message.includes("reservation")
                 )
 
                 &&
 
                 (
-
-                    titre.includes(
-                        "confirm"
-                    )
-
+                    titre.includes("confirm")
                     ||
-
-                    message.includes(
-                        "confirm"
-                    )
-
+                    message.includes("confirm")
                 )
 
             ) {
 
                 console.log(
-                    "Réservation confirmée par admin :",
+                    "Réservation confirmée :",
                     n
                 );
 
-
-                // -------------------------------------------------
-                // SEULEMENT MAINTENANT le client peut aller
-                // vers le paiement.
-                // -------------------------------------------------
 
                 if (n.lien) {
 
@@ -986,7 +866,6 @@ const telechargerRecu = (lien) => {
 
             }
 
-
         };
 
 
@@ -994,158 +873,109 @@ const telechargerRecu = (lien) => {
     // ICONES
     // =====================================================
 
-    const getIcone =
-        (n) => {
+    const getIcone = (n) => {
 
 
-            // =================================================
-            // PAIEMENT
-            // =================================================
+        // =================================================
+        // PAIEMENT
+        // =================================================
 
-            if (
-                estNotificationPaiement(n)
-            ) {
-
-
-                // -------------------------------------------------
-                // PAIEMENT ÉCHOUÉ
-                // -------------------------------------------------
-
-                if (
-                    paiementEstEchoue(n)
-                ) {
-
-                    return (
-
-                        <FaTimesCircle
-                            className="danger"
-                        />
-
-                    );
-
-                }
-
-
-                // -------------------------------------------------
-                // PAIEMENT VALIDÉ
-                // -------------------------------------------------
-
-                if (
-                    paiementEstValide(n)
-                ) {
-
-                    return (
-
-                        <FaCheckCircle
-                            className="success"
-                        />
-
-                    );
-
-                }
-
-
-                return (
-
-                    <FaBell />
-
-                );
-
-            }
-
-
-            // =================================================
-            // REJET / ANNULATION
-            // =================================================
-
-            const titre =
-                normaliserTexte(
-                    n.titre
-                );
+        if (
+            estNotificationPaiement(n)
+        ) {
 
 
             if (
-
-                titre.includes(
-                    "rejet"
-                )
-
-                ||
-
-                titre.includes(
-                    "annul"
-                )
-
+                paiementEstEchoue(n)
             ) {
 
                 return (
-
                     <FaTimesCircle
                         className="danger"
                     />
-
                 );
 
             }
 
 
-            // =================================================
-            // EXPIRATION
-            // =================================================
-
             if (
-
-                titre.includes(
-                    "expiration"
-                )
-
+                paiementEstValide(n)
             ) {
 
                 return (
-
-                    <FaCalendarTimes
-                        className="warning"
+                    <FaCheckCircle
+                        className="success"
                     />
-
                 );
 
             }
 
-
-            // =================================================
-            // AVIS
-            // =================================================
-
-            if (
-
-                titre.includes(
-                    "avis"
-                )
-
-            ) {
-
-                return (
-
-                    <FaStar
-                        className="star"
-                    />
-
-                );
-
-            }
-
-
-            // =================================================
-            // PAR DÉFAUT
-            // =================================================
 
             return (
-
                 <FaBell />
-
             );
 
-        };
+        }
+
+
+        // =================================================
+        // AUTRES
+        // =================================================
+
+        const titre =
+            normaliserTexte(
+                n.titre
+            );
+
+
+        if (
+
+            titre.includes("rejet")
+            ||
+            titre.includes("annul")
+
+        ) {
+
+            return (
+                <FaTimesCircle
+                    className="danger"
+                />
+            );
+
+        }
+
+
+        if (
+            titre.includes("expiration")
+        ) {
+
+            return (
+                <FaCalendarTimes
+                    className="warning"
+                />
+            );
+
+        }
+
+
+        if (
+            titre.includes("avis")
+        ) {
+
+            return (
+                <FaStar
+                    className="star"
+                />
+            );
+
+        }
+
+
+        return (
+            <FaBell />
+        );
+
+    };
 
 
     // =====================================================
@@ -1163,19 +993,14 @@ const telechargerRecu = (lien) => {
 
 
             {
-
                 notifications.length === 0
 
                     ?
 
                     (
-
                         <p className="empty">
-
                             Aucune notification
-
                         </p>
-
                     )
 
                     :
@@ -1183,55 +1008,32 @@ const telechargerRecu = (lien) => {
                     (
 
                         (
-
                             afficherToutes
-
                                 ?
-
                                 notifications
-
                                 :
-
-                                notifications.slice(
-                                    0,
-                                    5
-                                )
-
+                                notifications.slice(0, 5)
                         )
 
                             .map(
-
                                 n => (
 
-
                                     <div
-
                                         key={
                                             n.id_notification
                                         }
 
-
                                         className={
-
                                             Number(n.lu) === 0
-
                                                 ?
-
                                                 "notification-card unread"
-
                                                 :
-
                                                 "notification-card"
-
                                         }
-
 
                                         onClick={() =>
-                                            ouvrirNotification(
-                                                n
-                                            )
+                                            ouvrirNotification(n)
                                         }
-
                                     >
 
 
@@ -1240,7 +1042,6 @@ const telechargerRecu = (lien) => {
                                         ================================= */}
 
                                         <button
-
                                             className="delete-notification-btn"
 
                                             onClick={(e) => {
@@ -1252,11 +1053,8 @@ const telechargerRecu = (lien) => {
                                                 );
 
                                             }}
-
                                         >
-
                                             🗑
-
                                         </button>
 
 
@@ -1281,34 +1079,28 @@ const telechargerRecu = (lien) => {
 
 
                                             <h3>
-
                                                 {
                                                     n.titre
                                                 }
-
                                             </h3>
 
 
                                             <p>
-
                                                 {
                                                     n.message
                                                 }
-
                                             </p>
 
 
                                             <small>
 
                                                 {
-
                                                     new Date(
                                                         n.date_notification
                                                     )
                                                         .toLocaleString(
                                                             "fr-FR"
                                                         )
-
                                                 }
 
                                             </small>
@@ -1316,27 +1108,18 @@ const telechargerRecu = (lien) => {
 
                                             {/* =================================
                                                 BOUTON REÇU
-                                                UNIQUEMENT PAIEMENT VALIDÉ
                                             ================================= */}
 
                                             {
-
                                                 estNotificationPaiement(n)
-
                                                 &&
-
                                                 paiementEstValide(n)
-
                                                 &&
-
                                                 n.lien
-
                                                 &&
 
                                                 (
-
                                                     <button
-
                                                         type="button"
 
                                                         className="download-btn"
@@ -1345,13 +1128,11 @@ const telechargerRecu = (lien) => {
 
                                                             e.stopPropagation();
 
-
                                                             telechargerRecu(
                                                                 n.lien
                                                             );
 
                                                         }}
-
                                                     >
 
                                                         <FaFileDownload />
@@ -1359,19 +1140,15 @@ const telechargerRecu = (lien) => {
                                                         Télécharger reçu
 
                                                     </button>
-
                                                 )
-
                                             }
 
 
                                         </div>
 
-
                                     </div>
 
                                 )
-
                             )
 
                     )
@@ -1384,15 +1161,12 @@ const telechargerRecu = (lien) => {
             ===================================================== */}
 
             {
-
                 notifications.length > 5
 
                 &&
 
                 (
-
                     <button
-
                         className="btn-afficher-notifications"
 
                         onClick={() =>
@@ -1400,27 +1174,18 @@ const telechargerRecu = (lien) => {
                                 !afficherToutes
                             )
                         }
-
                     >
 
                         {
-
                             afficherToutes
-
                                 ?
-
                                 "Afficher seulement les récentes"
-
                                 :
-
                                 "Afficher les notifications précédentes"
-
                         }
 
                     </button>
-
                 )
-
             }
 
 
