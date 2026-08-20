@@ -25,9 +25,13 @@ function NotificationsClient() {
 
     const navigate = useNavigate();
 
-    const [notifications, setNotifications] = useState([]);
 
-    const [afficherToutes, setAfficherToutes] = useState(false);
+    const [notifications, setNotifications] =
+        useState([]);
+
+
+    const [afficherToutes, setAfficherToutes] =
+        useState(false);
 
 
     // =====================================================
@@ -38,6 +42,7 @@ function NotificationsClient() {
         JSON.parse(
             localStorage.getItem("utilisateur")
         );
+
 
     const utilisateur =
         dataUtilisateur?.utilisateur
@@ -66,7 +71,7 @@ function NotificationsClient() {
 
 
     // =====================================================
-    // NOTIFICATION DE PAIEMENT
+    // DÉTERMINER SI C'EST UNE NOTIFICATION DE PAIEMENT
     // =====================================================
 
     const estNotificationPaiement = (n) => {
@@ -80,12 +85,19 @@ function NotificationsClient() {
         const type =
             normaliserTexte(n.type);
 
+
         return (
+
             type === "paiement"
+
             ||
+
             titre.includes("paiement")
+
             ||
+
             message.includes("paiement")
+
         );
 
     };
@@ -103,22 +115,37 @@ function NotificationsClient() {
         const message =
             normaliserTexte(n.message);
 
+
         return (
 
             titre.includes("echou")
+
             ||
+
             titre.includes("echec")
+
             ||
+
             titre.includes("non valide")
+
             ||
+
             titre.includes("non validee")
+
             ||
+
             message.includes("echou")
+
             ||
+
             message.includes("echec")
+
             ||
+
             message.includes("non valide")
+
             ||
+
             message.includes("non validee")
 
         );
@@ -139,8 +166,10 @@ function NotificationsClient() {
             normaliserTexte(n.message);
 
 
-        // "Paiement non validé" ou "Paiement échoué"
-        // ne doit jamais être considéré comme validé.
+        // -------------------------------------------------
+        // Un paiement échoué ou non validé n'est jamais
+        // considéré comme un paiement validé.
+        // -------------------------------------------------
 
         if (
             paiementEstEchoue(n)
@@ -154,22 +183,30 @@ function NotificationsClient() {
         return (
 
             titre.includes("paiement valide")
+
             ||
+
             titre.includes("paiement paye")
+
             ||
-            titre.includes("paiement payé")
-            ||
+
             titre.includes("paiement confirme")
+
             ||
+
             message.includes("paiement est confirme")
+
             ||
+
             message.includes("paiement confirme")
+
             ||
+
             message.includes("paiement valide")
+
             ||
+
             message.includes("paiement paye")
-            ||
-            message.includes("paiement payé")
 
         );
 
@@ -212,19 +249,28 @@ function NotificationsClient() {
         if (
 
             type === "reservation"
+
             ||
+
             titre.includes("reservation")
+
             ||
+
             message.includes("reservation")
 
         ) {
 
-            // Réservation confirmée
+
+            // ---------------------------------------------
+            // RÉSERVATION CONFIRMÉE
+            // ---------------------------------------------
 
             if (
 
                 titre.includes("confirm")
+
                 ||
+
                 message.includes("confirm")
 
             ) {
@@ -234,12 +280,16 @@ function NotificationsClient() {
             }
 
 
-            // Réservation rejetée
+            // ---------------------------------------------
+            // RÉSERVATION REJETÉE
+            // ---------------------------------------------
 
             if (
 
                 titre.includes("rejet")
+
                 ||
+
                 message.includes("rejet")
 
             ) {
@@ -249,12 +299,16 @@ function NotificationsClient() {
             }
 
 
-            // Réservation annulée
+            // ---------------------------------------------
+            // RÉSERVATION ANNULÉE
+            // ---------------------------------------------
 
             if (
 
                 titre.includes("annul")
+
                 ||
+
                 message.includes("annul")
 
             ) {
@@ -264,14 +318,17 @@ function NotificationsClient() {
             }
 
 
-            // Autres notifications de réservation
+            // ---------------------------------------------
+            // AUTRES NOTIFICATIONS DE RÉSERVATION
+            // ---------------------------------------------
+
             return false;
 
         }
 
 
         // =================================================
-        // AVIS ET AUTRES
+        // AVIS ET AUTRES NOTIFICATIONS
         // =================================================
 
         return true;
@@ -360,7 +417,9 @@ function NotificationsClient() {
         const interval =
             setInterval(
                 () => {
+
                     chargerNotifications();
+
                 },
                 2000
             );
@@ -388,7 +447,10 @@ function NotificationsClient() {
 
         return () => {
 
-            clearInterval(interval);
+            clearInterval(
+                interval
+            );
+
 
             document.removeEventListener(
                 "visibilitychange",
@@ -407,30 +469,44 @@ function NotificationsClient() {
     const marquerCommeLu = (id) => {
 
         setNotifications(
+
             prev =>
+
                 prev.map(
+
                     n =>
+
                         n.id_notification === id
+
                             ?
+
                             {
                                 ...n,
                                 lu: 1
                             }
+
                             :
+
                             n
+
                 )
+
         );
 
 
         api.put(
             `/notifications/lu/${id}`
         )
+
             .catch(
+
                 error =>
+
                     console.log(
                         "Erreur lecture :",
                         error
                     )
+
             );
 
     };
@@ -451,11 +527,18 @@ function NotificationsClient() {
 
 
                 setNotifications(
+
                     prev =>
+
                         prev.filter(
+
                             n =>
-                                n.id_notification !== id
+
+                                n.id_notification !==
+                                id
+
                         )
+
                 );
 
             }
@@ -477,103 +560,7 @@ function NotificationsClient() {
 
 
     // =====================================================
-    // CONSTRUIRE L'URL DU REÇU
-    // =====================================================
-
-    const construireUrlRecu = (lien) => {
-
-        if (!lien) {
-            return null;
-        }
-
-
-        // -------------------------------------------------
-        // Si le backend a déjà enregistré une URL complète
-        // -------------------------------------------------
-
-        if (
-            lien.startsWith("http://")
-            ||
-            lien.startsWith("https://")
-        ) {
-
-            return lien;
-
-        }
-
-
-        // -------------------------------------------------
-        // URL du backend
-        // Exemple :
-        // VITE_API_URL=http://localhost:8081/api
-        // -------------------------------------------------
-
-        const baseUrl =
-            import.meta.env.VITE_API_URL
-                ?.
-                replace(/\/$/, "");
-
-
-        if (!baseUrl) {
-
-            console.error(
-                "VITE_API_URL n'est pas défini."
-            );
-
-            return lien;
-
-        }
-
-
-        // -------------------------------------------------
-        // Éviter /api/api
-        // -------------------------------------------------
-
-        if (
-            lien.startsWith("/api/")
-        ) {
-
-            const baseSansApi =
-                baseUrl.replace(
-                    /\/api$/,
-                    ""
-                );
-
-            return (
-                baseSansApi +
-                lien
-            );
-
-        }
-
-
-        // -------------------------------------------------
-        // Lien commençant par /
-        // -------------------------------------------------
-
-        if (
-            lien.startsWith("/")
-        ) {
-
-            return (
-                baseUrl +
-                lien
-            );
-
-        }
-
-
-        return (
-            baseUrl +
-            "/" +
-            lien
-        );
-
-    };
-
-
-    // =====================================================
-    // TÉLÉCHARGER / OUVRIR LE REÇU
+    // OUVRIR LA PAGE DU REÇU
     // =====================================================
 
     const telechargerRecu = (lien) => {
@@ -584,29 +571,6 @@ function NotificationsClient() {
                 "Aucun lien de reçu disponible."
             );
 
-            return;
-
-        }
-
-
-        const urlRecu =
-            construireUrlRecu(lien);
-
-
-        console.log(
-            "Lien enregistré dans notification :",
-            lien
-        );
-
-
-        console.log(
-            "URL finale du reçu :",
-            urlRecu
-        );
-
-
-        if (!urlRecu) {
-
             alert(
                 "Le lien du reçu est indisponible."
             );
@@ -616,19 +580,120 @@ function NotificationsClient() {
         }
 
 
-        // -------------------------------------------------
-        // Ouvre directement la route backend :
-        //
-        // http://localhost:8081/api/recu/5
-        //
-        // Le backend retourne ensuite les données
-        // du reçu.
-        // -------------------------------------------------
+        console.log(
+            "Lien du reçu reçu depuis la notification :",
+            lien
+        );
 
-        window.open(
-            urlRecu,
-            "_blank",
-            "noopener,noreferrer"
+
+        let idPaiement = null;
+
+
+        // =================================================
+        // CAS 1
+        // URL complète
+        //
+        // Exemple :
+        // http://localhost:8081/api/recu/23
+        // =================================================
+
+        if (
+
+            lien.startsWith("http://")
+
+            ||
+
+            lien.startsWith("https://")
+
+        ) {
+
+            try {
+
+                const url =
+                    new URL(lien);
+
+
+                const morceaux =
+                    url.pathname
+                        .split("/")
+                        .filter(Boolean);
+
+
+                idPaiement =
+                    morceaux[
+                        morceaux.length - 1
+                    ];
+
+            }
+            catch (error) {
+
+                console.log(
+                    "Erreur analyse URL du reçu :",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // =================================================
+        // CAS 2
+        // URL relative
+        //
+        // Exemple :
+        // /api/recu/23
+        // =================================================
+
+        else {
+
+            const morceaux =
+                lien
+                    .split("/")
+                    .filter(Boolean);
+
+
+            idPaiement =
+                morceaux[
+                    morceaux.length - 1
+                ];
+
+        }
+
+
+        // =================================================
+        // VÉRIFICATION
+        // =================================================
+
+        if (!idPaiement) {
+
+            console.log(
+                "Impossible de récupérer l'ID du paiement."
+            );
+
+
+            alert(
+                "Impossible de récupérer l'identifiant du paiement."
+            );
+
+
+            return;
+
+        }
+
+
+        console.log(
+            "ID paiement du reçu :",
+            idPaiement
+        );
+
+
+        // =================================================
+        // OUVRIR LA PAGE REACT DU REÇU
+        // =================================================
+
+        navigate(
+            `/recu/${idPaiement}`
         );
 
     };
@@ -657,6 +722,10 @@ function NotificationsClient() {
             }
 
 
+            // =================================================
+            // NORMALISATION
+            // =================================================
+
             const titre =
                 normaliserTexte(
                     n.titre
@@ -682,7 +751,9 @@ function NotificationsClient() {
             if (
 
                 titre.includes("avis")
+
                 ||
+
                 message.includes("avis")
 
             ) {
@@ -690,6 +761,7 @@ function NotificationsClient() {
                 navigate(
                     "/avis-public"
                 );
+
 
                 return;
 
@@ -703,7 +775,9 @@ function NotificationsClient() {
             if (
 
                 estNotificationPaiement(n)
+
                 &&
+
                 paiementEstEchoue(n)
 
             ) {
@@ -731,7 +805,9 @@ function NotificationsClient() {
             if (
 
                 estNotificationPaiement(n)
+
                 &&
+
                 paiementEstValide(n)
 
             ) {
@@ -742,8 +818,8 @@ function NotificationsClient() {
                 );
 
 
-                // Le bouton "Télécharger reçu"
-                // gère directement le reçu.
+                // Le reçu est ouvert uniquement avec
+                // le lien "Télécharger reçu".
 
                 return;
 
@@ -757,19 +833,29 @@ function NotificationsClient() {
             if (
 
                 (
+
                     type === "reservation"
+
                     ||
+
                     titre.includes("reservation")
+
                     ||
+
                     message.includes("reservation")
+
                 )
 
                 &&
 
                 (
+
                     titre.includes("annul")
+
                     ||
+
                     message.includes("annul")
+
                 )
 
             ) {
@@ -777,6 +863,7 @@ function NotificationsClient() {
                 navigate(
                     "/mes-reservations"
                 );
+
 
                 return;
 
@@ -790,19 +877,29 @@ function NotificationsClient() {
             if (
 
                 (
+
                     type === "reservation"
+
                     ||
+
                     titre.includes("reservation")
+
                     ||
+
                     message.includes("reservation")
+
                 )
 
                 &&
 
                 (
+
                     titre.includes("rejet")
+
                     ||
+
                     message.includes("rejet")
+
                 )
 
             ) {
@@ -810,6 +907,7 @@ function NotificationsClient() {
                 navigate(
                     "/mes-reservations"
                 );
+
 
                 return;
 
@@ -823,19 +921,29 @@ function NotificationsClient() {
             if (
 
                 (
+
                     type === "reservation"
+
                     ||
+
                     titre.includes("reservation")
+
                     ||
+
                     message.includes("reservation")
+
                 )
 
                 &&
 
                 (
+
                     titre.includes("confirm")
+
                     ||
+
                     message.includes("confirm")
+
                 )
 
             ) {
@@ -873,109 +981,150 @@ function NotificationsClient() {
     // ICONES
     // =====================================================
 
-    const getIcone = (n) => {
+    const getIcone =
+        (n) => {
 
 
-        // =================================================
-        // PAIEMENT
-        // =================================================
-
-        if (
-            estNotificationPaiement(n)
-        ) {
-
+            // =================================================
+            // PAIEMENT
+            // =================================================
 
             if (
-                paiementEstEchoue(n)
+                estNotificationPaiement(n)
+            ) {
+
+
+                // ---------------------------------------------
+                // PAIEMENT ÉCHOUÉ
+                // ---------------------------------------------
+
+                if (
+                    paiementEstEchoue(n)
+                ) {
+
+                    return (
+
+                        <FaTimesCircle
+                            className="danger"
+                        />
+
+                    );
+
+                }
+
+
+                // ---------------------------------------------
+                // PAIEMENT VALIDÉ
+                // ---------------------------------------------
+
+                if (
+                    paiementEstValide(n)
+                ) {
+
+                    return (
+
+                        <FaCheckCircle
+                            className="success"
+                        />
+
+                    );
+
+                }
+
+
+                return (
+
+                    <FaBell />
+
+                );
+
+            }
+
+
+            // =================================================
+            // AUTRES NOTIFICATIONS
+            // =================================================
+
+            const titre =
+                normaliserTexte(
+                    n.titre
+                );
+
+
+            // =================================================
+            // REJET / ANNULATION
+            // =================================================
+
+            if (
+
+                titre.includes("rejet")
+
+                ||
+
+                titre.includes("annul")
+
             ) {
 
                 return (
+
                     <FaTimesCircle
                         className="danger"
                     />
+
                 );
 
             }
 
 
+            // =================================================
+            // EXPIRATION
+            // =================================================
+
             if (
-                paiementEstValide(n)
+                titre.includes("expiration")
             ) {
 
                 return (
-                    <FaCheckCircle
-                        className="success"
+
+                    <FaCalendarTimes
+                        className="warning"
                     />
+
                 );
 
             }
 
 
+            // =================================================
+            // AVIS
+            // =================================================
+
+            if (
+                titre.includes("avis")
+            ) {
+
+                return (
+
+                    <FaStar
+                        className="star"
+                    />
+
+                );
+
+            }
+
+
+            // =================================================
+            // PAR DÉFAUT
+            // =================================================
+
             return (
+
                 <FaBell />
+
             );
 
-        }
-
-
-        // =================================================
-        // AUTRES
-        // =================================================
-
-        const titre =
-            normaliserTexte(
-                n.titre
-            );
-
-
-        if (
-
-            titre.includes("rejet")
-            ||
-            titre.includes("annul")
-
-        ) {
-
-            return (
-                <FaTimesCircle
-                    className="danger"
-                />
-            );
-
-        }
-
-
-        if (
-            titre.includes("expiration")
-        ) {
-
-            return (
-                <FaCalendarTimes
-                    className="warning"
-                />
-            );
-
-        }
-
-
-        if (
-            titre.includes("avis")
-        ) {
-
-            return (
-                <FaStar
-                    className="star"
-                />
-            );
-
-        }
-
-
-        return (
-            <FaBell />
-        );
-
-    };
+        };
 
 
     // =====================================================
@@ -993,14 +1142,19 @@ function NotificationsClient() {
 
 
             {
+
                 notifications.length === 0
 
                     ?
 
                     (
+
                         <p className="empty">
+
                             Aucune notification
+
                         </p>
+
                     )
 
                     :
@@ -1008,32 +1162,54 @@ function NotificationsClient() {
                     (
 
                         (
+
                             afficherToutes
+
                                 ?
+
                                 notifications
+
                                 :
-                                notifications.slice(0, 5)
+
+                                notifications.slice(
+                                    0,
+                                    5
+                                )
+
                         )
 
                             .map(
+
                                 n => (
 
                                     <div
+
                                         key={
                                             n.id_notification
                                         }
 
+
                                         className={
+
                                             Number(n.lu) === 0
+
                                                 ?
+
                                                 "notification-card unread"
+
                                                 :
+
                                                 "notification-card"
+
                                         }
 
+
                                         onClick={() =>
-                                            ouvrirNotification(n)
+                                            ouvrirNotification(
+                                                n
+                                            )
                                         }
+
                                     >
 
 
@@ -1042,19 +1218,24 @@ function NotificationsClient() {
                                         ================================= */}
 
                                         <button
+
                                             className="delete-notification-btn"
 
                                             onClick={(e) => {
 
                                                 e.stopPropagation();
 
+
                                                 supprimerNotification(
                                                     n.id_notification
                                                 );
 
                                             }}
+
                                         >
+
                                             🗑
+
                                         </button>
 
 
@@ -1079,76 +1260,121 @@ function NotificationsClient() {
 
 
                                             <h3>
+
                                                 {
                                                     n.titre
                                                 }
+
                                             </h3>
 
 
                                             <p>
+
                                                 {
                                                     n.message
                                                 }
+
                                             </p>
 
 
                                             <small>
 
                                                 {
+
                                                     new Date(
                                                         n.date_notification
                                                     )
                                                         .toLocaleString(
                                                             "fr-FR"
                                                         )
+
                                                 }
 
                                             </small>
 
 
                                             {/* =================================
-                                                BOUTON REÇU
+                                                LIEN REÇU
+                                                UNIQUEMENT PAIEMENT VALIDÉ
                                             ================================= */}
 
                                             {
+
                                                 estNotificationPaiement(n)
+
                                                 &&
+
                                                 paiementEstValide(n)
+
                                                 &&
+
                                                 n.lien
+
                                                 &&
 
                                                 (
-                                                    <button
-                                                        type="button"
 
-                                                        className="download-btn"
+                                                    <span
+
+                                                        className="download-recu-link"
+
+                                                        role="button"
+
+                                                        tabIndex={0}
 
                                                         onClick={(e) => {
 
                                                             e.stopPropagation();
+
 
                                                             telechargerRecu(
                                                                 n.lien
                                                             );
 
                                                         }}
+
+                                                        onKeyDown={(e) => {
+
+                                                            if (
+                                                                e.key === "Enter"
+                                                                ||
+                                                                e.key === " "
+                                                            ) {
+
+                                                                e.preventDefault();
+
+
+                                                                e.stopPropagation();
+
+
+                                                                telechargerRecu(
+                                                                    n.lien
+                                                                );
+
+                                                            }
+
+                                                        }}
+
                                                     >
 
                                                         <FaFileDownload />
 
                                                         Télécharger reçu
 
-                                                    </button>
+                                                    </span>
+
                                                 )
+
                                             }
 
 
                                         </div>
 
+
                                     </div>
 
                                 )
+
                             )
 
                     )
@@ -1161,12 +1387,15 @@ function NotificationsClient() {
             ===================================================== */}
 
             {
+
                 notifications.length > 5
 
                 &&
 
                 (
+
                     <button
+
                         className="btn-afficher-notifications"
 
                         onClick={() =>
@@ -1174,18 +1403,27 @@ function NotificationsClient() {
                                 !afficherToutes
                             )
                         }
+
                     >
 
                         {
+
                             afficherToutes
+
                                 ?
+
                                 "Afficher seulement les récentes"
+
                                 :
+
                                 "Afficher les notifications précédentes"
+
                         }
 
                     </button>
+
                 )
+
             }
 
 
