@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -22,6 +23,7 @@ import "./Accueil.css";
 
 function Accueil() {
 
+
     const [destinations, setDestinations] = useState([]);
     const [offres, setOffres] = useState([]);
 
@@ -32,20 +34,33 @@ function Accueil() {
     const [errorOffres, setErrorOffres] = useState("");
 
 
-    
+    /* =========================================================
+       PRIX
+    ========================================================= */
 
-const formatPrixEuro = (prix) => {
+    const formatPrixEuro = (prix) => {
 
-    if (prix === null || prix === undefined || prix === "") {
-        return "Prix sur demande";
-    }
+        if (
+            prix === null ||
+            prix === undefined ||
+            prix === ""
+        ) {
 
-    return `${Number(prix).toLocaleString("fr-FR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    })} €`;
+            return "Prix sur demande";
 
-};
+        }
+
+
+        return `${Number(prix).toLocaleString(
+            "fr-FR",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        )} €`;
+
+    };
+
 
     /* =========================================================
        CONSTRUIRE URL IMAGE
@@ -54,30 +69,100 @@ const formatPrixEuro = (prix) => {
     const getImageUrl = (image) => {
 
         if (!image) {
+
             return null;
+
         }
 
-        // Si l'API renvoie déjà une URL complète
+
+        /* Image Cloudinary ou URL complète */
+
         if (
             image.startsWith("http://") ||
             image.startsWith("https://")
         ) {
+
             return image;
+
         }
 
-        // Si l'API renvoie /uploads/image.jpg
-        if (image.startsWith("/uploads/")) {
+
+        /* Ancien système /uploads */
+
+        if (
+            image.startsWith("/uploads/")
+        ) {
+
             return `${import.meta.env.VITE_SERVER_URL}${image}`;
+
         }
 
-        // Si l'API renvoie /image.jpg
-        if (image.startsWith("/")) {
+
+        /* URL commençant par / */
+
+        if (
+            image.startsWith("/")
+        ) {
+
             return `${import.meta.env.VITE_SERVER_URL}${image}`;
+
         }
 
-        // Si l'API renvoie seulement image.jpg
+
+        /* Nom de fichier */
+
         return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+
     };
+
+
+    /* =========================================================
+       VIDEOS ACCUEIL
+    ========================================================= */
+
+    const videosAccueil = [
+
+        {
+            fichier: "/videos/lemurien.mp4",
+            categorie: "Nature",
+            titre: "La faune de Madagascar",
+            description:
+                "Découvrez la richesse exceptionnelle de la faune malgache."
+        },
+
+        {
+            fichier: "/videos/ville.mp4",
+            categorie: "Ville",
+            titre: "Découvrez les villes",
+            description:
+                "Explorez les villes et l'ambiance de nouvelles destinations."
+        },
+
+        {
+            fichier: "/videos/ranomafana.mp4",
+            categorie: "Destination",
+            titre: "Ranomafana",
+            description:
+                "Découvrez les paysages et les merveilles naturelles."
+        },
+
+        {
+            fichier: "/videos/hotel.mp4",
+            categorie: "Hébergement",
+            titre: "Séjournez confortablement",
+            description:
+                "Découvrez les chambres et les hébergements disponibles."
+        },
+
+        {
+            fichier: "/videos/nature.mp4",
+            categorie: "Nature",
+            titre: "Évasion et paysages",
+            description:
+                "Laissez-vous séduire par des paysages exceptionnels."
+        }
+
+    ];
 
 
     /* =========================================================
@@ -91,53 +176,75 @@ const formatPrixEuro = (prix) => {
             try {
 
                 setLoadingDestinations(true);
+
                 setErrorDestinations("");
 
-                const response = await api.get("/destinations");
+                const response =
+                    await api.get("/destinations");
+
 
                 console.log(
                     "Destinations récupérées :",
                     response.data
                 );
 
+
                 let data = response.data;
 
-                // Si le backend retourne { destinations: [...] }
+
                 if (
                     data &&
-                    Array.isArray(data.destinations)
+                    Array.isArray(
+                        data.destinations
+                    )
                 ) {
+
                     data = data.destinations;
+
                 }
 
-                // Si le backend retourne { data: [...] }
+
                 if (
                     data &&
-                    Array.isArray(data.data)
+                    Array.isArray(
+                        data.data
+                    )
                 ) {
+
                     data = data.data;
+
                 }
+
 
                 if (Array.isArray(data)) {
+
                     setDestinations(data);
-                } else {
+
+                }
+                else {
+
                     setDestinations([]);
+
                 }
 
-            } catch (error) {
+            }
+            catch (error) {
 
                 console.error(
                     "Erreur chargement destinations :",
                     error
                 );
 
+
                 setErrorDestinations(
                     "Impossible de charger les destinations."
                 );
 
+
                 setDestinations([]);
 
-            } finally {
+            }
+            finally {
 
                 setLoadingDestinations(false);
 
@@ -162,53 +269,76 @@ const formatPrixEuro = (prix) => {
             try {
 
                 setLoadingOffres(true);
+
                 setErrorOffres("");
 
-                const response = await api.get("/offres");
+
+                const response =
+                    await api.get("/offres");
+
 
                 console.log(
                     "Offres récupérées :",
                     response.data
                 );
 
+
                 let data = response.data;
 
-                // Si le backend retourne { offres: [...] }
+
                 if (
                     data &&
-                    Array.isArray(data.offres)
+                    Array.isArray(
+                        data.offres
+                    )
                 ) {
+
                     data = data.offres;
+
                 }
 
-                // Si le backend retourne { data: [...] }
+
                 if (
                     data &&
-                    Array.isArray(data.data)
+                    Array.isArray(
+                        data.data
+                    )
                 ) {
+
                     data = data.data;
+
                 }
+
 
                 if (Array.isArray(data)) {
+
                     setOffres(data);
-                } else {
+
+                }
+                else {
+
                     setOffres([]);
+
                 }
 
-            } catch (error) {
+            }
+            catch (error) {
 
                 console.error(
                     "Erreur chargement offres :",
                     error
                 );
 
+
                 setErrorOffres(
                     "Impossible de charger les offres."
                 );
 
+
                 setOffres([]);
 
-            } finally {
+            }
+            finally {
 
                 setLoadingOffres(false);
 
@@ -223,17 +353,20 @@ const formatPrixEuro = (prix) => {
 
 
     /* =========================================================
-       DONNEES DESTINATIONS
+       AFFICHAGE DESTINATIONS
+       Seulement 3 sur l'accueil
     ========================================================= */
 
-    const destinationsAffichees = destinations.slice(0, 4);
+    const destinationsAffichees =
+        destinations.slice(0, 3);
 
 
     /* =========================================================
-       DONNEES OFFRES
+       AFFICHAGE OFFRES
     ========================================================= */
 
-    const offresAffichees = offres.slice(0, 6);
+    const offresAffichees =
+        offres.slice(0, 6);
 
 
     return (
@@ -285,7 +418,9 @@ const formatPrixEuro = (prix) => {
 
                     <div className="hero-buttons">
 
-                        <Link to="/destinations-public">
+                        <Link
+                            to="/destinations-public"
+                        >
 
                             <button
                                 type="button"
@@ -303,7 +438,9 @@ const formatPrixEuro = (prix) => {
                         </Link>
 
 
-                        <Link to="/offres-public">
+                        <Link
+                            to="/offres-public"
+                        >
 
                             <button
                                 type="button"
@@ -317,6 +454,161 @@ const formatPrixEuro = (prix) => {
                         </Link>
 
                     </div>
+
+                </div>
+
+            </section>
+
+
+
+            {/* =====================================================
+                VIDEOS
+            ===================================================== */}
+
+            <section className="videos-section">
+
+
+                <div className="section-heading">
+
+                    <div>
+
+                        <span className="section-label">
+                            INSPIRATION
+                        </span>
+
+
+                        <h2>
+                            Laissez-vous inspirer par le voyage
+                        </h2>
+
+
+                        <p>
+                            Découvrez des paysages, des villes,
+                            des expériences et des hébergements
+                            qui pourraient être votre prochaine destination.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div className="videos-showcase">
+
+
+                    {/* =================================================
+                        GRANDE VIDEO
+                    ================================================= */}
+
+                    <div className="video-main-card">
+
+                        <video
+                            src={
+                                videosAccueil[0].fichier
+                            }
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                        />
+
+
+                        <div className="video-main-overlay"></div>
+
+
+                        <div className="video-card-content">
+
+                            <span>
+                                {
+                                    videosAccueil[0].categorie
+                                }
+                            </span>
+
+
+                            <h3>
+                                {
+                                    videosAccueil[0].titre
+                                }
+                            </h3>
+
+
+                            <p>
+                                {
+                                    videosAccueil[0].description
+                                }
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    {/* =================================================
+                        PETITES VIDEOS
+                    ================================================= */}
+
+                    <div className="videos-side-grid">
+
+
+                        {
+                            videosAccueil
+                                .slice(1)
+                                .map(
+                                    (
+                                        video,
+                                        index
+                                    ) => (
+
+                                        <div
+                                            className="video-small-card"
+                                            key={index}
+                                        >
+
+
+                                            <video
+                                                src={
+                                                    video.fichier
+                                                }
+                                                autoPlay
+                                                muted
+                                                loop
+                                                playsInline
+                                                preload="metadata"
+                                            />
+
+
+                                            <div className="video-small-overlay"></div>
+
+
+                                            <div className="video-small-content">
+
+                                                <span>
+                                                    {
+                                                        video.categorie
+                                                    }
+                                                </span>
+
+
+                                                <h3>
+                                                    {
+                                                        video.titre
+                                                    }
+                                                </h3>
+
+                                            </div>
+
+
+                                        </div>
+
+                                    )
+                                )
+                        }
+
+                    </div>
+
 
                 </div>
 
@@ -339,9 +631,11 @@ const formatPrixEuro = (prix) => {
                             DESTINATIONS
                         </span>
 
+
                         <h2>
                             Explorez Madagascar
                         </h2>
+
 
                         <p>
                             Découvrez les destinations les plus
@@ -366,163 +660,183 @@ const formatPrixEuro = (prix) => {
 
 
 
-                {loadingDestinations ? (
+                {
+                    loadingDestinations ? (
 
-                    <div className="loading-container">
+                        <div className="loading-container">
 
-                        <div className="loading-spinner"></div>
+                            <div className="loading-spinner"></div>
 
-                        <p>
-                            Chargement des destinations...
-                        </p>
+                            <p>
+                                Chargement des destinations...
+                            </p>
 
-                    </div>
+                        </div>
 
-                ) : errorDestinations ? (
+                    ) : errorDestinations ? (
 
-                    <div className="error-container">
+                        <div className="error-container">
 
-                        <span>
-                            ⚠️
-                        </span>
+                            <span>
+                                ⚠️
+                            </span>
 
-                        <p>
-                            {errorDestinations}
-                        </p>
+                            <p>
+                                {errorDestinations}
+                            </p>
 
-                    </div>
+                        </div>
 
-                ) : destinationsAffichees.length === 0 ? (
+                    ) : destinationsAffichees.length === 0 ? (
 
-                    <div className="empty-container">
+                        <div className="empty-container">
 
-                        <span>
-                            🌍
-                        </span>
+                            <span>
+                                🌍
+                            </span>
 
-                        <p>
-                            Aucune destination disponible pour le moment.
-                        </p>
+                            <p>
+                                Aucune destination disponible pour le moment.
+                            </p>
 
-                    </div>
+                        </div>
 
-                ) : (
+                    ) : (
 
-                    <div className="destination-grid">
+                        <div className="destination-grid">
 
-                        {destinationsAffichees.map(
-                            (destination, index) => {
+                            {
+                                destinationsAffichees.map(
+                                    (
+                                        destination,
+                                        index
+                                    ) => {
 
-                                const image = getImageUrl(
-                                    destination.image ||
-                                    destination.photo ||
-                                    destination.image_destination
-                                );
-
-
-                                const id =
-                                    destination.id_destination ||
-                                    destination.id;
-
-
-                                return (
-
-                                    <Link
-                                        to="/destinations-public"
-                                        className="destination-card"
-                                        key={id || index}
-                                    >
+                                        const image =
+                                            getImageUrl(
+                                                destination.image ||
+                                                destination.photo ||
+                                                destination.image_destination
+                                            );
 
 
-                                        {image ? (
+                                        const id =
+                                            destination.id_destination ||
+                                            destination.id;
 
-                                            <img
-                                                src={image}
-                                                alt={
-                                                    destination.nom ||
-                                                    destination.nom_destination ||
-                                                    "Destination"
+
+                                        return (
+
+                                            <Link
+                                                to="/destinations-public"
+                                                className="destination-card"
+                                                key={
+                                                    id ||
+                                                    index
                                                 }
-                                                className="destination-image"
-                                                onError={(event) => {
+                                            >
 
-                                                    console.error(
-                                                        "Image destination introuvable :",
-                                                        image
-                                                    );
-
-                                                    event.currentTarget.style.display =
-                                                        "none";
-
-                                                }}
-                                            />
-
-                                        ) : (
-
-                                            <div className="destination-no-image">
-
-                                                <FaGlobeAfrica />
-
-                                            </div>
-
-                                        )}
-
-
-                                        <div className="destination-overlay"></div>
-
-
-                                        <div className="destination-content">
-
-                                            <span className="destination-location">
-
-                                                <FaMapMarkerAlt />
-
-                                                Madagascar
-
-                                            </span>
-
-
-                                            <h3>
 
                                                 {
-                                                    destination.nom ||
-                                                    destination.nom_destination ||
-                                                    "Destination"
+                                                    image ? (
+
+                                                        <img
+                                                            src={image}
+                                                            alt={
+                                                                destination.nom ||
+                                                                destination.nom_destination ||
+                                                                "Destination"
+                                                            }
+                                                            className="destination-image"
+                                                            onError={(
+                                                                event
+                                                            ) => {
+
+                                                                console.error(
+                                                                    "Image destination introuvable :",
+                                                                    image
+                                                                );
+
+
+                                                                event
+                                                                    .currentTarget
+                                                                    .style
+                                                                    .display =
+                                                                    "none";
+
+                                                            }}
+                                                        />
+
+                                                    ) : (
+
+                                                        <div className="destination-no-image">
+
+                                                            <FaGlobeAfrica />
+
+                                                        </div>
+
+                                                    )
                                                 }
 
-                                            </h3>
+
+                                                <div className="destination-overlay"></div>
 
 
-                                            <p>
+                                                <div className="destination-content">
 
-                                                {
-                                                    destination.description ||
-                                                    "Découvrez cette magnifique destination touristique."
-                                                }
+                                                    <span className="destination-location">
 
-                                            </p>
+                                                        <FaMapMarkerAlt />
+
+                                                        Madagascar
+
+                                                    </span>
 
 
-                                            <span className="destination-link">
+                                                    <h3>
 
-                                                Découvrir
+                                                        {
+                                                            destination.nom ||
+                                                            destination.nom_destination ||
+                                                            "Destination"
+                                                        }
 
-                                                <FaArrowRight />
+                                                    </h3>
 
-                                            </span>
 
-                                        </div>
+                                                    <p>
 
-                                    </Link>
+                                                        {
+                                                            destination.description ||
+                                                            "Découvrez cette magnifique destination touristique."
+                                                        }
 
-                                );
+                                                    </p>
 
+
+                                                    <span className="destination-link">
+
+                                                        Découvrir
+
+                                                        <FaArrowRight />
+
+                                                    </span>
+
+                                                </div>
+
+
+                                            </Link>
+
+                                        );
+
+                                    }
+                                )
                             }
-                        )}
 
-                    </div>
+                        </div>
 
-                )}
+                    )
+                }
 
             </section>
 
@@ -543,9 +857,11 @@ const formatPrixEuro = (prix) => {
                             NOS OFFRES
                         </span>
 
+
                         <h2>
                             Des séjours pour tous les goûts
                         </h2>
+
 
                         <p>
                             Trouvez l'offre idéale pour votre prochain
@@ -570,252 +886,298 @@ const formatPrixEuro = (prix) => {
 
 
 
-                {loadingOffres ? (
+                {
+                    loadingOffres ? (
 
-                    <div className="loading-container">
+                        <div className="loading-container">
 
-                        <div className="loading-spinner"></div>
+                            <div className="loading-spinner"></div>
 
-                        <p>
-                            Chargement des offres...
-                        </p>
+                            <p>
+                                Chargement des offres...
+                            </p>
 
-                    </div>
+                        </div>
 
-                ) : errorOffres ? (
+                    ) : errorOffres ? (
 
-                    <div className="error-container">
+                        <div className="error-container">
 
-                        <span>
-                            ⚠️
-                        </span>
+                            <span>
+                                ⚠️
+                            </span>
 
-                        <p>
-                            {errorOffres}
-                        </p>
+                            <p>
+                                {errorOffres}
+                            </p>
 
-                    </div>
+                        </div>
 
-                ) : offresAffichees.length === 0 ? (
+                    ) : offresAffichees.length === 0 ? (
 
-                    <div className="empty-container">
+                        <div className="empty-container">
 
-                        <span>
-                            🏨
-                        </span>
+                            <span>
+                                🏨
+                            </span>
 
-                        <p>
-                            Aucune offre disponible pour le moment.
-                        </p>
+                            <p>
+                                Aucune offre disponible pour le moment.
+                            </p>
 
-                    </div>
+                        </div>
 
-                ) : (
+                    ) : (
 
-                    <div className="offers-grid">
+                        <div className="offers-grid">
 
-                        {offresAffichees.map(
-                            (offre, index) => {
+                            {
+                                offresAffichees.map(
+                                    (
+                                        offre,
+                                        index
+                                    ) => {
 
-                                const image = getImageUrl(
-                                    offre.image ||
-                                    offre.photo ||
-                                    offre.image_offre
-                                );
-
-
-                                const id =
-                                    offre.id_offre ||
-                                    offre.id;
-
-
-                                return (
-
-                                    <div
-                                        className="offer-card"
-                                        key={id || index}
-                                    >
+                                        const image =
+                                            getImageUrl(
+                                                offre.image ||
+                                                offre.photo ||
+                                                offre.image_offre
+                                            );
 
 
-                                        <div className="offer-image">
+                                        const id =
+                                            offre.id_offre ||
+                                            offre.id;
 
 
-                                            {image ? (
+                                        return (
 
-                                                <img
-                                                    src={image}
-                                                    alt={
-                                                        offre.titre ||
-                                                        "Offre touristique"
+                                            <div
+                                                className="offer-card"
+                                                key={
+                                                    id ||
+                                                    index
+                                                }
+                                            >
+
+
+                                                <div className="offer-image">
+
+
+                                                    {
+                                                        image ? (
+
+                                                            <img
+                                                                src={image}
+                                                                alt={
+                                                                    offre.titre ||
+                                                                    "Offre touristique"
+                                                                }
+                                                                onError={(
+                                                                    event
+                                                                ) => {
+
+                                                                    console.error(
+                                                                        "Image offre introuvable :",
+                                                                        image
+                                                                    );
+
+
+                                                                    event
+                                                                        .currentTarget
+                                                                        .style
+                                                                        .display =
+                                                                        "none";
+
+                                                                }}
+                                                            />
+
+                                                        ) : (
+
+                                                            <div className="offer-no-image">
+
+                                                                <FaHotel />
+
+                                                            </div>
+
+                                                        )
                                                     }
-                                                    onError={(event) => {
 
-                                                        console.error(
-                                                            "Image offre introuvable :",
-                                                            image
-                                                        );
 
-                                                        event.currentTarget.style.display =
-                                                            "none";
+                                                    {
+                                                        offre.categorie && (
 
-                                                    }}
-                                                />
+                                                            <span className="offer-badge">
 
-                                            ) : (
+                                                                {
+                                                                    offre.categorie
+                                                                }
 
-                                                <div className="offer-no-image">
+                                                            </span>
 
-                                                    <FaHotel />
+                                                        )
+                                                    }
+
+
+                                                    <button
+                                                        type="button"
+                                                        className="favorite-button"
+                                                        onClick={(
+                                                            event
+                                                        ) => {
+
+                                                            event.preventDefault();
+
+                                                        }}
+                                                    >
+
+                                                        <FaHeart />
+
+                                                    </button>
 
                                                 </div>
 
-                                            )}
 
 
-                                            {offre.categorie && (
-
-                                                <span className="offer-badge">
-
-                                                    {offre.categorie}
-
-                                                </span>
-
-                                            )}
+                                                <div className="offer-content">
 
 
-                                            <button
-                                                type="button"
-                                                className="favorite-button"
-                                                onClick={(event) => {
+                                                    <span className="offer-location">
 
-                                                    event.preventDefault();
+                                                        <FaMapMarkerAlt />
 
-                                                }}
-                                            >
-
-                                                <FaHeart />
-
-                                            </button>
-
-                                        </div>
-
-
-
-                                        <div className="offer-content">
-
-
-                                            <span className="offer-location">
-
-                                                <FaMapMarkerAlt />
-
-                                                {
-                                                    offre.destination ||
-                                                    offre.nom_destination ||
-                                                    "Madagascar"
-                                                }
-
-                                            </span>
-
-
-                                            <h3>
-
-                                                {
-                                                    offre.titre ||
-                                                    "Offre touristique"
-                                                }
-
-                                            </h3>
-
-
-                                            <div className="offer-info">
-
-
-                                                {offre.capacite && (
-
-                                                    <span>
-
-                                                        👥{" "}
-
-                                                        {offre.capacite}
-                                                        {" "}
-                                                        personnes
+                                                        {
+                                                            offre.destination ||
+                                                            offre.nom_destination ||
+                                                            "Madagascar"
+                                                        }
 
                                                     </span>
 
-                                                )}
+
+                                                    <h3>
+
+                                                        {
+                                                            offre.titre ||
+                                                            "Offre touristique"
+                                                        }
+
+                                                    </h3>
 
 
-                                                {offre.disponibilite !== undefined && (
-
-                                                    <span>
-
-                                                        ✓ Disponible
-
-                                                    </span>
-
-                                                )}
+                                                    <div className="offer-info">
 
 
-                                                {offre.date_debut && (
+                                                        {
+                                                            offre.capacite && (
 
-                                                    <span>
+                                                                <span>
 
-                                                        📅{" "}
+                                                                    👥{" "}
 
-                                                        {new Date(
-                                                            offre.date_debut
-                                                        ).toLocaleDateString(
-                                                            "fr-FR"
-                                                        )}
+                                                                    {
+                                                                        offre.capacite
+                                                                    }
 
-                                                    </span>
+                                                                    {" "}
+                                                                    personnes
 
-                                                )}
+                                                                </span>
+
+                                                            )
+                                                        }
+
+
+                                                        {
+                                                            offre.disponibilite !== undefined && (
+
+                                                                <span>
+
+                                                                    ✓ Disponible
+
+                                                                </span>
+
+                                                            )
+                                                        }
+
+
+                                                        {
+                                                            offre.date_debut && (
+
+                                                                <span>
+
+                                                                    📅{" "}
+
+                                                                    {
+                                                                        new Date(
+                                                                            offre.date_debut
+                                                                        ).toLocaleDateString(
+                                                                            "fr-FR"
+                                                                        )
+                                                                    }
+
+                                                                </span>
+
+                                                            )
+                                                        }
+
+                                                    </div>
+
+
+
+                                                    <div className="offer-bottom">
+
+
+                                                        <div className="offer-price">
+
+                                                            <small>
+                                                                À partir de
+                                                            </small>
+
+
+                                                            <strong>
+
+                                                                {
+                                                                    formatPrixEuro(
+                                                                        offre.prix
+                                                                    )
+                                                                }
+
+                                                            </strong>
+
+                                                        </div>
+
+
+                                                        <Link
+                                                            to={
+                                                                `/detail-offre/${id}`
+                                                            }
+                                                            className="offer-button"
+                                                        >
+
+                                                            Voir l'offre
+
+                                                            <FaArrowRight />
+
+                                                        </Link>
+
+                                                    </div>
+
+                                                </div>
 
                                             </div>
 
+                                        );
 
-
-                                            <div className="offer-bottom">
-
-
-                                                <div className="offer-price">
-
-                                                   <small>
-                                                     À partir de
-                                                    </small>
-
-                                                  <strong>
-                                                      {formatPrixEuro(offre.prix)}
-                                                  </strong>
-
-                                                 </div>
-
-                                                <Link
-                                                    to={`/detail-offre/${id}`}
-                                                    className="offer-button"
-                                                >
-
-                                                    Voir l'offre
-
-                                                    <FaArrowRight />
-
-                                                </Link>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                );
-
+                                    }
+                                )
                             }
-                        )}
 
-                    </div>
+                        </div>
 
-                )}
+                    )
+                }
 
             </section>
 
@@ -826,7 +1188,6 @@ const formatPrixEuro = (prix) => {
             ===================================================== */}
 
             <section className="advantages-section">
-
 
                 <div className="advantages-container">
 
@@ -884,9 +1245,11 @@ const formatPrixEuro = (prix) => {
 
                             </div>
 
+
                             <h3>
                                 Réservation sécurisée
                             </h3>
+
 
                             <p>
                                 Vos réservations sont traitées
@@ -904,9 +1267,11 @@ const formatPrixEuro = (prix) => {
 
                             </div>
 
+
                             <h3>
                                 Paiement simple
                             </h3>
+
 
                             <p>
                                 Profitez d'un processus de paiement
@@ -924,9 +1289,11 @@ const formatPrixEuro = (prix) => {
 
                             </div>
 
+
                             <h3>
                                 Offres sélectionnées
                             </h3>
+
 
                             <p>
                                 Découvrez des offres touristiques
@@ -944,9 +1311,11 @@ const formatPrixEuro = (prix) => {
 
                             </div>
 
+
                             <h3>
                                 Assistance
                             </h3>
+
 
                             <p>
                                 Notre équipe reste disponible pour
@@ -1175,53 +1544,64 @@ const formatPrixEuro = (prix) => {
 
                     </p>
 
-          <div className="contact-buttons">
 
-          {/* CONTACT */}
-          <Link to="/contact">
-
-           <button
-            type="button"
-            className="contact-primary"
-            >
-
-            Contactez-nous
-
-            <FaArrowRight />
-
-                 </button>
-
-                </Link>
+                    <div className="contact-buttons">
 
 
-                 {/* ASSISTANT CHATBOT */}
-                 <button
-    type="button"
-    className="contact-chatbot"
-    onClick={() => {
-        // Ouvre le chatbot flottant
-        window.dispatchEvent(new Event("open-chatbot"));
-    }}
->
-    <FaRobot />
+                        <Link to="/contact">
 
-    Assistant chatbot
-</button>
+                            <button
+                                type="button"
+                                className="contact-primary"
+                            >
+
+                                Contactez-nous
+
+                                <FaArrowRight />
+
+                            </button>
+
+                        </Link>
 
 
-                    {/* EXPLORER */}
-                    <Link to="/destinations-public">
 
                         <button
-                         type="button"
-                         className="contact-secondary"
-                      >
+                            type="button"
+                            className="contact-chatbot"
+                            onClick={() => {
 
-                           Explorer
+                                window.dispatchEvent(
+                                    new Event(
+                                        "open-chatbot"
+                                    )
+                                );
 
-                         </button>
+                            }}
+                        >
 
-                      </Link>
+                            <FaRobot />
+
+                            Assistant chatbot
+
+                        </button>
+
+
+
+                        <Link
+                            to="/destinations-public"
+                        >
+
+                            <button
+                                type="button"
+                                className="contact-secondary"
+                            >
+
+                                Explorer
+
+                            </button>
+
+                        </Link>
+
 
                     </div>
 
@@ -1238,3 +1618,4 @@ const formatPrixEuro = (prix) => {
 
 
 export default Accueil;
+

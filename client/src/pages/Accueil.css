@@ -1,37 +1,13 @@
 /* =========================================================
-   RESET LOCAL - ÉVITE LES DÉBORDEMENTS
+   ACCUEIL - STYLE GLOBAL
 ========================================================= */
-
-.home-page,
-.home-page * {
-    box-sizing: border-box;
-}
 
 .home-page {
     width: 100%;
-    max-width: 100%;
+    min-height: 100vh;
     overflow-x: hidden;
-}
-
-.home-page img {
-    max-width: 100%;
-}
-
-.home-page button,
-.home-page a {
-    max-width: 100%;
-}
-
-
-/* =========================================================
-   PAGE ACCUEIL
-========================================================= */
-
-.home-page {
-    width: 100%;
     background: #f8fafc;
     color: #1e293b;
-    overflow-x: hidden;
 }
 
 
@@ -41,381 +17,187 @@
 
 .home-hero {
     position: relative;
-
-    min-height: 700px;
-
-    background-image: url("/Bellefond.jpg");
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-
+    min-height: 650px;
     display: flex;
-    flex-direction: column;
-
-    justify-content: center;
     align-items: center;
-
-    padding: 100px 30px;
-
-    color: white;
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.48),
+            rgba(0, 0, 0, 0.58)
+        ),
+        url("/images/Bellefond.jpg") center/cover no-repeat;
+    overflow: hidden;
 }
-
-
-/* =========================================================
-   OVERLAY HERO
-========================================================= */
 
 .hero-overlay {
     position: absolute;
-
     inset: 0;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(15, 23, 42, 0.84),
-            rgba(15, 23, 42, 0.48)
-        );
-
-    z-index: 1;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.68),
+        rgba(0, 0, 0, 0.25),
+        rgba(0, 0, 0, 0.15)
+    );
 }
-
-
-/* =========================================================
-   HERO CONTENT
-========================================================= */
 
 .hero-content {
     position: relative;
-
     z-index: 2;
-
-    width: 100%;
-    max-width: 900px;
-
-    text-align: center;
+    width: min(1200px, 92%);
+    margin: auto;
+    padding: 100px 0;
+    color: white;
 }
 
 .hero-badge {
     display: inline-flex;
-
     align-items: center;
-    justify-content: center;
-
-    gap: 9px;
-
-    padding: 9px 18px;
-
+    gap: 10px;
+    padding: 10px 18px;
     margin-bottom: 25px;
-
-    background: rgba(255, 255, 255, 0.14);
-
-    border: 1px solid rgba(255, 255, 255, 0.25);
-
     border-radius: 30px;
-
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
     backdrop-filter: blur(10px);
-
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
 }
 
+.hero-badge svg {
+    font-size: 18px;
+}
+
 .hero-content h1 {
-    margin: 0;
-
-    font-size: 58px;
-    line-height: 1.08;
-
+    max-width: 780px;
+    margin: 0 0 25px;
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.05;
     font-weight: 800;
-
-    letter-spacing: -1.5px;
-
-    overflow-wrap: break-word;
+    letter-spacing: -2px;
 }
 
 .hero-content h1 span {
     display: block;
-
-    margin-top: 8px;
-
-    color: #38bdf8;
+    margin-top: 10px;
 }
 
-.hero-content p {
-    width: 100%;
-    max-width: 700px;
-
-    margin: 25px auto;
-
-    color: #e2e8f0;
-
-    font-size: 19px;
+.hero-content > p {
+    max-width: 650px;
+    margin-bottom: 35px;
+    font-size: 18px;
     line-height: 1.7;
-
-    overflow-wrap: break-word;
+    color: rgba(255, 255, 255, 0.9);
 }
-
-
-/* =========================================================
-   BOUTONS HERO
-========================================================= */
 
 .hero-buttons {
     display: flex;
-
-    justify-content: center;
-
+    align-items: center;
     gap: 15px;
-
-    margin-top: 30px;
+    flex-wrap: wrap;
 }
 
 .hero-buttons a {
     text-decoration: none;
 }
 
-.hero-primary-btn,
-.hero-secondary-btn {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 10px;
-
-    padding: 15px 25px;
-
-    border-radius: 12px;
-
-    font-size: 15px;
-    font-weight: 600;
-
+.hero-buttons button {
+    border: none;
     cursor: pointer;
-
-    transition: 0.3s;
-
-    max-width: 100%;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 15px 24px;
+    border-radius: 12px;
+    transition: 0.3s ease;
 }
 
 .hero-primary-btn {
-    border: none;
-
-    background: #2563eb;
-
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #0f766e;
     color: white;
+}
+
+.hero-primary-btn:hover {
+    transform: translateY(-3px);
+    background: #115e59;
 }
 
 .hero-primary-btn span {
     display: flex;
-
-    transition: 0.3s;
-}
-
-.hero-primary-btn:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-3px);
-}
-
-.hero-primary-btn:hover span {
-    transform: translateX(5px);
 }
 
 .hero-secondary-btn {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-
-    background: rgba(255, 255, 255, 0.1);
-
+    background: rgba(255, 255, 255, 0.14);
     color: white;
-
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
     backdrop-filter: blur(8px);
 }
 
 .hero-secondary-btn:hover {
-    background: white;
-
-    color: #0f172a;
-
-    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.24);
 }
 
 
 /* =========================================================
-   SECTIONS
+   SECTIONS COMMUNES
 ========================================================= */
 
 .destinations-section,
 .offers-section,
+.advantages-section,
 .steps-section {
-    width: 100%;
-    max-width: 1200px;
-
+    width: min(1200px, 92%);
     margin: auto;
-
-    padding: 110px 30px 60px;
+    padding: 90px 0;
 }
 
 .section-heading {
     display: flex;
-
-    justify-content: space-between;
     align-items: flex-end;
-
+    justify-content: space-between;
     gap: 30px;
-
     margin-bottom: 40px;
 }
 
 .section-label {
-    color: #2563eb;
-
-    font-size: 11px;
-
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #0f766e;
+    font-size: 13px;
     font-weight: 800;
-
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
 }
 
 .section-heading h2,
 .section-title-center h2 {
-    margin: 10px 0;
-
+    margin: 0 0 12px;
     color: #0f172a;
-
-    font-size: 38px;
-
-    line-height: 1.2;
-
-    overflow-wrap: break-word;
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1.15;
 }
 
 .section-heading p,
 .section-title-center p {
+    max-width: 650px;
     margin: 0;
-
     color: #64748b;
-
-    font-size: 15px;
-
     line-height: 1.7;
-
-    overflow-wrap: break-word;
 }
 
 .see-all-link {
     display: inline-flex;
-
     align-items: center;
-
-    gap: 8px;
-
-    white-space: nowrap;
-
-    color: #2563eb;
-
-    font-size: 14px;
-
+    gap: 10px;
+    color: #0f766e;
     font-weight: 700;
-
     text-decoration: none;
-
+    white-space: nowrap;
     transition: 0.3s;
 }
 
 .see-all-link:hover {
-    color: #1d4ed8;
-
-    transform: translateX(3px);
-}
-
-
-/* =========================================================
-   LOADING
-========================================================= */
-
-.loading-container {
-    min-height: 250px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
     gap: 15px;
-
-    color: #64748b;
-
-    text-align: center;
-}
-
-.loading-spinner {
-    width: 42px;
-    height: 42px;
-
-    flex-shrink: 0;
-
-    border: 4px solid #dbeafe;
-
-    border-top-color: #2563eb;
-
-    border-radius: 50%;
-
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-
-/* =========================================================
-   VIDE / ERREUR
-========================================================= */
-
-.error-container,
-.empty-container {
-    width: 100%;
-
-    min-height: 220px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 30px;
-
-    border-radius: 18px;
-
-    background: white;
-
-    color: #64748b;
-
-    text-align: center;
-}
-
-.error-container span,
-.empty-container span {
-    font-size: 35px;
-}
-
-.error-container p,
-.empty-container p {
-    margin: 0;
-
-    overflow-wrap: break-word;
 }
 
 
@@ -424,161 +206,97 @@
 ========================================================= */
 
 .destination-grid {
-    width: 100%;
-
     display: grid;
-
-    grid-template-columns: repeat(4, 1fr);
-
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
 }
 
 .destination-card {
     position: relative;
-
-    min-width: 0;
     min-height: 390px;
-
     overflow: hidden;
-
-    border-radius: 20px;
-
-    background: #cbd5e1;
-
-    color: white;
-
+    border-radius: 22px;
     text-decoration: none;
-
-    transition: 0.4s;
+    background: #e2e8f0;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
 }
 
-.destination-card:hover {
-    transform: translateY(-8px);
-
-    box-shadow:
-        0 20px 40px rgba(15, 23, 42, 0.2);
-}
-
-.destination-image {
+.destination-card img {
     position: absolute;
-
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-
-    display: block;
-
-    transition: 0.5s;
+    transition: transform 0.6s ease;
 }
 
-.destination-card:hover .destination-image {
-    transform: scale(1.07);
-}
-
-.destination-no-image {
-    position: absolute;
-
-    inset: 0;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    background:
-        linear-gradient(
-            135deg,
-            #0ea5e9,
-            #2563eb
-        );
-
-    color: white;
-
-    font-size: 55px;
+.destination-card:hover img {
+    transform: scale(1.08);
 }
 
 .destination-overlay {
     position: absolute;
-
     inset: 0;
-
-    z-index: 1;
-
     background:
         linear-gradient(
             to top,
-            rgba(15, 23, 42, 0.94),
-            rgba(15, 23, 42, 0.08)
+            rgba(0, 0, 0, 0.78),
+            rgba(0, 0, 0, 0.05) 70%
         );
 }
 
 .destination-content {
     position: absolute;
-
     z-index: 2;
-
-    left: 22px;
-    right: 22px;
-    bottom: 22px;
-
-    min-width: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 28px;
+    color: white;
 }
 
 .destination-location {
     display: flex;
-
     align-items: center;
-
-    gap: 6px;
-
-    font-size: 11px;
-
-    color: #e2e8f0;
+    gap: 7px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.9;
 }
 
 .destination-content h3 {
-    margin: 8px 0;
-
+    margin: 0 0 10px;
     font-size: 26px;
-
-    color: white;
-
-    overflow-wrap: break-word;
 }
 
 .destination-content p {
-    margin: 0 0 15px;
-
-    color: #e2e8f0;
-
-    font-size: 12px;
-
-    line-height: 1.5;
-
     display: -webkit-box;
-
+    margin: 0 0 18px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    line-height: 1.5;
     -webkit-line-clamp: 2;
-
     -webkit-box-orient: vertical;
-
     overflow: hidden;
 }
 
 .destination-link {
     display: inline-flex;
-
     align-items: center;
-
-    gap: 7px;
-
-    color: white;
-
-    font-size: 13px;
-
+    gap: 9px;
+    font-size: 14px;
     font-weight: 700;
+}
+
+.destination-no-image {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 50px;
 }
 
 
@@ -587,66 +305,45 @@
 ========================================================= */
 
 .offers-section {
-    padding-top: 50px;
+    width: 100%;
+    max-width: none;
+    padding-left: max(4%, calc((100% - 1200px) / 2));
+    padding-right: max(4%, calc((100% - 1200px) / 2));
+    background: #ffffff;
 }
 
 .offers-grid {
-    width: 100%;
-
     display: grid;
-
     grid-template-columns: repeat(3, 1fr);
-
     gap: 25px;
 }
 
 .offer-card {
-    min-width: 0;
-
     overflow: hidden;
-
     background: white;
-
+    border: 1px solid #e2e8f0;
     border-radius: 20px;
-
-    box-shadow:
-        0 8px 30px rgba(15, 23, 42, 0.07);
-
-    transition: 0.3s;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    transition: 0.3s ease;
 }
 
 .offer-card:hover {
     transform: translateY(-7px);
-
-    box-shadow:
-        0 18px 40px rgba(15, 23, 42, 0.14);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
 }
-
-
-/* =========================================================
-   IMAGE OFFRE
-========================================================= */
 
 .offer-image {
     position: relative;
-
-    width: 100%;
-    height: 220px;
-
+    height: 230px;
     overflow: hidden;
-
     background: #e2e8f0;
 }
 
 .offer-image img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-
-    display: block;
-
-    transition: 0.5s;
+    transition: 0.5s ease;
 }
 
 .offer-card:hover .offer-image img {
@@ -656,228 +353,251 @@
 .offer-no-image {
     width: 100%;
     height: 100%;
-
     display: flex;
-
-    justify-content: center;
     align-items: center;
-
-    background:
-        linear-gradient(
-            135deg,
-            #0ea5e9,
-            #2563eb
-        );
-
-    color: white;
-
-    font-size: 55px;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 45px;
 }
 
 .offer-badge {
     position: absolute;
-
     top: 15px;
     left: 15px;
-
-    max-width: 180px;
-
     padding: 7px 12px;
-
-    overflow: hidden;
-
-    white-space: nowrap;
-
-    text-overflow: ellipsis;
-
-    background: white;
-
-    color: #2563eb;
-
     border-radius: 20px;
-
-    font-size: 10px;
-
+    background: white;
+    color: #0f766e;
+    font-size: 12px;
     font-weight: 700;
 }
 
 .favorite-button {
     position: absolute;
-
     top: 14px;
     right: 14px;
-
-    width: 38px;
-    height: 38px;
-
+    width: 40px;
+    height: 40px;
     border: none;
-
     border-radius: 50%;
-
-    background: white;
-
-    color: #334155;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    font-size: 17px;
-
+    background: rgba(255, 255, 255, 0.92);
+    color: #64748b;
     cursor: pointer;
-
     transition: 0.3s;
 }
 
 .favorite-button:hover {
-    background: #fee2e2;
-
     color: #ef4444;
-
     transform: scale(1.08);
 }
 
-
-/* =========================================================
-   CONTENU OFFRE
-========================================================= */
-
 .offer-content {
-    min-width: 0;
-
-    padding: 23px;
+    padding: 22px;
 }
 
 .offer-location {
     display: flex;
-
     align-items: center;
-
-    gap: 6px;
-
-    color: #2563eb;
-
-    font-size: 12px;
-
+    gap: 7px;
+    color: #0f766e;
+    font-size: 13px;
     font-weight: 700;
-
-    overflow-wrap: break-word;
 }
 
 .offer-content h3 {
-    min-height: 48px;
-
-    margin: 9px 0;
-
+    margin: 10px 0 15px;
     color: #0f172a;
-
-    font-size: 19px;
-
-    line-height: 1.4;
-
-    overflow-wrap: break-word;
+    font-size: 20px;
 }
 
 .offer-info {
     display: flex;
-
     flex-wrap: wrap;
-
     gap: 8px;
-
-    margin-top: 12px;
+    margin-bottom: 20px;
 }
 
 .offer-info span {
-    max-width: 100%;
-
     padding: 6px 9px;
-
-    border-radius: 7px;
-
+    border-radius: 8px;
     background: #f1f5f9;
-
     color: #64748b;
-
-    font-size: 10px;
-
-    overflow-wrap: break-word;
+    font-size: 12px;
 }
 
 .offer-bottom {
     display: flex;
-
     align-items: flex-end;
-
     justify-content: space-between;
-
     gap: 15px;
-
-    margin-top: 20px;
-
-    padding-top: 18px;
-
-    border-top: 1px solid #e2e8f0;
 }
 
 .offer-price {
-    min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .offer-price small {
-    display: block;
-
     color: #94a3b8;
-
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .offer-price strong {
-    display: block;
-
-    margin-top: 4px;
-
     color: #0f172a;
-
-    font-size: 18px;
-
-    overflow-wrap: break-word;
+    font-size: 21px;
 }
 
 .offer-button {
     display: inline-flex;
-
     align-items: center;
-    justify-content: center;
-
-    gap: 7px;
-
+    gap: 8px;
     padding: 10px 14px;
-
-    border-radius: 9px;
-
-    background: #eff6ff;
-
-    color: #2563eb;
-
-    font-size: 12px;
-
+    border-radius: 10px;
+    background: #0f766e;
+    color: white;
+    font-size: 13px;
     font-weight: 700;
-
     text-decoration: none;
-
-    white-space: nowrap;
-
     transition: 0.3s;
-
-    flex-shrink: 0;
 }
 
 .offer-button:hover {
-    background: #2563eb;
+    background: #115e59;
+}
 
+
+/* =========================================================
+   VIDEOS
+========================================================= */
+
+.videos-section {
+    width: 100%;
+    padding: 90px 0;
+    background: #0f172a;
+    overflow: hidden;
+}
+
+.videos-container {
+    width: min(1200px, 92%);
+    margin: auto;
+}
+
+.videos-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 35px;
     color: white;
+}
+
+.videos-heading h2 {
+    margin: 0 0 12px;
+    color: white;
+    font-size: clamp(30px, 4vw, 42px);
+}
+
+.videos-heading p {
+    max-width: 650px;
+    margin: 0;
+    color: #cbd5e1;
+    line-height: 1.7;
+}
+
+.videos-heading .section-label {
+    color: #5eead4;
+}
+
+
+/*
+   Zone de glissement professionnelle.
+   La barre de scroll est masquée.
+*/
+
+.videos-slider {
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 10px 4px 25px;
+    cursor: grab;
+}
+
+.videos-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.videos-slider:active {
+    cursor: grabbing;
+}
+
+.video-card {
+    position: relative;
+    flex: 0 0 350px;
+    height: 440px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #1e293b;
+    scroll-snap-align: start;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.72),
+        rgba(0, 0, 0, 0.05) 65%
+    );
+    pointer-events: none;
+}
+
+.video-content {
+    position: absolute;
+    z-index: 2;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+    color: white;
+}
+
+.video-content h3 {
+    margin: 0 0 7px;
+    font-size: 22px;
+}
+
+.video-content p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+}
+
+.video-number {
+    position: absolute;
+    z-index: 3;
+    top: 18px;
+    left: 18px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    backdrop-filter: blur(8px);
 }
 
 
@@ -886,164 +606,97 @@
 ========================================================= */
 
 .advantages-section {
-    margin-top: 50px;
-
-    padding: 90px 30px;
-
-    background: #0f172a;
-
-    color: white;
+    width: 100%;
+    max-width: none;
+    background: #f1f5f9;
 }
 
 .advantages-container {
-    width: 100%;
-    max-width: 1200px;
-
+    width: min(1200px, 92%);
     margin: auto;
-
     display: grid;
-
-    grid-template-columns: 0.8fr 1.2fr;
-
+    grid-template-columns: 0.9fr 1.1fr;
     gap: 70px;
-
     align-items: center;
 }
 
-.advantages-intro {
-    min-width: 0;
-}
-
-.advantages-intro .section-label {
-    color: #38bdf8;
-}
-
 .advantages-intro h2 {
-    margin: 15px 0;
-
-    font-size: 42px;
-
-    line-height: 1.2;
-
-    overflow-wrap: break-word;
+    margin: 0 0 20px;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.15;
 }
 
 .advantages-intro h2 span {
     display: block;
-
-    color: #38bdf8;
+    color: #0f766e;
 }
 
 .advantages-intro p {
-    max-width: 480px;
-
-    color: #cbd5e1;
-
+    max-width: 520px;
+    margin-bottom: 28px;
+    color: #64748b;
     line-height: 1.7;
-
-    margin-bottom: 30px;
-
-    overflow-wrap: break-word;
 }
 
 .advantages-button {
     display: inline-flex;
-
     align-items: center;
-
-    gap: 8px;
-
-    padding: 13px 20px;
-
-    border-radius: 10px;
-
-    background: #2563eb;
-
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: #0f766e;
     color: white;
-
+    font-weight: 700;
     text-decoration: none;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
     transition: 0.3s;
 }
 
 .advantages-button:hover {
-    background: #3b82f6;
-
+    background: #115e59;
     transform: translateY(-2px);
 }
 
 .advantages-grid {
-    min-width: 0;
-
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
-    gap: 18px;
+    gap: 20px;
 }
 
 .advantage-card {
-    min-width: 0;
-
-    padding: 25px;
-
-    background: rgba(255, 255, 255, 0.06);
-
-    border: 1px solid rgba(255, 255, 255, 0.08);
-
-    border-radius: 17px;
-
+    padding: 28px;
+    background: white;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
     transition: 0.3s;
 }
 
 .advantage-card:hover {
-    background: rgba(255, 255, 255, 0.1);
-
-    transform: translateY(-4px);
+    transform: translateY(-5px);
 }
 
 .advantage-icon {
-    width: 48px;
-    height: 48px;
-
-    margin-bottom: 18px;
-
+    width: 50px;
+    height: 50px;
     display: flex;
-
-    justify-content: center;
     align-items: center;
-
-    background: rgba(56, 189, 248, 0.12);
-
-    border-radius: 12px;
-
-    color: #38bdf8;
-
-    font-size: 23px;
+    justify-content: center;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    background: #ccfbf1;
+    color: #0f766e;
+    font-size: 21px;
 }
 
 .advantage-card h3 {
     margin: 0 0 10px;
-
-    font-size: 17px;
-
-    overflow-wrap: break-word;
+    font-size: 18px;
 }
 
 .advantage-card p {
     margin: 0;
-
-    color: #94a3b8;
-
-    font-size: 13px;
-
+    color: #64748b;
+    font-size: 14px;
     line-height: 1.6;
-
-    overflow-wrap: break-word;
 }
 
 
@@ -1051,217 +704,128 @@
    COMMENT ÇA MARCHE
 ========================================================= */
 
-.section-title-center {
-    width: 100%;
-    max-width: 650px;
-
-    margin: 0 auto 50px;
-
+.steps-section {
     text-align: center;
 }
 
+.section-title-center {
+    margin-bottom: 50px;
+}
+
+.section-title-center p {
+    margin: auto;
+}
+
 .steps-grid {
-    width: 100%;
-
     display: grid;
-
     grid-template-columns: repeat(3, 1fr);
-
     gap: 25px;
 }
 
 .step-card {
     position: relative;
-
-    min-width: 0;
-
-    padding: 35px 30px;
-
-    text-align: center;
-
+    padding: 35px 28px;
+    text-align: left;
     background: white;
-
-    border-radius: 18px;
-
-    box-shadow:
-        0 8px 30px rgba(15, 23, 42, 0.06);
-
-    transition: 0.3s;
-}
-
-.step-card:hover {
-    transform: translateY(-5px);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
 }
 
 .step-number {
     position: absolute;
-
     top: 20px;
-    right: 20px;
-
-    color: #dbeafe;
-
-    font-size: 30px;
-
+    right: 22px;
+    color: #cbd5e1;
+    font-size: 13px;
     font-weight: 800;
 }
 
 .step-icon {
-    width: 65px;
-    height: 65px;
-
-    margin: 10px auto 20px;
-
+    width: 55px;
+    height: 55px;
     display: flex;
-
-    justify-content: center;
     align-items: center;
-
-    background: #eff6ff;
-
-    color: #2563eb;
-
-    border-radius: 50%;
-
-    font-size: 28px;
+    justify-content: center;
+    margin-bottom: 22px;
+    border-radius: 15px;
+    background: #ccfbf1;
+    color: #0f766e;
+    font-size: 22px;
 }
 
 .step-card h3 {
     margin: 0 0 10px;
-
-    color: #0f172a;
-
-    overflow-wrap: break-word;
+    font-size: 20px;
 }
 
 .step-card p {
     margin: 0;
-
     color: #64748b;
-
-    font-size: 14px;
-
     line-height: 1.6;
-
-    overflow-wrap: break-word;
+    font-size: 14px;
 }
 
 
 /* =========================================================
-   RECOMMANDATION IA
+   IA
 ========================================================= */
 
 .ia-section {
-    width: 100%;
-    max-width: 1200px;
-
-    margin: 30px auto 80px;
-
-    padding: 0 30px;
+    width: min(1200px, 92%);
+    margin: 0 auto 90px;
 }
 
 .ia-content {
-    width: 100%;
-
-    padding: 35px;
-
     display: grid;
-
     grid-template-columns: auto 1fr auto;
-
     align-items: center;
-
     gap: 25px;
-
-    border-radius: 22px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #eff6ff,
-            #f0fdfa
-        );
-
-    border: 1px solid #dbeafe;
+    padding: 40px;
+    border-radius: 25px;
+    background: linear-gradient(
+        135deg,
+        #0f766e,
+        #134e4a
+    );
+    color: white;
 }
 
 .ia-icon {
     width: 65px;
     height: 65px;
-
     display: flex;
-
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 27px;
+}
 
-    border-radius: 17px;
-
-    background: white;
-
-    color: #2563eb;
-
-    box-shadow:
-        0 8px 20px rgba(37, 99, 235, 0.1);
-
-    font-size: 30px;
-
-    flex-shrink: 0;
+.ia-content .section-label {
+    color: #99f6e4;
 }
 
 .ia-content h2 {
-    margin: 8px 0;
-
-    color: #0f172a;
-
-    font-size: 24px;
-
-    overflow-wrap: break-word;
+    margin: 0 0 8px;
+    font-size: 28px;
 }
 
 .ia-content p {
     margin: 0;
-
-    color: #64748b;
-
-    font-size: 14px;
-
-    line-height: 1.6;
-
-    overflow-wrap: break-word;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .ia-button {
     display: inline-flex;
-
     align-items: center;
-
-    gap: 8px;
-
-    padding: 13px 20px;
-
+    gap: 10px;
+    padding: 13px 18px;
     border-radius: 10px;
-
-    background: #2563eb;
-
-    color: white;
-
-    text-decoration: none;
-
-    font-size: 13px;
-
+    background: white;
+    color: #0f766e;
     font-weight: 700;
-
+    text-decoration: none;
     white-space: nowrap;
-
-    transition: 0.3s;
-
-    flex-shrink: 0;
-}
-
-.ia-button:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-2px);
 }
 
 
@@ -1271,203 +835,167 @@
 
 .home-contact {
     position: relative;
-
-    min-height: 420px;
-
-    background-image: url("/Bellefond.jpg");
-
-    background-size: cover;
-
-    background-position: center;
-
+    min-height: 480px;
     display: flex;
-
-    justify-content: center;
     align-items: center;
-
-    text-align: center;
-
-    color: white;
-
-    overflow: hidden;
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.58),
+            rgba(0, 0, 0, 0.65)
+        ),
+        url("/images/Bellefond.jpg") center/cover no-repeat;
 }
 
 .contact-overlay {
     position: absolute;
-
     inset: 0;
-
-    background:
-        linear-gradient(
-            rgba(15, 23, 42, 0.82),
-            rgba(15, 23, 42, 0.82)
-        );
 }
 
 .contact-content {
     position: relative;
-
     z-index: 2;
-
-    width: 100%;
-    max-width: 750px;
-
-    padding: 50px 25px;
+    width: min(900px, 92%);
+    margin: auto;
+    text-align: center;
+    color: white;
 }
 
 .contact-label {
-    color: #38bdf8;
-
-    font-size: 11px;
-
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #5eead4;
+    font-size: 13px;
     font-weight: 800;
-
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
 }
 
 .contact-content h2 {
-    margin: 15px 0;
-
-    font-size: 43px;
-
-    line-height: 1.2;
-
-    overflow-wrap: break-word;
+    margin: 0 0 20px;
+    font-size: clamp(34px, 5vw, 52px);
 }
 
 .contact-content h2 span {
     display: block;
-
-    color: #38bdf8;
 }
 
 .contact-content p {
-    margin-bottom: 30px;
-
-    color: #e2e8f0;
-
-    font-size: 16px;
-
+    max-width: 650px;
+    margin: 0 auto 30px;
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.7;
-
-    overflow-wrap: break-word;
 }
 
 .contact-buttons {
     display: flex;
-
     justify-content: center;
-
-    gap: 15px;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .contact-buttons a {
     text-decoration: none;
 }
 
-.contact-primary,
-.contact-secondary,
-.contact-chatbot {
+.contact-buttons button {
     display: inline-flex;
-
-    justify-content: center;
     align-items: center;
-
-    gap: 8px;
-
-    padding: 14px 25px;
-
-    border-radius: 10px;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 20px;
+    border-radius: 11px;
+    font-weight: 700;
     cursor: pointer;
-
     transition: 0.3s;
-
-    max-width: 100%;
 }
 
 .contact-primary {
     border: none;
-
-    background: #2563eb;
-
+    background: #0f766e;
     color: white;
 }
 
 .contact-primary:hover {
-    background: #1d4ed8;
+    background: #115e59;
+}
 
-    transform: translateY(-3px);
+.contact-chatbot {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    backdrop-filter: blur(8px);
+}
+
+.contact-chatbot:hover {
+    background: rgba(255, 255, 255, 0.22);
 }
 
 .contact-secondary {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-
+    border: 1px solid rgba(255, 255, 255, 0.35);
     background: transparent;
-
     color: white;
 }
 
 .contact-secondary:hover {
     background: white;
-
     color: #0f172a;
-}
-
-.contact-chatbot {
-    border: 1px solid rgba(56, 189, 248, 0.5);
-
-    background: rgba(56, 189, 248, 0.12);
-
-    color: #38bdf8;
-}
-
-.contact-chatbot:hover {
-    background: #38bdf8;
-
-    color: #0f172a;
-
-    transform: translateY(-3px);
 }
 
 
 /* =========================================================
-   RESPONSIVE TABLETTE
-   NE MODIFIE PAS LE DESKTOP
+   LOADING / ERROR / EMPTY
+========================================================= */
+
+.loading-container,
+.error-container,
+.empty-container {
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    color: #64748b;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 38px;
+    height: 38px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #0f766e;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   TABLETTE
 ========================================================= */
 
 @media (max-width: 1000px) {
 
-    .home-hero {
-        min-height: 650px;
-        padding: 90px 30px;
-    }
-
-    .hero-content h1 {
-        font-size: 46px;
-    }
-
-    .hero-content p {
-        font-size: 18px;
-    }
-
     .destination-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 22px;
     }
 
     .offers-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 22px;
     }
 
     .advantages-container {
         grid-template-columns: 1fr;
-        gap: 45px;
+        gap: 40px;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
     }
 
     .ia-content {
@@ -1478,1544 +1006,204 @@
         grid-column: 2;
         justify-self: start;
     }
+
 }
 
 
 /* =========================================================
-   MOBILE
-   700px ET MOINS
+   TELEPHONE
 ========================================================= */
 
 @media (max-width: 700px) {
 
-    .home-page {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-
-    /* =====================================================
-       HERO
-    ===================================================== */
-
     .home-hero {
-        width: 100%;
-
-        min-height: 650px;
-
-        padding: 80px 22px 70px;
-
-        background-position: center center;
-
-        justify-content: center;
+        min-height: 600px;
     }
 
     .hero-content {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .hero-badge {
-        max-width: 100%;
-
-        padding: 9px 15px;
-
-        margin-bottom: 22px;
-
-        font-size: 12px;
-
-        text-align: center;
+        padding: 80px 0;
     }
 
     .hero-content h1 {
-        font-size: 36px;
-
-        line-height: 1.15;
-
-        letter-spacing: -0.7px;
+        font-size: 42px;
+        letter-spacing: -1px;
     }
 
-    .hero-content h1 span {
-        margin-top: 6px;
+    .hero-content > p {
+        font-size: 15px;
     }
-
-    .hero-content p {
-        max-width: 100%;
-
-        margin: 20px auto;
-
-        font-size: 16px;
-
-        line-height: 1.65;
-    }
-
-
-    /* =====================================================
-       BOUTONS HERO
-    ===================================================== */
 
     .hero-buttons {
-        width: 100%;
-
         flex-direction: column;
-
         align-items: stretch;
-
-        gap: 12px;
-
-        margin-top: 25px;
     }
 
-    .hero-buttons a {
+    .hero-buttons a,
+    .hero-buttons button {
         width: 100%;
     }
 
-    .hero-primary-btn,
-    .hero-secondary-btn {
-        width: 100%;
-
-        min-height: 52px;
-
-        padding: 14px 20px;
-
-        font-size: 15px;
-
-        box-sizing: border-box;
+    .hero-buttons button {
+        justify-content: center;
     }
 
 
-    /* =====================================================
-       SECTIONS
-    ===================================================== */
+    /* Sections */
 
     .destinations-section,
     .offers-section,
+    .advantages-section,
     .steps-section {
-        width: 100%;
-
-        max-width: 100%;
-
-        box-sizing: border-box;
-
-        padding: 75px 20px 50px;
+        padding-top: 65px;
+        padding-bottom: 65px;
     }
 
     .section-heading {
-        display: flex;
-
-        flex-direction: column;
-
         align-items: flex-start;
-
+        flex-direction: column;
         gap: 15px;
-
-        margin-bottom: 30px;
-    }
-
-    .section-heading h2,
-    .section-title-center h2 {
-        font-size: 30px;
-
-        line-height: 1.25;
-
-        margin: 8px 0;
-    }
-
-    .section-heading p,
-    .section-title-center p {
-        font-size: 14px;
-
-        line-height: 1.65;
-    }
-
-    .section-label {
-        font-size: 10px;
-
-        letter-spacing: 1.7px;
-    }
-
-    .see-all-link {
-        font-size: 14px;
     }
 
 
-    /* =====================================================
-       DESTINATIONS
-    ===================================================== */
+    /* Destinations */
 
     .destination-grid {
-        width: 100%;
-
         grid-template-columns: 1fr;
-
-        gap: 20px;
+        gap: 18px;
     }
 
     .destination-card {
-        width: 100%;
-
-        min-width: 0;
-
-        min-height: 390px;
-
-        border-radius: 18px;
-    }
-
-    .destination-content {
-        left: 20px;
-
-        right: 20px;
-
-        bottom: 20px;
-    }
-
-    .destination-content h3 {
-        font-size: 25px;
-
-        margin: 8px 0;
-    }
-
-    .destination-content p {
-        font-size: 13px;
-
-        line-height: 1.55;
-    }
-
-    .destination-location {
-        font-size: 12px;
-    }
-
-    .destination-link {
-        font-size: 14px;
+        min-height: 360px;
     }
 
 
-    /* =====================================================
-       OFFRES
-    ===================================================== */
+    /* Offres */
 
     .offers-section {
-        padding-top: 55px;
+        padding-left: 4%;
+        padding-right: 4%;
     }
 
     .offers-grid {
-        width: 100%;
-
         grid-template-columns: 1fr;
-
-        gap: 22px;
     }
 
-    .offer-card {
-        width: 100%;
 
-        min-width: 0;
+    /* Videos */
 
+    .videos-section {
+        padding: 65px 0;
+    }
+
+    .videos-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .videos-slider {
+        gap: 15px;
+    }
+
+    .video-card {
+        flex: 0 0 82vw;
+        height: 430px;
         border-radius: 18px;
     }
 
-    .offer-image {
-        height: 230px;
-    }
 
-    .offer-content {
-        padding: 22px;
-    }
-
-    .offer-location {
-        font-size: 12px;
-    }
-
-    .offer-content h3 {
-        min-height: auto;
-
-        margin: 10px 0;
-
-        font-size: 20px;
-
-        line-height: 1.4;
-    }
-
-    .offer-info {
-        gap: 8px;
-
-        margin-top: 14px;
-    }
-
-    .offer-info span {
-        padding: 7px 10px;
-
-        font-size: 11px;
-    }
-
-    .offer-bottom {
-        margin-top: 20px;
-
-        padding-top: 18px;
-
-        gap: 15px;
-    }
-
-    .offer-price small {
-        font-size: 11px;
-    }
-
-    .offer-price strong {
-        font-size: 19px;
-    }
-
-    .offer-button {
-        min-height: 42px;
-
-        padding: 10px 15px;
-
-        font-size: 13px;
-    }
-
-
-    /* =====================================================
-       AVANTAGES
-    ===================================================== */
-
-    .advantages-section {
-        width: 100%;
-
-        margin-top: 40px;
-
-        padding: 70px 20px;
-
-        box-sizing: border-box;
-    }
-
-    .advantages-container {
-        width: 100%;
-
-        grid-template-columns: 1fr;
-
-        gap: 40px;
-    }
-
-    .advantages-intro h2 {
-        font-size: 34px;
-
-        line-height: 1.25;
-    }
-
-    .advantages-intro p {
-        max-width: 100%;
-
-        font-size: 14px;
-
-        line-height: 1.7;
-    }
-
-    .advantages-button {
-        min-height: 48px;
-
-        padding: 12px 18px;
-
-        font-size: 14px;
-    }
+    /* Advantages */
 
     .advantages-grid {
         grid-template-columns: 1fr;
-
-        gap: 15px;
     }
 
     .advantage-card {
-        padding: 22px;
-
-        border-radius: 16px;
-    }
-
-    .advantage-icon {
-        width: 50px;
-
-        height: 50px;
-
-        font-size: 23px;
-    }
-
-    .advantage-card h3 {
-        font-size: 18px;
-    }
-
-    .advantage-card p {
-        font-size: 14px;
-
-        line-height: 1.65;
+        padding: 24px;
     }
 
 
-    /* =====================================================
-       COMMENT ÇA MARCHE
-    ===================================================== */
-
-    .steps-section {
-        padding-top: 75px;
-
-        padding-bottom: 60px;
-    }
-
-    .steps-grid {
-        grid-template-columns: 1fr;
-
-        gap: 20px;
-    }
+    /* Steps */
 
     .step-card {
-        padding: 32px 24px;
-
-        border-radius: 17px;
-    }
-
-    .step-number {
-        top: 18px;
-
-        right: 18px;
-
-        font-size: 28px;
-    }
-
-    .step-icon {
-        width: 68px;
-
-        height: 68px;
-
-        margin: 8px auto 20px;
-
-        font-size: 29px;
-    }
-
-    .step-card h3 {
-        font-size: 18px;
-    }
-
-    .step-card p {
-        font-size: 14px;
-
-        line-height: 1.65;
+        padding: 28px 22px;
     }
 
 
-    /* =====================================================
-       IA
-    ===================================================== */
+    /* IA */
 
     .ia-section {
-        width: 100%;
-
-        max-width: 100%;
-
-        box-sizing: border-box;
-
-        padding: 0 20px;
-
-        margin: 30px auto 60px;
+        margin-bottom: 65px;
     }
 
     .ia-content {
-        width: 100%;
-
         grid-template-columns: 1fr;
-
-        gap: 20px;
-
-        padding: 30px 22px;
-
+        padding: 28px;
         text-align: center;
-
-        border-radius: 19px;
     }
 
     .ia-icon {
-        width: 65px;
-
-        height: 65px;
-
-        margin: 0 auto;
-
-        font-size: 29px;
-    }
-
-    .ia-content h2 {
-        font-size: 23px;
-    }
-
-    .ia-content p {
-        font-size: 14px;
-
-        line-height: 1.65;
+        margin: auto;
     }
 
     .ia-button {
         grid-column: auto;
-
         justify-self: center;
-
-        min-height: 46px;
-
-        padding: 12px 18px;
-
-        font-size: 13px;
     }
 
 
-    /* =====================================================
-       CONTACT
-    ===================================================== */
+    /* Contact */
 
     .home-contact {
-        width: 100%;
-
-        min-height: 500px;
-
-        padding: 20px;
-
-        box-sizing: border-box;
-    }
-
-    .contact-content {
-        width: 100%;
-
-        max-width: 100%;
-
-        box-sizing: border-box;
-
-        padding: 50px 10px;
-    }
-
-    .contact-label {
-        font-size: 10px;
-    }
-
-    .contact-content h2 {
-        font-size: 35px;
-
-        line-height: 1.25;
-    }
-
-    .contact-content p {
-        font-size: 15px;
-
-        line-height: 1.7;
+        min-height: 550px;
     }
 
     .contact-buttons {
-        width: 100%;
-
         flex-direction: column;
-
-        align-items: stretch;
-
-        gap: 12px;
-    }
-
-    .contact-buttons a {
         width: 100%;
     }
 
-    .contact-primary,
-    .contact-secondary,
-    .contact-chatbot {
+    .contact-buttons a,
+    .contact-buttons button {
         width: 100%;
-
-        min-height: 50px;
-
-        box-sizing: border-box;
-
-        padding: 13px 18px;
-
-        font-size: 14px;
     }
+
 }
 
 
 /* =========================================================
-   PETITS TÉLÉPHONES
-   480px ET MOINS
+   PETIT TELEPHONE
 ========================================================= */
 
-@media (max-width: 480px) {
-
-    .home-hero {
-        min-height: 620px;
-
-        padding: 70px 18px 60px;
-    }
-
-    .hero-badge {
-        font-size: 11px;
-
-        padding: 8px 13px;
-    }
+@media (max-width: 430px) {
 
     .hero-content h1 {
-        font-size: 31px;
-
-        line-height: 1.15;
-    }
-
-    .hero-content p {
-        font-size: 15px;
-
-        margin: 18px auto;
-    }
-
-    .hero-primary-btn,
-    .hero-secondary-btn {
-        min-height: 50px;
-
-        font-size: 14px;
-    }
-
-
-    .destinations-section,
-    .offers-section,
-    .steps-section {
-        padding-left: 18px;
-
-        padding-right: 18px;
-    }
-
-    .section-heading h2,
-    .section-title-center h2 {
-        font-size: 27px;
-    }
-
-    .section-heading p,
-    .section-title-center p {
-        font-size: 13px;
-    }
-
-
-    .destination-card {
-        min-height: 350px;
-
-        border-radius: 17px;
-    }
-
-    .destination-content {
-        left: 18px;
-
-        right: 18px;
-
-        bottom: 18px;
-    }
-
-    .destination-content h3 {
-        font-size: 23px;
-    }
-
-    .destination-content p {
-        font-size: 12px;
-    }
-
-
-    .offer-image {
-        height: 210px;
-    }
-
-    .offer-content {
-        padding: 20px;
-    }
-
-    .offer-content h3 {
-        font-size: 18px;
-    }
-
-    .offer-info span {
-        font-size: 10px;
-
-        padding: 6px 9px;
-    }
-
-    .offer-bottom {
-        flex-direction: column;
-
-        align-items: stretch;
-
-        gap: 15px;
-    }
-
-    .offer-button {
-        width: 100%;
-
-        box-sizing: border-box;
-
-        justify-content: center;
-
-        min-height: 44px;
-    }
-
-
-    .advantages-section {
-        padding: 60px 18px;
-    }
-
-    .advantages-intro h2 {
-        font-size: 30px;
-    }
-
-    .advantage-card {
-        padding: 20px;
-    }
-
-
-    .ia-section {
-        padding: 0 18px;
-    }
-
-    .ia-content {
-        padding: 27px 18px;
-    }
-
-    .ia-content h2 {
-        font-size: 21px;
-    }
-
-
-    .home-contact {
-        min-height: 520px;
-
-        padding: 18px;
-    }
-
-    .contact-content {
-        padding: 45px 5px;
-    }
-
-    .contact-content h2 {
-        font-size: 30px;
-    }
-
-    .contact-content p {
-        font-size: 14px;
-    }
-
-    .contact-primary,
-    .contact-secondary,
-    .contact-chatbot {
-        min-height: 48px;
-
-        font-size: 13px;
-
-        padding: 12px 15px;
-    }
-}
-
-
-/* =========================================================
-   TRÈS PETITS TÉLÉPHONES
-   360px ET MOINS
-========================================================= */
-
-@media (max-width: 360px) {
-
-    .home-page {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-
-    /* =====================================================
-       HERO
-    ===================================================== */
-
-    .home-hero {
-        min-height: 590px;
-
-        padding: 55px 14px 50px;
-
-        background-position: center center;
+        font-size: 36px;
     }
 
     .hero-content {
-        width: 100%;
-
-        max-width: 100%;
-    }
-
-    .hero-badge {
-        max-width: calc(100% - 10px);
-
-        padding: 7px 11px;
-
-        margin-bottom: 18px;
-
-        font-size: 10px;
-
-        gap: 6px;
-    }
-
-    .hero-content h1 {
-        font-size: 27px;
-
-        line-height: 1.12;
-
-        letter-spacing: -0.5px;
-    }
-
-    .hero-content h1 span {
-        margin-top: 5px;
-    }
-
-    .hero-content p {
-        width: 100%;
-
-        max-width: 100%;
-
-        margin: 17px auto;
-
-        font-size: 13px;
-
-        line-height: 1.6;
-    }
-
-
-    /* =====================================================
-       HERO BUTTONS
-    ===================================================== */
-
-    .hero-buttons {
-        width: 100%;
-
-        margin-top: 20px;
-
-        gap: 9px;
-    }
-
-    .hero-buttons a {
-        width: 100%;
-
-        display: block;
-    }
-
-    .hero-primary-btn,
-    .hero-secondary-btn {
-        width: 100%;
-
-        min-height: 47px;
-
-        padding: 11px 13px;
-
-        font-size: 13px;
-
-        border-radius: 9px;
-    }
-
-
-    /* =====================================================
-       SECTIONS
-    ===================================================== */
-
-    .destinations-section,
-    .offers-section,
-    .steps-section {
-        width: 100%;
-
-        max-width: 100%;
-
-        padding: 55px 14px 40px;
-    }
-
-    .section-heading {
-        width: 100%;
-
-        gap: 12px;
-
-        margin-bottom: 25px;
-    }
-
-    .section-label {
-        font-size: 9px;
-
-        letter-spacing: 1.4px;
-    }
-
-    .section-heading h2,
-    .section-title-center h2 {
-        font-size: 23px;
-
-        line-height: 1.22;
-
-        margin: 7px 0;
-    }
-
-    .section-heading p,
-    .section-title-center p {
-        font-size: 12px;
-
-        line-height: 1.6;
-    }
-
-    .see-all-link {
-        font-size: 12px;
-
-        gap: 5px;
-
-        white-space: normal;
-    }
-
-
-    /* =====================================================
-       DESTINATIONS
-    ===================================================== */
-
-    .destination-grid {
-        width: 100%;
-
-        grid-template-columns: 1fr;
-
-        gap: 15px;
-    }
-
-    .destination-card {
-        width: 100%;
-
-        min-width: 0;
-
-        min-height: 315px;
-
-        border-radius: 15px;
+        width: 88%;
     }
 
     .destination-content {
-        left: 15px;
-
-        right: 15px;
-
-        bottom: 15px;
-    }
-
-    .destination-location {
-        font-size: 10px;
-
-        gap: 5px;
+        padding: 22px;
     }
 
     .destination-content h3 {
-        font-size: 20px;
-
-        line-height: 1.2;
-
-        margin: 6px 0;
+        font-size: 23px;
     }
 
-    .destination-content p {
-        font-size: 11px;
-
-        line-height: 1.45;
-
-        margin-bottom: 11px;
-    }
-
-    .destination-link {
-        font-size: 12px;
-
-        gap: 5px;
-    }
-
-    .destination-no-image {
-        font-size: 42px;
-    }
-
-
-    /* =====================================================
-       OFFRES
-    ===================================================== */
-
-    .offers-section {
-        padding-top: 45px;
-    }
-
-    .offers-grid {
-        width: 100%;
-
-        grid-template-columns: 1fr;
-
-        gap: 16px;
-    }
-
-    .offer-card {
-        width: 100%;
-
-        border-radius: 15px;
-    }
-
-    .offer-image {
-        width: 100%;
-
-        height: 175px;
-    }
-
-    .offer-content {
-        padding: 16px;
-    }
-
-    .offer-location {
-        font-size: 10px;
-
-        gap: 5px;
-    }
-
-    .offer-content h3 {
-        min-height: auto;
-
-        margin: 7px 0;
-
-        font-size: 16px;
-
-        line-height: 1.35;
-    }
-
-    .offer-info {
-        gap: 5px;
-
-        margin-top: 10px;
-    }
-
-    .offer-info span {
-        padding: 5px 7px;
-
-        font-size: 9px;
-
-        border-radius: 6px;
-    }
-
-    .offer-badge {
-        top: 9px;
-
-        left: 9px;
-
-        max-width: 130px;
-
-        padding: 5px 8px;
-
-        font-size: 8px;
-    }
-
-    .favorite-button {
-        top: 9px;
-
-        right: 9px;
-
-        width: 31px;
-
-        height: 31px;
-
-        font-size: 13px;
+    .video-card {
+        flex-basis: 86vw;
+        height: 400px;
     }
 
     .offer-bottom {
-        flex-direction: column;
-
         align-items: stretch;
-
-        gap: 11px;
-
-        margin-top: 15px;
-
-        padding-top: 14px;
-    }
-
-    .offer-price small {
-        font-size: 9px;
-    }
-
-    .offer-price strong {
-        font-size: 16px;
+        flex-direction: column;
     }
 
     .offer-button {
-        width: 100%;
-
-        min-height: 40px;
-
-        padding: 9px 12px;
-
         justify-content: center;
-
-        font-size: 11px;
-
-        border-radius: 8px;
-    }
-
-    .offer-no-image {
-        font-size: 42px;
-    }
-
-
-    /* =====================================================
-       AVANTAGES
-    ===================================================== */
-
-    .advantages-section {
-        width: 100%;
-
-        margin-top: 30px;
-
-        padding: 50px 14px;
-
-        box-sizing: border-box;
-    }
-
-    .advantages-container {
-        width: 100%;
-
-        grid-template-columns: 1fr;
-
-        gap: 30px;
-    }
-
-    .advantages-intro h2 {
-        font-size: 27px;
-
-        line-height: 1.2;
-    }
-
-    .advantages-intro p {
-        width: 100%;
-
-        font-size: 12px;
-
-        line-height: 1.6;
-
-        margin-bottom: 22px;
-    }
-
-    .advantages-button {
-        min-height: 44px;
-
-        padding: 10px 14px;
-
-        font-size: 12px;
-
-        border-radius: 8px;
-    }
-
-    .advantages-grid {
-        grid-template-columns: 1fr;
-
-        gap: 11px;
-    }
-
-    .advantage-card {
-        padding: 17px;
-
-        border-radius: 13px;
-    }
-
-    .advantage-icon {
-        width: 43px;
-
-        height: 43px;
-
-        margin-bottom: 13px;
-
-        font-size: 19px;
-
-        border-radius: 10px;
-    }
-
-    .advantage-card h3 {
-        font-size: 15px;
-
-        margin-bottom: 7px;
-    }
-
-    .advantage-card p {
-        font-size: 11px;
-
-        line-height: 1.55;
-    }
-
-
-    /* =====================================================
-       COMMENT ÇA MARCHE
-    ===================================================== */
-
-    .steps-section {
-        padding-top: 55px;
-
-        padding-bottom: 45px;
-    }
-
-    .section-title-center {
-        width: 100%;
-
-        margin-bottom: 30px;
-    }
-
-    .steps-grid {
-        grid-template-columns: 1fr;
-
-        gap: 14px;
-    }
-
-    .step-card {
-        padding: 27px 18px;
-
-        border-radius: 14px;
-    }
-
-    .step-number {
-        top: 13px;
-
-        right: 14px;
-
-        font-size: 23px;
-    }
-
-    .step-icon {
-        width: 57px;
-
-        height: 57px;
-
-        margin: 5px auto 15px;
-
-        font-size: 24px;
-    }
-
-    .step-card h3 {
-        font-size: 16px;
-
-        margin-bottom: 7px;
-    }
-
-    .step-card p {
-        font-size: 11px;
-
-        line-height: 1.55;
-    }
-
-
-    /* =====================================================
-       IA
-    ===================================================== */
-
-    .ia-section {
-        width: 100%;
-
-        max-width: 100%;
-
-        box-sizing: border-box;
-
-        padding: 0 14px;
-
-        margin: 25px auto 45px;
-    }
-
-    .ia-content {
-        width: 100%;
-
-        grid-template-columns: 1fr;
-
-        gap: 15px;
-
-        padding: 23px 15px;
-
-        box-sizing: border-box;
-
-        border-radius: 15px;
-    }
-
-    .ia-icon {
-        width: 55px;
-
-        height: 55px;
-
-        margin: 0 auto;
-
-        font-size: 24px;
-
-        border-radius: 13px;
-    }
-
-    .ia-content h2 {
-        font-size: 19px;
-
-        line-height: 1.25;
-
-        margin: 6px 0;
-    }
-
-    .ia-content p {
-        font-size: 11px;
-
-        line-height: 1.55;
-    }
-
-    .ia-button {
-        width: auto;
-
-        min-height: 42px;
-
-        justify-self: center;
-
-        padding: 10px 15px;
-
-        font-size: 11px;
-
-        border-radius: 8px;
-    }
-
-
-    /* =====================================================
-       CONTACT
-    ===================================================== */
-
-    .home-contact {
-        width: 100%;
-
-        min-height: 500px;
-
-        padding: 15px;
-
-        box-sizing: border-box;
-    }
-
-    .contact-content {
-        width: 100%;
-
-        max-width: 100%;
-
-        padding: 40px 3px;
-
-        box-sizing: border-box;
-    }
-
-    .contact-label {
-        font-size: 9px;
-
-        letter-spacing: 1.4px;
-    }
-
-    .contact-content h2 {
-        font-size: 26px;
-
-        line-height: 1.2;
-
-        margin: 12px 0;
-    }
-
-    .contact-content p {
-        font-size: 12px;
-
-        line-height: 1.6;
-
-        margin-bottom: 22px;
-    }
-
-    .contact-buttons {
-        width: 100%;
-
-        gap: 9px;
-    }
-
-    .contact-buttons a {
-        width: 100%;
-    }
-
-    .contact-primary,
-    .contact-secondary,
-    .contact-chatbot {
-        width: 100%;
-
-        min-height: 45px;
-
-        padding: 10px 13px;
-
-        font-size: 12px;
-
-        border-radius: 8px;
-    }
-}
-
-
-/* =========================================================
-   TÉLÉPHONES EXTRÊMEMENT PETITS
-   320px ET MOINS
-========================================================= */
-
-@media (max-width: 320px) {
-
-    .home-hero {
-        min-height: 570px;
-
-        padding: 50px 12px 45px;
-    }
-
-    .hero-badge {
-        font-size: 9px;
-
-        padding: 6px 9px;
-    }
-
-    .hero-content h1 {
-        font-size: 24px;
-    }
-
-    .hero-content p {
-        font-size: 12px;
-
-        line-height: 1.55;
-    }
-
-    .hero-primary-btn,
-    .hero-secondary-btn {
-        min-height: 44px;
-
-        font-size: 12px;
-
-        padding: 10px;
-    }
-
-
-    .destinations-section,
-    .offers-section,
-    .steps-section {
-        padding-left: 12px;
-
-        padding-right: 12px;
-    }
-
-    .section-heading h2,
-    .section-title-center h2 {
-        font-size: 21px;
-    }
-
-    .section-heading p,
-    .section-title-center p {
-        font-size: 11px;
-    }
-
-    .see-all-link {
-        font-size: 11px;
-    }
-
-
-    .destination-card {
-        min-height: 290px;
-    }
-
-    .destination-content {
-        left: 13px;
-
-        right: 13px;
-
-        bottom: 13px;
-    }
-
-    .destination-content h3 {
-        font-size: 19px;
-    }
-
-    .destination-content p {
-        font-size: 10px;
-    }
-
-
-    .offer-image {
-        height: 160px;
-    }
-
-    .offer-content {
-        padding: 14px;
-    }
-
-    .offer-content h3 {
-        font-size: 15px;
-    }
-
-    .offer-info span {
-        font-size: 8px;
-
-        padding: 4px 6px;
-    }
-
-    .offer-price strong {
-        font-size: 15px;
-    }
-
-    .offer-button {
-        font-size: 10px;
-
-        min-height: 38px;
-    }
-
-
-    .advantages-section {
-        padding-left: 12px;
-
-        padding-right: 12px;
-    }
-
-    .advantages-intro h2 {
-        font-size: 25px;
-    }
-
-    .advantage-card {
-        padding: 15px;
-    }
-
-    .advantage-card h3 {
-        font-size: 14px;
-    }
-
-    .advantage-card p {
-        font-size: 10px;
-    }
-
-
-    .ia-section {
-        padding-left: 12px;
-
-        padding-right: 12px;
-    }
-
-    .ia-content {
-        padding: 20px 13px;
-    }
-
-    .ia-content h2 {
-        font-size: 18px;
     }
 
-    .ia-content p {
-        font-size: 10px;
-    }
-
-
-    .home-contact {
-        min-height: 480px;
-
-        padding: 12px;
-    }
-
-    .contact-content {
-        padding-left: 2px;
-        padding-right: 2px;
-    }
-
-    .contact-content h2 {
-        font-size: 24px;
-    }
-
-    .contact-content p {
-        font-size: 11px;
-    }
-
-    .contact-primary,
-    .contact-secondary,
-    .contact-chatbot {
-        min-height: 43px;
-
-        font-size: 11px;
-
-        padding: 10px 11px;
-    }
 }
