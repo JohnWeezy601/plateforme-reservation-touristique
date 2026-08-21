@@ -188,3 +188,60 @@ color:#333;
     text-decoration:underline;
 
 }
+
+/* =====================================================
+   SÉPARATEUR GOOGLE
+===================================================== */
+
+.login-separator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: #888;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.login-separator::before,
+.login-separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+}
+
+.login-separator span {
+    padding: 0 5px;
+}
+
+
+/* =====================================================
+   BOUTON GOOGLE
+===================================================== */
+
+.google-login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Le composant Google génère lui-même son bouton */
+.google-login-container > div {
+    width: 100% !important;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 480px) {
+
+    .google-login-container {
+        width: 100%;
+    }
+
+}

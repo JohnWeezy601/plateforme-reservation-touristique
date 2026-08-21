@@ -1,10 +1,13 @@
+
 const express = require("express");
 
 const router = express.Router();
 
-const utilisateurController = require("../controllers/utilisateurController");
+const utilisateurController =
+    require("../controllers/utilisateurController");
 
-const upload = require("../middleware/upload");
+const upload =
+    require("../middleware/upload");
 
 
 // =============================
@@ -12,8 +15,11 @@ const upload = require("../middleware/upload");
 // =============================
 
 router.get(
+
     "/",
+
     utilisateurController.getUtilisateurs
+
 );
 
 
@@ -22,8 +28,11 @@ router.get(
 // =============================
 
 router.post(
+
     "/",
+
     utilisateurController.register
+
 );
 
 
@@ -32,8 +41,11 @@ router.post(
 // =============================
 
 router.get(
+
     "/:id",
+
     utilisateurController.getUtilisateurById
+
 );
 
 
@@ -42,18 +54,37 @@ router.get(
 // =============================
 
 router.post(
+
     "/register",
+
     utilisateurController.register
+
 );
 
 
 // =============================
-// CONNEXION
+// CONNEXION CLASSIQUE
 // =============================
 
 router.post(
+
     "/login",
+
     utilisateurController.login
+
+);
+
+
+// =============================
+// CONNEXION AVEC GOOGLE
+// =============================
+
+router.post(
+
+    "/google",
+
+    utilisateurController.googleLogin
+
 );
 
 
@@ -62,8 +93,11 @@ router.post(
 // =============================
 
 router.put(
+
     "/:id",
+
     utilisateurController.updateUtilisateur
+
 );
 
 
@@ -72,8 +106,11 @@ router.put(
 // =============================
 
 router.delete(
+
     "/:id",
+
     utilisateurController.deleteUtilisateur
+
 );
 
 
@@ -82,10 +119,15 @@ router.delete(
 // =============================
 
 router.put(
+
     "/photo/:id",
+
     upload.single("photo"),
+
     utilisateurController.updatePhoto
+
 );
 
 
 module.exports = router;
+

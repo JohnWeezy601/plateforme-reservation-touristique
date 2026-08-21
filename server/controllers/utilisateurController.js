@@ -1,8 +1,11 @@
+
 const db = require("../db");
 
 const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
+
+const { OAuth2Client } = require("google-auth-library");
 
 const cloudinary = require("cloudinary").v2;
 
@@ -22,6 +25,17 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 
 });
+
+
+// =====================================================
+// CONFIGURATION GOOGLE
+// =====================================================
+
+const googleClient = new OAuth2Client(
+
+    process.env.GOOGLE_CLIENT_ID
+
+);
 
 
 // =====================================================
@@ -112,7 +126,9 @@ exports.register = async (req, res) => {
             `,
 
             [
+
                 email
+
             ]
 
         );
@@ -136,8 +152,11 @@ exports.register = async (req, res) => {
 
         const hashPassword =
             await bcrypt.hash(
+
                 passwordFinal,
+
                 10
+
             );
 
 
@@ -155,10 +174,11 @@ exports.register = async (req, res) => {
                 email,
                 mot_de_passe,
                 telephone,
-                role
+                role,
+                provider
             )
 
-            VALUES (?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?)
             `,
 
             [
@@ -173,7 +193,9 @@ exports.register = async (req, res) => {
 
                 telephone,
 
-                role
+                role,
+
+                "local"
 
             ]
 
@@ -212,9 +234,8 @@ exports.register = async (req, res) => {
 };
 
 
-
 // =====================================================
-// LOGIN
+// LOGIN CLASSIQUE
 // =====================================================
 
 exports.login = async (req, res) => {
@@ -241,7 +262,9 @@ exports.login = async (req, res) => {
             `,
 
             [
+
                 email
+
             ]
 
         );
@@ -266,6 +289,18 @@ exports.login = async (req, res) => {
         // =====================================================
         // VÉRIFIER MOT DE PASSE
         // =====================================================
+
+        if (!utilisateur.mot_de_passe) {
+
+            return res.status(401).json({
+
+                message:
+                    "Ce compte utilise une connexion Google"
+
+            });
+
+        }
+
 
         const passwordOK =
             await bcrypt.compare(
@@ -371,6 +406,371 @@ exports.login = async (req, res) => {
 };
 
 
+// =====================================================
+// CONNEXION AVEC GOOGLE
+// =====================================================
+
+exports.googleLogin = async (req, res) => {
+
+    const { credential } = req.body;
+
+
+    try {
+
+        // =====================================================
+        // VÉRIFIER LE CREDENTIAL GOOGLE
+        // =====================================================
+
+        if (!credential) {
+
+            return res.status(400).json({
+
+                message:
+                    "Token Google manquant"
+
+            });
+
+        }
+
+
+        const ticket =
+            await googleClient.verifyIdToken({
+
+                idToken:
+                    credential,
+
+                audience:
+                    process.env.GOOGLE_CLIENT_ID
+
+            });
+
+
+        const payload =
+            ticket.getPayload();
+
+
+        // =====================================================
+        // INFORMATIONS GOOGLE
+        // =====================================================
+
+        const googleId =
+            payload.sub;
+
+        const email =
+            payload.email;
+
+        const emailVerified =
+            payload.email_verified;
+
+        const nom =
+            payload.family_name || "";
+
+        const prenom =
+            payload.given_name || "";
+
+        const photo =
+            payload.picture || null;
+
+
+        // =====================================================
+        // EMAIL GOOGLE VÉRIFIÉ
+        // =====================================================
+
+        if (!emailVerified) {
+
+            return res.status(401).json({
+
+                message:
+                    "L'adresse email Google n'est pas vérifiée"
+
+            });
+
+        }
+
+
+        // =====================================================
+        // CHERCHER UN COMPTE GOOGLE EXISTANT
+        // =====================================================
+
+        const [utilisateursGoogle] =
+            await db.query(
+
+                `
+                SELECT *
+
+                FROM utilisateur
+
+                WHERE provider=?
+
+                AND provider_id=?
+                `,
+
+                [
+
+                    "google",
+
+                    googleId
+
+                ]
+
+            );
+
+
+        let utilisateur;
+
+
+        // =====================================================
+        // COMPTE GOOGLE EXISTANT
+        // =====================================================
+
+        if (utilisateursGoogle.length > 0) {
+
+            utilisateur =
+                utilisateursGoogle[0];
+
+        }
+
+        else {
+
+            // =====================================================
+            // CHERCHER PAR EMAIL
+            // =====================================================
+
+            const [utilisateursEmail] =
+                await db.query(
+
+                    `
+                    SELECT *
+
+                    FROM utilisateur
+
+                    WHERE email=?
+                    `,
+
+                    [
+
+                        email
+
+                    ]
+
+                );
+
+
+            // =====================================================
+            // EMAIL DÉJÀ EXISTANT
+            // =====================================================
+
+            if (utilisateursEmail.length > 0) {
+
+                utilisateur =
+                    utilisateursEmail[0];
+
+
+                // =====================================================
+                // ASSOCIER LE COMPTE EXISTANT À GOOGLE
+                // =====================================================
+
+                await db.query(
+
+                    `
+                    UPDATE utilisateur
+
+                    SET
+
+                        provider=?,
+
+                        provider_id=?
+
+                    WHERE id_utilisateur=?
+                    `,
+
+                    [
+
+                        "google",
+
+                        googleId,
+
+                        utilisateur.id_utilisateur
+
+                    ]
+
+                );
+
+
+                utilisateur.provider =
+                    "google";
+
+                utilisateur.provider_id =
+                    googleId;
+
+            }
+
+            else {
+
+                // =====================================================
+                // CRÉER NOUVEL UTILISATEUR GOOGLE
+                // =====================================================
+
+                const [result] =
+                    await db.query(
+
+                        `
+                        INSERT INTO utilisateur
+                        (
+                            nom,
+                            prenom,
+                            email,
+                            mot_de_passe,
+                            provider,
+                            provider_id,
+                            telephone,
+                            role,
+                            photo
+                        )
+
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        `,
+
+                        [
+
+                            nom,
+
+                            prenom,
+
+                            email,
+
+                            null,
+
+                            "google",
+
+                            googleId,
+
+                            null,
+
+                            "Touriste",
+
+                            photo
+
+                        ]
+
+                    );
+
+
+                const [nouvelUtilisateur] =
+                    await db.query(
+
+                        `
+                        SELECT *
+
+                        FROM utilisateur
+
+                        WHERE id_utilisateur=?
+                        `,
+
+                        [
+
+                            result.insertId
+
+                        ]
+
+                    );
+
+
+                utilisateur =
+                    nouvelUtilisateur[0];
+
+            }
+
+        }
+
+
+        // =====================================================
+        // CRÉER JWT
+        // =====================================================
+
+        const token =
+            jwt.sign(
+
+                {
+
+                    id:
+                        utilisateur.id_utilisateur,
+
+                    role:
+                        utilisateur.role
+
+                },
+
+                process.env.JWT_SECRET,
+
+                {
+
+                    expiresIn: "1h"
+
+                }
+
+            );
+
+
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
+
+        res.json({
+
+            message:
+                "Connexion Google réussie",
+
+            token,
+
+            utilisateur: {
+
+                id:
+                    utilisateur.id_utilisateur,
+
+                nom:
+                    utilisateur.nom,
+
+                prenom:
+                    utilisateur.prenom,
+
+                email:
+                    utilisateur.email,
+
+                role:
+                    utilisateur.role,
+
+                photo:
+                    utilisateur.photo
+
+            }
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "❌ Erreur connexion Google :",
+            error
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Erreur lors de la connexion avec Google",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+};
+
 
 // =====================================================
 // MODIFIER UTILISATEUR
@@ -399,10 +799,6 @@ exports.updateUtilisateur = async (req, res) => {
 
     try {
 
-        // =====================================================
-        // RÔLES AUTORISÉS
-        // =====================================================
-
         const rolesAutorises = [
 
             "Administrateur",
@@ -425,10 +821,6 @@ exports.updateUtilisateur = async (req, res) => {
 
         }
 
-
-        // =====================================================
-        // MODIFICATION
-        // =====================================================
 
         await db.query(
 
@@ -495,7 +887,6 @@ exports.updateUtilisateur = async (req, res) => {
 };
 
 
-
 // =====================================================
 // SUPPRIMER UTILISATEUR
 // =====================================================
@@ -508,10 +899,6 @@ exports.deleteUtilisateur = async (req, res) => {
 
     try {
 
-        // =====================================================
-        // SUPPRIMER RECOMMANDATIONS IA
-        // =====================================================
-
         await db.query(
 
             `
@@ -521,15 +908,13 @@ exports.deleteUtilisateur = async (req, res) => {
             `,
 
             [
+
                 id
+
             ]
 
         );
 
-
-        // =====================================================
-        // SUPPRIMER NOTIFICATIONS
-        // =====================================================
 
         await db.query(
 
@@ -540,15 +925,13 @@ exports.deleteUtilisateur = async (req, res) => {
             `,
 
             [
+
                 id
+
             ]
 
         );
 
-
-        // =====================================================
-        // SUPPRIMER AVIS
-        // =====================================================
 
         await db.query(
 
@@ -559,15 +942,13 @@ exports.deleteUtilisateur = async (req, res) => {
             `,
 
             [
+
                 id
+
             ]
 
         );
 
-
-        // =====================================================
-        // SUPPRIMER RÉSERVATIONS
-        // =====================================================
 
         await db.query(
 
@@ -578,15 +959,13 @@ exports.deleteUtilisateur = async (req, res) => {
             `,
 
             [
+
                 id
+
             ]
 
         );
 
-
-        // =====================================================
-        // SUPPRIMER UTILISATEUR
-        // =====================================================
 
         await db.query(
 
@@ -597,7 +976,9 @@ exports.deleteUtilisateur = async (req, res) => {
             `,
 
             [
+
                 id
+
             ]
 
         );
@@ -630,7 +1011,6 @@ exports.deleteUtilisateur = async (req, res) => {
     }
 
 };
-
 
 
 // =====================================================
@@ -694,7 +1074,6 @@ exports.getUtilisateurs = async (req, res) => {
 };
 
 
-
 // =====================================================
 // AFFICHER UN UTILISATEUR PAR ID
 // =====================================================
@@ -735,7 +1114,9 @@ exports.getUtilisateurById = async (req, res) => {
                 `,
 
                 [
+
                     id
+
                 ]
 
             );
@@ -776,7 +1157,6 @@ exports.getUtilisateurById = async (req, res) => {
 };
 
 
-
 // =====================================================
 // MODIFIER PHOTO UTILISATEUR
 // =====================================================
@@ -786,10 +1166,6 @@ exports.updatePhoto = async (req, res) => {
     const id =
         req.params.id;
 
-
-    // =====================================================
-    // VÉRIFIER FICHIER
-    // =====================================================
 
     if (!req.file) {
 
@@ -805,10 +1181,6 @@ exports.updatePhoto = async (req, res) => {
 
     try {
 
-        // =====================================================
-        // RÉCUPÉRER ANCIENNE PHOTO
-        // =====================================================
-
         const [utilisateurs] =
             await db.query(
 
@@ -821,7 +1193,9 @@ exports.updatePhoto = async (req, res) => {
                 `,
 
                 [
+
                     id
+
                 ]
 
             );
@@ -842,10 +1216,6 @@ exports.updatePhoto = async (req, res) => {
         const anciennePhoto =
             utilisateurs[0].photo;
 
-
-        // =====================================================
-        // UPLOAD CLOUDINARY
-        // =====================================================
 
         console.log(
             "☁️ Upload photo utilisateur vers Cloudinary..."
@@ -887,17 +1257,9 @@ exports.updatePhoto = async (req, res) => {
         );
 
 
-        // =====================================================
-        // NOUVELLE URL
-        // =====================================================
-
         const nouvellePhoto =
             resultat.secure_url;
 
-
-        // =====================================================
-        // METTRE À JOUR MYSQL
-        // =====================================================
 
         await db.query(
 
@@ -925,10 +1287,6 @@ exports.updatePhoto = async (req, res) => {
         );
 
 
-        // =====================================================
-        // SUPPRIMER ANCIENNE PHOTO CLOUDINARY
-        // =====================================================
-
         if (
 
             anciennePhoto &&
@@ -941,10 +1299,6 @@ exports.updatePhoto = async (req, res) => {
 
             try {
 
-                // -------------------------------------------------
-                // Extraire le chemin après /upload/
-                // -------------------------------------------------
-
                 const partie =
                     anciennePhoto.split(
                         "/upload/"
@@ -953,20 +1307,12 @@ exports.updatePhoto = async (req, res) => {
 
                 if (partie) {
 
-                    // -------------------------------------------------
-                    // Supprimer vXXXXXXXXXX/
-                    // -------------------------------------------------
-
                     const sansVersion =
                         partie.replace(
                             /^v\d+\//,
                             ""
                         );
 
-
-                    // -------------------------------------------------
-                    // Supprimer extension
-                    // -------------------------------------------------
 
                     const publicIdAncien =
                         sansVersion.replace(
@@ -1018,10 +1364,6 @@ exports.updatePhoto = async (req, res) => {
         }
 
 
-        // =====================================================
-        // SUPPRIMER FICHIER LOCAL TEMPORAIRE
-        // =====================================================
-
         try {
 
             if (
@@ -1059,10 +1401,6 @@ exports.updatePhoto = async (req, res) => {
         }
 
 
-        // =====================================================
-        // RÉPONSE
-        // =====================================================
-
         res.json({
 
             message:
@@ -1086,10 +1424,6 @@ exports.updatePhoto = async (req, res) => {
         );
 
 
-        // =====================================================
-        // SI CLOUDINARY A ÉTÉ UPLOADÉ MAIS MYSQL ÉCHOUE
-        // =====================================================
-
         res.status(500).json({
 
             message:
@@ -1103,3 +1437,4 @@ exports.updatePhoto = async (req, res) => {
     }
 
 };
+

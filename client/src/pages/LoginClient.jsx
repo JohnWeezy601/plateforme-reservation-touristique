@@ -1,458 +1,653 @@
+
 import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import api from "../api/api";
+
 import "./LoginClient.css";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+import {
+    FaEye,
+    FaEyeSlash
+} from "react-icons/fa";
+
+import { GoogleLogin } from "@react-oauth/google";
 
 
 function LoginClient(){
 
 
-const navigate = useNavigate();
+    const navigate = useNavigate();
 
 
+    const [email,setEmail] = useState("");
 
+    const [motDePasse,setMotDePasse] = useState("");
 
+    const [loading,setLoading] = useState(false);
 
-const [email,setEmail]=useState("");
+    const [voirMotDePasse,setVoirMotDePasse] = useState(false);
 
-const [motDePasse,setMotDePasse]=useState("");
 
-const [loading,setLoading]=useState(false);
-const [voirMotDePasse,setVoirMotDePasse]=useState(false);
+    // =====================================================
+    // FONCTION COMMUNE POUR SAUVEGARDER L'UTILISATEUR
+    // APRÈS CONNEXION GOOGLE
+    // =====================================================
 
+    const finaliserConnexion = (res) => {
 
+        console.log(
+            "Utilisateur connecté :",
+            res.data
+        );
 
 
+        // =====================================================
+        // TOKEN JWT
+        // =====================================================
 
-// =============================
-// Connexion client
-// =============================
+        localStorage.setItem(
+            "token",
+            res.data.token
+        );
 
 
-const connexion = async(e)=>{
+        // =====================================================
+        // UTILISATEUR
+        // =====================================================
 
+        const utilisateurConnecte = {
 
-e.preventDefault();
+            id_utilisateur:
+                res.data.utilisateur.id,
 
+            nom:
+                res.data.utilisateur.nom,
 
+            prenom:
+                res.data.utilisateur.prenom,
 
-try{
+            email:
+                res.data.utilisateur.email,
 
+            role:
+                res.data.utilisateur.role,
 
-setLoading(true);
+            photo:
+                res.data.utilisateur.photo
 
+        };
 
 
+        localStorage.setItem(
 
-const res = await api.post(
+            "utilisateur",
 
-"/utilisateurs/login",
+            JSON.stringify(
+                utilisateurConnecte
+            )
 
-{
+        );
 
-email:email,
 
-mot_de_passe:motDePasse
+        window.dispatchEvent(
+            new Event("utilisateurConnecte")
+        );
 
-}
 
-);
+        // =====================================================
+        // REDIRECTION SELON LE RÔLE
+        // =====================================================
 
+        const role =
+            utilisateurConnecte.role;
 
 
+        console.log(
+            "ROLE :",
+            role
+        );
 
 
-console.log(
-"Utilisateur connecté :",
-res.data
-);
+        if(role === "Administrateur"){
 
+            navigate(
+                "/dashboard"
+            );
 
+        }
 
-// Sauvegarder le token JWT
+        else if(role === "Prestataire"){
 
-localStorage.setItem(
-    "token",
-    res.data.token
-);
+            navigate(
+                "/prestataire"
+            );
 
+        }
 
+        else{
 
+            const retour =
+                sessionStorage.getItem(
+                    "retourApresLogin"
+                );
 
 
+            console.log(
+                "RETOUR APRES LOGIN :",
+                retour
+            );
 
-// Sauvegarder utilisateur
 
-// Sauvegarder utilisateur avec id_utilisateur
+            if(retour){
 
-const utilisateurConnecte = {
+                sessionStorage.removeItem(
+                    "retourApresLogin"
+                );
 
-    id_utilisateur: res.data.utilisateur.id,
+                navigate(
+                    retour
+                );
 
-    nom: res.data.utilisateur.nom,
+            }
 
-    prenom: res.data.utilisateur.prenom,
+            else{
 
-    email: res.data.utilisateur.email,
+                navigate(
+                    -1
+                );
 
-    role: res.data.utilisateur.role,
+            }
 
-    photo: res.data.utilisateur.photo
+        }
 
-};
+    };
 
 
+    // =====================================================
+    // CONNEXION CLASSIQUE
+    // =====================================================
 
-localStorage.setItem(
+    const connexion = async(e)=>{
 
-    "utilisateur",
 
-    JSON.stringify(utilisateurConnecte)
+        e.preventDefault();
 
-);
-window.dispatchEvent(new Event("utilisateurConnecte"));
 
+        try{
 
 
+            setLoading(true);
 
 
+            const res = await api.post(
 
-// =============================
-// Redirection selon le rôle
-// =============================
+                "/utilisateurs/login",
 
-// =============================
-// Redirection selon le rôle
-// =============================
+                {
 
+                    email:
+                        email,
 
-const role = utilisateurConnecte.role;
-console.log("ROLE :", role);
+                    mot_de_passe:
+                        motDePasse
 
+                }
 
+            );
 
-if(role === "Administrateur"){
 
+            console.log(
+                "Utilisateur connecté :",
+                res.data
+            );
 
-    navigate("/dashboard");
 
+            // =====================================================
+            // Sauvegarder le token JWT
+            // =====================================================
 
-}
+            localStorage.setItem(
+                "token",
+                res.data.token
+            );
 
-else if(role === "Prestataire"){
 
+            // =====================================================
+            // Sauvegarder utilisateur
+            // =====================================================
 
-    navigate("/prestataire");
+            const utilisateurConnecte = {
 
+                id_utilisateur:
+                    res.data.utilisateur.id,
 
-}
-else{
+                nom:
+                    res.data.utilisateur.nom,
 
+                prenom:
+                    res.data.utilisateur.prenom,
 
-const retour = sessionStorage.getItem(
-    "retourApresLogin"
-);
+                email:
+                    res.data.utilisateur.email,
 
+                role:
+                    res.data.utilisateur.role,
 
+                photo:
+                    res.data.utilisateur.photo
 
-console.log(
-    "RETOUR APRES LOGIN :",
-    retour
-);
+            };
 
 
+            localStorage.setItem(
 
-if(retour){
+                "utilisateur",
 
+                JSON.stringify(
+                    utilisateurConnecte
+                )
 
-    sessionStorage.removeItem(
-        "retourApresLogin"
+            );
+
+
+            window.dispatchEvent(
+                new Event("utilisateurConnecte")
+            );
+
+
+            // =====================================================
+            // REDIRECTION SELON LE RÔLE
+            // =====================================================
+
+            const role =
+                utilisateurConnecte.role;
+
+
+            console.log(
+                "ROLE :",
+                role
+            );
+
+
+            if(role === "Administrateur"){
+
+                navigate(
+                    "/dashboard"
+                );
+
+            }
+
+            else if(role === "Prestataire"){
+
+                navigate(
+                    "/prestataire"
+                );
+
+            }
+
+            else{
+
+                const retour =
+                    sessionStorage.getItem(
+                        "retourApresLogin"
+                    );
+
+
+                console.log(
+                    "RETOUR APRES LOGIN :",
+                    retour
+                );
+
+
+                if(retour){
+
+                    sessionStorage.removeItem(
+                        "retourApresLogin"
+                    );
+
+                    navigate(
+                        retour
+                    );
+
+                }
+
+                else{
+
+                    // Aucun chemin sauvegardé :
+                    // revenir à la page précédente
+
+                    navigate(
+                        -1
+                    );
+
+                }
+
+            }
+
+        }
+
+        catch(error){
+
+            console.log(
+
+                "Erreur connexion",
+
+                error
+
+            );
+
+
+            alert(
+
+                "Email ou mot de passe incorrect"
+
+            );
+
+        }
+
+        finally{
+
+            setLoading(
+                false
+            );
+
+        }
+
+    };
+
+
+    // =====================================================
+    // CONNEXION GOOGLE
+    // =====================================================
+
+    const connexionGoogle = async (credentialResponse) => {
+
+        try {
+
+            setLoading(true);
+
+
+            console.log(
+                "Connexion Google..."
+            );
+
+
+            const res = await api.post(
+
+                "/utilisateurs/google",
+
+                {
+
+                    credential:
+                        credentialResponse.credential
+
+                }
+
+            );
+
+
+            console.log(
+                "Connexion Google réussie :",
+                res.data
+            );
+
+
+            finaliserConnexion(
+                res
+            );
+
+        }
+
+        catch(error){
+
+            console.log(
+                "Erreur connexion Google :",
+                error
+            );
+
+
+            alert(
+                "Impossible de se connecter avec Google"
+            );
+
+        }
+
+        finally{
+
+            setLoading(false);
+
+        }
+
+    };
+
+
+    return(
+
+
+        <div className="login-client">
+
+
+            <div className="login-card">
+
+
+                <h1>
+                    Connexion
+                </h1>
+
+
+                <p>
+                    Connectez-vous à votre espace personnel.
+                </p>
+
+
+                <form
+                    onSubmit={connexion}
+                >
+
+
+                    <label>
+                        Email
+                    </label>
+
+
+                    <input
+
+                        type="email"
+
+                        placeholder="Votre email"
+
+                        value={email}
+
+                        onChange={(e)=>
+                            setEmail(e.target.value)
+                        }
+
+                    />
+
+
+                    <label>
+                        Mot de passe
+                    </label>
+
+
+                    <div className="password-field">
+
+
+                        <input
+
+                            type={
+                                voirMotDePasse
+                                ?
+                                "text"
+                                :
+                                "password"
+                            }
+
+                            placeholder="Votre mot de passe"
+
+                            value={motDePasse}
+
+                            onChange={(e)=>
+                                setMotDePasse(
+                                    e.target.value
+                                )
+                            }
+
+                        />
+
+
+                        <span
+
+                            className="password-eye"
+
+                            onClick={()=>
+                                setVoirMotDePasse(
+                                    !voirMotDePasse
+                                )
+                            }
+
+                        >
+
+                            {
+
+                                voirMotDePasse
+
+                                ?
+
+                                <FaEyeSlash/>
+
+                                :
+
+                                <FaEye/>
+
+                            }
+
+                        </span>
+
+
+                    </div>
+
+
+                    <button
+
+                        type="submit"
+
+                        disabled={loading}
+
+                    >
+
+                        {
+
+                            loading
+
+                            ?
+
+                            "Connexion..."
+
+                            :
+
+                            "Se connecter"
+
+                        }
+
+                    </button>
+
+
+                    {/* =====================================================
+                        SÉPARATEUR
+                    ===================================================== */}
+
+                    <div className="login-separator">
+
+                        <span>
+                            OU
+                        </span>
+
+                    </div>
+
+
+                    {/* =====================================================
+                        CONNEXION GOOGLE
+                    ===================================================== */}
+
+                    <div className="google-login-container">
+
+                        <GoogleLogin
+
+                            onSuccess={
+                                connexionGoogle
+                            }
+
+                            onError={() => {
+
+                                console.log(
+                                    "Échec de la connexion Google"
+                                );
+
+                                alert(
+                                    "La connexion avec Google a échoué"
+                                );
+
+                            }}
+
+                            text="continue_with"
+
+                            shape="rectangular"
+
+                            theme="outline"
+
+                            size="large"
+
+                            width="100%"
+
+                        />
+
+                    </div>
+
+
+                    <div className="register-link">
+
+                        <p>
+
+                            Vous n'avez pas de compte ?
+
+                            {" "}
+
+                            <span
+
+                                className="register-link-text"
+
+                                onClick={()=>
+                                    navigate(
+                                        "/register"
+                                    )
+                                }
+
+                            >
+
+                                Créer un compte
+
+                            </span>
+
+                        </p>
+
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
     );
 
-
-    navigate(retour);
-
-
 }
-
-else{
-
-
-    // Aucun chemin sauvegardé :
-    // revenir à la page précédente
-
-    navigate(-1);
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-console.log(
-"Retour après connexion :",
-retour
-);
-
-
-
-sessionStorage.removeItem(
-"retourApresLogin"
-);
-
-
-
-navigate(retour);
-
-
-
-}
-
-
-}
-
-catch(error){
-
-
-console.log(
-
-"Erreur connexion",
-
-error
-
-);
-
-
-alert(
-
-"Email ou mot de passe incorrect"
-
-);
-
-
-
-}
-
-finally{
-
-
-setLoading(false);
-
-
-}
-
-
-
-};
-
-
-
-
-
-
-
-
-
-return(
-
-
-<div className="login-client">
-
-
-
-<div className="login-card">
-
-
-<h1>
-Connexion
-</h1>
-
-
-<p>
-Connectez-vous à votre espace personnel.
-</p>
-
-
-
-
-
-
-<form onSubmit={connexion}>
-
-
-
-
-
-<label>
-Email
-</label>
-
-
-
-<input
-
-
-type="email"
-
-
-placeholder="Votre email"
-
-
-value={email}
-
-
-onChange={(e)=>
-setEmail(e.target.value)
-}
-
-
-/>
-
-
-
-
-
-
-
-
-<label>
-Mot de passe
-</label>
-
-
-
-
-<div className="password-field">
-
-
-<input
-
-type={voirMotDePasse ? "text" : "password"}
-
-placeholder="Votre mot de passe"
-
-value={motDePasse}
-
-onChange={(e)=>
-setMotDePasse(e.target.value)
-}
-
-/>
-
-
-<span
-
-className="password-eye"
-
-onClick={()=>setVoirMotDePasse(!voirMotDePasse)}
-
->
-
-{
-
-voirMotDePasse
-
-?
-
-<FaEyeSlash/>
-
-:
-
-<FaEye/>
-
-}
-
-</span>
-
-
-</div>
-
-
-
-
-<button
-
-type="submit"
-
-disabled={loading}
-
->
-
-
-{
-
-loading
-
-?
-
-"Connexion..."
-
-:
-
-"Se connecter"
-
-}
-
-
-</button>
-
-
-<div className="register-link">
-
-    <p>
-
-        Vous n'avez pas de compte ?
-
-        {" "}
-
-        <span
-            className="register-link-text"
-            onClick={()=>navigate("/register")}
-        >
-
-            Créer un compte
-
-        </span>
-
-    </p>
-
-</div>
-
-
-
-</form>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-);
-
-
-}
-
 
 
 export default LoginClient;
+
