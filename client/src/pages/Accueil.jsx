@@ -1,9 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
-    FaSearch,
     FaMapMarkerAlt,
     FaArrowRight,
     FaHotel,
@@ -23,6 +21,9 @@ import "./Accueil.css";
 
 function Accueil() {
 
+    /* =========================================================
+       ETATS
+    ========================================================= */
 
     const [destinations, setDestinations] = useState([]);
     const [offres, setOffres] = useState([]);
@@ -45,20 +46,22 @@ function Accueil() {
             prix === undefined ||
             prix === ""
         ) {
-
             return "Prix sur demande";
-
         }
 
+        const prixNumerique = Number(prix);
 
-        return `${Number(prix).toLocaleString(
+        if (Number.isNaN(prixNumerique)) {
+            return "Prix sur demande";
+        }
+
+        return `${prixNumerique.toLocaleString(
             "fr-FR",
             {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }
         )} €`;
-
     };
 
 
@@ -69,50 +72,75 @@ function Accueil() {
     const getImageUrl = (image) => {
 
         if (!image) {
-
             return null;
-
         }
 
+        const imageString = String(image).trim();
 
-        /* Image Cloudinary ou URL complète */
+        if (!imageString) {
+            return null;
+        }
 
+        /*
+         * Image Cloudinary ou URL complète
+         */
         if (
-            image.startsWith("http://") ||
-            image.startsWith("https://")
+            imageString.startsWith("http://") ||
+            imageString.startsWith("https://")
         ) {
+            return imageString;
+        }
 
-            return image;
+        const serverUrl =
+            import.meta.env.VITE_SERVER_URL || "";
+
+
+        /*
+         * Ancien système /uploads
+         */
+        if (imageString.startsWith("/uploads/")) {
+
+            return `${serverUrl}${imageString}`;
 
         }
 
 
-        /* Ancien système /uploads */
+        /*
+         * Autre URL locale commençant par /
+         */
+        if (imageString.startsWith("/")) {
 
-        if (
-            image.startsWith("/uploads/")
-        ) {
-
-            return `${import.meta.env.VITE_SERVER_URL}${image}`;
-
-        }
-
-
-        /* URL commençant par / */
-
-        if (
-            image.startsWith("/")
-        ) {
-
-            return `${import.meta.env.VITE_SERVER_URL}${image}`;
+            return `${serverUrl}${imageString}`;
 
         }
 
 
-        /* Nom de fichier */
+        /*
+         * Nom de fichier uniquement
+         */
+        return `${serverUrl}/uploads/${imageString}`;
+    };
 
-        return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
 
+    /* =========================================================
+       IMAGE DE REMPLACEMENT
+    ========================================================= */
+
+    const handleImageError = (event) => {
+
+        if (!event.currentTarget) {
+            return;
+        }
+
+        event.currentTarget.style.display = "none";
+
+        const parent = event.currentTarget.parentElement;
+
+        if (parent) {
+
+            parent.classList.add("image-load-error");
+
+        }
     };
 
 
@@ -171,32 +199,33 @@ function Accueil() {
 
     useEffect(() => {
 
+        let actif = true;
+
         const chargerDestinations = async () => {
 
             try {
 
                 setLoadingDestinations(true);
-
                 setErrorDestinations("");
 
                 const response =
                     await api.get("/destinations");
-
 
                 console.log(
                     "Destinations récupérées :",
                     response.data
                 );
 
-
                 let data = response.data;
 
 
+                /*
+                 * Réponse :
+                 * { destinations: [...] }
+                 */
                 if (
                     data &&
-                    Array.isArray(
-                        data.destinations
-                    )
+                    Array.isArray(data.destinations)
                 ) {
 
                     data = data.destinations;
@@ -204,11 +233,13 @@ function Accueil() {
                 }
 
 
-                if (
+                /*
+                 * Réponse :
+                 * { data: [...] }
+                 */
+                else if (
                     data &&
-                    Array.isArray(
-                        data.data
-                    )
+                    Array.isArray(data.data)
                 ) {
 
                     data = data.data;
@@ -216,14 +247,18 @@ function Accueil() {
                 }
 
 
-                if (Array.isArray(data)) {
+                if (actif) {
 
-                    setDestinations(data);
+                    if (Array.isArray(data)) {
 
-                }
-                else {
+                        setDestinations(data);
 
-                    setDestinations([]);
+                    }
+                    else {
+
+                        setDestinations([]);
+
+                    }
 
                 }
 
@@ -235,18 +270,24 @@ function Accueil() {
                     error
                 );
 
+                if (actif) {
 
-                setErrorDestinations(
-                    "Impossible de charger les destinations."
-                );
+                    setErrorDestinations(
+                        "Impossible de charger les destinations."
+                    );
 
+                    setDestinations([]);
 
-                setDestinations([]);
+                }
 
             }
             finally {
 
-                setLoadingDestinations(false);
+                if (actif) {
+
+                    setLoadingDestinations(false);
+
+                }
 
             }
 
@@ -254,6 +295,13 @@ function Accueil() {
 
 
         chargerDestinations();
+
+
+        return () => {
+
+            actif = false;
+
+        };
 
     }, []);
 
@@ -264,33 +312,33 @@ function Accueil() {
 
     useEffect(() => {
 
+        let actif = true;
+
         const chargerOffres = async () => {
 
             try {
 
                 setLoadingOffres(true);
-
                 setErrorOffres("");
-
 
                 const response =
                     await api.get("/offres");
-
 
                 console.log(
                     "Offres récupérées :",
                     response.data
                 );
 
-
                 let data = response.data;
 
 
+                /*
+                 * Réponse :
+                 * { offres: [...] }
+                 */
                 if (
                     data &&
-                    Array.isArray(
-                        data.offres
-                    )
+                    Array.isArray(data.offres)
                 ) {
 
                     data = data.offres;
@@ -298,11 +346,13 @@ function Accueil() {
                 }
 
 
-                if (
+                /*
+                 * Réponse :
+                 * { data: [...] }
+                 */
+                else if (
                     data &&
-                    Array.isArray(
-                        data.data
-                    )
+                    Array.isArray(data.data)
                 ) {
 
                     data = data.data;
@@ -310,14 +360,18 @@ function Accueil() {
                 }
 
 
-                if (Array.isArray(data)) {
+                if (actif) {
 
-                    setOffres(data);
+                    if (Array.isArray(data)) {
 
-                }
-                else {
+                        setOffres(data);
 
-                    setOffres([]);
+                    }
+                    else {
+
+                        setOffres([]);
+
+                    }
 
                 }
 
@@ -329,18 +383,24 @@ function Accueil() {
                     error
                 );
 
+                if (actif) {
 
-                setErrorOffres(
-                    "Impossible de charger les offres."
-                );
+                    setErrorOffres(
+                        "Impossible de charger les offres."
+                    );
 
+                    setOffres([]);
 
-                setOffres([]);
+                }
 
             }
             finally {
 
-                setLoadingOffres(false);
+                if (actif) {
+
+                    setLoadingOffres(false);
+
+                }
 
             }
 
@@ -349,25 +409,30 @@ function Accueil() {
 
         chargerOffres();
 
+
+        return () => {
+
+            actif = false;
+
+        };
+
     }, []);
 
 
     /* =========================================================
-       AFFICHAGE DESTINATIONS
-       Seulement 3 sur l'accueil
+       ELEMENTS A AFFICHER
     ========================================================= */
 
     const destinationsAffichees =
         destinations.slice(0, 3);
 
-
-    /* =========================================================
-       AFFICHAGE OFFRES
-    ========================================================= */
-
     const offresAffichees =
         offres.slice(0, 6);
 
+
+    /* =========================================================
+       RENDU
+    ========================================================= */
 
     return (
 
@@ -420,36 +485,26 @@ function Accueil() {
 
                         <Link
                             to="/destinations-public"
+                            className="hero-primary-btn"
                         >
 
-                            <button
-                                type="button"
-                                className="hero-primary-btn"
-                            >
-
+                            <span>
                                 Explorer les destinations
+                            </span>
 
-                                <span>
-                                    <FaArrowRight />
-                                </span>
-
-                            </button>
+                            <span>
+                                <FaArrowRight />
+                            </span>
 
                         </Link>
 
 
                         <Link
                             to="/offres-public"
+                            className="hero-secondary-btn"
                         >
 
-                            <button
-                                type="button"
-                                className="hero-secondary-btn"
-                            >
-
-                                Voir les offres
-
-                            </button>
+                            Voir les offres
 
                         </Link>
 
@@ -460,13 +515,11 @@ function Accueil() {
             </section>
 
 
-
             {/* =====================================================
                 VIDEOS
             ===================================================== */}
 
             <section className="videos-section">
-
 
                 <div className="section-heading">
 
@@ -493,20 +546,15 @@ function Accueil() {
                 </div>
 
 
-
                 <div className="videos-showcase">
 
 
-                    {/* =================================================
-                        GRANDE VIDEO
-                    ================================================= */}
+                    {/* GRANDE VIDEO */}
 
                     <div className="video-main-card">
 
                         <video
-                            src={
-                                videosAccueil[0].fichier
-                            }
+                            src={videosAccueil[0].fichier}
                             autoPlay
                             muted
                             loop
@@ -521,23 +569,17 @@ function Accueil() {
                         <div className="video-card-content">
 
                             <span>
-                                {
-                                    videosAccueil[0].categorie
-                                }
+                                {videosAccueil[0].categorie}
                             </span>
 
 
                             <h3>
-                                {
-                                    videosAccueil[0].titre
-                                }
+                                {videosAccueil[0].titre}
                             </h3>
 
 
                             <p>
-                                {
-                                    videosAccueil[0].description
-                                }
+                                {videosAccueil[0].description}
                             </p>
 
                         </div>
@@ -545,75 +587,54 @@ function Accueil() {
                     </div>
 
 
-
-                    {/* =================================================
-                        PETITES VIDEOS
-                    ================================================= */}
+                    {/* PETITES VIDEOS */}
 
                     <div className="videos-side-grid">
 
+                        {videosAccueil
+                            .slice(1)
+                            .map((video, index) => (
 
-                        {
-                            videosAccueil
-                                .slice(1)
-                                .map(
-                                    (
-                                        video,
-                                        index
-                                    ) => (
+                                <div
+                                    className="video-small-card"
+                                    key={`${video.fichier}-${index}`}
+                                >
 
-                                        <div
-                                            className="video-small-card"
-                                            key={index}
-                                        >
-
-
-                                            <video
-                                                src={
-                                                    video.fichier
-                                                }
-                                                autoPlay
-                                                muted
-                                                loop
-                                                playsInline
-                                                preload="metadata"
-                                            />
+                                    <video
+                                        src={video.fichier}
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
+                                        preload="metadata"
+                                    />
 
 
-                                            <div className="video-small-overlay"></div>
+                                    <div className="video-small-overlay"></div>
 
 
-                                            <div className="video-small-content">
+                                    <div className="video-small-content">
 
-                                                <span>
-                                                    {
-                                                        video.categorie
-                                                    }
-                                                </span>
+                                        <span>
+                                            {video.categorie}
+                                        </span>
 
 
-                                                <h3>
-                                                    {
-                                                        video.titre
-                                                    }
-                                                </h3>
+                                        <h3>
+                                            {video.titre}
+                                        </h3>
 
-                                            </div>
+                                    </div>
 
+                                </div>
 
-                                        </div>
-
-                                    )
-                                )
-                        }
+                            ))}
 
                     </div>
-
 
                 </div>
 
             </section>
-
 
 
             {/* =====================================================
@@ -621,7 +642,6 @@ function Accueil() {
             ===================================================== */}
 
             <section className="destinations-section">
-
 
                 <div className="section-heading">
 
@@ -659,187 +679,152 @@ function Accueil() {
                 </div>
 
 
+                {loadingDestinations ? (
 
-                {
-                    loadingDestinations ? (
+                    <div className="loading-container">
 
-                        <div className="loading-container">
+                        <div className="loading-spinner"></div>
 
-                            <div className="loading-spinner"></div>
+                        <p>
+                            Chargement des destinations...
+                        </p>
 
-                            <p>
-                                Chargement des destinations...
-                            </p>
+                    </div>
 
-                        </div>
+                ) : errorDestinations ? (
 
-                    ) : errorDestinations ? (
+                    <div className="error-container">
 
-                        <div className="error-container">
+                        <span>
+                            ⚠️
+                        </span>
 
-                            <span>
-                                ⚠️
-                            </span>
+                        <p>
+                            {errorDestinations}
+                        </p>
 
-                            <p>
-                                {errorDestinations}
-                            </p>
+                    </div>
 
-                        </div>
+                ) : destinationsAffichees.length === 0 ? (
 
-                    ) : destinationsAffichees.length === 0 ? (
+                    <div className="empty-container">
 
-                        <div className="empty-container">
+                        <span>
+                            🌍
+                        </span>
 
-                            <span>
-                                🌍
-                            </span>
+                        <p>
+                            Aucune destination disponible pour le moment.
+                        </p>
 
-                            <p>
-                                Aucune destination disponible pour le moment.
-                            </p>
+                    </div>
 
-                        </div>
+                ) : (
 
-                    ) : (
+                    <div className="destination-grid">
 
-                        <div className="destination-grid">
+                        {destinationsAffichees.map(
+                            (destination, index) => {
 
-                            {
-                                destinationsAffichees.map(
-                                    (
-                                        destination,
-                                        index
-                                    ) => {
-
-                                        const image =
-                                            getImageUrl(
-                                                destination.image ||
-                                                destination.photo ||
-                                                destination.image_destination
-                                            );
+                                const image =
+                                    getImageUrl(
+                                        destination.image ||
+                                        destination.photo ||
+                                        destination.image_destination
+                                    );
 
 
-                                        const id =
-                                            destination.id_destination ||
-                                            destination.id;
+                                const id =
+                                    destination.id_destination ||
+                                    destination.id;
 
 
-                                        return (
-
-                                            <Link
-                                                to="/destinations-public"
-                                                className="destination-card"
-                                                key={
-                                                    id ||
-                                                    index
-                                                }
-                                            >
+                                const nom =
+                                    destination.nom ||
+                                    destination.nom_destination ||
+                                    "Destination";
 
 
-                                                {
-                                                    image ? (
-
-                                                        <img
-                                                            src={image}
-                                                            alt={
-                                                                destination.nom ||
-                                                                destination.nom_destination ||
-                                                                "Destination"
-                                                            }
-                                                            className="destination-image"
-                                                            onError={(
-                                                                event
-                                                            ) => {
-
-                                                                console.error(
-                                                                    "Image destination introuvable :",
-                                                                    image
-                                                                );
+                                const description =
+                                    destination.description ||
+                                    "Découvrez cette magnifique destination touristique.";
 
 
-                                                                event
-                                                                    .currentTarget
-                                                                    .style
-                                                                    .display =
-                                                                    "none";
+                                return (
 
-                                                            }}
-                                                        />
+                                    <Link
+                                        to="/destinations-public"
+                                        className="destination-card"
+                                        key={id || index}
+                                    >
 
-                                                    ) : (
+                                        {image ? (
 
-                                                        <div className="destination-no-image">
+                                            <img
+                                                src={image}
+                                                alt={nom}
+                                                className="destination-image"
+                                                loading="lazy"
+                                                onError={handleImageError}
+                                            />
 
-                                                            <FaGlobeAfrica />
+                                        ) : (
 
-                                                        </div>
+                                            <div className="destination-no-image">
 
-                                                    )
-                                                }
+                                                <FaGlobeAfrica />
 
+                                            </div>
 
-                                                <div className="destination-overlay"></div>
-
-
-                                                <div className="destination-content">
-
-                                                    <span className="destination-location">
-
-                                                        <FaMapMarkerAlt />
-
-                                                        Madagascar
-
-                                                    </span>
+                                        )}
 
 
-                                                    <h3>
-
-                                                        {
-                                                            destination.nom ||
-                                                            destination.nom_destination ||
-                                                            "Destination"
-                                                        }
-
-                                                    </h3>
+                                        <div className="destination-overlay"></div>
 
 
-                                                    <p>
+                                        <div className="destination-content">
 
-                                                        {
-                                                            destination.description ||
-                                                            "Découvrez cette magnifique destination touristique."
-                                                        }
+                                            <span className="destination-location">
 
-                                                    </p>
+                                                <FaMapMarkerAlt />
 
+                                                Madagascar
 
-                                                    <span className="destination-link">
-
-                                                        Découvrir
-
-                                                        <FaArrowRight />
-
-                                                    </span>
-
-                                                </div>
+                                            </span>
 
 
-                                            </Link>
+                                            <h3>
+                                                {nom}
+                                            </h3>
 
-                                        );
 
-                                    }
-                                )
+                                            <p>
+                                                {description}
+                                            </p>
+
+
+                                            <span className="destination-link">
+
+                                                Découvrir
+
+                                                <FaArrowRight />
+
+                                            </span>
+
+                                        </div>
+
+                                    </Link>
+
+                                );
+
                             }
+                        )}
 
-                        </div>
+                    </div>
 
-                    )
-                }
+                )}
 
             </section>
-
 
 
             {/* =====================================================
@@ -847,7 +832,6 @@ function Accueil() {
             ===================================================== */}
 
             <section className="offers-section">
-
 
                 <div className="section-heading">
 
@@ -885,302 +869,276 @@ function Accueil() {
                 </div>
 
 
+                {loadingOffres ? (
 
-                {
-                    loadingOffres ? (
+                    <div className="loading-container">
 
-                        <div className="loading-container">
+                        <div className="loading-spinner"></div>
 
-                            <div className="loading-spinner"></div>
+                        <p>
+                            Chargement des offres...
+                        </p>
 
-                            <p>
-                                Chargement des offres...
-                            </p>
+                    </div>
 
-                        </div>
+                ) : errorOffres ? (
 
-                    ) : errorOffres ? (
+                    <div className="error-container">
 
-                        <div className="error-container">
+                        <span>
+                            ⚠️
+                        </span>
 
-                            <span>
-                                ⚠️
-                            </span>
+                        <p>
+                            {errorOffres}
+                        </p>
 
-                            <p>
-                                {errorOffres}
-                            </p>
+                    </div>
 
-                        </div>
+                ) : offresAffichees.length === 0 ? (
 
-                    ) : offresAffichees.length === 0 ? (
+                    <div className="empty-container">
 
-                        <div className="empty-container">
+                        <span>
+                            🏨
+                        </span>
 
-                            <span>
-                                🏨
-                            </span>
+                        <p>
+                            Aucune offre disponible pour le moment.
+                        </p>
 
-                            <p>
-                                Aucune offre disponible pour le moment.
-                            </p>
+                    </div>
 
-                        </div>
+                ) : (
 
-                    ) : (
+                    <div className="offers-grid">
 
-                        <div className="offers-grid">
+                        {offresAffichees.map(
+                            (offre, index) => {
 
-                            {
-                                offresAffichees.map(
-                                    (
-                                        offre,
-                                        index
-                                    ) => {
-
-                                        const image =
-                                            getImageUrl(
-                                                offre.image ||
-                                                offre.photo ||
-                                                offre.image_offre
-                                            );
+                                const image =
+                                    getImageUrl(
+                                        offre.image ||
+                                        offre.photo ||
+                                        offre.image_offre
+                                    );
 
 
-                                        const id =
-                                            offre.id_offre ||
-                                            offre.id;
+                                const id =
+                                    offre.id_offre ||
+                                    offre.id;
 
 
-                                        return (
-
-                                            <div
-                                                className="offer-card"
-                                                key={
-                                                    id ||
-                                                    index
-                                                }
-                                            >
+                                const titre =
+                                    offre.titre ||
+                                    "Offre touristique";
 
 
-                                                <div className="offer-image">
+                                const destination =
+                                    offre.destination ||
+                                    offre.nom_destination ||
+                                    "Madagascar";
 
 
-                                                    {
-                                                        image ? (
+                                return (
 
-                                                            <img
-                                                                src={image}
-                                                                alt={
-                                                                    offre.titre ||
-                                                                    "Offre touristique"
-                                                                }
-                                                                onError={(
-                                                                    event
-                                                                ) => {
-
-                                                                    console.error(
-                                                                        "Image offre introuvable :",
-                                                                        image
-                                                                    );
+                                    <article
+                                        className="offer-card"
+                                        key={id || index}
+                                    >
 
 
-                                                                    event
-                                                                        .currentTarget
-                                                                        .style
-                                                                        .display =
-                                                                        "none";
+                                        {/* IMAGE */}
 
-                                                                }}
-                                                            />
+                                        <div className="offer-image">
 
-                                                        ) : (
+                                            {image ? (
 
-                                                            <div className="offer-no-image">
+                                                <img
+                                                    src={image}
+                                                    alt={titre}
+                                                    loading="lazy"
+                                                    onError={handleImageError}
+                                                />
 
-                                                                <FaHotel />
+                                            ) : (
 
-                                                            </div>
+                                                <div className="offer-no-image">
 
-                                                        )
-                                                    }
-
-
-                                                    {
-                                                        offre.categorie && (
-
-                                                            <span className="offer-badge">
-
-                                                                {
-                                                                    offre.categorie
-                                                                }
-
-                                                            </span>
-
-                                                        )
-                                                    }
-
-
-                                                    <button
-                                                        type="button"
-                                                        className="favorite-button"
-                                                        onClick={(
-                                                            event
-                                                        ) => {
-
-                                                            event.preventDefault();
-
-                                                        }}
-                                                    >
-
-                                                        <FaHeart />
-
-                                                    </button>
+                                                    <FaHotel />
 
                                                 </div>
 
+                                            )}
 
 
-                                                <div className="offer-content">
+                                            {offre.categorie && (
+
+                                                <span className="offer-badge">
+
+                                                    {offre.categorie}
+
+                                                </span>
+
+                                            )}
 
 
-                                                    <span className="offer-location">
+                                            <button
+                                                type="button"
+                                                className="favorite-button"
+                                                aria-label="Ajouter aux favoris"
+                                                onClick={(event) => {
 
-                                                        <FaMapMarkerAlt />
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
 
-                                                        {
-                                                            offre.destination ||
-                                                            offre.nom_destination ||
-                                                            "Madagascar"
-                                                        }
+                                                }}
+                                            >
+
+                                                <FaHeart />
+
+                                            </button>
+
+                                        </div>
+
+
+                                        {/* CONTENU */}
+
+                                        <div className="offer-content">
+
+
+                                            <span className="offer-location">
+
+                                                <FaMapMarkerAlt />
+
+                                                {destination}
+
+                                            </span>
+
+
+                                            <h3>
+                                                {titre}
+                                            </h3>
+
+
+                                            <div className="offer-info">
+
+
+                                                {offre.capacite !==
+                                                    undefined &&
+                                                    offre.capacite !==
+                                                    null &&
+                                                    offre.capacite !==
+                                                    "" && (
+
+                                                        <span>
+
+                                                            👥{" "}
+
+                                                            {offre.capacite}
+
+                                                            {" "}
+                                                            personnes
+
+                                                        </span>
+
+                                                    )}
+
+
+                                                {offre.disponibilite !==
+                                                    undefined && (
+
+                                                        <span>
+
+                                                            ✓ Disponible
+
+                                                        </span>
+
+                                                    )}
+
+
+                                                {offre.date_debut && (
+
+                                                    <span>
+
+                                                        📅{" "}
+
+                                                        {new Date(
+                                                            offre.date_debut
+                                                        ).toLocaleDateString(
+                                                            "fr-FR"
+                                                        )}
 
                                                     </span>
 
-
-                                                    <h3>
-
-                                                        {
-                                                            offre.titre ||
-                                                            "Offre touristique"
-                                                        }
-
-                                                    </h3>
-
-
-                                                    <div className="offer-info">
-
-
-                                                        {
-                                                            offre.capacite && (
-
-                                                                <span>
-
-                                                                    👥{" "}
-
-                                                                    {
-                                                                        offre.capacite
-                                                                    }
-
-                                                                    {" "}
-                                                                    personnes
-
-                                                                </span>
-
-                                                            )
-                                                        }
-
-
-                                                        {
-                                                            offre.disponibilite !== undefined && (
-
-                                                                <span>
-
-                                                                    ✓ Disponible
-
-                                                                </span>
-
-                                                            )
-                                                        }
-
-
-                                                        {
-                                                            offre.date_debut && (
-
-                                                                <span>
-
-                                                                    📅{" "}
-
-                                                                    {
-                                                                        new Date(
-                                                                            offre.date_debut
-                                                                        ).toLocaleDateString(
-                                                                            "fr-FR"
-                                                                        )
-                                                                    }
-
-                                                                </span>
-
-                                                            )
-                                                        }
-
-                                                    </div>
-
-
-
-                                                    <div className="offer-bottom">
-
-
-                                                        <div className="offer-price">
-
-                                                            <small>
-                                                                À partir de
-                                                            </small>
-
-
-                                                            <strong>
-
-                                                                {
-                                                                    formatPrixEuro(
-                                                                        offre.prix
-                                                                    )
-                                                                }
-
-                                                            </strong>
-
-                                                        </div>
-
-
-                                                        <Link
-                                                            to={
-                                                                `/detail-offre/${id}`
-                                                            }
-                                                            className="offer-button"
-                                                        >
-
-                                                            Voir l'offre
-
-                                                            <FaArrowRight />
-
-                                                        </Link>
-
-                                                    </div>
-
-                                                </div>
+                                                )}
 
                                             </div>
 
-                                        );
 
-                                    }
-                                )
+                                            <div className="offer-bottom">
+
+
+                                                <div className="offer-price">
+
+                                                    <small>
+                                                        À partir de
+                                                    </small>
+
+
+                                                    <strong>
+                                                        {formatPrixEuro(
+                                                            offre.prix
+                                                        )}
+                                                    </strong>
+
+                                                </div>
+
+
+                                                {id ? (
+
+                                                    <Link
+                                                        to={`/detail-offre/${id}`}
+                                                        className="offer-button"
+                                                    >
+
+                                                        Voir l'offre
+
+                                                        <FaArrowRight />
+
+                                                    </Link>
+
+                                                ) : (
+
+                                                    <Link
+                                                        to="/offres-public"
+                                                        className="offer-button"
+                                                    >
+
+                                                        Voir les offres
+
+                                                        <FaArrowRight />
+
+                                                    </Link>
+
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
+                                    </article>
+
+                                );
+
                             }
+                        )}
 
-                        </div>
+                    </div>
 
-                    )
-                }
+                )}
 
             </section>
-
 
 
             {/* =====================================================
@@ -1233,16 +1191,13 @@ function Accueil() {
                     </div>
 
 
-
                     <div className="advantages-grid">
 
 
                         <div className="advantage-card">
 
                             <div className="advantage-icon">
-
                                 <FaShieldAlt />
-
                             </div>
 
 
@@ -1262,9 +1217,7 @@ function Accueil() {
                         <div className="advantage-card">
 
                             <div className="advantage-icon">
-
                                 <FaCreditCard />
-
                             </div>
 
 
@@ -1284,9 +1237,7 @@ function Accueil() {
                         <div className="advantage-card">
 
                             <div className="advantage-icon">
-
                                 <FaStar />
-
                             </div>
 
 
@@ -1306,9 +1257,7 @@ function Accueil() {
                         <div className="advantage-card">
 
                             <div className="advantage-icon">
-
                                 <FaHeadset />
-
                             </div>
 
 
@@ -1331,13 +1280,11 @@ function Accueil() {
             </section>
 
 
-
             {/* =====================================================
                 COMMENT ÇA MARCHE
             ===================================================== */}
 
             <section className="steps-section">
-
 
                 <div className="section-title-center">
 
@@ -1359,7 +1306,6 @@ function Accueil() {
                 </div>
 
 
-
                 <div className="steps-grid">
 
 
@@ -1372,13 +1318,13 @@ function Accueil() {
 
                         <div className="step-icon">
 
-                            <FaSearch />
+                            <FaGlobeAfrica />
 
                         </div>
 
 
                         <h3>
-                            Recherchez
+                            Explorez
                         </h3>
 
 
@@ -1388,7 +1334,6 @@ function Accueil() {
                         </p>
 
                     </div>
-
 
 
                     <div className="step-card">
@@ -1416,7 +1361,6 @@ function Accueil() {
                         </p>
 
                     </div>
-
 
 
                     <div className="step-card">
@@ -1450,13 +1394,11 @@ function Accueil() {
             </section>
 
 
-
             {/* =====================================================
                 IA
             ===================================================== */}
 
             <section className="ia-section">
-
 
                 <div className="ia-content">
 
@@ -1506,13 +1448,11 @@ function Accueil() {
             </section>
 
 
-
             {/* =====================================================
                 CONTACT
             ===================================================== */}
 
             <section className="home-contact">
-
 
                 <div className="contact-overlay"></div>
 
@@ -1548,21 +1488,16 @@ function Accueil() {
                     <div className="contact-buttons">
 
 
-                        <Link to="/contact">
+                        <Link
+                            to="/contact"
+                            className="contact-primary"
+                        >
 
-                            <button
-                                type="button"
-                                className="contact-primary"
-                            >
+                            Contactez-nous
 
-                                Contactez-nous
-
-                                <FaArrowRight />
-
-                            </button>
+                            <FaArrowRight />
 
                         </Link>
-
 
 
                         <button
@@ -1571,9 +1506,7 @@ function Accueil() {
                             onClick={() => {
 
                                 window.dispatchEvent(
-                                    new Event(
-                                        "open-chatbot"
-                                    )
+                                    new Event("open-chatbot")
                                 );
 
                             }}
@@ -1586,22 +1519,14 @@ function Accueil() {
                         </button>
 
 
-
                         <Link
                             to="/destinations-public"
+                            className="contact-secondary"
                         >
 
-                            <button
-                                type="button"
-                                className="contact-secondary"
-                            >
-
-                                Explorer
-
-                            </button>
+                            Explorer
 
                         </Link>
-
 
                     </div>
 
@@ -1618,4 +1543,3 @@ function Accueil() {
 
 
 export default Accueil;
-
