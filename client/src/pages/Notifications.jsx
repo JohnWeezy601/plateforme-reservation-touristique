@@ -1,17 +1,29 @@
+
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import "./Notifications.css";
+
+import {
+    FaBell,
+    FaCreditCard,
+    FaCheckCircle,
+    FaTimesCircle,
+    FaClock,
+    FaTrash,
+    FaEye
+} from "react-icons/fa";
 
 
 function Notifications() {
 
+    const [notifications, setNotifications] = useState([]);
 
-    const [notifications,setNotifications] = useState([]);
+    const [menuOuvert, setMenuOuvert] = useState(null);
 
-    const [menuOuvert,setMenuOuvert] = useState(null);
+    const [afficherAnciens, setAfficherAnciens] = useState(false);
 
-    const [afficherAnciens,setAfficherAnciens] = useState(false);
-
+    const navigate = useNavigate();
 
 
     // ==========================
@@ -22,534 +34,734 @@ function Notifications() {
         localStorage.getItem("utilisateur")
     );
 
-
-    const idUtilisateur = utilisateur?.id_utilisateur;
-
-
+    const idUtilisateur =
+        utilisateur?.id_utilisateur;
 
 
     // ==========================
     // Charger notifications
     // ==========================
 
-    const chargerNotifications = async()=>{
+    const chargerNotifications = async () => {
 
-
-        if(!idUtilisateur)
+        if (!idUtilisateur)
             return;
 
-
-
-        try{
-
+        try {
 
             const res = await api.get(
-
                 `/notifications/utilisateur/${idUtilisateur}`
-
             );
-
 
             setNotifications(res.data);
 
-
         }
-        catch(error){
-
+        catch (error) {
 
             console.log(
                 "Erreur chargement notifications",
                 error
             );
 
-
         }
 
-
     };
-
-
-
-
 
 
     // ==========================
     // Marquer comme lu
     // ==========================
 
-  const marquerCommeLu = async(id)=>{
+    const marquerCommeLu = async (id) => {
 
+        try {
 
-    try{
+            await api.put(
+                `/notifications/lu/${id}`
+            );
 
+            setNotifications(prev =>
 
-        await api.put(
+                prev.map(notification =>
 
-            `/notifications/lu/${id}`
+                    notification.id_notification === id
 
-        );
+                        ?
 
+                        {
+                            ...notification,
+                            lu: 1
+                        }
 
+                        :
 
-        // Mise à jour instantanée sans rechargement
+                        notification
 
-        setNotifications(prev =>
+                )
 
-            prev.map(notification =>
+            );
 
-                notification.id_notification === id
+        }
+        catch (error) {
 
-                ?
+            console.log(
+                "Erreur marquer comme lue",
+                error
+            );
 
-                {
-                    ...notification,
-                    lu:1
-                }
+        }
 
-                :
-
-                notification
-
-            )
-
-        );
-
-
-
-    }
-    catch(error){
-
-        console.log(
-            "Erreur marquer comme lue",
-            error
-        );
-
-    }
-
-
-};
-
-
-
-
-
+    };
 
 
     // ==========================
     // Supprimer notification
     // ==========================
 
-   const supprimerNotification = async(id)=>{
+    const supprimerNotification = async (id) => {
 
+        const confirmation =
+            window.confirm(
+                "Supprimer cette notification ?"
+            );
 
-    const confirmation = window.confirm(
+        if (!confirmation)
+            return;
 
-        "Supprimer cette notification ?"
+        try {
 
-    );
+            await api.delete(
+                `/notifications/${id}`
+            );
 
+            setNotifications(prev =>
 
-    if(!confirmation)
-        return;
+                prev.filter(
+                    notification =>
+                        notification.id_notification !== id
+                )
 
+            );
 
+        }
+        catch (error) {
 
-    try{
+            console.log(
+                "Erreur suppression notification",
+                error
+            );
 
+        }
 
-        await api.delete(
-
-            `/notifications/${id}`
-
-        );
-
-
-
-        // suppression immédiate
-
-        setNotifications(prev =>
-
-            prev.filter(
-
-                notification =>
-
-                notification.id_notification !== id
-
-            )
-
-        );
-
-
-
-    }
-    catch(error){
-
-
-        console.log(
-
-            "Erreur suppression notification",
-
-            error
-
-        );
-
-
-    }
-
-
-};
-
+    };
 
 
     // ==========================
     // Actualisation automatique
     // ==========================
 
-   useEffect(()=>{
+    useEffect(() => {
 
-
-    if(!idUtilisateur)
-        return;
-
-
-
-    // Chargement initial
-
-    chargerNotifications();
-
-
-
-    // Actualisation automatique toutes les 5 secondes
-
-    const interval = setInterval(()=>{
-
+        if (!idUtilisateur)
+            return;
 
         chargerNotifications();
 
+        const interval =
+            setInterval(() => {
 
-    },5000);
+                chargerNotifications();
 
+            }, 2000);
 
+        return () => {
 
+            clearInterval(interval);
 
-    return ()=>{
+        };
 
-
-        clearInterval(interval);
-
-
-    };
-
-
-},[idUtilisateur]);
-
-
+    }, [idUtilisateur]);
 
 
     // ==========================
     // Nombre affiché
     // ==========================
 
-    const notificationsAffichees = afficherAnciens
+    const notificationsAffichees =
+        afficherAnciens
 
-    ?
+            ?
 
-    notifications
+            notifications
 
-    :
+            :
 
-    notifications.slice(0,5);
-
-
-
+            notifications.slice(0, 5);
 
 
+    // ==========================
+    // Icône notification
+    // ==========================
+
+    const getNotificationIcon = (notification) => {
+
+        const type =
+            String(notification.type || "")
+                .toLowerCase();
 
 
+        // Paiement
+
+        if (type === "paiement") {
+
+            const titre =
+                String(notification.titre || "")
+                    .toLowerCase();
 
 
-    return(
+            if (
+                titre.includes("valid")
+            ) {
 
+                return (
+                    <div className="notification-icon paiement valide">
+
+                        <FaCheckCircle />
+
+                    </div>
+                );
+
+            }
+
+
+            if (
+                titre.includes("non valid")
+            ) {
+
+                return (
+                    <div className="notification-icon paiement non-valide">
+
+                        <FaTimesCircle />
+
+                    </div>
+                );
+
+            }
+
+
+            if (
+                titre.includes("échou")
+                ||
+                titre.includes("echec")
+            ) {
+
+                return (
+                    <div className="notification-icon paiement echoue">
+
+                        <FaTimesCircle />
+
+                    </div>
+                );
+
+            }
+
+
+            return (
+                <div className="notification-icon paiement">
+
+                    <FaCreditCard />
+
+                </div>
+            );
+
+        }
+
+
+        // Notification classique
+
+        return (
+            <div className="notification-icon">
+
+                <FaBell />
+
+            </div>
+        );
+
+    };
+
+
+    // ==========================
+    // Cliquer notification
+    // ==========================
+
+    const cliquerNotification = async (notification) => {
+
+        // Marquer comme lue
+
+        if (
+            Number(notification.lu) === 0
+        ) {
+
+            await marquerCommeLu(
+                notification.id_notification
+            );
+
+        }
+
+
+        // Ouvrir / fermer le menu
+
+        setMenuOuvert(
+
+            menuOuvert === notification.id_notification
+
+                ?
+
+                null
+
+                :
+
+                notification.id_notification
+
+        );
+
+
+        // Si paiement admin
+
+        if (
+            String(notification.type || "")
+                .toLowerCase()
+                ===
+            "paiement"
+        ) {
+
+            // On peut aller vers la page Paiements
+
+            if (
+                utilisateur?.role === "Administrateur"
+                ||
+                utilisateur?.id_role === 6
+            ) {
+
+                navigate("/paiements");
+
+            }
+
+        }
+
+    };
+
+
+    return (
 
         <div className="notifications-page">
 
 
-            <h1>
-                Notifications
-            </h1>
+            {/* ==========================
+                EN-TÊTE
+            ========================== */}
 
+            <div className="notifications-header">
 
-            <p>
-                Historique des notifications
-            </p>
+                <div>
 
+                    <h1>
 
+                        <FaBell />
 
+                        Notifications
 
+                    </h1>
 
-            {
+                    <p>
 
-            notificationsAffichees.length===0
+                        Historique des notifications
 
-            ?
-
-
-            <div className="notification-vide">
-
-                Aucune notification.
-
-            </div>
-
-
-
-            :
-
-
-
-            notificationsAffichees.map((notification)=>(
-
-
-
-                <div
-
-                key={notification.id_notification}
-
-
-                className={
-
-                    notification.lu===1
-
-                    ?
-
-                    "notification-card"
-
-                    :
-
-                    "notification-card non-lue"
-
-                }
-
-
-                onClick={()=>{
-
-
-                    setMenuOuvert(
-
-                        menuOuvert===notification.id_notification
-
-                        ?
-
-                        null
-
-                        :
-
-                        notification.id_notification
-
-                    );
-
-
-                }}
-
-
-
-                >
-
-
-
-                    <div>
-
-
-                        <h3>
-
-                            {notification.titre}
-
-                        </h3>
-
-
-
-                        <p>
-
-                            {notification.message}
-
-                        </p>
-
-
-
-
-                      <small>
-
-{
-new Date(
-notification.date_notification
-)
-.toLocaleString("fr-FR")
-}
-
-
-{
-
-Number(notification.lu) === 1 &&
-
-
-<span className="notification-lue">
-
-&nbsp; ✓ Lue
-
-</span>
-
-
-}
-
-
-</small>
-
-
-
-                        {
-
-                        menuOuvert===notification.id_notification &&
-
-
-
-                        <div className="notification-actions">
-
-
-
-                            {
-
-                            notification.lu===0 &&
-
-
-
-                            <span
-
-                            onClick={(e)=>{
-
-
-                                e.stopPropagation();
-
-
-                                marquerCommeLu(
-
-                                    notification.id_notification
-
-                                );
-
-
-                            }}
-
-
-                            >
-
-                                Marquer comme lue
-
-                            </span>
-
-                            }
-
-
-
-
-                            <span
-
-                            className="supprimer-text"
-
-
-                            onClick={(e)=>{
-
-
-                                e.stopPropagation();
-
-
-                                supprimerNotification(
-
-                                    notification.id_notification
-
-                                );
-
-
-                            }}
-
-
-                            >
-
-                                Supprimer
-
-                            </span>
-
-
-
-                        </div>
-
-
-                        }
-
-
-
-                    </div>
-
-
+                    </p>
 
                 </div>
 
 
-
-            ))
-
-
-            }
-
-
-
-
-
-            {
-
-            notifications.length>5 &&
-
-
-
-            <div className="notification-plus">
-
-
-                <span
-
-                onClick={()=>setAfficherAnciens(!afficherAnciens)}
-
-                >
-
                 {
 
-                afficherAnciens
+                    notifications.filter(
+                        notification =>
+                            Number(notification.lu) === 0
+                    ).length > 0
 
-                ?
+                    &&
 
-                "Afficher les notifications récentes"
+                    <span className="notifications-count">
 
-                :
+                        {
+                            notifications.filter(
+                                notification =>
+                                    Number(notification.lu) === 0
+                            ).length
+                        }
 
-                "Afficher les anciennes notifications"
+                        &nbsp;
+
+                        non lue(s)
+
+                    </span>
 
                 }
-
-
-                </span>
-
 
             </div>
 
 
+            {/* ==========================
+                LISTE
+            ========================== */}
+
+            {
+
+                notificationsAffichees.length === 0
+
+                    ?
+
+                    (
+
+                        <div className="notification-vide">
+
+                            <FaBell />
+
+                            <p>
+
+                                Aucune notification.
+
+                            </p>
+
+                        </div>
+
+                    )
+
+                    :
+
+                    (
+
+                        <div className="notifications-list">
+
+                            {
+
+                                notificationsAffichees.map(
+                                    (notification) => {
+
+                                        const estPaiement =
+
+                                            String(
+                                                notification.type || ""
+                                            )
+                                                .toLowerCase()
+                                            ===
+                                            "paiement";
+
+
+                                        return (
+
+                                            <div
+
+                                                key={
+                                                    notification.id_notification
+                                                }
+
+                                                className={
+
+                                                    notification.lu === 1
+
+                                                        ?
+
+                                                        `notification-card ${
+                                                            estPaiement
+                                                                ? "notification-paiement"
+                                                                : ""
+                                                        }`
+
+                                                        :
+
+                                                        `notification-card non-lue ${
+                                                            estPaiement
+                                                                ? "notification-paiement"
+                                                                : ""
+                                                        }`
+
+                                                }
+
+                                                onClick={() =>
+                                                    cliquerNotification(
+                                                        notification
+                                                    )
+                                                }
+
+                                            >
+
+
+                                                {/* ==========================
+                                                    ICÔNE
+                                                ========================== */}
+
+                                                {
+                                                    getNotificationIcon(
+                                                        notification
+                                                    )
+                                                }
+
+
+                                                {/* ==========================
+                                                    CONTENU
+                                                ========================== */}
+
+                                                <div className="notification-content">
+
+
+                                                    <div className="notification-title-row">
+
+
+                                                        <h3>
+
+                                                            {
+                                                                notification.titre
+                                                            }
+
+                                                        </h3>
+
+
+                                                        {
+
+                                                            estPaiement
+
+                                                            &&
+
+                                                            <span className="badge-paiement">
+
+                                                                Paiement
+
+                                                            </span>
+
+                                                        }
+
+
+                                                    </div>
+
+
+                                                    <p>
+
+                                                        {
+                                                            notification.message
+                                                        }
+
+                                                    </p>
+
+
+                                                    <small>
+
+                                                        {
+
+                                                            new Date(
+                                                                notification.date_notification
+                                                            )
+                                                                .toLocaleString(
+                                                                    "fr-FR"
+                                                                )
+
+                                                        }
+
+
+                                                        {
+
+                                                            Number(
+                                                                notification.lu
+                                                            ) === 1
+
+                                                            &&
+
+                                                            <span className="notification-lue">
+
+                                                                &nbsp; ✓ Lue
+
+                                                            </span>
+
+                                                        }
+
+                                                    </small>
+
+
+                                                    {/* ==========================
+                                                        ACTIONS
+                                                    ========================== */}
+
+                                                    {
+
+                                                        menuOuvert ===
+                                                        notification.id_notification
+
+                                                        &&
+
+                                                        <div
+                                                            className="notification-actions"
+                                                        >
+
+                                                            {
+
+                                                                notification.lu === 0
+
+                                                                &&
+
+                                                                <span
+
+                                                                    onClick={
+                                                                        (e) => {
+
+                                                                            e.stopPropagation();
+
+                                                                            marquerCommeLu(
+                                                                                notification.id_notification
+                                                                            );
+
+                                                                        }
+                                                                    }
+
+                                                                >
+
+                                                                    <FaEye />
+
+                                                                    Marquer comme lue
+
+                                                                </span>
+
+                                                            }
+
+
+                                                            {
+
+                                                                estPaiement
+
+                                                                &&
+
+                                                                <span
+
+                                                                    onClick={
+                                                                        (e) => {
+
+                                                                            e.stopPropagation();
+
+                                                                            navigate(
+                                                                                "/paiements"
+                                                                            );
+
+                                                                        }
+                                                                    }
+
+                                                                >
+
+                                                                    <FaCreditCard />
+
+                                                                    Voir les paiements
+
+                                                                </span>
+
+                                                            }
+
+
+                                                            <span
+
+                                                                className="supprimer-text"
+
+                                                                onClick={
+                                                                    (e) => {
+
+                                                                        e.stopPropagation();
+
+                                                                        supprimerNotification(
+                                                                            notification.id_notification
+                                                                        );
+
+                                                                    }
+                                                                }
+
+                                                            >
+
+                                                                <FaTrash />
+
+                                                                Supprimer
+
+                                                            </span>
+
+                                                        </div>
+
+                                                    }
+
+
+                                                </div>
+
+
+                                            </div>
+
+                                        );
+
+                                    }
+
+                                )
+
+                            }
+
+                        </div>
+
+                    )
+
             }
 
+
+            {/* ==========================
+                ANCIENNES NOTIFICATIONS
+            ========================== */}
+
+            {
+
+                notifications.length > 5
+
+                &&
+
+                <div className="notification-plus">
+
+                    <span
+
+                        onClick={() =>
+                            setAfficherAnciens(
+                                !afficherAnciens
+                            )
+                        }
+
+                    >
+
+                        {
+
+                            afficherAnciens
+
+                                ?
+
+                                "Afficher les notifications récentes"
+
+                                :
+
+                                "Afficher les anciennes notifications"
+
+                        }
+
+                    </span>
+
+                </div>
+
+            }
 
 
         </div>
 
-
     );
-
 
 }
 
 
 export default Notifications;
+

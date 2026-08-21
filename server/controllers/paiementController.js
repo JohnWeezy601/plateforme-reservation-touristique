@@ -3,6 +3,7 @@ const db = require("../db");
 
 // ==================================
 // Ajouter paiement avec preuve
+// + Notification administrateur
 // ==================================
 
 exports.createPaiement = async (req, res) => {
@@ -29,6 +30,29 @@ exports.createPaiement = async (req, res) => {
         const preuve = req.file
             ? req.file.filename
             : null;
+
+
+        // ==================================
+        // PREUVE OBLIGATOIRE
+        // Mobile Money + Virement
+        // ==================================
+
+        if (
+            (
+                mode_paiement === "Mobile Money" ||
+                mode_paiement === "Virement"
+            ) &&
+            !preuve
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "Une preuve de paiement est obligatoire pour ce mode de paiement."
+
+            });
+
+        }
 
 
         // ==================================
@@ -87,18 +111,150 @@ exports.createPaiement = async (req, res) => {
         );
 
 
+        const idPaiement = result.insertId;
+
+
         console.log(
             "Paiement créé avec le statut En attente :",
-            result.insertId
+            idPaiement
         );
 
 
-        // IMPORTANT :
-        // AUCUNE NOTIFICATION ICI.
-        //
-        // Le paiement vient juste d'être envoyé.
-        // L'administrateur doit d'abord le vérifier.
+        // ==================================
+        // RÉCUPÉRER LES INFORMATIONS
+        // DE LA RÉSERVATION ET DU CLIENT
+        // ==================================
 
+        const [reservation] = await db.query(
+
+            `
+
+            SELECT
+
+                r.id_reservation,
+                r.id_utilisateur,
+
+                u.nom,
+                u.prenom,
+
+                o.titre
+
+            FROM reservation r
+
+            INNER JOIN utilisateur u
+                ON r.id_utilisateur = u.id_utilisateur
+
+            INNER JOIN offre o
+                ON r.id_offre = o.id_offre
+
+            WHERE r.id_reservation = ?
+
+            LIMIT 1
+
+            `,
+
+            [id_reservation]
+
+        );
+
+
+        // ==================================
+        // VÉRIFIER LA RÉSERVATION
+        // ==================================
+
+        if (reservation.length === 0) {
+
+            console.log(
+                "Réservation introuvable pour le paiement :",
+                id_reservation
+            );
+
+        }
+
+        else {
+
+            const client = reservation[0];
+
+
+            // ==================================
+            // RÉCUPÉRER LES ADMINISTRATEURS
+            // ==================================
+
+            const [administrateurs] = await db.query(
+
+                `
+
+                SELECT id_utilisateur
+
+                FROM utilisateur
+
+                WHERE role = 'Administrateur'
+
+                `
+
+            );
+
+
+            console.log(
+                "Administrateurs trouvés :",
+                administrateurs.length
+            );
+
+
+            // ==================================
+            // CRÉER UNE NOTIFICATION
+            // POUR CHAQUE ADMINISTRATEUR
+            // ==================================
+
+            for (const admin of administrateurs) {
+
+                await db.query(
+
+                    `
+
+                    INSERT INTO notification
+
+                    (
+                        id_utilisateur,
+                        titre,
+                        message,
+                        type,
+                        lien
+                    )
+
+                    VALUES (?, ?, ?, ?, ?)
+
+                    `,
+
+                    [
+
+                        admin.id_utilisateur,
+
+                        "Nouveau paiement",
+
+                        `Le client ${client.prenom} ${client.nom} vient d'effectuer un paiement de ${Number(montant).toLocaleString("fr-FR")} Ar pour la réservation #${id_reservation}. Mode : ${mode_paiement}. Paiement en attente de validation.`,
+
+                        "Paiement",
+
+                        "/paiements"
+
+                    ]
+
+                );
+
+            }
+
+
+            console.log(
+                "Notification(s) administrateur créée(s)."
+            );
+
+        }
+
+
+        // ==================================
+        // RÉPONSE
+        // ==================================
 
         res.json({
 
@@ -106,7 +262,7 @@ exports.createPaiement = async (req, res) => {
                 "Paiement envoyé avec succès",
 
             id_paiement:
-                result.insertId,
+                idPaiement,
 
             preuve:
                 preuve
@@ -137,6 +293,7 @@ exports.createPaiement = async (req, res) => {
     }
 
 };
+
 
 
 
