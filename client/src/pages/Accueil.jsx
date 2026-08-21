@@ -28,11 +28,79 @@ function Accueil() {
     const [destinations, setDestinations] = useState([]);
     const [offres, setOffres] = useState([]);
 
-    const [loadingDestinations, setLoadingDestinations] = useState(true);
-    const [loadingOffres, setLoadingOffres] = useState(true);
+    const [loadingDestinations, setLoadingDestinations] =
+        useState(true);
 
-    const [errorDestinations, setErrorDestinations] = useState("");
-    const [errorOffres, setErrorOffres] = useState("");
+    const [loadingOffres, setLoadingOffres] =
+        useState(true);
+
+    const [errorDestinations, setErrorDestinations] =
+        useState("");
+
+    const [errorOffres, setErrorOffres] =
+        useState("");
+
+    const [videosDisponibles, setVideosDisponibles] =
+        useState([]);
+
+    const [videoPrincipale, setVideoPrincipale] =
+        useState(null);
+
+
+    /* =========================================================
+       VIDEOS ACCUEIL
+       
+       IMPORTANT :
+       Les fichiers sont dans :
+       client/public/videos-web/
+       
+       Donc les URLs commencent par :
+       /videos-web/
+    ========================================================= */
+
+    const videosAccueil = [
+
+        {
+            fichier: "/videos-web/lemurien.mp4",
+            categorie: "Nature",
+            titre: "La faune de Madagascar",
+            description:
+                "Découvrez la richesse exceptionnelle de la faune malgache."
+        },
+
+        {
+            fichier: "/videos-web/ville.mp4",
+            categorie: "Ville",
+            titre: "Découvrez les villes",
+            description:
+                "Explorez les villes et l'ambiance des destinations malgaches."
+        },
+
+        {
+            fichier: "/videos-web/ranomafana.mp4",
+            categorie: "Destination",
+            titre: "Ranomafana",
+            description:
+                "Découvrez les paysages et les merveilles naturelles de Ranomafana."
+        },
+
+        {
+            fichier: "/videos-web/hotel.mp4",
+            categorie: "Hébergement",
+            titre: "Séjournez confortablement",
+            description:
+                "Découvrez les hébergements et les espaces conçus pour votre séjour."
+        },
+
+        {
+            fichier: "/videos-web/nature.mp4",
+            categorie: "Nature",
+            titre: "Évasion et paysages",
+            description:
+                "Laissez-vous séduire par les paysages exceptionnels de Madagascar."
+        }
+
+    ];
 
 
     /* =========================================================
@@ -81,9 +149,9 @@ function Accueil() {
             return null;
         }
 
-        /*
-         * Image Cloudinary ou URL complète
-         */
+
+        /* URL Cloudinary ou URL complète */
+
         if (
             imageString.startsWith("http://") ||
             imageString.startsWith("https://")
@@ -91,13 +159,13 @@ function Accueil() {
             return imageString;
         }
 
+
         const serverUrl =
             import.meta.env.VITE_SERVER_URL || "";
 
 
-        /*
-         * Ancien système /uploads
-         */
+        /* Ancien système /uploads */
+
         if (imageString.startsWith("/uploads/")) {
 
             return `${serverUrl}${imageString}`;
@@ -105,9 +173,8 @@ function Accueil() {
         }
 
 
-        /*
-         * Autre URL locale commençant par /
-         */
+        /* Autre URL locale */
+
         if (imageString.startsWith("/")) {
 
             return `${serverUrl}${imageString}`;
@@ -115,15 +182,14 @@ function Accueil() {
         }
 
 
-        /*
-         * Nom de fichier uniquement
-         */
+        /* Nom de fichier uniquement */
+
         return `${serverUrl}/uploads/${imageString}`;
     };
 
 
     /* =========================================================
-       IMAGE DE REMPLACEMENT
+       ERREUR IMAGE
     ========================================================= */
 
     const handleImageError = (event) => {
@@ -134,63 +200,151 @@ function Accueil() {
 
         event.currentTarget.style.display = "none";
 
-        const parent = event.currentTarget.parentElement;
+        const parent =
+            event.currentTarget.parentElement;
 
         if (parent) {
 
-            parent.classList.add("image-load-error");
+            parent.classList.add(
+                "image-load-error"
+            );
 
         }
     };
 
 
     /* =========================================================
-       VIDEOS ACCUEIL
+       VERIFIER LES VIDEOS DISPONIBLES
+       
+       On vérifie réellement chaque fichier.
+       
+       Les vidéos inexistantes sont ignorées.
+       Les vidéos disponibles sont affichées dans le montage.
     ========================================================= */
 
-    const videosAccueil = [
+    useEffect(() => {
 
-        {
-            fichier: "/videos/lemurien.mp4",
-            categorie: "Nature",
-            titre: "La faune de Madagascar",
-            description:
-                "Découvrez la richesse exceptionnelle de la faune malgache."
-        },
+        let actif = true;
 
-        {
-            fichier: "/videos/ville.mp4",
-            categorie: "Ville",
-            titre: "Découvrez les villes",
-            description:
-                "Explorez les villes et l'ambiance de nouvelles destinations."
-        },
 
-        {
-            fichier: "/videos/ranomafana.mp4",
-            categorie: "Destination",
-            titre: "Ranomafana",
-            description:
-                "Découvrez les paysages et les merveilles naturelles."
-        },
+        const verifierVideos = async () => {
 
-        {
-            fichier: "/videos/hotel.mp4",
-            categorie: "Hébergement",
-            titre: "Séjournez confortablement",
-            description:
-                "Découvrez les chambres et les hébergements disponibles."
-        },
+            const resultats =
+                await Promise.all(
 
-        {
-            fichier: "/videos/nature.mp4",
-            categorie: "Nature",
-            titre: "Évasion et paysages",
-            description:
-                "Laissez-vous séduire par des paysages exceptionnels."
-        }
+                    videosAccueil.map(
+                        (video) => {
 
-    ];
+                            return new Promise((resolve) => {
+
+                                const videoElement =
+                                    document.createElement("video");
+
+
+                                let termine = false;
+
+
+                                const terminer = (resultat) => {
+
+                                    if (termine) {
+                                        return;
+                                    }
+
+                                    termine = true;
+
+                                    resolve(resultat);
+
+                                };
+
+
+                                videoElement.preload =
+                                    "metadata";
+
+
+                                videoElement.muted = true;
+
+
+                                videoElement.onloadedmetadata =
+                                    () => {
+
+                                        terminer(video);
+
+                                    };
+
+
+                                videoElement.oncanplay =
+                                    () => {
+
+                                        terminer(video);
+
+                                    };
+
+
+                                videoElement.onerror =
+                                    () => {
+
+                                        terminer(null);
+
+                                    };
+
+
+                                videoElement.src =
+                                    video.fichier;
+
+
+                                videoElement.load();
+
+                            });
+
+                        }
+                    )
+                );
+
+
+            if (!actif) {
+                return;
+            }
+
+
+            const videosValides =
+                resultats.filter(Boolean);
+
+
+            setVideosDisponibles(
+                videosValides
+            );
+
+
+            /*
+             * Première vidéo = vidéo principale
+             */
+
+            if (videosValides.length > 0) {
+
+                setVideoPrincipale(
+                    videosValides[0]
+                );
+
+            }
+            else {
+
+                setVideoPrincipale(null);
+
+            }
+
+        };
+
+
+        verifierVideos();
+
+
+        return () => {
+
+            actif = false;
+
+        };
+
+    }, []);
 
 
     /* =========================================================
@@ -201,55 +355,65 @@ function Accueil() {
 
         let actif = true;
 
+
         const chargerDestinations = async () => {
 
             try {
 
                 setLoadingDestinations(true);
+
                 setErrorDestinations("");
+
 
                 const response =
                     await api.get("/destinations");
+
 
                 console.log(
                     "Destinations récupérées :",
                     response.data
                 );
 
-                let data = response.data;
+
+                let data =
+                    response.data;
 
 
-                /*
-                 * Réponse :
-                 * { destinations: [...] }
-                 */
+                /* { destinations: [...] } */
+
                 if (
                     data &&
-                    Array.isArray(data.destinations)
+                    Array.isArray(
+                        data.destinations
+                    )
                 ) {
 
-                    data = data.destinations;
+                    data =
+                        data.destinations;
 
                 }
 
 
-                /*
-                 * Réponse :
-                 * { data: [...] }
-                 */
+                /* { data: [...] } */
+
                 else if (
                     data &&
-                    Array.isArray(data.data)
+                    Array.isArray(
+                        data.data
+                    )
                 ) {
 
-                    data = data.data;
+                    data =
+                        data.data;
 
                 }
 
 
                 if (actif) {
 
-                    if (Array.isArray(data)) {
+                    if (
+                        Array.isArray(data)
+                    ) {
 
                         setDestinations(data);
 
@@ -270,11 +434,13 @@ function Accueil() {
                     error
                 );
 
+
                 if (actif) {
 
                     setErrorDestinations(
                         "Impossible de charger les destinations."
                     );
+
 
                     setDestinations([]);
 
@@ -285,7 +451,9 @@ function Accueil() {
 
                 if (actif) {
 
-                    setLoadingDestinations(false);
+                    setLoadingDestinations(
+                        false
+                    );
 
                 }
 
@@ -314,55 +482,65 @@ function Accueil() {
 
         let actif = true;
 
+
         const chargerOffres = async () => {
 
             try {
 
                 setLoadingOffres(true);
+
                 setErrorOffres("");
+
 
                 const response =
                     await api.get("/offres");
+
 
                 console.log(
                     "Offres récupérées :",
                     response.data
                 );
 
-                let data = response.data;
+
+                let data =
+                    response.data;
 
 
-                /*
-                 * Réponse :
-                 * { offres: [...] }
-                 */
+                /* { offres: [...] } */
+
                 if (
                     data &&
-                    Array.isArray(data.offres)
+                    Array.isArray(
+                        data.offres
+                    )
                 ) {
 
-                    data = data.offres;
+                    data =
+                        data.offres;
 
                 }
 
 
-                /*
-                 * Réponse :
-                 * { data: [...] }
-                 */
+                /* { data: [...] } */
+
                 else if (
                     data &&
-                    Array.isArray(data.data)
+                    Array.isArray(
+                        data.data
+                    )
                 ) {
 
-                    data = data.data;
+                    data =
+                        data.data;
 
                 }
 
 
                 if (actif) {
 
-                    if (Array.isArray(data)) {
+                    if (
+                        Array.isArray(data)
+                    ) {
 
                         setOffres(data);
 
@@ -383,11 +561,13 @@ function Accueil() {
                     error
                 );
 
+
                 if (actif) {
 
                     setErrorOffres(
                         "Impossible de charger les offres."
                     );
+
 
                     setOffres([]);
 
@@ -398,7 +578,9 @@ function Accueil() {
 
                 if (actif) {
 
-                    setLoadingOffres(false);
+                    setLoadingOffres(
+                        false
+                    );
 
                 }
 
@@ -426,8 +608,22 @@ function Accueil() {
     const destinationsAffichees =
         destinations.slice(0, 3);
 
+
     const offresAffichees =
         offres.slice(0, 6);
+
+
+    /*
+     * Les vidéos secondaires :
+     * toutes les vidéos sauf la principale.
+     */
+
+    const videosSecondaires =
+        videosDisponibles.filter(
+            (video) =>
+                video.fichier !==
+                videoPrincipale?.fichier
+        );
 
 
     /* =========================================================
@@ -516,7 +712,7 @@ function Accueil() {
 
 
             {/* =====================================================
-                VIDEOS
+                MONTAGE VIDEO
             ===================================================== */}
 
             <section className="videos-section">
@@ -536,9 +732,9 @@ function Accueil() {
 
 
                         <p>
-                            Découvrez des paysages, des villes,
-                            des expériences et des hébergements
-                            qui pourraient être votre prochaine destination.
+                            Découvrez Madagascar à travers un
+                            montage de paysages, de villes,
+                            de nature et d'expériences.
                         </p>
 
                     </div>
@@ -546,93 +742,152 @@ function Accueil() {
                 </div>
 
 
-                <div className="videos-showcase">
+                {videosDisponibles.length === 0 ? (
+
+                    /* =================================================
+                       AUCUNE VIDEO
+                    ================================================= */
+
+                    <div className="video-empty-state">
+
+                        <div className="video-empty-icon">
+
+                            <FaGlobeAfrica />
+
+                        </div>
 
 
-                    {/* GRANDE VIDEO */}
-
-                    <div className="video-main-card">
-
-                        <video
-                            src={videosAccueil[0].fichier}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="metadata"
-                        />
+                        <h3>
+                            Découvrez bientôt nos vidéos
+                        </h3>
 
 
-                        <div className="video-main-overlay"></div>
+                        <p>
+                            Notre sélection de clips touristiques
+                            sera bientôt disponible.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    /* =================================================
+                       MONTAGE
+                    ================================================= */
+
+                    <div className="video-montage">
 
 
-                        <div className="video-card-content">
+                        {/* =============================================
+                            VIDEO PRINCIPALE
+                        ============================================= */}
 
-                            <span>
-                                {videosAccueil[0].categorie}
-                            </span>
+                        {videoPrincipale && (
+
+                            <div
+                                className="video-montage-card video-montage-main"
+                            >
+
+                                <video
+                                    src={
+                                        videoPrincipale.fichier
+                                    }
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    preload="metadata"
+                                />
 
 
-                            <h3>
-                                {videosAccueil[0].titre}
-                            </h3>
+                                <div className="video-montage-overlay"></div>
 
 
-                            <p>
-                                {videosAccueil[0].description}
-                            </p>
+                                <div className="video-montage-content">
+
+                                    <span className="video-category">
+
+                                        {videoPrincipale.categorie}
+
+                                    </span>
+
+
+                                    <h3>
+
+                                        {videoPrincipale.titre}
+
+                                    </h3>
+
+
+                                    <p>
+
+                                        {videoPrincipale.description}
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        )}
+
+
+                        {/* =============================================
+                            VIDEOS SECONDAIRES
+                        ============================================= */}
+
+                        <div className="video-montage-side">
+
+                            {videosSecondaires.map(
+                                (video, index) => (
+
+                                    <div
+                                        className={`video-montage-card video-montage-small video-montage-small-${index + 1}`}
+                                        key={`${video.fichier}-${index}`}
+                                    >
+
+                                        <video
+                                            src={
+                                                video.fichier
+                                            }
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            preload="metadata"
+                                        />
+
+
+                                        <div className="video-montage-overlay"></div>
+
+
+                                        <div className="video-montage-content">
+
+                                            <span className="video-category">
+
+                                                {video.categorie}
+
+                                            </span>
+
+
+                                            <h3>
+
+                                                {video.titre}
+
+                                            </h3>
+
+                                        </div>
+
+                                    </div>
+
+                                )
+                            )}
 
                         </div>
 
                     </div>
 
-
-                    {/* PETITES VIDEOS */}
-
-                    <div className="videos-side-grid">
-
-                        {videosAccueil
-                            .slice(1)
-                            .map((video, index) => (
-
-                                <div
-                                    className="video-small-card"
-                                    key={`${video.fichier}-${index}`}
-                                >
-
-                                    <video
-                                        src={video.fichier}
-                                        autoPlay
-                                        muted
-                                        loop
-                                        playsInline
-                                        preload="metadata"
-                                    />
-
-
-                                    <div className="video-small-overlay"></div>
-
-
-                                    <div className="video-small-content">
-
-                                        <span>
-                                            {video.categorie}
-                                        </span>
-
-
-                                        <h3>
-                                            {video.titre}
-                                        </h3>
-
-                                    </div>
-
-                                </div>
-
-                            ))}
-
-                    </div>
-
-                </div>
+                )}
 
             </section>
 
@@ -765,7 +1020,9 @@ function Accueil() {
                                                 alt={nom}
                                                 className="destination-image"
                                                 loading="lazy"
-                                                onError={handleImageError}
+                                                onError={
+                                                    handleImageError
+                                                }
                                             />
 
                                         ) : (
@@ -947,9 +1204,6 @@ function Accueil() {
                                         key={id || index}
                                     >
 
-
-                                        {/* IMAGE */}
-
                                         <div className="offer-image">
 
                                             {image ? (
@@ -958,7 +1212,9 @@ function Accueil() {
                                                     src={image}
                                                     alt={titre}
                                                     loading="lazy"
-                                                    onError={handleImageError}
+                                                    onError={
+                                                        handleImageError
+                                                    }
                                                 />
 
                                             ) : (
@@ -990,6 +1246,7 @@ function Accueil() {
                                                 onClick={(event) => {
 
                                                     event.preventDefault();
+
                                                     event.stopPropagation();
 
                                                 }}
@@ -1002,10 +1259,7 @@ function Accueil() {
                                         </div>
 
 
-                                        {/* CONTENU */}
-
                                         <div className="offer-content">
-
 
                                             <span className="offer-location">
 
@@ -1022,7 +1276,6 @@ function Accueil() {
 
 
                                             <div className="offer-info">
-
 
                                                 {offre.capacite !==
                                                     undefined &&
@@ -1077,7 +1330,6 @@ function Accueil() {
 
 
                                             <div className="offer-bottom">
-
 
                                                 <div className="offer-price">
 
@@ -1149,7 +1401,6 @@ function Accueil() {
 
                 <div className="advantages-container">
 
-
                     <div className="advantages-intro">
 
                         <span className="section-label">
@@ -1192,7 +1443,6 @@ function Accueil() {
 
 
                     <div className="advantages-grid">
-
 
                         <div className="advantage-card">
 
@@ -1308,7 +1558,6 @@ function Accueil() {
 
                 <div className="steps-grid">
 
-
                     <div className="step-card">
 
                         <span className="step-number">
@@ -1402,7 +1651,6 @@ function Accueil() {
 
                 <div className="ia-content">
 
-
                     <div className="ia-icon">
 
                         <FaRobot />
@@ -1459,7 +1707,6 @@ function Accueil() {
 
                 <div className="contact-content">
 
-
                     <span className="contact-label">
                         BESOIN D'AIDE ?
                     </span>
@@ -1487,7 +1734,6 @@ function Accueil() {
 
                     <div className="contact-buttons">
 
-
                         <Link
                             to="/contact"
                             className="contact-primary"
@@ -1506,7 +1752,9 @@ function Accueil() {
                             onClick={() => {
 
                                 window.dispatchEvent(
-                                    new Event("open-chatbot")
+                                    new Event(
+                                        "open-chatbot"
+                                    )
                                 );
 
                             }}
@@ -1533,7 +1781,6 @@ function Accueil() {
                 </div>
 
             </section>
-
 
         </div>
 
