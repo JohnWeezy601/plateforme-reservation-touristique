@@ -1,9 +1,11 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
-    FaGlobeAfrica,
+    FaSearch,
     FaMapMarkerAlt,
+    FaArrowRight,
     FaHotel,
     FaStar,
     FaShieldAlt,
@@ -11,46 +13,15 @@ import {
     FaCreditCard,
     FaRobot,
     FaHeart,
-    FaArrowRight,
-    FaPlay,
+    FaGlobeAfrica,
     FaCheckCircle,
+    FaPlay,
     FaCalendarAlt,
-    FaUsers,
-    FaSearch
+    FaUsers
 } from "react-icons/fa";
 
 import api from "../api/api";
-
 import "./Accueil.css";
-
-
-/* =========================================================
-   URL IMAGE
-========================================================= */
-
-const getImageUrl = (image) => {
-
-    if (!image) {
-        return null;
-    }
-
-    if (
-        image.startsWith("http://") ||
-        image.startsWith("https://")
-    ) {
-        return image;
-    }
-
-    if (image.startsWith("/uploads/")) {
-        return image;
-    }
-
-    if (image.startsWith("/")) {
-        return image;
-    }
-
-    return `/uploads/${image}`;
-};
 
 
 /* =========================================================
@@ -73,7 +44,75 @@ const formatPrixEuro = (prix) => {
         return prix;
     }
 
-    return `${nombre.toLocaleString("fr-FR")} €`;
+    return `${nombre.toLocaleString("fr-FR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })} €`;
+};
+
+
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
+const formatDate = (date) => {
+
+    if (!date) {
+        return null;
+    }
+
+    const dateFormatee = new Date(date);
+
+    if (Number.isNaN(dateFormatee.getTime())) {
+        return date;
+    }
+
+    return dateFormatee.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    });
+};
+
+
+/* =========================================================
+   CONSTRUIRE URL IMAGE
+========================================================= */
+
+const getImageUrl = (image) => {
+
+    if (!image) {
+        return null;
+    }
+
+    /*
+     * URL Cloudinary ou autre URL complète
+     */
+    if (
+        image.startsWith("http://") ||
+        image.startsWith("https://")
+    ) {
+        return image;
+    }
+
+    /*
+     * Si l'API retourne déjà /uploads/...
+     */
+    if (image.startsWith("/uploads/")) {
+        return `${import.meta.env.VITE_SERVER_URL}${image}`;
+    }
+
+    /*
+     * Si l'API retourne /image.jpg
+     */
+    if (image.startsWith("/")) {
+        return `${import.meta.env.VITE_SERVER_URL}${image}`;
+    }
+
+    /*
+     * Si l'API retourne seulement image.jpg
+     */
+    return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
 };
 
 
@@ -85,50 +124,71 @@ const videoItems = [
 
     {
         id: 1,
+
         src: "/videos-web/lemurien.mp4",
+
         category: "FAUNE",
+
         title: "À la rencontre des lémuriens",
+
         description:
             "Découvrez l'une des espèces les plus emblématiques de Madagascar."
     },
 
     {
         id: 2,
+
         src: "/videos-web/nature.mp4",
+
         category: "NATURE",
+
         title: "La nature de Madagascar",
+
         description:
             "Explorez des paysages naturels exceptionnels au cœur de Madagascar."
     },
 
     {
         id: 3,
+
         src: "/videos-web/ranomafana.mp4",
+
         category: "AVENTURE",
+
         title: "Ranomafana",
+
         description:
             "Découvrez les paysages luxuriants et la biodiversité exceptionnelle de Ranomafana."
     },
 
     {
         id: 4,
+
         src: "/videos-web/ville.mp4",
+
         category: "CULTURE",
-        title: "Les villes ",
+
+        title: "Les villes de Madagascar",
+
         description:
             "Découvrez Madagascar à travers ses villes, ses rues et son quotidien."
     },
 
     {
         id: 5,
+
         src: "/videos-web/hotel.mp4",
+
         category: "ÉVASION",
+
         title: "Une expérience exceptionnelle",
+
         description:
-            "Profitez d'un séjour confortable et découvrez une autre façon de voyager ."
+            "Profitez d'un séjour confortable et découvrez une autre façon de voyager."
     }
 
 ];
+
 
 /* =========================================================
    COMPOSANT ACCUEIL
@@ -137,40 +197,84 @@ const videoItems = [
 function Accueil() {
 
     const [destinations, setDestinations] = useState([]);
+
     const [offres, setOffres] = useState([]);
 
-    const [loadingDestinations, setLoadingDestinations] = useState(true);
-    const [loadingOffres, setLoadingOffres] = useState(true);
+    const [loadingDestinations, setLoadingDestinations] =
+        useState(true);
 
-    const [errorDestinations, setErrorDestinations] = useState("");
-    const [errorOffres, setErrorOffres] = useState("");
+    const [loadingOffres, setLoadingOffres] =
+        useState(true);
+
+    const [errorDestinations, setErrorDestinations] =
+        useState("");
+
+    const [errorOffres, setErrorOffres] =
+        useState("");
 
 
     /* =====================================================
-       CHARGEMENT DESTINATIONS
+       CHARGER DESTINATIONS
     ===================================================== */
 
     useEffect(() => {
 
-        const fetchDestinations = async () => {
+        const chargerDestinations = async () => {
 
             try {
 
                 setLoadingDestinations(true);
+
                 setErrorDestinations("");
 
-                const response = await api.get("/destinations");
+                const response =
+                    await api.get("/destinations");
 
-                const data = response.data;
+                console.log(
+                    "Destinations récupérées :",
+                    response.data
+                );
+
+                let data = response.data;
+
+
+                /*
+                 * { destinations: [...] }
+                 */
+
+                if (
+                    data &&
+                    Array.isArray(data.destinations)
+                ) {
+
+                    data = data.destinations;
+
+                }
+
+
+                /*
+                 * { data: [...] }
+                 */
+
+                if (
+                    data &&
+                    Array.isArray(data.data)
+                ) {
+
+                    data = data.data;
+
+                }
+
 
                 if (Array.isArray(data)) {
+
                     setDestinations(data);
-                }
-                else if (Array.isArray(data?.destinations)) {
-                    setDestinations(data.destinations);
+
                 }
                 else {
+
                     setDestinations([]);
+
                 }
 
             }
@@ -185,6 +289,8 @@ function Accueil() {
                     "Impossible de charger les destinations."
                 );
 
+                setDestinations([]);
+
             }
             finally {
 
@@ -195,36 +301,73 @@ function Accueil() {
         };
 
 
-        fetchDestinations();
+        chargerDestinations();
 
     }, []);
 
 
     /* =====================================================
-       CHARGEMENT OFFRES
+       CHARGER OFFRES
     ===================================================== */
 
     useEffect(() => {
 
-        const fetchOffres = async () => {
+        const chargerOffres = async () => {
 
             try {
 
                 setLoadingOffres(true);
+
                 setErrorOffres("");
 
-                const response = await api.get("/offres");
+                const response =
+                    await api.get("/offres");
 
-                const data = response.data;
+                console.log(
+                    "Offres récupérées :",
+                    response.data
+                );
+
+                let data = response.data;
+
+
+                /*
+                 * { offres: [...] }
+                 */
+
+                if (
+                    data &&
+                    Array.isArray(data.offres)
+                ) {
+
+                    data = data.offres;
+
+                }
+
+
+                /*
+                 * { data: [...] }
+                 */
+
+                if (
+                    data &&
+                    Array.isArray(data.data)
+                ) {
+
+                    data = data.data;
+
+                }
+
 
                 if (Array.isArray(data)) {
+
                     setOffres(data);
-                }
-                else if (Array.isArray(data?.offres)) {
-                    setOffres(data.offres);
+
                 }
                 else {
+
                     setOffres([]);
+
                 }
 
             }
@@ -239,6 +382,8 @@ function Accueil() {
                     "Impossible de charger les offres."
                 );
 
+                setOffres([]);
+
             }
             finally {
 
@@ -249,26 +394,34 @@ function Accueil() {
         };
 
 
-        fetchOffres();
+        chargerOffres();
 
     }, []);
 
 
     /* =====================================================
-       DESTINATIONS LIMITÉES
+       DONNÉES AFFICHÉES
     ===================================================== */
 
-    const displayedDestinations =
-        destinations.slice(0, 6);
+    /*
+     * Seulement 3 destinations sur l'accueil
+     */
+
+    const destinationsAffichees =
+        destinations.slice(0, 3);
+
+
+    /*
+     * 6 offres sur l'accueil
+     */
+
+    const offresAffichees =
+        offres.slice(0, 6);
 
 
     /* =====================================================
-       OFFRES LIMITÉES
+       RENDER
     ===================================================== */
-
-    const displayedOffers =
-        offres.slice(0, 6);
-
 
     return (
 
@@ -283,7 +436,9 @@ function Accueil() {
 
                 <div className="hero-overlay"></div>
 
+
                 <div className="hero-content">
+
 
                     <div className="hero-badge">
 
@@ -301,7 +456,7 @@ function Accueil() {
                         Découvrez
 
                         <span>
-                            Madagascar autrement
+                            le monde autrement
                         </span>
 
                     </h1>
@@ -310,8 +465,9 @@ function Accueil() {
                     <p>
 
                         Explorez les plus belles destinations,
+                        découvrez des expériences uniques,
                         trouvez les meilleures offres touristiques
-                        et réservez votre prochaine aventure
+                        et préparez votre prochaine aventure
                         en toute simplicité.
 
                     </p>
@@ -319,13 +475,14 @@ function Accueil() {
 
                     <div className="hero-buttons">
 
+
                         <Link
-                            to="/destinations"
+                            to="/destinations-public"
                             className="hero-primary-btn"
                         >
 
                             <span>
-                                Explorer Madagascar
+                                Explorer les destinations
                             </span>
 
                             <FaArrowRight />
@@ -334,7 +491,7 @@ function Accueil() {
 
 
                         <Link
-                            to="/offres"
+                            to="/offres-public"
                             className="hero-secondary-btn"
                         >
 
@@ -346,11 +503,13 @@ function Accueil() {
 
                         </Link>
 
+
                     </div>
 
                 </div>
 
             </section>
+
 
 
             {/* =================================================
@@ -359,25 +518,27 @@ function Accueil() {
 
             <section className="videos-section">
 
+
                 <div className="videos-cinematic">
 
 
-                    {/* ================================
-                        TEXTE GAUCHE
-                    ================================= */}
+                    {/* =================================================
+                        INTRODUCTION
+                    ================================================= */}
 
                     <div className="videos-cinematic-intro">
 
+
                         <span className="section-label">
 
-                            EXPLOREZ MADAGASCAR
+                            EXPLOREZ LE MONDE
 
                         </span>
 
 
                         <h2>
 
-                            Découvrez Madagascar
+                            Explorez. Voyagez. Vivez
 
                             <span>
                                 autrement.
@@ -397,7 +558,7 @@ function Accueil() {
 
 
                         <Link
-                            to="/destinations"
+                            to="/destinations-public"
                             className="cinematic-discover-button"
                         >
 
@@ -410,9 +571,10 @@ function Accueil() {
                     </div>
 
 
-                    {/* ================================
-                        MUR VIDÉO
-                    ================================= */}
+
+                    {/* =================================================
+                        MUR VIDÉO CINÉMATIQUE
+                    ================================================= */}
 
                     <div className="cinematic-video-window">
 
@@ -429,6 +591,7 @@ function Accueil() {
                                     key={`first-${video.id}`}
                                 >
 
+
                                     <video
                                         src={video.src}
                                         autoPlay
@@ -444,17 +607,21 @@ function Accueil() {
 
                                     <div className="cinematic-video-content">
 
+
                                         <span>
                                             {video.category}
                                         </span>
+
 
                                         <h3>
                                             {video.title}
                                         </h3>
 
+
                                         <p>
                                             {video.description}
                                         </p>
+
 
                                     </div>
 
@@ -463,8 +630,9 @@ function Accueil() {
                             ))}
 
 
+
                             {/* DEUXIÈME SÉRIE
-                                pour créer une boucle continue */}
+                                Pour créer une boucle continue */}
 
                             {videoItems.map((video) => (
 
@@ -474,6 +642,7 @@ function Accueil() {
                                     aria-hidden="true"
                                 >
 
+
                                     <video
                                         src={video.src}
                                         autoPlay
@@ -489,23 +658,28 @@ function Accueil() {
 
                                     <div className="cinematic-video-content">
 
+
                                         <span>
                                             {video.category}
                                         </span>
+
 
                                         <h3>
                                             {video.title}
                                         </h3>
 
+
                                         <p>
                                             {video.description}
                                         </p>
+
 
                                     </div>
 
                                 </article>
 
                             ))}
+
 
                         </div>
 
@@ -514,11 +688,13 @@ function Accueil() {
 
                         <div className="cinematic-bottom-fade"></div>
 
+
                     </div>
 
                 </div>
 
             </section>
+
 
 
             {/* =================================================
@@ -527,28 +703,37 @@ function Accueil() {
 
             <section className="destinations-section">
 
+
                 <div className="section-heading">
 
+
                     <div>
+
 
                         <span className="section-label">
                             DESTINATIONS
                         </span>
 
+
                         <h2>
-                            Des lieux qui font rêver
+                            Explorez de nouveaux horizons
                         </h2>
 
+
                         <p>
-                            Découvrez les destinations
-                            incontournables de Madagascar.
+
+                            Découvrez des destinations
+                            remarquables et préparez votre
+                            prochaine aventure.
+
                         </p>
+
 
                     </div>
 
 
                     <Link
-                        to="/destinations"
+                        to="/destinations-public"
                         className="see-all-link"
                     >
 
@@ -558,7 +743,9 @@ function Accueil() {
 
                     </Link>
 
+
                 </div>
+
 
 
                 {loadingDestinations ? (
@@ -577,7 +764,9 @@ function Accueil() {
 
                     <div className="error-container">
 
-                        <span>⚠️</span>
+                        <span>
+                            ⚠️
+                        </span>
 
                         <p>
                             {errorDestinations}
@@ -585,14 +774,16 @@ function Accueil() {
 
                     </div>
 
-                ) : displayedDestinations.length === 0 ? (
+                ) : destinationsAffichees.length === 0 ? (
 
                     <div className="empty-container">
 
-                        <span>🌍</span>
+                        <span>
+                            🌍
+                        </span>
 
                         <p>
-                            Aucune destination disponible.
+                            Aucune destination disponible pour le moment.
                         </p>
 
                     </div>
@@ -601,8 +792,10 @@ function Accueil() {
 
                     <div className="destination-grid">
 
-                        {displayedDestinations.map(
-                            (destination) => {
+
+                        {destinationsAffichees.map(
+                            (destination, index) => {
+
 
                                 const image =
                                     getImageUrl(
@@ -612,19 +805,19 @@ function Accueil() {
                                     );
 
 
+                                const id =
+                                    destination.id_destination ||
+                                    destination.id;
+
+
                                 return (
 
                                     <Link
-                                        key={
-                                            destination.id_destination ||
-                                            destination.id
-                                        }
-                                        to={`/destinations/${
-                                            destination.id_destination ||
-                                            destination.id
-                                        }`}
+                                        to="/destinations-public"
                                         className="destination-card"
+                                        key={id || index}
                                     >
+
 
                                         {image ? (
 
@@ -636,6 +829,18 @@ function Accueil() {
                                                     "Destination"
                                                 }
                                                 className="destination-image"
+
+                                                onError={(event) => {
+
+                                                    console.error(
+                                                        "Image destination introuvable :",
+                                                        image
+                                                    );
+
+                                                    event.currentTarget.style.display =
+                                                        "none";
+
+                                                }}
                                             />
 
                                         ) : (
@@ -654,15 +859,16 @@ function Accueil() {
 
                                         <div className="destination-content">
 
-                                            <div className="destination-location">
+
+                                            <span className="destination-location">
 
                                                 <FaMapMarkerAlt />
 
-                                                <span>
-                                                    Madagascar
-                                                </span>
+                                                {destination.pays ||
+                                                 destination.country ||
+                                                 "Destination"}
 
-                                            </div>
+                                            </span>
 
 
                                             <h3>
@@ -686,13 +892,14 @@ function Accueil() {
                                             </p>
 
 
-                                            <div className="destination-link">
+                                            <span className="destination-link">
 
                                                 Découvrir
 
                                                 <FaArrowRight />
 
-                                            </div>
+                                            </span>
+
 
                                         </div>
 
@@ -710,34 +917,44 @@ function Accueil() {
             </section>
 
 
+
             {/* =================================================
                 OFFRES
             ================================================= */}
 
             <section className="offers-section">
 
+
                 <div className="section-heading">
 
+
                     <div>
+
 
                         <span className="section-label">
                             NOS OFFRES
                         </span>
 
+
                         <h2>
-                            Préparez votre prochaine aventure
+                            Des séjours pour tous les goûts
                         </h2>
 
+
                         <p>
-                            Des expériences sélectionnées
-                            pour rendre votre séjour inoubliable.
+
+                            Trouvez l'offre idéale pour votre
+                            prochain voyage et profitez d'une
+                            expérience adaptée à vos envies.
+
                         </p>
+
 
                     </div>
 
 
                     <Link
-                        to="/offres"
+                        to="/offres-public"
                         className="see-all-link"
                     >
 
@@ -747,7 +964,9 @@ function Accueil() {
 
                     </Link>
 
+
                 </div>
+
 
 
                 {loadingOffres ? (
@@ -766,7 +985,9 @@ function Accueil() {
 
                     <div className="error-container">
 
-                        <span>⚠️</span>
+                        <span>
+                            ⚠️
+                        </span>
 
                         <p>
                             {errorOffres}
@@ -774,14 +995,16 @@ function Accueil() {
 
                     </div>
 
-                ) : displayedOffers.length === 0 ? (
+                ) : offresAffichees.length === 0 ? (
 
                     <div className="empty-container">
 
-                        <span>🏨</span>
+                        <span>
+                            🏨
+                        </span>
 
                         <p>
-                            Aucune offre disponible.
+                            Aucune offre disponible pour le moment.
                         </p>
 
                     </div>
@@ -790,162 +1013,274 @@ function Accueil() {
 
                     <div className="offers-grid">
 
-                        {displayedOffers.map((offre) => {
 
-                            const image =
-                                getImageUrl(
-                                    offre.image ||
-                                    offre.photo ||
-                                    offre.image_offre
-                                );
+                        {offresAffichees.map(
+                            (offre, index) => {
 
 
-                            return (
-
-                                <article
-                                    key={
-                                        offre.id_offre ||
-                                        offre.id
-                                    }
-                                    className="offer-card"
-                                >
+                                const image =
+                                    getImageUrl(
+                                        offre.image ||
+                                        offre.photo ||
+                                        offre.image_offre
+                                    );
 
 
-                                    <div className="offer-image">
-
-                                        {image ? (
-
-                                            <img
-                                                src={image}
-                                                alt={
-                                                    offre.titre ||
-                                                    offre.nom ||
-                                                    "Offre touristique"
-                                                }
-                                            />
-
-                                        ) : (
-
-                                            <div className="offer-no-image">
-
-                                                <FaHotel />
-
-                                            </div>
-
-                                        )}
+                                const id =
+                                    offre.id_offre ||
+                                    offre.id;
 
 
-                                        <span className="offer-badge">
+                                return (
 
-                                            {
-                                                offre.categorie ||
-                                                "OFFRE TOURISTIQUE"
-                                            }
-
-                                        </span>
+                                    <article
+                                        className="offer-card"
+                                        key={id || index}
+                                    >
 
 
-                                        <button
-                                            type="button"
-                                            className="favorite-button"
-                                            aria-label="Ajouter aux favoris"
-                                        >
+                                        {/* IMAGE */}
 
-                                            <FaHeart />
-
-                                        </button>
-
-                                    </div>
+                                        <div className="offer-image">
 
 
-                                    <div className="offer-content">
+                                            {image ? (
+
+                                                <img
+                                                    src={image}
+                                                    alt={
+                                                        offre.titre ||
+                                                        "Offre touristique"
+                                                    }
+
+                                                    onError={(event) => {
+
+                                                        console.error(
+                                                            "Image offre introuvable :",
+                                                            image
+                                                        );
+
+                                                        event.currentTarget.style.display =
+                                                            "none";
+
+                                                    }}
+                                                />
+
+                                            ) : (
+
+                                                <div className="offer-no-image">
+
+                                                    <FaHotel />
+
+                                                </div>
+
+                                            )}
 
 
-                                        <div className="offer-location">
 
-                                            <FaMapMarkerAlt />
+                                            {offre.categorie && (
 
-                                            <span>
+                                                <span className="offer-badge">
+
+                                                    {offre.categorie}
+
+                                                </span>
+
+                                            )}
+
+
+
+                                            <button
+                                                type="button"
+                                                className="favorite-button"
+
+                                                aria-label="Ajouter aux favoris"
+
+                                                onClick={(event) => {
+
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+
+                                                }}
+                                            >
+
+                                                <FaHeart />
+
+                                            </button>
+
+
+                                        </div>
+
+
+
+                                        {/* CONTENU */}
+
+                                        <div className="offer-content">
+
+
+                                            {/* DESTINATION */}
+
+                                            <span className="offer-location">
+
+                                                <FaMapMarkerAlt />
 
                                                 {
                                                     offre.destination ||
                                                     offre.nom_destination ||
-                                                    "Madagascar"
+                                                    "Destination"
                                                 }
 
                                             </span>
 
-                                        </div>
 
 
-                                        <h3>
+                                            {/* TITRE */}
 
-                                            {
-                                                offre.titre ||
-                                                offre.nom ||
-                                                "Offre touristique"
-                                            }
+                                            <h3>
 
-                                        </h3>
+                                                {
+                                                    offre.titre ||
+                                                    offre.nom ||
+                                                    "Offre touristique"
+                                                }
 
-
-                                        <div className="offer-info">
-
-                                            <span>
-                                                <FaCalendarAlt />
-                                                Séjour touristique
-                                            </span>
-
-                                            <span>
-                                                <FaUsers />
-                                                Disponible
-                                            </span>
-
-                                        </div>
+                                            </h3>
 
 
-                                        <div className="offer-bottom">
 
-                                            <div className="offer-price">
+                                            {/* DESCRIPTION */}
 
-                                                <small>
-                                                    À partir de
-                                                </small>
+                                            <p className="offer-description">
 
-                                                <strong>
+                                                {
+                                                    offre.description ||
+                                                    offre.description_offre ||
+                                                    "Découvrez cette expérience touristique et profitez d'un séjour inoubliable."
+                                                }
 
-                                                    {formatPrixEuro(
-                                                        offre.prix
-                                                    )}
+                                            </p>
 
-                                                </strong>
+
+
+                                            {/* INFORMATIONS */}
+
+                                            <div className="offer-info">
+
+
+                                                {/* CAPACITÉ */}
+
+                                                {(
+                                                    offre.capacite !==
+                                                    null &&
+                                                    offre.capacite !==
+                                                    undefined &&
+                                                    offre.capacite !== ""
+                                                ) && (
+
+                                                    <span>
+
+                                                        <FaUsers />
+
+                                                        {offre.capacite}
+                                                        {" "}
+                                                        {Number(offre.capacite) > 1
+                                                            ? "personnes"
+                                                            : "personne"}
+
+                                                    </span>
+
+                                                )}
+
+
+
+                                                {/* DATE */}
+
+                                                {offre.date_debut && (
+
+                                                    <span>
+
+                                                        <FaCalendarAlt />
+
+                                                        {formatDate(
+                                                            offre.date_debut
+                                                        )}
+
+                                                    </span>
+
+                                                )}
+
+
+
+                                                {/* DISPONIBILITÉ */}
+
+                                                {offre.disponibilite !==
+                                                    undefined && (
+
+                                                    <span>
+
+                                                        <FaCheckCircle />
+
+                                                        Disponible
+
+                                                    </span>
+
+                                                )}
+
 
                                             </div>
 
 
-                                            <Link
-                                                to={`/offres/${
-                                                    offre.id_offre ||
-                                                    offre.id
-                                                }`}
-                                                className="offer-button"
-                                            >
 
-                                                Voir l'offre
+                                            {/* PRIX + BOUTON */}
 
-                                                <FaArrowRight />
+                                            <div className="offer-bottom">
 
-                                            </Link>
+
+                                                <div className="offer-price">
+
+                                                    <small>
+                                                        À partir de
+                                                    </small>
+
+                                                    <strong>
+
+                                                        {formatPrixEuro(
+                                                            offre.prix
+                                                        )}
+
+                                                    </strong>
+
+                                                </div>
+
+
+
+                                                {/* IMPORTANT :
+                                                    route exacte du détail */}
+
+                                                <Link
+                                                    to={`/detail-offre/${id}`}
+                                                    className="offer-button"
+                                                >
+
+                                                    Voir l'offre
+
+                                                    <FaArrowRight />
+
+                                                </Link>
+
+
+                                            </div>
+
 
                                         </div>
 
-                                    </div>
 
-                                </article>
+                                    </article>
 
-                            );
+                                );
 
-                        })}
+                            }
+                        )}
 
                     </div>
 
@@ -954,28 +1289,31 @@ function Accueil() {
             </section>
 
 
+
             {/* =================================================
                 AVANTAGES
             ================================================= */}
 
             <section className="advantages-section">
 
+
                 <div className="advantages-container">
 
 
                     <div className="advantages-intro">
 
+
                         <span className="section-label">
-                            POURQUOI NOUS ?
+                            POURQUOI NOUS CHOISIR ?
                         </span>
 
 
                         <h2>
 
-                            Voyagez
+                            Voyagez en toute
 
                             <span>
-                                en toute confiance.
+                                simplicité.
                             </span>
 
                         </h2>
@@ -984,25 +1322,26 @@ function Accueil() {
                         <p>
 
                             Notre plateforme vous accompagne
-                            à chaque étape pour rendre votre
-                            expérience touristique simple,
-                            sécurisée et agréable.
+                            de la recherche de votre destination
+                            jusqu'à la réservation de votre séjour.
 
                         </p>
 
 
                         <Link
-                            to="/contact"
+                            to="/destinations-public"
                             className="advantages-button"
                         >
 
-                            Besoin d'aide ?
+                            Commencer maintenant
 
                             <FaArrowRight />
 
                         </Link>
 
+
                     </div>
+
 
 
                     <div className="advantages-grid">
@@ -1010,25 +1349,33 @@ function Accueil() {
 
                         <div className="advantage-card">
 
+
                             <div className="advantage-icon">
 
                                 <FaShieldAlt />
 
                             </div>
 
+
                             <h3>
                                 Réservation sécurisée
                             </h3>
 
+
                             <p>
-                                Vos réservations et vos données
-                                sont protégées.
+
+                                Vos réservations sont traitées
+                                de manière fiable et sécurisée.
+
                             </p>
+
 
                         </div>
 
 
+
                         <div className="advantage-card">
+
 
                             <div className="advantage-icon">
 
@@ -1036,39 +1383,26 @@ function Accueil() {
 
                             </div>
 
+
                             <h3>
-                                Paiement sécurisé
+                                Paiement simple
                             </h3>
 
+
                             <p>
-                                Effectuez vos paiements en toute
-                                tranquillité.
+
+                                Profitez d'un processus de paiement
+                                simple et pratique.
+
                             </p>
+
 
                         </div>
 
 
-                        <div className="advantage-card">
-
-                            <div className="advantage-icon">
-
-                                <FaHeadset />
-
-                            </div>
-
-                            <h3>
-                                Assistance
-                            </h3>
-
-                            <p>
-                                Une équipe disponible pour vous
-                                accompagner.
-                            </p>
-
-                        </div>
-
 
                         <div className="advantage-card">
+
 
                             <div className="advantage-icon">
 
@@ -1076,22 +1410,56 @@ function Accueil() {
 
                             </div>
 
+
                             <h3>
-                                Expériences sélectionnées
+                                Offres sélectionnées
                             </h3>
 
+
                             <p>
-                                Des offres et destinations choisies
-                                pour leur qualité.
+
+                                Découvrez des offres touristiques
+                                adaptées à vos besoins.
+
                             </p>
 
+
                         </div>
+
+
+
+                        <div className="advantage-card">
+
+
+                            <div className="advantage-icon">
+
+                                <FaHeadset />
+
+                            </div>
+
+
+                            <h3>
+                                Assistance
+                            </h3>
+
+
+                            <p>
+
+                                Notre équipe reste disponible
+                                pour répondre à vos questions.
+
+                            </p>
+
+
+                        </div>
+
 
                     </div>
 
                 </div>
 
             </section>
+
 
 
             {/* =================================================
@@ -1100,22 +1468,30 @@ function Accueil() {
 
             <section className="steps-section">
 
+
                 <div className="section-title-center">
 
+
                     <span className="section-label">
-                        SIMPLE ET RAPIDE
+                        COMMENT ÇA MARCHE ?
                     </span>
 
+
                     <h2>
-                        Comment ça marche ?
+                        Réservez votre séjour en quelques étapes
                     </h2>
 
+
                     <p>
-                        Quelques étapes suffisent pour préparer
-                        votre prochaine aventure.
+
+                        Un processus simple et rapide pour
+                        organiser votre prochain voyage.
+
                     </p>
 
+
                 </div>
+
 
 
                 <div className="steps-grid">
@@ -1123,9 +1499,11 @@ function Accueil() {
 
                     <div className="step-card">
 
+
                         <span className="step-number">
                             01
                         </span>
+
 
                         <div className="step-icon">
 
@@ -1133,47 +1511,31 @@ function Accueil() {
 
                         </div>
 
+
                         <h3>
                             Recherchez
                         </h3>
 
+
                         <p>
-                            Explorez les destinations et offres
-                            disponibles.
+
+                            Explorez les destinations et les
+                            offres disponibles sur notre plateforme.
+
                         </p>
+
 
                     </div>
 
 
+
                     <div className="step-card">
+
 
                         <span className="step-number">
                             02
                         </span>
 
-                        <div className="step-icon">
-
-                            <FaCalendarAlt />
-
-                        </div>
-
-                        <h3>
-                            Choisissez
-                        </h3>
-
-                        <p>
-                            Sélectionnez l'expérience qui vous
-                            correspond.
-                        </p>
-
-                    </div>
-
-
-                    <div className="step-card">
-
-                        <span className="step-number">
-                            03
-                        </span>
 
                         <div className="step-icon">
 
@@ -1181,20 +1543,59 @@ function Accueil() {
 
                         </div>
 
+
+                        <h3>
+                            Choisissez
+                        </h3>
+
+
+                        <p>
+
+                            Sélectionnez l'offre touristique
+                            qui correspond le mieux à vos besoins.
+
+                        </p>
+
+
+                    </div>
+
+
+
+                    <div className="step-card">
+
+
+                        <span className="step-number">
+                            03
+                        </span>
+
+
+                        <div className="step-icon">
+
+                            <FaCreditCard />
+
+                        </div>
+
+
                         <h3>
                             Réservez
                         </h3>
 
+
                         <p>
-                            Confirmez votre réservation simplement
-                            et rapidement.
+
+                            Effectuez votre réservation et
+                            préparez votre prochain voyage.
+
                         </p>
 
+
                     </div>
+
 
                 </div>
 
             </section>
+
 
 
             {/* =================================================
@@ -1202,6 +1603,7 @@ function Accueil() {
             ================================================= */}
 
             <section className="ia-section">
+
 
                 <div className="ia-content">
 
@@ -1215,25 +1617,31 @@ function Accueil() {
 
                     <div>
 
+
                         <span className="section-label">
                             RECOMMANDATION INTELLIGENTE
                         </span>
+
 
                         <h2>
                             Laissez notre IA vous guider
                         </h2>
 
+
                         <p>
-                            Obtenez des recommandations adaptées
-                            à vos envies pour trouver votre
-                            prochaine destination.
+
+                            Recevez des recommandations
+                            touristiques personnalisées selon
+                            vos préférences.
+
                         </p>
+
 
                     </div>
 
 
                     <Link
-                        to="/recommandation"
+                        to="/recommandations"
                         className="ia-button"
                     >
 
@@ -1243,9 +1651,11 @@ function Accueil() {
 
                     </Link>
 
+
                 </div>
 
             </section>
+
 
 
             {/* =================================================
@@ -1254,22 +1664,24 @@ function Accueil() {
 
             <section className="home-contact">
 
+
                 <div className="contact-overlay"></div>
 
 
                 <div className="contact-content">
 
+
                     <span className="contact-label">
-                        PRÊT À PARTIR ?
+                        BESOIN D'AIDE ?
                     </span>
 
 
                     <h2>
 
-                        Votre prochaine aventure
+                        Préparez votre prochain
 
                         <span>
-                            commence ici.
+                            voyage avec nous.
                         </span>
 
                     </h2>
@@ -1277,47 +1689,74 @@ function Accueil() {
 
                     <p>
 
-                        Explorez Madagascar, choisissez
-                        votre destination et préparez-vous
-                        à vivre une expérience inoubliable.
+                        Explorez de nouvelles destinations,
+                        découvrez des expériences uniques et
+                        préparez-vous à vivre un voyage inoubliable.
 
                     </p>
 
 
+
                     <div className="contact-buttons">
 
-                        <Link
-                            to="/offres"
-                            className="contact-primary"
-                        >
 
-                            Explorer les offres
+                        {/* CONTACT */}
 
-                            <FaArrowRight />
+                        <Link to="/contact">
 
-                        </Link>
+                            <button
+                                type="button"
+                                className="contact-primary"
+                            >
 
+                                Contactez-nous
 
-                        <Link
-                            to="/contact"
-                            className="contact-secondary"
-                        >
+                                <FaArrowRight />
 
-                            Nous contacter
+                            </button>
 
                         </Link>
 
+
+
+                        {/* ASSISTANT CHATBOT FLOTTANT */}
 
                         <button
                             type="button"
                             className="contact-chatbot"
+
+                            onClick={() => {
+
+                                window.dispatchEvent(
+                                    new Event("open-chatbot")
+                                );
+
+                            }}
                         >
 
                             <FaRobot />
 
-                            Assistant IA
+                            Assistant chatbot
 
                         </button>
+
+
+
+                        {/* EXPLORER */}
+
+                        <Link to="/destinations-public">
+
+                            <button
+                                type="button"
+                                className="contact-secondary"
+                            >
+
+                                Explorer
+
+                            </button>
+
+                        </Link>
+
 
                     </div>
 
@@ -1327,8 +1766,11 @@ function Accueil() {
 
 
         </main>
+
     );
+
 }
 
 
 export default Accueil;
+
