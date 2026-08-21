@@ -936,9 +936,9 @@ function Accueil() {
                         </span>
 
 
-                        <h2>
+                        <p>
                             Des séjours pour tous les goûts
-                        </h2>
+                        </p>
 
 
                         <p>
