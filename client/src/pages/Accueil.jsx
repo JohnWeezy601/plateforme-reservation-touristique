@@ -85,7 +85,7 @@ const videoItems = [
 
     {
         id: 1,
-        src: "/videos/lemurien.mp4",
+        src: "/videos-web/lemurien.mp4",
         category: "FAUNE",
         title: "À la rencontre des lémuriens",
         description:
@@ -94,42 +94,41 @@ const videoItems = [
 
     {
         id: 2,
-        src: "/videos/baobab.mp4",
+        src: "/videos-web/nature.mp4",
         category: "NATURE",
-        title: "L'allée des Baobabs",
+        title: "La nature de Madagascar",
         description:
-            "Un paysage mythique au cœur de Madagascar."
+            "Explorez des paysages naturels exceptionnels au cœur de Madagascar."
     },
 
     {
         id: 3,
-        src: "/videos/plage.mp4",
-        category: "OCÉAN",
-        title: "Les plages paradisiaques",
+        src: "/videos-web/ranomafana.mp4",
+        category: "AVENTURE",
+        title: "Ranomafana",
         description:
-            "Des eaux turquoise et des paysages tropicaux exceptionnels."
+            "Découvrez les paysages luxuriants et la biodiversité exceptionnelle de Ranomafana."
     },
 
     {
         id: 4,
-        src: "/videos/tsingy.mp4",
-        category: "AVENTURE",
-        title: "Les Tsingy de Madagascar",
+        src: "/videos-web/ville.mp4",
+        category: "CULTURE",
+        title: "Les villes ",
         description:
-            "Explorez des formations rocheuses parmi les plus spectaculaires."
+            "Découvrez Madagascar à travers ses villes, ses rues et son quotidien."
     },
 
     {
         id: 5,
-        src: "/videos/ocean.mp4",
+        src: "/videos-web/hotel.mp4",
         category: "ÉVASION",
-        title: "Madagascar côté océan",
+        title: "Une expérience exceptionnelle",
         description:
-            "Laissez-vous transporter par les paysages de l'océan Indien."
+            "Profitez d'un séjour confortable et découvrez une autre façon de voyager ."
     }
 
 ];
-
 
 /* =========================================================
    COMPOSANT ACCUEIL
