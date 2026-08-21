@@ -572,40 +572,37 @@ function LoginClient(){
                         CONNEXION GOOGLE
                     ===================================================== */}
 
-                    <div className="google-login-container">
+                   <div className="google-login-container">
 
-                        <GoogleLogin
+    <GoogleLogin
 
-                            onSuccess={
-                                connexionGoogle
-                            }
+        onSuccess={
+            connexionGoogle
+        }
 
-                            onError={() => {
+        onError={() => {
 
-                                console.log(
-                                    "Échec de la connexion Google"
-                                );
+            console.log(
+                "Échec de la connexion Google"
+            );
 
-                                alert(
-                                    "La connexion avec Google a échoué"
-                                );
+            alert(
+                "La connexion avec Google a échoué"
+            );
 
-                            }}
+        }}
 
-                            text="continue_with"
+        text="continue_with"
 
-                            shape="rectangular"
+        shape="rectangular"
 
-                            theme="outline"
+        theme="outline"
 
-                            size="large"
+        size="large"
 
-                            width="100%"
+    />
 
-                        />
-
-                    </div>
-
+</div>
 
                     <div className="register-link">
 

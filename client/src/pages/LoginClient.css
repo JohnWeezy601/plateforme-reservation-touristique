@@ -224,13 +224,11 @@ color:#333;
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    margin-top: 15px;
 }
 
-
-/* Le composant Google génère lui-même son bouton */
 .google-login-container > div {
-    width: 100% !important;
+    width: 100%;
 }
 
 
