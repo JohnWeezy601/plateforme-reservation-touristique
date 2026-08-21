@@ -220,19 +220,20 @@ function PaiementPublic() {
 
 
     // ==========================================
-    // FORMAT PRIX
-    // ==========================================
+// FORMAT PRIX EN EURO
+// ==========================================
 
-    const formatPrix =
-        (prix) => {
+const formatPrix = (prix) => {
 
-            return Number(
-                prix || 0
-            ).toLocaleString(
-                "fr-FR"
-            );
+    return Number(prix || 0).toLocaleString(
+        "fr-FR",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
 
-        };
+};
 
 
     // ==========================================
@@ -792,9 +793,9 @@ function PaiementPublic() {
 
                                 <strong className="success-price">
 
-                                    {formatPrix(
-                                        form.montant
-                                    )} Ar
+                                   {formatPrix(
+                                   form.montant
+                                    )} €
 
                                 </strong>
 
@@ -1653,9 +1654,8 @@ function PaiementPublic() {
                                 <strong>
 
                                     {formatPrix(
-                                        form.montant
-                                    )} Ar
-
+                                    form.montant
+                                     )} €
                                 </strong>
 
                             </div>
@@ -1968,8 +1968,8 @@ function PaiementPublic() {
                                     <strong>
 
                                         {formatPrix(
-                                            reservation.montant_total
-                                        )} Ar
+                                        reservation.montant_total
+                                        )} €
 
                                     </strong>
 

@@ -622,26 +622,19 @@ function Recu() {
                             </strong>
 
 
-                            <span className="montant">
+                           <span className="montant">
 
-
-                                {
-
-                                    Number(
-                                        recu.montant
-                                    )
-                                        .toLocaleString(
-                                            "fr-FR"
-                                        )
-
-                                }
-
-
-                                {" "}Ar
-
+                             {
+                               Number(
+                            recu.montant
+                              )
+                          .toLocaleString(
+                              "fr-FR"
+                              )
+                             }
+                             {" "}€
 
                             </span>
-
 
                         </p>
 

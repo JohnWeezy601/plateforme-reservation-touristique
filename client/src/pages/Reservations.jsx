@@ -751,15 +751,12 @@ alt={reservation.titre}
 
 <span>
 
-{
+    {
+        Number(reservation.prix)
+            .toLocaleString("fr-FR")
+    }
 
-Number(reservation.prix)
-
-.toLocaleString("fr-FR")
-
-}
-
-Ar
+    {" "}€
 
 </span>
 
@@ -828,22 +825,14 @@ reservation.date_reservation
 
 <strong className="money">
 
+    {
+        Number(
+            reservation.montant_total
+        )
+        .toLocaleString("fr-FR")
+    }
 
-{
-
-Number(
-
-reservation.montant_total
-
-)
-
-.toLocaleString("fr-FR")
-
-
-}
-
-Ar
-
+    {" "}€
 
 </strong>
 
