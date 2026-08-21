@@ -943,10 +943,8 @@ function Accueil() {
 
                         <p>
 
-                            Trouvez l'offre idéale pour votre
-                            prochain voyage et profitez d'une
-                            expérience adaptée à vos envies.
-
+                           Trouvez l'offre idéale pour votre prochain voyage.
+                            
                         </p>
 
 
