@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
@@ -35,6 +34,11 @@ function PaiementPublic() {
 
     const navigate = useNavigate();
 
+
+    // ==========================================
+    // ÉTATS
+    // ==========================================
+
     const [reservation, setReservation] = useState(null);
 
     const [preuve, setPreuve] = useState(null);
@@ -42,6 +46,11 @@ function PaiementPublic() {
     const [paiementSucces, setPaiementSucces] = useState(false);
 
     const [envoiEnCours, setEnvoiEnCours] = useState(false);
+
+
+    // ==========================================
+    // FORMULAIRE
+    // ==========================================
 
     const [form, setForm] = useState({
 
@@ -76,11 +85,23 @@ function PaiementPublic() {
                     `/reservations/${id_reservation}`
                 );
 
+
+                console.log(
+                    "Réservation chargée :",
+                    res.data
+                );
+
+
                 setReservation(res.data);
 
+
                 setForm(prev => ({
+
                     ...prev,
-                    montant: res.data.montant_total
+
+                    montant:
+                        res.data.montant_total
+
                 }));
 
             }
@@ -96,71 +117,89 @@ function PaiementPublic() {
 
         };
 
-        chargerReservation();
+
+        if (id_reservation) {
+
+            chargerReservation();
+
+        }
 
     }, [id_reservation]);
 
 
     // ==========================================
-    // MODIFIER LES CHAMPS
+    // MODIFIER UN CHAMP
     // ==========================================
 
     const handleChange = (e) => {
 
-        setForm({
+        const {
+            name,
+            value
+        } = e.target;
 
-            ...form,
 
-            [e.target.name]: e.target.value
+        setForm(prev => ({
 
-        });
+            ...prev,
+
+            [name]: value
+
+        }));
 
     };
 
 
     // ==========================================
-    // CHANGER DE MODE DE PAIEMENT
+    // CHANGER MODE DE PAIEMENT
     // ==========================================
 
     const changerModePaiement = (mode) => {
 
-        setForm({
+        setForm(prev => ({
 
-            ...form,
+            ...prev,
 
             mode_paiement: mode,
 
             operateur: "",
+
             numero_destinataire: "",
+
             nom_destinataire: "",
 
             banque: "",
+
             compte: "",
+
             nom_compte: ""
 
-        });
+        }));
 
+
+        // Nouvelle preuve
         setPreuve(null);
 
     };
 
 
     // ==========================================
-    // CHOISIR OPÉRATEUR MOBILE MONEY
+    // CHOISIR OPÉRATEUR
     // ==========================================
 
     const choisirOperateur = (operateur) => {
 
-        setForm({
+        setForm(prev => ({
 
-            ...form,
+            ...prev,
 
-            operateur: operateur,
+            operateur,
 
             numero_destinataire: "",
+
             nom_destinataire: ""
 
-        });
+        }));
 
     };
 
@@ -179,6 +218,88 @@ function PaiementPublic() {
 
 
     // ==========================================
+    // SÉLECTIONNER PREUVE
+    // ==========================================
+
+    const handlePreuveChange = (e) => {
+
+        const fichier = e.target.files?.[0];
+
+
+        if (!fichier) {
+
+            setPreuve(null);
+
+            return;
+
+        }
+
+
+        // ======================================
+        // TAILLE MAXIMUM : 5 Mo
+        // ======================================
+
+        const tailleMax =
+            5 * 1024 * 1024;
+
+
+        if (fichier.size > tailleMax) {
+
+            alert(
+                "Le fichier est trop volumineux. Taille maximale : 5 Mo."
+            );
+
+
+            e.target.value = "";
+
+            setPreuve(null);
+
+            return;
+
+        }
+
+
+        // ======================================
+        // TYPES AUTORISÉS
+        // ======================================
+
+        const typesAutorises = [
+
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/webp",
+            "application/pdf"
+
+        ];
+
+
+        if (
+            !typesAutorises.includes(
+                fichier.type
+            )
+        ) {
+
+            alert(
+                "Format non autorisé. Utilisez JPG, PNG, WEBP ou PDF."
+            );
+
+
+            e.target.value = "";
+
+            setPreuve(null);
+
+            return;
+
+        }
+
+
+        setPreuve(fichier);
+
+    };
+
+
+    // ==========================================
     // ENVOYER PAIEMENT
     // ==========================================
 
@@ -186,14 +307,96 @@ function PaiementPublic() {
 
         e.preventDefault();
 
-        // Preuve obligatoire
+
+        // ======================================
+        // VALIDATION MONTANT
+        // ======================================
+
         if (
+            !form.montant ||
+            Number(form.montant) <= 0
+        ) {
+
+            alert(
+                "Le montant du paiement est invalide."
+            );
+
+            return;
+
+        }
+
+
+        // ======================================
+        // VALIDATION MOBILE MONEY
+        // ======================================
+
+        if (
+            form.mode_paiement ===
+            "Mobile Money"
+        ) {
+
+
+            if (!form.operateur) {
+
+                alert(
+                    "Veuillez choisir un opérateur Mobile Money."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !form.numero_destinataire
+                    .trim()
+            ) {
+
+                alert(
+                    "Veuillez saisir le numéro destinataire."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !form.nom_destinataire
+                    .trim()
+            ) {
+
+                alert(
+                    "Veuillez saisir le nom du bénéficiaire."
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        // ======================================
+        // PREUVE OBLIGATOIRE
+        // ======================================
+
+        if (
+
             (
-                form.mode_paiement === "Mobile Money" ||
-                form.mode_paiement === "Virement"
+                form.mode_paiement ===
+                "Mobile Money"
+
+                ||
+
+                form.mode_paiement ===
+                "Virement"
             )
+
             &&
+
             !preuve
+
         ) {
 
             alert(
@@ -205,42 +408,35 @@ function PaiementPublic() {
         }
 
 
-        // Mobile Money
-        if (
-            form.mode_paiement === "Mobile Money"
-            &&
-            !form.operateur
-        ) {
-
-            alert(
-                "Veuillez choisir un opérateur Mobile Money."
-            );
-
-            return;
-
-        }
-
-
         setEnvoiEnCours(true);
+
 
         try {
 
+            // ==================================
+            // FORMDATA
+            // ==================================
+
             const data = new FormData();
+
 
             data.append(
                 "id_reservation",
                 id_reservation
             );
 
+
             data.append(
                 "montant",
                 form.montant
             );
 
+
             data.append(
                 "mode_paiement",
                 form.mode_paiement
             );
+
 
             data.append(
                 "statut",
@@ -253,7 +449,8 @@ function PaiementPublic() {
             // ==================================
 
             if (
-                form.mode_paiement === "Mobile Money"
+                form.mode_paiement ===
+                "Mobile Money"
             ) {
 
                 data.append(
@@ -261,10 +458,12 @@ function PaiementPublic() {
                     form.operateur
                 );
 
+
                 data.append(
                     "numero_destinataire",
                     form.numero_destinataire
                 );
+
 
                 data.append(
                     "nom_destinataire",
@@ -279,7 +478,8 @@ function PaiementPublic() {
             // ==================================
 
             if (
-                form.mode_paiement === "Virement"
+                form.mode_paiement ===
+                "Virement"
             ) {
 
                 data.append(
@@ -287,10 +487,12 @@ function PaiementPublic() {
                     form.banque
                 );
 
+
                 data.append(
                     "compte",
                     form.compte
                 );
+
 
                 data.append(
                     "nom_compte",
@@ -315,20 +517,70 @@ function PaiementPublic() {
 
 
             // ==================================
-            // ENVOI API
+            // DEBUG
             // ==================================
 
-            await api.post(
-                "/paiements",
-                data,
-                {
-                    headers: {
-                        "Content-Type":
-                            "multipart/form-data"
-                    }
-                }
+            console.log(
+                "========== PAIEMENT =========="
             );
 
+
+            console.log(
+                "ID réservation :",
+                id_reservation
+            );
+
+
+            console.log(
+                "Montant :",
+                form.montant
+            );
+
+
+            console.log(
+                "Mode :",
+                form.mode_paiement
+            );
+
+
+            console.log(
+                "Preuve :",
+                preuve
+            );
+
+
+            console.log(
+                "=============================="
+            );
+
+
+            // ==================================
+            // ENVOI API
+            // ==================================
+            //
+            // IMPORTANT :
+            // NE PAS mettre manuellement
+            // Content-Type.
+            //
+            // Axios va générer automatiquement
+            // multipart/form-data + boundary.
+            // ==================================
+
+            const response = await api.post(
+                "/paiements",
+                data
+            );
+
+
+            console.log(
+                "Paiement enregistré :",
+                response.data
+            );
+
+
+            // ==================================
+            // SUCCÈS
+            // ==================================
 
             setPaiementSucces(true);
 
@@ -341,9 +593,27 @@ function PaiementPublic() {
                 error
             );
 
+
+            console.log(
+                "STATUT SERVEUR :",
+                error?.response?.status
+            );
+
+
+            console.log(
+                "RÉPONSE SERVEUR :",
+                error?.response?.data
+            );
+
+
             alert(
-                error?.response?.data?.message ||
+
+                error?.response?.data?.message
+
+                ||
+
                 "Erreur lors de l'envoi du paiement."
+
             );
 
         }
@@ -369,6 +639,7 @@ function PaiementPublic() {
 
                 <div className="paiement-success-card">
 
+
                     <div className="success-icon">
 
                         <FaCheckCircle />
@@ -377,7 +648,9 @@ function PaiementPublic() {
 
 
                     <h1>
+
                         Paiement envoyé avec succès !
+
                     </h1>
 
 
@@ -388,7 +661,10 @@ function PaiementPublic() {
                         <br />
 
                         Il est maintenant en attente de
-                        <strong> validation par notre équipe.</strong>
+
+                        <strong>
+                            {" "}validation par notre équipe.
+                        </strong>
 
                     </p>
 
@@ -396,6 +672,7 @@ function PaiementPublic() {
                     {reservation && (
 
                         <div className="success-reservation">
+
 
                             <div className="success-info">
 
@@ -452,6 +729,7 @@ function PaiementPublic() {
 
                             </div>
 
+
                         </div>
 
                     )}
@@ -468,8 +746,10 @@ function PaiementPublic() {
                             </strong>
 
                             <span>
+
                                 Vous recevrez une notification
                                 dès que votre paiement sera validé.
+
                             </span>
 
                         </div>
@@ -478,6 +758,7 @@ function PaiementPublic() {
 
 
                     <div className="success-actions">
+
 
                         <button
                             className="success-primary"
@@ -508,7 +789,9 @@ function PaiementPublic() {
 
                         </button>
 
+
                     </div>
+
 
                 </div>
 
@@ -527,6 +810,7 @@ function PaiementPublic() {
 
         <div className="paiement-public-page">
 
+
             <div className="paiement-container">
 
 
@@ -536,9 +820,13 @@ function PaiementPublic() {
 
                 <div className="paiement-header">
 
+
                     <button
                         className="btn-retour"
-                        onClick={() => navigate(-1)}
+                        type="button"
+                        onClick={() =>
+                            navigate(-1)
+                        }
                     >
 
                         <FaArrowLeft />
@@ -558,36 +846,44 @@ function PaiementPublic() {
 
                         </div>
 
+
                         <p>
-                            Finalisez votre réservation en toute sécurité.
+
+                            Finalisez votre réservation
+                            en toute sécurité.
+
                         </p>
 
                     </div>
+
 
                 </div>
 
 
                 {/* ==================================
-                    CONTENU
+                    LAYOUT
                 ================================== */}
 
                 <div className="paiement-layout">
 
 
                     {/* ==================================
-                        FORMULAIRE GAUCHE
+                        FORMULAIRE
                     ================================== */}
 
                     <div className="paiement-form-card">
 
+
                         <form
-                            onSubmit={envoyerPaiement}
+                            onSubmit={
+                                envoyerPaiement
+                            }
                         >
 
 
-                            {/* ==============================
-                                MODE DE PAIEMENT
-                            ============================== */}
+                            {/* ==================================
+                                ÉTAPE 1
+                            ================================== */}
 
                             <div className="section-title">
 
@@ -609,6 +905,10 @@ function PaiementPublic() {
 
                             </div>
 
+
+                            {/* ==================================
+                                MODES
+                            ================================== */}
 
                             <div className="payment-methods">
 
@@ -638,6 +938,7 @@ function PaiementPublic() {
 
                                     </div>
 
+
                                     <div>
 
                                         <strong>
@@ -649,6 +950,7 @@ function PaiementPublic() {
                                         </span>
 
                                     </div>
+
 
                                     <div className="radio-indicator" />
 
@@ -680,6 +982,7 @@ function PaiementPublic() {
 
                                     </div>
 
+
                                     <div>
 
                                         <strong>
@@ -691,6 +994,7 @@ function PaiementPublic() {
                                         </span>
 
                                     </div>
+
 
                                     <div className="radio-indicator" />
 
@@ -722,6 +1026,7 @@ function PaiementPublic() {
 
                                     </div>
 
+
                                     <div>
 
                                         <strong>
@@ -734,27 +1039,33 @@ function PaiementPublic() {
 
                                     </div>
 
+
                                     <div className="radio-indicator" />
 
                                 </button>
 
+
                             </div>
 
 
-                            {/* ==============================
+                            {/* ==================================
                                 CARTE BANCAIRE
-                            ============================== */}
+                            ================================== */}
 
                             {form.mode_paiement ===
                                 "Carte bancaire" && (
 
                                 <div className="payment-content">
 
+
                                     <div className="content-header">
 
                                         <div className="content-icon">
+
                                             <FaCreditCard />
+
                                         </div>
+
 
                                         <div>
 
@@ -773,6 +1084,7 @@ function PaiementPublic() {
 
                                     <div className="card-simulation">
 
+
                                         <div className="card-top">
 
                                             <span>
@@ -785,7 +1097,9 @@ function PaiementPublic() {
 
 
                                         <div className="card-number">
+
                                             •••• •••• •••• 3456
+
                                         </div>
 
 
@@ -801,6 +1115,7 @@ function PaiementPublic() {
 
                                         </div>
 
+
                                     </div>
 
 
@@ -809,31 +1124,38 @@ function PaiementPublic() {
                                         <FaShieldAlt />
 
                                         <span>
+
                                             Aucun numéro de carte réel
                                             n'est demandé dans cette version.
+
                                         </span>
 
                                     </div>
+
 
                                 </div>
 
                             )}
 
 
-                            {/* ==============================
+                            {/* ==================================
                                 MOBILE MONEY
-                            ============================== */}
+                            ================================== */}
 
                             {form.mode_paiement ===
                                 "Mobile Money" && (
 
                                 <div className="payment-content">
 
+
                                     <div className="content-header">
 
                                         <div className="content-icon">
+
                                             <FaMobileAlt />
+
                                         </div>
+
 
                                         <div>
 
@@ -920,6 +1242,7 @@ function PaiementPublic() {
 
                                             </button>
 
+
                                         </div>
 
                                     )}
@@ -929,7 +1252,9 @@ function PaiementPublic() {
 
                                         <div className="operateur-selection">
 
+
                                             <div className="operateur-selection-header">
+
 
                                                 <img
                                                     src={
@@ -941,8 +1266,11 @@ function PaiementPublic() {
                                                                 ? mvola
                                                                 : airtelMoney
                                                     }
-                                                    alt={form.operateur}
+                                                    alt={
+                                                        form.operateur
+                                                    }
                                                 />
+
 
                                                 <div>
 
@@ -956,19 +1284,24 @@ function PaiementPublic() {
 
                                                 </div>
 
+
                                                 <button
                                                     type="button"
                                                     onClick={() =>
                                                         choisirOperateur("")
                                                     }
                                                 >
+
                                                     Changer
+
                                                 </button>
+
 
                                             </div>
 
 
                                             <div className="form-grid">
+
 
                                                 <div className="form-group">
 
@@ -1013,6 +1346,7 @@ function PaiementPublic() {
 
                                                 </div>
 
+
                                             </div>
 
 
@@ -1027,39 +1361,47 @@ function PaiementPublic() {
                                                     </strong>
 
                                                     <span>
+
                                                         Conservez votre reçu
                                                         ou capture d'écran.
                                                         Vous devrez l'envoyer
                                                         comme preuve.
+
                                                     </span>
 
                                                 </div>
 
                                             </div>
 
+
                                         </div>
 
                                     )}
+
 
                                 </div>
 
                             )}
 
 
-                            {/* ==============================
+                            {/* ==================================
                                 VIREMENT
-                            ============================== */}
+                            ================================== */}
 
                             {form.mode_paiement ===
                                 "Virement" && (
 
                                 <div className="payment-content">
 
+
                                     <div className="content-header">
 
                                         <div className="content-icon">
+
                                             <FaUniversity />
+
                                         </div>
+
 
                                         <div>
 
@@ -1068,8 +1410,10 @@ function PaiementPublic() {
                                             </h3>
 
                                             <p>
+
                                                 Effectuez le virement puis
                                                 envoyez votre justificatif.
+
                                             </p>
 
                                         </div>
@@ -1078,6 +1422,7 @@ function PaiementPublic() {
 
 
                                     <div className="bank-details">
+
 
                                         <div className="bank-detail">
 
@@ -1130,6 +1475,7 @@ function PaiementPublic() {
 
                                         </div>
 
+
                                     </div>
 
 
@@ -1144,23 +1490,26 @@ function PaiementPublic() {
                                             </strong>
 
                                             <span>
+
                                                 Indiquez la référence de
                                                 réservation lors du virement
                                                 afin de faciliter la vérification.
+
                                             </span>
 
                                         </div>
 
                                     </div>
 
+
                                 </div>
 
                             )}
 
 
-                            {/* ==============================
-                                MONTANT
-                            ============================== */}
+                            {/* ==================================
+                                ÉTAPE 2
+                            ================================== */}
 
                             <div className="section-title section-margin">
 
@@ -1190,7 +1539,11 @@ function PaiementPublic() {
                                 </span>
 
                                 <strong>
-                                    {formatPrix(form.montant)} Ar
+
+                                    {formatPrix(
+                                        form.montant
+                                    )} Ar
+
                                 </strong>
 
                             </div>
@@ -1203,13 +1556,19 @@ function PaiementPublic() {
                             />
 
 
-                            {/* ==============================
-                                PREUVE
-                            ============================== */}
+                            {/* ==================================
+                                ÉTAPE 3
+                            ================================== */}
 
                             {(
-                                form.mode_paiement === "Mobile Money" ||
-                                form.mode_paiement === "Virement"
+                                form.mode_paiement ===
+                                "Mobile Money"
+
+                                ||
+
+                                form.mode_paiement ===
+                                "Virement"
+
                             ) && (
 
                                 <>
@@ -1227,8 +1586,10 @@ function PaiementPublic() {
                                             </h2>
 
                                             <p>
+
                                                 Cette preuve est obligatoire
                                                 pour ce mode de paiement.
+
                                             </p>
 
                                         </div>
@@ -1241,6 +1602,7 @@ function PaiementPublic() {
                                         <FaReceipt />
 
                                         Justificatif de paiement
+
                                         <span>
                                             *
                                         </span>
@@ -1251,6 +1613,7 @@ function PaiementPublic() {
                                     <div className="upload-paiement">
 
                                         <FaUpload />
+
 
                                         <div>
 
@@ -1264,14 +1627,13 @@ function PaiementPublic() {
 
                                         </div>
 
+
                                         <input
                                             type="file"
-                                            accept="image/*,.pdf"
+                                            accept="image/jpeg,image/png,image/webp,application/pdf"
                                             required
-                                            onChange={(e) =>
-                                                setPreuve(
-                                                    e.target.files[0]
-                                                )
+                                            onChange={
+                                                handlePreuveChange
                                             }
                                         />
 
@@ -1281,6 +1643,7 @@ function PaiementPublic() {
                                     {preuve && (
 
                                         <div className="preuve-selectionnee">
+
 
                                             <div className="preuve-header">
 
@@ -1318,23 +1681,27 @@ function PaiementPublic() {
 
                                             )}
 
+
                                         </div>
 
                                     )}
+
 
                                 </>
 
                             )}
 
 
-                            {/* ==============================
+                            {/* ==================================
                                 BOUTON
-                            ============================== */}
+                            ================================== */}
 
                             <button
                                 type="submit"
                                 className="btn-payer"
-                                disabled={envoiEnCours}
+                                disabled={
+                                    envoiEnCours
+                                }
                             >
 
                                 {envoiEnCours ? (
@@ -1346,6 +1713,7 @@ function PaiementPublic() {
                                 ) : (
 
                                     <>
+
                                         <FaLock />
 
                                         Envoyer le paiement
@@ -1362,19 +1730,23 @@ function PaiementPublic() {
                                 <FaShieldAlt />
 
                                 <span>
+
                                     Vos informations sont traitées
                                     de manière sécurisée.
+
                                 </span>
 
                             </div>
 
+
                         </form>
+
 
                     </div>
 
 
                     {/* ==================================
-                        RÉSUMÉ DROITE
+                        RÉSUMÉ RÉSERVATION
                     ================================== */}
 
                     <aside className="reservation-summary">
@@ -1397,25 +1769,26 @@ function PaiementPublic() {
 
                             <>
 
+
                                 <div className="reservation-image">
 
                                     {reservation.image ? (
 
                                         <img
                                             src={
-                                                reservation.image.startsWith(
-                                                    "http"
-                                                )
-                                                    ? reservation.image
-                                                    : reservation.image
+                                                reservation.image
                                             }
-                                            alt={reservation.titre}
+                                            alt={
+                                                reservation.titre
+                                            }
                                         />
 
                                     ) : (
 
                                         <div className="image-placeholder">
+
                                             <FaReceipt />
+
                                         </div>
 
                                     )}
@@ -1428,6 +1801,7 @@ function PaiementPublic() {
                                     <h3>
                                         {reservation.titre}
                                     </h3>
+
 
                                     <div>
 
@@ -1444,6 +1818,7 @@ function PaiementPublic() {
 
                                 <div className="summary-details">
 
+
                                     <div>
 
                                         <FaCalendarAlt />
@@ -1451,7 +1826,9 @@ function PaiementPublic() {
                                         <span>
 
                                             {reservation.date_debut_sejour}
+
                                             {" → "}
+
                                             {reservation.date_fin_sejour}
 
                                         </span>
@@ -1465,9 +1842,12 @@ function PaiementPublic() {
 
                                         <span>
 
-                                            {reservation.nombre_personnes}
-                                            {" "}
-                                            personne
+                                            {
+                                                reservation.nombre_personnes
+                                            }
+
+                                            {" personne"}
+
                                             {Number(
                                                 reservation.nombre_personnes
                                             ) > 1
@@ -1477,6 +1857,7 @@ function PaiementPublic() {
                                         </span>
 
                                     </div>
+
 
                                 </div>
 
@@ -1488,12 +1869,15 @@ function PaiementPublic() {
                                     </span>
 
                                     <strong>
+
                                         {formatPrix(
                                             reservation.montant_total
                                         )} Ar
+
                                     </strong>
 
                                 </div>
+
 
                             </>
 
@@ -1511,8 +1895,10 @@ function PaiementPublic() {
                                 </strong>
 
                                 <span>
+
                                     Votre paiement sera vérifié
                                     avant confirmation.
+
                                 </span>
 
                             </div>
@@ -1525,16 +1911,22 @@ function PaiementPublic() {
                             <FaCheckCircle />
 
                             <span>
+
                                 Validation manuelle par l'administration
+
                             </span>
 
                         </div>
 
+
                     </aside>
+
 
                 </div>
 
+
             </div>
+
 
         </div>
 
@@ -1544,4 +1936,3 @@ function PaiementPublic() {
 
 
 export default PaiementPublic;
-
