@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
 import api from "../api/api";
 
 import {
@@ -17,12 +18,13 @@ import {
     FaMapMarkerAlt,
     FaUsers,
     FaShieldAlt,
-    FaExchangeAlt
+    FaExchangeAlt,
+    FaUser,
+    FaFileInvoiceDollar
 } from "react-icons/fa";
 
 import "./PaiementPublic.css";
 
-// Logos Mobile Money
 import orangeMoney from "../assets/paiement/orange-money.png";
 import mvola from "../assets/paiement/mvola.png";
 import airtelMoney from "../assets/paiement/airtel-money.png";
@@ -39,13 +41,17 @@ function PaiementPublic() {
     // ÉTATS
     // ==========================================
 
-    const [reservation, setReservation] = useState(null);
+    const [reservation, setReservation] =
+        useState(null);
 
-    const [preuve, setPreuve] = useState(null);
+    const [preuve, setPreuve] =
+        useState(null);
 
-    const [paiementSucces, setPaiementSucces] = useState(false);
+    const [paiementSucces, setPaiementSucces] =
+        useState(false);
 
-    const [envoiEnCours, setEnvoiEnCours] = useState(false);
+    const [envoiEnCours, setEnvoiEnCours] =
+        useState(false);
 
 
     // ==========================================
@@ -56,7 +62,8 @@ function PaiementPublic() {
 
         montant: "",
 
-        mode_paiement: "Carte bancaire",
+        mode_paiement:
+            "Carte bancaire",
 
         // Mobile Money
         operateur: "",
@@ -66,56 +73,61 @@ function PaiementPublic() {
         // Virement
         banque: "",
         compte: "",
-        nom_compte: ""
+        nom_compte: "",
+        iban_rib: ""
 
     });
 
 
     // ==========================================
-    // CHARGER LA RÉSERVATION
+    // CHARGER RÉSERVATION
     // ==========================================
 
     useEffect(() => {
 
-        const chargerReservation = async () => {
+        const chargerReservation =
+            async () => {
 
-            try {
+                try {
 
-                const res = await api.get(
-                    `/reservations/${id_reservation}`
-                );
-
-
-                console.log(
-                    "Réservation chargée :",
-                    res.data
-                );
+                    const res =
+                        await api.get(
+                            `/reservations/${id_reservation}`
+                        );
 
 
-                setReservation(res.data);
+                    console.log(
+                        "Réservation chargée :",
+                        res.data
+                    );
 
 
-                setForm(prev => ({
+                    setReservation(
+                        res.data
+                    );
 
-                    ...prev,
 
-                    montant:
-                        res.data.montant_total
+                    setForm(prev => ({
 
-                }));
+                        ...prev,
 
-            }
+                        montant:
+                            res.data.montant_total
 
-            catch (error) {
+                    }));
 
-                console.log(
-                    "Erreur chargement réservation :",
-                    error
-                );
+                }
 
-            }
+                catch (error) {
 
-        };
+                    console.error(
+                        "Erreur chargement réservation :",
+                        error
+                    );
+
+                }
+
+            };
 
 
         if (id_reservation) {
@@ -128,7 +140,7 @@ function PaiementPublic() {
 
 
     // ==========================================
-    // MODIFIER UN CHAMP
+    // CHANGEMENT CHAMP
     // ==========================================
 
     const handleChange = (e) => {
@@ -151,297 +163,189 @@ function PaiementPublic() {
 
 
     // ==========================================
-    // CHANGER MODE DE PAIEMENT
+    // CHANGER MODE
     // ==========================================
 
-    const changerModePaiement = (mode) => {
+    const changerModePaiement =
+        (mode) => {
 
-        setForm(prev => ({
+            setForm(prev => ({
 
-            ...prev,
+                ...prev,
 
-            mode_paiement: mode,
+                mode_paiement: mode,
 
-            operateur: "",
+                operateur: "",
 
-            numero_destinataire: "",
+                numero_destinataire: "",
 
-            nom_destinataire: "",
+                nom_destinataire: "",
 
-            banque: "",
+                banque: "",
 
-            compte: "",
+                compte: "",
 
-            nom_compte: ""
+                nom_compte: "",
 
-        }));
+                iban_rib: ""
+
+            }));
 
 
-        // Nouvelle preuve
-        setPreuve(null);
+            setPreuve(null);
 
-    };
+        };
 
 
     // ==========================================
     // CHOISIR OPÉRATEUR
     // ==========================================
 
-    const choisirOperateur = (operateur) => {
+    const choisirOperateur =
+        (operateur) => {
 
-        setForm(prev => ({
+            setForm(prev => ({
 
-            ...prev,
+                ...prev,
 
-            operateur,
+                operateur,
 
-            numero_destinataire: "",
+                numero_destinataire: "",
 
-            nom_destinataire: ""
+                nom_destinataire: ""
 
-        }));
+            }));
 
-    };
+        };
 
 
     // ==========================================
     // FORMAT PRIX
     // ==========================================
 
-    const formatPrix = (prix) => {
+    const formatPrix =
+        (prix) => {
 
-        return Number(prix || 0).toLocaleString(
-            "fr-FR"
-        );
+            return Number(
+                prix || 0
+            ).toLocaleString(
+                "fr-FR"
+            );
 
-    };
+        };
 
 
     // ==========================================
-    // SÉLECTIONNER PREUVE
+    // PREUVE
     // ==========================================
 
-    const handlePreuveChange = (e) => {
+    const handlePreuveChange =
+        (e) => {
 
-        const fichier = e.target.files?.[0];
-
-
-        if (!fichier) {
-
-            setPreuve(null);
-
-            return;
-
-        }
+            const fichier =
+                e.target.files?.[0];
 
 
-        // ======================================
-        // TAILLE MAXIMUM : 5 Mo
-        // ======================================
+            if (!fichier) {
 
-        const tailleMax =
-            5 * 1024 * 1024;
+                setPreuve(null);
+
+                return;
+
+            }
 
 
-        if (fichier.size > tailleMax) {
+            const tailleMax =
+                5 * 1024 * 1024;
 
-            alert(
-                "Le fichier est trop volumineux. Taille maximale : 5 Mo."
+
+            if (
+                fichier.size >
+                tailleMax
+            ) {
+
+                alert(
+                    "Le fichier est trop volumineux. Taille maximale : 5 Mo."
+                );
+
+
+                e.target.value = "";
+
+                setPreuve(null);
+
+                return;
+
+            }
+
+
+            const typesAutorises = [
+
+                "image/jpeg",
+
+                "image/jpg",
+
+                "image/png",
+
+                "image/webp",
+
+                "application/pdf"
+
+            ];
+
+
+            if (
+                !typesAutorises.includes(
+                    fichier.type
+                )
+            ) {
+
+                alert(
+                    "Format non autorisé. Utilisez JPG, JPEG, PNG, WEBP ou PDF."
+                );
+
+
+                e.target.value = "";
+
+                setPreuve(null);
+
+                return;
+
+            }
+
+
+            setPreuve(
+                fichier
             );
 
-
-            e.target.value = "";
-
-            setPreuve(null);
-
-            return;
-
-        }
-
-
-        // ======================================
-        // TYPES AUTORISÉS
-        // ======================================
-
-        const typesAutorises = [
-
-            "image/jpeg",
-            "image/jpg",
-            "image/png",
-            "image/webp",
-            "application/pdf"
-
-        ];
-
-
-        if (
-            !typesAutorises.includes(
-                fichier.type
-            )
-        ) {
-
-            alert(
-                "Format non autorisé. Utilisez JPG, PNG, WEBP ou PDF."
-            );
-
-
-            e.target.value = "";
-
-            setPreuve(null);
-
-            return;
-
-        }
-
-
-        setPreuve(fichier);
-
-    };
+        };
 
 
     // ==========================================
     // ENVOYER PAIEMENT
     // ==========================================
 
-    const envoyerPaiement = async (e) => {
+    const envoyerPaiement =
+        async (e) => {
 
-        e.preventDefault();
-
-
-        // ======================================
-        // VALIDATION MONTANT
-        // ======================================
-
-        if (
-            !form.montant ||
-            Number(form.montant) <= 0
-        ) {
-
-            alert(
-                "Le montant du paiement est invalide."
-            );
-
-            return;
-
-        }
+            e.preventDefault();
 
 
-        // ======================================
-        // VALIDATION MOBILE MONEY
-        // ======================================
-
-        if (
-            form.mode_paiement ===
-            "Mobile Money"
-        ) {
-
-
-            if (!form.operateur) {
-
-                alert(
-                    "Veuillez choisir un opérateur Mobile Money."
-                );
-
-                return;
-
-            }
-
+            // ==================================
+            // MONTANT
+            // ==================================
 
             if (
-                !form.numero_destinataire
-                    .trim()
+                !form.montant ||
+                Number(form.montant) <= 0
             ) {
 
                 alert(
-                    "Veuillez saisir le numéro destinataire."
+                    "Le montant du paiement est invalide."
                 );
 
                 return;
 
             }
-
-
-            if (
-                !form.nom_destinataire
-                    .trim()
-            ) {
-
-                alert(
-                    "Veuillez saisir le nom du bénéficiaire."
-                );
-
-                return;
-
-            }
-
-        }
-
-
-        // ======================================
-        // PREUVE OBLIGATOIRE
-        // ======================================
-
-        if (
-
-            (
-                form.mode_paiement ===
-                "Mobile Money"
-
-                ||
-
-                form.mode_paiement ===
-                "Virement"
-            )
-
-            &&
-
-            !preuve
-
-        ) {
-
-            alert(
-                "Veuillez joindre une preuve de paiement."
-            );
-
-            return;
-
-        }
-
-
-        setEnvoiEnCours(true);
-
-
-        try {
-
-            // ==================================
-            // FORMDATA
-            // ==================================
-
-            const data = new FormData();
-
-
-            data.append(
-                "id_reservation",
-                id_reservation
-            );
-
-
-            data.append(
-                "montant",
-                form.montant
-            );
-
-
-            data.append(
-                "mode_paiement",
-                form.mode_paiement
-            );
-
-
-            data.append(
-                "statut",
-                "En attente"
-            );
 
 
             // ==================================
@@ -453,22 +357,41 @@ function PaiementPublic() {
                 "Mobile Money"
             ) {
 
-                data.append(
-                    "operateur",
-                    form.operateur
-                );
+                if (!form.operateur) {
+
+                    alert(
+                        "Veuillez choisir un opérateur Mobile Money."
+                    );
+
+                    return;
+
+                }
 
 
-                data.append(
-                    "numero_destinataire",
-                    form.numero_destinataire
-                );
+                if (
+                    !form.numero_destinataire.trim()
+                ) {
+
+                    alert(
+                        "Veuillez saisir le numéro destinataire."
+                    );
+
+                    return;
+
+                }
 
 
-                data.append(
-                    "nom_destinataire",
-                    form.nom_destinataire
-                );
+                if (
+                    !form.nom_destinataire.trim()
+                ) {
+
+                    alert(
+                        "Veuillez saisir le nom du bénéficiaire."
+                    );
+
+                    return;
+
+                }
 
             }
 
@@ -482,22 +405,56 @@ function PaiementPublic() {
                 "Virement"
             ) {
 
-                data.append(
-                    "banque",
-                    form.banque
-                );
+                if (
+                    !form.nom_compte.trim()
+                ) {
+
+                    alert(
+                        "Veuillez saisir le nom du titulaire du compte."
+                    );
+
+                    return;
+
+                }
 
 
-                data.append(
-                    "compte",
-                    form.compte
-                );
+                if (
+                    !form.banque.trim()
+                ) {
+
+                    alert(
+                        "Veuillez saisir le nom de votre banque."
+                    );
+
+                    return;
+
+                }
 
 
-                data.append(
-                    "nom_compte",
-                    form.nom_compte
-                );
+                if (
+                    !form.compte.trim()
+                ) {
+
+                    alert(
+                        "Veuillez saisir votre numéro de compte."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !form.iban_rib.trim()
+                ) {
+
+                    alert(
+                        "Veuillez saisir votre IBAN ou RIB."
+                    );
+
+                    return;
+
+                }
 
             }
 
@@ -506,125 +463,243 @@ function PaiementPublic() {
             // PREUVE
             // ==================================
 
-            if (preuve) {
+            if (
 
-                data.append(
-                    "preuve",
-                    preuve
+                (
+                    form.mode_paiement ===
+                    "Mobile Money"
+
+                    ||
+
+                    form.mode_paiement ===
+                    "Virement"
+                )
+
+                &&
+
+                !preuve
+
+            ) {
+
+                alert(
+                    "Veuillez joindre une preuve de paiement."
                 );
+
+                return;
 
             }
 
 
-            // ==================================
-            // DEBUG
-            // ==================================
-
-            console.log(
-                "========== PAIEMENT =========="
-            );
+            setEnvoiEnCours(true);
 
 
-            console.log(
-                "ID réservation :",
-                id_reservation
-            );
+            try {
+
+                // ==================================
+                // FORMDATA
+                // ==================================
+
+                const data =
+                    new FormData();
 
 
-            console.log(
-                "Montant :",
-                form.montant
-            );
+                data.append(
+                    "id_reservation",
+                    id_reservation
+                );
 
 
-            console.log(
-                "Mode :",
-                form.mode_paiement
-            );
+                data.append(
+                    "montant",
+                    form.montant
+                );
 
 
-            console.log(
-                "Preuve :",
-                preuve
-            );
+                data.append(
+                    "mode_paiement",
+                    form.mode_paiement
+                );
 
 
-            console.log(
-                "=============================="
-            );
+                // ==================================
+                // MOBILE MONEY
+                // ==================================
+
+                if (
+                    form.mode_paiement ===
+                    "Mobile Money"
+                ) {
+
+                    data.append(
+                        "operateur",
+                        form.operateur
+                    );
 
 
-            // ==================================
-            // ENVOI API
-            // ==================================
-            //
-            // IMPORTANT :
-            // NE PAS mettre manuellement
-            // Content-Type.
-            //
-            // Axios va générer automatiquement
-            // multipart/form-data + boundary.
-            // ==================================
-
-            const response = await api.post(
-                "/paiements",
-                data
-            );
+                    data.append(
+                        "numero_destinataire",
+                        form.numero_destinataire
+                    );
 
 
-            console.log(
-                "Paiement enregistré :",
-                response.data
-            );
+                    data.append(
+                        "nom_destinataire",
+                        form.nom_destinataire
+                    );
+
+                }
 
 
-            // ==================================
-            // SUCCÈS
-            // ==================================
+                // ==================================
+                // VIREMENT
+                // ==================================
 
-            setPaiementSucces(true);
+                if (
+                    form.mode_paiement ===
+                    "Virement"
+                ) {
 
-        }
-
-        catch (error) {
-
-            console.log(
-                "Erreur paiement :",
-                error
-            );
-
-
-            console.log(
-                "STATUT SERVEUR :",
-                error?.response?.status
-            );
+                    data.append(
+                        "banque",
+                        form.banque
+                    );
 
 
-            console.log(
-                "RÉPONSE SERVEUR :",
-                error?.response?.data
-            );
+                    data.append(
+                        "compte",
+                        form.compte
+                    );
 
 
-            alert(
+                    data.append(
+                        "nom_compte",
+                        form.nom_compte
+                    );
 
-                error?.response?.data?.message
 
-                ||
+                    data.append(
+                        "iban_rib",
+                        form.iban_rib
+                    );
 
-                "Erreur lors de l'envoi du paiement."
+                }
 
-            );
 
-        }
+                // ==================================
+                // PREUVE
+                // ==================================
 
-        finally {
+                if (preuve) {
 
-            setEnvoiEnCours(false);
+                    data.append(
+                        "preuve",
+                        preuve
+                    );
 
-        }
+                }
 
-    };
+
+                // ==================================
+                // DEBUG
+                // ==================================
+
+                console.log(
+                    "================================"
+                );
+
+                console.log(
+                    "PAIEMENT"
+                );
+
+                console.log(
+                    "Réservation :",
+                    id_reservation
+                );
+
+                console.log(
+                    "Montant :",
+                    form.montant
+                );
+
+                console.log(
+                    "Mode :",
+                    form.mode_paiement
+                );
+
+                console.log(
+                    "Preuve :",
+                    preuve
+                );
+
+                console.log(
+                    "================================"
+                );
+
+
+                // ==================================
+                // ENVOI
+                // ==================================
+
+                const response =
+                    await api.post(
+                        "/paiements",
+                        data
+                    );
+
+
+                console.log(
+                    "Paiement enregistré :",
+                    response.data
+                );
+
+
+                setPaiementSucces(
+                    true
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Erreur paiement :",
+                    error
+                );
+
+
+                console.error(
+                    "STATUT SERVEUR :",
+                    error?.response?.status
+                );
+
+
+                console.error(
+                    "RÉPONSE SERVEUR :",
+                    error?.response?.data
+                );
+
+
+                alert(
+
+                    error?.response?.data?.message
+
+                    ||
+
+                    "Erreur lors de l'envoi du paiement."
+
+                );
+
+            }
+
+            finally {
+
+                setEnvoiEnCours(
+                    false
+                );
+
+            }
+
+        };
 
 
     // ==========================================
@@ -639,7 +714,6 @@ function PaiementPublic() {
 
                 <div className="paiement-success-card">
 
-
                     <div className="success-icon">
 
                         <FaCheckCircle />
@@ -648,9 +722,7 @@ function PaiementPublic() {
 
 
                     <h1>
-
                         Paiement envoyé avec succès !
-
                     </h1>
 
 
@@ -672,7 +744,6 @@ function PaiementPublic() {
                     {reservation && (
 
                         <div className="success-reservation">
-
 
                             <div className="success-info">
 
@@ -729,7 +800,6 @@ function PaiementPublic() {
 
                             </div>
 
-
                         </div>
 
                     )}
@@ -758,7 +828,6 @@ function PaiementPublic() {
 
 
                     <div className="success-actions">
-
 
                         <button
                             className="success-primary"
@@ -789,9 +858,7 @@ function PaiementPublic() {
 
                         </button>
 
-
                     </div>
-
 
                 </div>
 
@@ -810,16 +877,12 @@ function PaiementPublic() {
 
         <div className="paiement-public-page">
 
-
             <div className="paiement-container">
 
 
-                {/* ==================================
-                    HEADER
-                ================================== */}
+                {/* HEADER */}
 
                 <div className="paiement-header">
-
 
                     <button
                         className="btn-retour"
@@ -856,13 +919,8 @@ function PaiementPublic() {
 
                     </div>
 
-
                 </div>
 
-
-                {/* ==================================
-                    LAYOUT
-                ================================== */}
 
                 <div className="paiement-layout">
 
@@ -873,7 +931,6 @@ function PaiementPublic() {
 
                     <div className="paiement-form-card">
 
-
                         <form
                             onSubmit={
                                 envoyerPaiement
@@ -881,9 +938,7 @@ function PaiementPublic() {
                         >
 
 
-                            {/* ==================================
-                                ÉTAPE 1
-                            ================================== */}
+                            {/* ÉTAPE 1 */}
 
                             <div className="section-title">
 
@@ -906,10 +961,6 @@ function PaiementPublic() {
                             </div>
 
 
-                            {/* ==================================
-                                MODES
-                            ================================== */}
-
                             <div className="payment-methods">
 
 
@@ -917,14 +968,12 @@ function PaiementPublic() {
 
                                 <button
                                     type="button"
-                                    className={
-                                        `payment-method ${
-                                            form.mode_paiement ===
-                                            "Carte bancaire"
-                                                ? "active"
-                                                : ""
-                                        }`
-                                    }
+                                    className={`payment-method ${
+                                        form.mode_paiement ===
+                                        "Carte bancaire"
+                                            ? "active"
+                                            : ""
+                                    }`}
                                     onClick={() =>
                                         changerModePaiement(
                                             "Carte bancaire"
@@ -938,7 +987,6 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                     <div>
 
                                         <strong>
@@ -951,7 +999,6 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                     <div className="radio-indicator" />
 
                                 </button>
@@ -961,14 +1008,12 @@ function PaiementPublic() {
 
                                 <button
                                     type="button"
-                                    className={
-                                        `payment-method ${
-                                            form.mode_paiement ===
-                                            "Mobile Money"
-                                                ? "active"
-                                                : ""
-                                        }`
-                                    }
+                                    className={`payment-method ${
+                                        form.mode_paiement ===
+                                        "Mobile Money"
+                                            ? "active"
+                                            : ""
+                                    }`}
                                     onClick={() =>
                                         changerModePaiement(
                                             "Mobile Money"
@@ -982,7 +1027,6 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                     <div>
 
                                         <strong>
@@ -995,7 +1039,6 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                     <div className="radio-indicator" />
 
                                 </button>
@@ -1005,14 +1048,12 @@ function PaiementPublic() {
 
                                 <button
                                     type="button"
-                                    className={
-                                        `payment-method ${
-                                            form.mode_paiement ===
-                                            "Virement"
-                                                ? "active"
-                                                : ""
-                                        }`
-                                    }
+                                    className={`payment-method ${
+                                        form.mode_paiement ===
+                                        "Virement"
+                                            ? "active"
+                                            : ""
+                                    }`}
                                     onClick={() =>
                                         changerModePaiement(
                                             "Virement"
@@ -1026,7 +1067,6 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                     <div>
 
                                         <strong>
@@ -1039,24 +1079,21 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                     <div className="radio-indicator" />
 
                                 </button>
-
 
                             </div>
 
 
                             {/* ==================================
-                                CARTE BANCAIRE
+                                CARTE
                             ================================== */}
 
                             {form.mode_paiement ===
                                 "Carte bancaire" && (
 
                                 <div className="payment-content">
-
 
                                     <div className="content-header">
 
@@ -1065,7 +1102,6 @@ function PaiementPublic() {
                                             <FaCreditCard />
 
                                         </div>
-
 
                                         <div>
 
@@ -1083,7 +1119,6 @@ function PaiementPublic() {
 
 
                                     <div className="card-simulation">
-
 
                                         <div className="card-top">
 
@@ -1115,7 +1150,6 @@ function PaiementPublic() {
 
                                         </div>
 
-
                                     </div>
 
 
@@ -1132,7 +1166,6 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                 </div>
 
                             )}
@@ -1147,7 +1180,6 @@ function PaiementPublic() {
 
                                 <div className="payment-content">
 
-
                                     <div className="content-header">
 
                                         <div className="content-icon">
@@ -1155,7 +1187,6 @@ function PaiementPublic() {
                                             <FaMobileAlt />
 
                                         </div>
-
 
                                         <div>
 
@@ -1175,7 +1206,6 @@ function PaiementPublic() {
                                     {!form.operateur && (
 
                                         <div className="operateurs-mobile">
-
 
                                             <button
                                                 type="button"
@@ -1242,7 +1272,6 @@ function PaiementPublic() {
 
                                             </button>
 
-
                                         </div>
 
                                     )}
@@ -1252,9 +1281,7 @@ function PaiementPublic() {
 
                                         <div className="operateur-selection">
 
-
                                             <div className="operateur-selection-header">
-
 
                                                 <img
                                                     src={
@@ -1296,12 +1323,10 @@ function PaiementPublic() {
 
                                                 </button>
 
-
                                             </div>
 
 
                                             <div className="form-grid">
-
 
                                                 <div className="form-group">
 
@@ -1346,7 +1371,6 @@ function PaiementPublic() {
 
                                                 </div>
 
-
                                             </div>
 
 
@@ -1373,11 +1397,9 @@ function PaiementPublic() {
 
                                             </div>
 
-
                                         </div>
 
                                     )}
-
 
                                 </div>
 
@@ -1385,14 +1407,13 @@ function PaiementPublic() {
 
 
                             {/* ==================================
-                                VIREMENT
+                                VIREMENT RÉEL
                             ================================== */}
 
                             {form.mode_paiement ===
                                 "Virement" && (
 
                                 <div className="payment-content">
-
 
                                     <div className="content-header">
 
@@ -1402,7 +1423,6 @@ function PaiementPublic() {
 
                                         </div>
 
-
                                         <div>
 
                                             <h3>
@@ -1410,10 +1430,8 @@ function PaiementPublic() {
                                             </h3>
 
                                             <p>
-
-                                                Effectuez le virement puis
-                                                envoyez votre justificatif.
-
+                                                Saisissez les informations
+                                                du compte utilisé pour le virement.
                                             </p>
 
                                         </div>
@@ -1421,43 +1439,18 @@ function PaiementPublic() {
                                     </div>
 
 
+                                    {/* INFORMATIONS BÉNÉFICIAIRE */}
+
                                     <div className="bank-details">
 
-
                                         <div className="bank-detail">
 
                                             <span>
-                                                Banque
-                                            </span>
-
-                                            <strong>
-                                                Votre banque
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div className="bank-detail">
-
-                                            <span>
-                                                Titulaire
+                                                Bénéficiaire
                                             </span>
 
                                             <strong>
                                                 Plateforme Réservation Touristique
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div className="bank-detail">
-
-                                            <span>
-                                                Numéro de compte
-                                            </span>
-
-                                            <strong>
-                                                XXXX XXXX XXXX
                                             </strong>
 
                                         </div>
@@ -1475,32 +1468,151 @@ function PaiementPublic() {
 
                                         </div>
 
-
                                     </div>
 
 
-                                    <div className="payment-instruction">
+                                    {/* FORMULAIRE PAYEUR */}
 
-                                        <FaExchangeAlt />
+                                    <div className="transfer-form">
 
-                                        <div>
+                                        <h4>
 
-                                            <strong>
-                                                Important
-                                            </strong>
+                                            <FaFileInvoiceDollar />
 
-                                            <span>
+                                            Informations du virement
 
-                                                Indiquez la référence de
-                                                réservation lors du virement
-                                                afin de faciliter la vérification.
+                                        </h4>
 
-                                            </span>
+
+                                        <div className="form-grid">
+
+
+                                            <div className="form-group">
+
+                                                <label>
+                                                    Nom du titulaire du compte *
+                                                </label>
+
+                                                <div className="input-icon">
+
+                                                    <FaUser />
+
+                                                    <input
+                                                        type="text"
+                                                        name="nom_compte"
+                                                        placeholder="Nom et prénom"
+                                                        value={
+                                                            form.nom_compte
+                                                        }
+                                                        onChange={
+                                                            handleChange
+                                                        }
+                                                        required
+                                                    />
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label>
+                                                    Banque *
+                                                </label>
+
+                                                <div className="input-icon">
+
+                                                    <FaUniversity />
+
+                                                    <input
+                                                        type="text"
+                                                        name="banque"
+                                                        placeholder="Nom de votre banque"
+                                                        value={
+                                                            form.banque
+                                                        }
+                                                        onChange={
+                                                            handleChange
+                                                        }
+                                                        required
+                                                    />
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label>
+                                                    Numéro de compte *
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    name="compte"
+                                                    placeholder="Numéro de votre compte"
+                                                    value={
+                                                        form.compte
+                                                    }
+                                                    onChange={
+                                                        handleChange
+                                                    }
+                                                    required
+                                                />
+
+                                            </div>
+
+
+                                            <div className="form-group">
+
+                                                <label>
+                                                    IBAN / RIB *
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    name="iban_rib"
+                                                    placeholder="Votre IBAN ou RIB"
+                                                    value={
+                                                        form.iban_rib
+                                                    }
+                                                    onChange={
+                                                        handleChange
+                                                    }
+                                                    required
+                                                />
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div className="payment-instruction">
+
+                                            <FaExchangeAlt />
+
+                                            <div>
+
+                                                <strong>
+                                                    Après le virement
+                                                </strong>
+
+                                                <span>
+
+                                                    Effectuez le virement
+                                                    vers le compte de la
+                                                    plateforme puis joignez
+                                                    votre justificatif.
+
+                                                </span>
+
+                                            </div>
 
                                         </div>
 
                                     </div>
-
 
                                 </div>
 
@@ -1508,7 +1620,7 @@ function PaiementPublic() {
 
 
                             {/* ==================================
-                                ÉTAPE 2
+                                MONTANT
                             ================================== */}
 
                             <div className="section-title section-margin">
@@ -1549,15 +1661,8 @@ function PaiementPublic() {
                             </div>
 
 
-                            <input
-                                type="hidden"
-                                name="montant"
-                                value={form.montant}
-                            />
-
-
                             {/* ==================================
-                                ÉTAPE 3
+                                PREUVE
                             ================================== */}
 
                             {(
@@ -1614,7 +1719,6 @@ function PaiementPublic() {
 
                                         <FaUpload />
 
-
                                         <div>
 
                                             <strong>
@@ -1630,7 +1734,7 @@ function PaiementPublic() {
 
                                         <input
                                             type="file"
-                                            accept="image/jpeg,image/png,image/webp,application/pdf"
+                                            accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                                             required
                                             onChange={
                                                 handlePreuveChange
@@ -1643,7 +1747,6 @@ function PaiementPublic() {
                                     {preuve && (
 
                                         <div className="preuve-selectionnee">
-
 
                                             <div className="preuve-header">
 
@@ -1671,9 +1774,11 @@ function PaiementPublic() {
                                                 <div className="preuve-preview">
 
                                                     <img
-                                                        src={URL.createObjectURL(
-                                                            preuve
-                                                        )}
+                                                        src={
+                                                            URL.createObjectURL(
+                                                                preuve
+                                                            )
+                                                        }
                                                         alt="Aperçu de la preuve de paiement"
                                                     />
 
@@ -1681,11 +1786,9 @@ function PaiementPublic() {
 
                                             )}
 
-
                                         </div>
 
                                     )}
-
 
                                 </>
 
@@ -1738,19 +1841,16 @@ function PaiementPublic() {
 
                             </div>
 
-
                         </form>
-
 
                     </div>
 
 
                     {/* ==================================
-                        RÉSUMÉ RÉSERVATION
+                        RÉSUMÉ
                     ================================== */}
 
                     <aside className="reservation-summary">
-
 
                         <div className="summary-header">
 
@@ -1768,7 +1868,6 @@ function PaiementPublic() {
                         {reservation && (
 
                             <>
-
 
                                 <div className="reservation-image">
 
@@ -1818,7 +1917,6 @@ function PaiementPublic() {
 
                                 <div className="summary-details">
 
-
                                     <div>
 
                                         <FaCalendarAlt />
@@ -1858,7 +1956,6 @@ function PaiementPublic() {
 
                                     </div>
 
-
                                 </div>
 
 
@@ -1877,7 +1974,6 @@ function PaiementPublic() {
                                     </strong>
 
                                 </div>
-
 
                             </>
 
@@ -1918,15 +2014,11 @@ function PaiementPublic() {
 
                         </div>
 
-
                     </aside>
-
 
                 </div>
 
-
             </div>
-
 
         </div>
 

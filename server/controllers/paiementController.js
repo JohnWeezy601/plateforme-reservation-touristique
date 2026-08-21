@@ -1,48 +1,199 @@
 const db = require("../db");
+const cloudinary = require("cloudinary").v2;
 
 
-// ==================================
-// Ajouter paiement avec preuve
-// + Notification administrateur
-// ==================================
+// ==========================================
+// CONFIGURATION CLOUDINARY
+// ==========================================
+
+cloudinary.config({
+
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+
+    api_key: process.env.CLOUDINARY_API_KEY,
+
+    api_secret: process.env.CLOUDINARY_API_SECRET
+
+});
+
+
+// ==========================================
+// UPLOAD BUFFER VERS CLOUDINARY
+// ==========================================
+
+const uploadBufferToCloudinary = (
+    buffer,
+    originalName
+) => {
+
+    return new Promise((resolve, reject) => {
+
+        const extension = originalName
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+        // PDF
+        const resourceType =
+            extension === "pdf"
+                ? "raw"
+                : "image";
+
+
+        const stream =
+            cloudinary.uploader.upload_stream(
+
+                {
+                    folder: "plateforme-touristique/paiements",
+
+                    resource_type: resourceType,
+
+                    use_filename: true,
+
+                    unique_filename: true,
+
+                    type: "upload"
+                },
+
+                (error, result) => {
+
+                    if (error) {
+
+                        reject(error);
+
+                    } else {
+
+                        resolve(result);
+
+                    }
+
+                }
+
+            );
+
+
+        stream.end(buffer);
+
+    });
+
+};
+
+
+// ==========================================
+// AJOUTER PAIEMENT
+// + PREUVE CLOUDINARY
+// + NOTIFICATION ADMIN
+// ==========================================
 
 exports.createPaiement = async (req, res) => {
 
     try {
 
         const {
+
             id_reservation,
+
             montant,
-            mode_paiement
+
+            mode_paiement,
+
+            operateur,
+
+            numero_destinataire,
+
+            nom_destinataire,
+
+            banque,
+
+            compte,
+
+            nom_compte,
+
+            iban_rib
+
         } = req.body;
 
 
         console.log(
-            "Données paiement reçues :",
+            "=================================="
+        );
+
+        console.log(
+            "DONNÉES PAIEMENT REÇUES"
+        );
+
+        console.log(
+            "Body :",
             req.body
+        );
+
+        console.log(
+            "Fichier :",
+            req.file
+                ? {
+                    originalname: req.file.originalname,
+                    mimetype: req.file.mimetype,
+                    size: req.file.size
+                }
+                : null
         );
 
 
         // ==================================
-        // FICHIER PREUVE PAIEMENT
+        // VALIDATION CHAMPS OBLIGATOIRES
         // ==================================
 
-        const preuve = req.file
-            ? req.file.filename
-            : null;
+        if (
+            !id_reservation ||
+            !montant ||
+            !mode_paiement
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "Les champs obligatoires sont manquants."
+
+            });
+
+        }
+
+
+        // ==================================
+        // VALIDATION MONTANT
+        // ==================================
+
+        if (
+            Number(montant) <= 0
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "Le montant du paiement est invalide."
+
+            });
+
+        }
 
 
         // ==================================
         // PREUVE OBLIGATOIRE
-        // Mobile Money + Virement
+        // MOBILE MONEY / VIREMENT
         // ==================================
 
         if (
+
             (
                 mode_paiement === "Mobile Money" ||
                 mode_paiement === "Virement"
-            ) &&
-            !preuve
+            )
+
+            &&
+
+            !req.file
+
         ) {
 
             return res.status(400).json({
@@ -56,21 +207,135 @@ exports.createPaiement = async (req, res) => {
 
 
         // ==================================
-        // VÉRIFICATION
+        // VALIDATION MOBILE MONEY
         // ==================================
 
         if (
-            !id_reservation ||
-            !montant ||
-            !mode_paiement
+            mode_paiement === "Mobile Money"
         ) {
 
-            return res.status(400).json({
+            if (!operateur) {
 
-                message:
-                    "Les champs obligatoires sont manquants"
+                return res.status(400).json({
 
-            });
+                    message:
+                        "L'opérateur Mobile Money est obligatoire."
+
+                });
+
+            }
+
+
+            if (!numero_destinataire) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Le numéro destinataire est obligatoire."
+
+                });
+
+            }
+
+
+            if (!nom_destinataire) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Le nom du bénéficiaire est obligatoire."
+
+                });
+
+            }
+
+        }
+
+
+        // ==================================
+        // VALIDATION VIREMENT
+        // ==================================
+
+        if (
+            mode_paiement === "Virement"
+        ) {
+
+            if (!banque) {
+
+                return res.status(400).json({
+
+                    message:
+                        "La banque est obligatoire."
+
+                });
+
+            }
+
+
+            if (!compte) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Le numéro de compte est obligatoire."
+
+                });
+
+            }
+
+
+            if (!nom_compte) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Le titulaire du compte est obligatoire."
+
+                });
+
+            }
+
+        }
+
+
+        // ==================================
+        // UPLOAD PREUVE CLOUDINARY
+        // ==================================
+
+        let preuve = null;
+
+        let preuvePublicId = null;
+
+
+        if (req.file) {
+
+            console.log(
+                "Upload de la preuve vers Cloudinary..."
+            );
+
+
+            const cloudinaryResult =
+                await uploadBufferToCloudinary(
+
+                    req.file.buffer,
+
+                    req.file.originalname
+
+                );
+
+
+            preuve =
+                cloudinaryResult.secure_url;
+
+
+            preuvePublicId =
+                cloudinaryResult.public_id;
+
+
+            console.log(
+                "Preuve Cloudinary :",
+                preuve
+            );
 
         }
 
@@ -101,98 +366,102 @@ exports.createPaiement = async (req, res) => {
             sql,
 
             [
+
                 id_reservation,
+
                 montant,
+
                 mode_paiement,
+
                 "En attente",
+
                 preuve
+
             ]
 
         );
 
 
-        const idPaiement = result.insertId;
+        const idPaiement =
+            result.insertId;
 
 
         console.log(
-            "Paiement créé avec le statut En attente :",
+            "Paiement créé :",
             idPaiement
         );
 
 
         // ==================================
-        // RÉCUPÉRER LES INFORMATIONS
-        // DE LA RÉSERVATION ET DU CLIENT
+        // RÉCUPÉRER RÉSERVATION + CLIENT
         // ==================================
 
-        const [reservation] = await db.query(
-
-            `
-
-            SELECT
-
-                r.id_reservation,
-                r.id_utilisateur,
-
-                u.nom,
-                u.prenom,
-
-                o.titre
-
-            FROM reservation r
-
-            INNER JOIN utilisateur u
-                ON r.id_utilisateur = u.id_utilisateur
-
-            INNER JOIN offre o
-                ON r.id_offre = o.id_offre
-
-            WHERE r.id_reservation = ?
-
-            LIMIT 1
-
-            `,
-
-            [id_reservation]
-
-        );
-
-
-        // ==================================
-        // VÉRIFIER LA RÉSERVATION
-        // ==================================
-
-        if (reservation.length === 0) {
-
-            console.log(
-                "Réservation introuvable pour le paiement :",
-                id_reservation
-            );
-
-        }
-
-        else {
-
-            const client = reservation[0];
-
-
-            // ==================================
-            // RÉCUPÉRER LES ADMINISTRATEURS
-            // ==================================
-
-            const [administrateurs] = await db.query(
+        const [reservation] =
+            await db.query(
 
                 `
 
-                SELECT id_utilisateur
+                SELECT
 
-                FROM utilisateur
+                    r.id_reservation,
 
-                WHERE role = 'Administrateur'
+                    r.id_utilisateur,
 
-                `
+                    u.nom,
+
+                    u.prenom,
+
+                    o.titre
+
+                FROM reservation r
+
+                INNER JOIN utilisateur u
+
+                    ON r.id_utilisateur =
+                       u.id_utilisateur
+
+                INNER JOIN offre o
+
+                    ON r.id_offre =
+                       o.id_offre
+
+                WHERE r.id_reservation = ?
+
+                LIMIT 1
+
+                `,
+
+                [id_reservation]
 
             );
+
+
+        // ==================================
+        // NOTIFICATION ADMIN
+        // ==================================
+
+        if (
+            reservation.length > 0
+        ) {
+
+            const client =
+                reservation[0];
+
+
+            const [administrateurs] =
+                await db.query(
+
+                    `
+
+                    SELECT id_utilisateur
+
+                    FROM utilisateur
+
+                    WHERE role = 'Administrateur'
+
+                    `
+
+                );
 
 
             console.log(
@@ -201,12 +470,10 @@ exports.createPaiement = async (req, res) => {
             );
 
 
-            // ==================================
-            // CRÉER UNE NOTIFICATION
-            // POUR CHAQUE ADMINISTRATEUR
-            // ==================================
-
-            for (const admin of administrateurs) {
+            for (
+                const admin
+                of administrateurs
+            ) {
 
                 await db.query(
 
@@ -256,16 +523,22 @@ exports.createPaiement = async (req, res) => {
         // RÉPONSE
         // ==================================
 
-        res.json({
+        res.status(201).json({
 
             message:
-                "Paiement envoyé avec succès",
+                "Paiement envoyé avec succès.",
 
             id_paiement:
                 idPaiement,
 
             preuve:
-                preuve
+                preuve,
+
+            preuve_public_id:
+                preuvePublicId,
+
+            statut:
+                "En attente"
 
         });
 
@@ -274,7 +547,7 @@ exports.createPaiement = async (req, res) => {
 
     catch (error) {
 
-        console.log(
+        console.error(
             "Erreur ajout paiement :",
             error
         );
@@ -283,7 +556,7 @@ exports.createPaiement = async (req, res) => {
         res.status(500).json({
 
             message:
-                "Erreur ajout paiement",
+                "Erreur ajout paiement.",
 
             error:
                 error.message
@@ -296,59 +569,79 @@ exports.createPaiement = async (req, res) => {
 
 
 
-
-
-// ==================================
-// Afficher paiements
-// ==================================
+// ==========================================
+// AFFICHER PAIEMENTS
+// ==========================================
 
 exports.getPaiements = async (req, res) => {
 
     try {
 
-        const [paiements] = await db.query(`
+        const [paiements] =
+            await db.query(`
 
-            SELECT
+                SELECT
 
-                p.*,
+                    p.*,
 
-                r.id_reservation,
-                r.date_reservation,
-                r.date_debut_sejour,
-                r.date_fin_sejour,
-                r.nombre_personnes,
-                r.montant_total,
-                r.statut AS statut_reservation,
+                    r.id_reservation,
 
-                u.id_utilisateur,
-                u.nom,
-                u.prenom,
-                u.email,
+                    r.date_reservation,
 
-                o.id_offre,
-                o.titre,
-                o.prix,
-                o.image,
+                    r.date_debut_sejour,
 
-                d.nom AS destination
+                    r.date_fin_sejour,
 
-            FROM paiement p
+                    r.nombre_personnes,
 
-            INNER JOIN reservation r
-                ON p.id_reservation = r.id_reservation
+                    r.montant_total,
 
-            INNER JOIN utilisateur u
-                ON r.id_utilisateur = u.id_utilisateur
+                    r.statut AS statut_reservation,
 
-            INNER JOIN offre o
-                ON r.id_offre = o.id_offre
+                    u.id_utilisateur,
 
-            INNER JOIN destination d
-                ON o.id_destination = d.id_destination
+                    u.nom,
 
-            ORDER BY p.id_paiement DESC
+                    u.prenom,
 
-        `);
+                    u.email,
+
+                    o.id_offre,
+
+                    o.titre,
+
+                    o.prix,
+
+                    o.image,
+
+                    d.nom AS destination
+
+                FROM paiement p
+
+                INNER JOIN reservation r
+
+                    ON p.id_reservation =
+                       r.id_reservation
+
+                INNER JOIN utilisateur u
+
+                    ON r.id_utilisateur =
+                       u.id_utilisateur
+
+                INNER JOIN offre o
+
+                    ON r.id_offre =
+                       o.id_offre
+
+                INNER JOIN destination d
+
+                    ON o.id_destination =
+                       d.id_destination
+
+                ORDER BY
+                    p.id_paiement DESC
+
+            `);
 
 
         res.json(paiements);
@@ -357,7 +650,7 @@ exports.getPaiements = async (req, res) => {
 
     catch (error) {
 
-        console.log(
+        console.error(
             "Erreur récupération paiements :",
             error
         );
@@ -366,7 +659,7 @@ exports.getPaiements = async (req, res) => {
         res.status(500).json({
 
             message:
-                "Erreur récupération paiements",
+                "Erreur récupération paiements.",
 
             error:
                 error.message
@@ -379,42 +672,29 @@ exports.getPaiements = async (req, res) => {
 
 
 
-
-// ==================================
-// Modifier paiement
-// Validation / rejet admin
-// ==================================
+// ==========================================
+// MODIFIER PAIEMENT
+// ==========================================
 
 exports.updatePaiement = async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        const id =
+            req.params.id;
+
 
         const {
             statut
         } = req.body;
 
 
-        console.log(
-            "Modification paiement :",
-            {
-                id_paiement: id,
-                nouveau_statut: statut
-            }
-        );
-
-
-        // ==================================
-        // VÉRIFICATION STATUT
-        // ==================================
-
         if (!statut) {
 
             return res.status(400).json({
 
                 message:
-                    "Le statut du paiement est obligatoire"
+                    "Le statut du paiement est obligatoire."
 
             });
 
@@ -422,30 +702,31 @@ exports.updatePaiement = async (req, res) => {
 
 
         // ==================================
-        // MODIFIER LE PAIEMENT
+        // MODIFIER STATUT
         // ==================================
 
-        const sql = `
+        const [result] =
+            await db.query(
 
-            UPDATE paiement
+                `
 
-            SET statut = ?
+                UPDATE paiement
 
-            WHERE id_paiement = ?
+                SET statut = ?
 
-        `;
+                WHERE id_paiement = ?
 
+                `,
 
-        const [result] = await db.query(
+                [
 
-            sql,
+                    statut,
 
-            [
-                statut,
-                id
-            ]
+                    id
 
-        );
+                ]
+
+            );
 
 
         if (
@@ -455,7 +736,7 @@ exports.updatePaiement = async (req, res) => {
             return res.status(404).json({
 
                 message:
-                    "Paiement introuvable"
+                    "Paiement introuvable."
 
             });
 
@@ -463,35 +744,38 @@ exports.updatePaiement = async (req, res) => {
 
 
         // ==================================
-        // RÉCUPÉRER L'UTILISATEUR
+        // RÉCUPÉRER CLIENT
         // ==================================
 
-        const [paiement] = await db.query(
+        const [paiement] =
+            await db.query(
 
-            `
+                `
 
-            SELECT
+                SELECT
 
-                p.id_paiement,
-                p.statut,
+                    p.id_paiement,
 
-                r.id_reservation,
-                r.id_utilisateur
+                    p.statut,
 
-            FROM paiement p
+                    r.id_reservation,
 
-            INNER JOIN reservation r
+                    r.id_utilisateur
 
-                ON p.id_reservation =
-                   r.id_reservation
+                FROM paiement p
 
-            WHERE p.id_paiement = ?
+                INNER JOIN reservation r
 
-            `,
+                    ON p.id_reservation =
+                       r.id_reservation
 
-            [id]
+                WHERE p.id_paiement = ?
 
-        );
+                `,
+
+                [id]
+
+            );
 
 
         if (
@@ -501,7 +785,7 @@ exports.updatePaiement = async (req, res) => {
             return res.status(404).json({
 
                 message:
-                    "Paiement ou réservation introuvable"
+                    "Paiement ou réservation introuvable."
 
             });
 
@@ -512,19 +796,12 @@ exports.updatePaiement = async (req, res) => {
             paiement[0].id_utilisateur;
 
 
-        console.log(
-            "Utilisateur concerné :",
-            idUtilisateur
-        );
-
-
-
         // ==================================
-        // NORMALISER LE STATUT
+        // NORMALISATION
         // ==================================
 
         const statutNormalise =
-            String(statut || "")
+            String(statut)
                 .trim()
                 .toLowerCase()
                 .normalize("NFD")
@@ -534,59 +811,54 @@ exports.updatePaiement = async (req, res) => {
                 );
 
 
-
-        // =====================================================
+        // ==================================
         // PAIEMENT VALIDÉ
-        // =====================================================
+        // ==================================
 
         if (
+
             statutNormalise === "paye" ||
+
             statutNormalise === "valide"
+
         ) {
 
+            const [
+                notificationExistante
+            ] = await db.query(
 
-            console.log(
-                "Paiement validé."
+                `
+
+                SELECT id_notification
+
+                FROM notification
+
+                WHERE id_utilisateur = ?
+
+                AND type = 'Paiement'
+
+                AND titre = 'Paiement validé'
+
+                AND message LIKE ?
+
+                LIMIT 1
+
+                `,
+
+                [
+
+                    idUtilisateur,
+
+                    `%#${id}%`
+
+                ]
+
             );
-
-
-            // ==================================
-            // ÉVITER LES DOUBLONS
-            // ==================================
-
-            const [notificationExistante] =
-                await db.query(
-
-                    `
-
-                    SELECT id_notification
-
-                    FROM notification
-
-                    WHERE id_utilisateur = ?
-
-                    AND type = 'Paiement'
-
-                    AND titre = 'Paiement validé'
-
-                    AND message LIKE ?
-
-                    LIMIT 1
-
-                    `,
-
-                    [
-                        idUtilisateur,
-                        `%#${id}%`
-                    ]
-
-                );
 
 
             if (
                 notificationExistante.length === 0
             ) {
-
 
                 await db.query(
 
@@ -622,76 +894,59 @@ exports.updatePaiement = async (req, res) => {
 
                 );
 
-
-                console.log(
-                    "Notification paiement validé créée."
-                );
-
             }
 
         }
 
 
-
-        // =====================================================
+        // ==================================
         // PAIEMENT NON VALIDÉ
-        // =====================================================
+        // ==================================
 
         else if (
 
             statutNormalise === "non valide" ||
 
-            statutNormalise === "non validee" ||
-
-            statutNormalise === "non validee" ||
-
-            statutNormalise === "non valide"
+            statutNormalise === "non validee"
 
         ) {
 
+            const [
+                notificationExistante
+            ] = await db.query(
 
-            console.log(
-                "Paiement non validé."
+                `
+
+                SELECT id_notification
+
+                FROM notification
+
+                WHERE id_utilisateur = ?
+
+                AND type = 'Paiement'
+
+                AND titre = 'Paiement non validé'
+
+                AND message LIKE ?
+
+                LIMIT 1
+
+                `,
+
+                [
+
+                    idUtilisateur,
+
+                    `%#${id}%`
+
+                ]
+
             );
-
-
-            // ==================================
-            // ÉVITER LES DOUBLONS
-            // ==================================
-
-            const [notificationExistante] =
-                await db.query(
-
-                    `
-
-                    SELECT id_notification
-
-                    FROM notification
-
-                    WHERE id_utilisateur = ?
-
-                    AND type = 'Paiement'
-
-                    AND titre = 'Paiement non validé'
-
-                    AND message LIKE ?
-
-                    LIMIT 1
-
-                    `,
-
-                    [
-                        idUtilisateur,
-                        `%#${id}%`
-                    ]
-
-                );
 
 
             if (
                 notificationExistante.length === 0
             ) {
-
 
                 await db.query(
 
@@ -727,20 +982,14 @@ exports.updatePaiement = async (req, res) => {
 
                 );
 
-
-                console.log(
-                    "Notification paiement non validé créée."
-                );
-
             }
 
         }
 
 
-
-        // =====================================================
+        // ==================================
         // PAIEMENT ÉCHOUÉ
-        // =====================================================
+        // ==================================
 
         else if (
 
@@ -750,49 +999,42 @@ exports.updatePaiement = async (req, res) => {
 
         ) {
 
+            const [
+                notificationExistante
+            ] = await db.query(
 
-            console.log(
-                "Paiement échoué."
+                `
+
+                SELECT id_notification
+
+                FROM notification
+
+                WHERE id_utilisateur = ?
+
+                AND type = 'Paiement'
+
+                AND titre = 'Paiement échoué'
+
+                AND message LIKE ?
+
+                LIMIT 1
+
+                `,
+
+                [
+
+                    idUtilisateur,
+
+                    `%#${id}%`
+
+                ]
+
             );
-
-
-            // ==================================
-            // ÉVITER LES DOUBLONS
-            // ==================================
-
-            const [notificationExistante] =
-                await db.query(
-
-                    `
-
-                    SELECT id_notification
-
-                    FROM notification
-
-                    WHERE id_utilisateur = ?
-
-                    AND type = 'Paiement'
-
-                    AND titre = 'Paiement échoué'
-
-                    AND message LIKE ?
-
-                    LIMIT 1
-
-                    `,
-
-                    [
-                        idUtilisateur,
-                        `%#${id}%`
-                    ]
-
-                );
 
 
             if (
                 notificationExistante.length === 0
             ) {
-
 
                 await db.query(
 
@@ -828,20 +1070,14 @@ exports.updatePaiement = async (req, res) => {
 
                 );
 
-
-                console.log(
-                    "Notification paiement échoué créée."
-                );
-
             }
 
         }
 
 
-
-        // =====================================================
+        // ==================================
         // EN ATTENTE
-        // =====================================================
+        // ==================================
 
         else if (
 
@@ -851,29 +1087,17 @@ exports.updatePaiement = async (req, res) => {
 
         ) {
 
-
-            // IMPORTANT :
-            // aucune notification.
-            //
-            // L'admin n'a pas encore terminé
-            // la vérification du paiement.
-
             console.log(
-                "Paiement toujours en attente : aucune notification."
+                "Paiement toujours en attente."
             );
 
         }
 
 
-
-        // =====================================================
-        // RÉPONSE
-        // =====================================================
-
         res.json({
 
             message:
-                "Statut paiement modifié avec succès",
+                "Statut paiement modifié avec succès.",
 
             statut:
                 statut
@@ -884,7 +1108,7 @@ exports.updatePaiement = async (req, res) => {
 
     catch (error) {
 
-        console.log(
+        console.error(
             "Erreur modification paiement :",
             error
         );
@@ -893,7 +1117,7 @@ exports.updatePaiement = async (req, res) => {
         res.status(500).json({
 
             message:
-                "Erreur modification paiement",
+                "Erreur modification paiement.",
 
             error:
                 error.message
@@ -906,31 +1130,32 @@ exports.updatePaiement = async (req, res) => {
 
 
 
-
-// ==================================
-// Supprimer paiement
-// ==================================
+// ==========================================
+// SUPPRIMER PAIEMENT
+// ==========================================
 
 exports.deletePaiement = async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        const id =
+            req.params.id;
 
 
-        const [result] = await db.query(
+        const [result] =
+            await db.query(
 
-            `
+                `
 
-            DELETE FROM paiement
+                DELETE FROM paiement
 
-            WHERE id_paiement = ?
+                WHERE id_paiement = ?
 
-            `,
+                `,
 
-            [id]
+                [id]
 
-        );
+            );
 
 
         if (
@@ -940,7 +1165,7 @@ exports.deletePaiement = async (req, res) => {
             return res.status(404).json({
 
                 message:
-                    "Paiement introuvable"
+                    "Paiement introuvable."
 
             });
 
@@ -950,7 +1175,7 @@ exports.deletePaiement = async (req, res) => {
         res.json({
 
             message:
-                "Paiement supprimé avec succès"
+                "Paiement supprimé avec succès."
 
         });
 
@@ -958,7 +1183,7 @@ exports.deletePaiement = async (req, res) => {
 
     catch (error) {
 
-        console.log(
+        console.error(
             "Erreur suppression paiement :",
             error
         );
@@ -967,7 +1192,7 @@ exports.deletePaiement = async (req, res) => {
         res.status(500).json({
 
             message:
-                "Erreur suppression paiement",
+                "Erreur suppression paiement.",
 
             error:
                 error.message

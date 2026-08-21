@@ -2,78 +2,52 @@ const express = require("express");
 
 const router = express.Router();
 
-
 const paiementController =
-require("../controllers/paiementController");
-
+    require("../controllers/paiementController");
 
 const upload =
-require("../middleware/upload");
+    require("../middleware/upload");
 
 
-
-
-// ==================================
-// Ajouter paiement avec preuve
-// ==================================
+// ==========================================
+// AJOUTER PAIEMENT AVEC PREUVE
+// ==========================================
 
 router.post(
-
-"/",
-
-upload.single("preuve"),
-
-paiementController.createPaiement
-
+    "/",
+    upload.single("preuve"),
+    paiementController.createPaiement
 );
 
 
-
-
-
-
-// Afficher paiements
+// ==========================================
+// AFFICHER PAIEMENTS
+// ==========================================
 
 router.get(
-
-"/",
-
-paiementController.getPaiements
-
+    "/",
+    paiementController.getPaiements
 );
 
 
-
-
-
-
-// Modifier paiement
+// ==========================================
+// MODIFIER PAIEMENT
+// ==========================================
 
 router.put(
-
-"/:id",
-
-paiementController.updatePaiement
-
+    "/:id",
+    paiementController.updatePaiement
 );
 
 
-
-
-
-
-// Supprimer paiement
+// ==========================================
+// SUPPRIMER PAIEMENT
+// ==========================================
 
 router.delete(
-
-"/:id",
-
-paiementController.deletePaiement
-
+    "/:id",
+    paiementController.deletePaiement
 );
 
 
-
-
-
-module.exports=router;
+module.exports = router;

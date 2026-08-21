@@ -1,18 +1,22 @@
 const multer = require("multer");
 const path = require("path");
 
+
 // ==========================================
 // STOCKAGE EN MÉMOIRE
 // ==========================================
-// Le fichier est conservé temporairement
-// dans req.file.buffer avant son envoi vers
-// Cloudinary.
+//
+// Le fichier reste temporairement dans :
+// req.file.buffer
+//
+// Il sera ensuite envoyé vers Cloudinary.
+// ==========================================
 
 const storage = multer.memoryStorage();
 
 
 // ==========================================
-// TYPES D'IMAGES AUTORISÉS
+// TYPES DE FICHIERS AUTORISÉS
 // ==========================================
 
 const fileFilter = (req, file, cb) => {
@@ -21,8 +25,10 @@ const fileFilter = (req, file, cb) => {
         ".jpg",
         ".jpeg",
         ".png",
-        ".webp"
+        ".webp",
+        ".pdf"
     ];
+
 
     const extension = path
         .extname(file.originalname)
@@ -37,7 +43,7 @@ const fileFilter = (req, file, cb) => {
 
         cb(
             new Error(
-                "Format image non autorisé. Utilisez JPG, JPEG, PNG ou WEBP."
+                "Format non autorisé. Utilisez JPG, JPEG, PNG, WEBP ou PDF."
             ),
             false
         );
