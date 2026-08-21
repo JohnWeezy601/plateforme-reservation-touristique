@@ -1,6 +1,16 @@
-import { useState, useEffect } from "react";
-import { FaTimes, FaSave, FaImage } from "react-icons/fa";
+import {
+    useState,
+    useEffect
+} from "react";
+
+import {
+    FaTimes,
+    FaSave,
+    FaImage
+} from "react-icons/fa";
+
 import api from "../api/api";
+
 import "./DestinationModal.css";
 
 
@@ -11,88 +21,104 @@ function DestinationModal({
     refresh
 }) {
 
-
     const [imagePreview, setImagePreview] = useState(null);
 
-    const [loading,setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
 
+    // ==========================================
+    // URL IMAGE
+    // ==========================================
 
-    useEffect(()=>{
+    const getImageUrl = (image) => {
+
+        if (!image) {
+            return null;
+        }
+
+        // Image Cloudinary
+        if (
+            image.startsWith("http://") ||
+            image.startsWith("https://")
+        ) {
+            return image;
+        }
+
+        // Ancienne image locale
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+    };
 
 
-        if(destination?.image){
+    // ==========================================
+    // INITIALISER L'APERÇU
+    // ==========================================
 
+    useEffect(() => {
+
+        if (destination?.image) {
 
             setImagePreview(
-                `${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`
+                getImageUrl(destination.image)
             );
 
-
-        }
-        else{
-
+        } else {
 
             setImagePreview(null);
 
-
         }
 
-
-    },[destination]);
-
+    }, [destination]);
 
 
+    // ==========================================
+    // FERMER LA MODALE
+    // ==========================================
 
-
-    if(!open)
+    if (!open) {
         return null;
+    }
 
 
+    // ==========================================
+    // SAUVEGARDER
+    // ==========================================
 
-
-
-
-    const sauvegarder = async(e)=>{
-
+    const sauvegarder = async (e) => {
 
         e.preventDefault();
 
 
-        if(loading)
+        if (loading) {
             return;
-
+        }
 
 
         setLoading(true);
 
 
-
         const form = e.target;
-
 
         const formData = new FormData();
 
 
-
+        // ==========================================
+        // INFORMATIONS DESTINATION
+        // ==========================================
 
         formData.append(
             "nom",
             form.nom.value
         );
 
-
         formData.append(
             "region",
             form.region.value
         );
 
-
         formData.append(
             "pays",
             form.pays.value
         );
-
 
         formData.append(
             "description",
@@ -100,510 +126,316 @@ function DestinationModal({
         );
 
 
+        // ==========================================
+        // ANCIENNE IMAGE
+        // ==========================================
 
-
-
-        if(destination?.image){
-
+        if (destination?.image) {
 
             formData.append(
                 "oldImage",
                 destination.image
             );
 
-
         }
 
 
+        // ==========================================
+        // NOUVELLE IMAGE
+        // ==========================================
 
+        const fichier = form.image.files[0];
 
-
-        if(form.image.files[0]){
-
+        if (fichier) {
 
             formData.append(
                 "image",
-                form.image.files[0]
+                fichier
             );
-
 
         }
 
 
-
-
-
-
-
-        try{
-
+        try {
 
             let response;
 
 
+            // ==========================================
+            // MODIFICATION
+            // ==========================================
 
-            if(destination){
-
-
+            if (destination) {
 
                 response = await api.put(
-
                     `/destinations/${destination.id_destination}`,
-
                     formData,
-
                     {
-
-                        headers:{
-
+                        headers: {
                             "Content-Type":
-                            "multipart/form-data"
-
+                                "multipart/form-data"
                         }
-
                     }
-
                 );
 
-
-
             }
-            else{
 
 
+            // ==========================================
+            // AJOUT
+            // ==========================================
+
+            else {
 
                 response = await api.post(
-
                     "/destinations",
-
                     formData,
-
                     {
-
-                        headers:{
-
+                        headers: {
                             "Content-Type":
-                            "multipart/form-data"
-
+                                "multipart/form-data"
                         }
-
                     }
-
                 );
 
-
-
             }
-
-
-
-
-
 
 
             console.log(
-
-                "REPONSE BACKEND :",
-
+                "Réponse backend :",
                 response.data
-
             );
-
-
-
-
 
 
             alert(
-
                 response.data.message
-
             );
 
 
-
-
-
-
-            // fermer modal
-
+            // Fermer la modale
             close();
 
 
-
-            // recharger tableau
-
+            // Recharger les destinations
             await refresh();
-
-
-
 
         }
 
+        catch (error) {
 
-        catch(error){
-
-
-
-            console.log(
-
+            console.error(
                 "Erreur destination :",
-
                 error.response?.data || error
-
             );
-
 
 
             alert(
-
                 error.response?.data?.message ||
-
                 "Erreur lors de l'opération"
-
             );
-
 
         }
 
-
-        finally{
-
+        finally {
 
             setLoading(false);
 
-
         }
-
-
 
     };
 
 
+    // ==========================================
+    // AFFICHAGE
+    // ==========================================
 
-
-
-
-
-
-
-
-
-    return(
-
+    return (
 
         <div className="modal-overlay">
 
-
             <div className="modal-box">
 
-
-
-
+                {/* ==========================================
+                    HEADER
+                ========================================== */}
 
                 <div className="modal-header">
 
-
                     <h2>
 
-
-                    {
-
-                        destination
-
-                        ?
-
-                        "Modifier destination"
-
-                        :
-
-                        "Ajouter destination"
-
-
-                    }
-
+                        {destination
+                            ? "Modifier destination"
+                            : "Ajouter destination"
+                        }
 
                     </h2>
 
 
-
-
                     <button
-
-                    type="button"
-
-                    onClick={close}
-
+                        type="button"
+                        onClick={close}
                     >
 
-
-                        <FaTimes/>
-
+                        <FaTimes />
 
                     </button>
-
-
 
                 </div>
 
 
-
-
-
-
-
-
+                {/* ==========================================
+                    FORMULAIRE
+                ========================================== */}
 
                 <form onSubmit={sauvegarder}>
 
+                    {/* Nom */}
 
                     <label>
                         Nom destination
                     </label>
 
-
                     <input
-
-                    name="nom"
-
-                    placeholder="Ex: Nosy Be"
-
-                    defaultValue={
-                        destination?.nom || ""
-                    }
-
-                    required
-
+                        name="nom"
+                        placeholder="Ex: Nosy Be"
+                        defaultValue={
+                            destination?.nom || ""
+                        }
+                        required
                     />
 
 
-
-
-
-
-
+                    {/* Région */}
 
                     <label>
                         Région
                     </label>
 
-
                     <input
-
-                    name="region"
-
-                    placeholder="Ex: Diana"
-
-                    defaultValue={
-                        destination?.region || ""
-                    }
-
+                        name="region"
+                        placeholder="Ex: Diana"
+                        defaultValue={
+                            destination?.region || ""
+                        }
                     />
 
 
-
-
-
-
-
-
+                    {/* Pays */}
 
                     <label>
                         Pays
                     </label>
 
-
                     <input
-
-                    name="pays"
-
-                    placeholder="Ex: Madagascar"
-
-                    defaultValue={
-                        destination?.pays || ""
-                    }
-
+                        name="pays"
+                        placeholder="Ex: Madagascar"
+                        defaultValue={
+                            destination?.pays || ""
+                        }
                     />
 
 
-
-
-
-
-
-
-
+                    {/* Description */}
 
                     <label>
                         Description
                     </label>
 
-
                     <textarea
-
-                    name="description"
-
-                    placeholder="Description destination"
-
-                    defaultValue={
-                        destination?.description || ""
-                    }
-
+                        name="description"
+                        placeholder="Description destination"
+                        defaultValue={
+                            destination?.description || ""
+                        }
                     />
 
 
-
-
-
-
-
-
+                    {/* Image */}
 
                     <label>
 
-                        <FaImage/>
+                        <FaImage />
 
                         Image destination
 
                     </label>
 
 
-
-
-
                     <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onChange={(e) => {
 
-                    type="file"
+                            const fichier =
+                                e.target.files[0];
 
-                    name="image"
+                            if (fichier) {
 
-                    accept="image/*"
+                                setImagePreview(
+                                    URL.createObjectURL(fichier)
+                                );
 
+                            }
 
-                    onChange={(e)=>{
-
-
-                        const fichier =
-                        e.target.files[0];
-
-
-
-                        if(fichier){
-
-
-                            setImagePreview(
-
-                                URL.createObjectURL(fichier)
-
-                            );
-
-
-                        }
-
-
-                    }}
-
-
+                        }}
                     />
 
 
+                    {/* ==========================================
+                        APERÇU IMAGE
+                    ========================================== */}
+
+                    {imagePreview && (
+
+                        <div className="image-preview">
+
+                            <img
+                                src={imagePreview}
+                                alt="Aperçu destination"
+                                className="preview-img"
+                                onError={(e) => {
+
+                                    console.error(
+                                        "Erreur chargement aperçu :",
+                                        imagePreview
+                                    );
+
+                                    e.currentTarget.style.display =
+                                        "none";
+                                }}
+                            />
+
+                        </div>
+
+                    )}
 
 
-
-
-
-
-
-                    {
-
-                    imagePreview &&
-
-
-                    <div className="image-preview">
-
-
-                        <img
-
-                        src={imagePreview}
-
-                        alt="Aperçu destination"
-
-                        className="preview-img"
-
-                        />
-
-
-                    </div>
-
-
-                    }
-
-
-
-
-
-
-
-
+                    {/* ==========================================
+                        BOUTON
+                    ========================================== */}
 
                     <button
-
-                    className="btn-save"
-
-                    type="submit"
-
-                    disabled={loading}
-
+                        className="btn-save"
+                        type="submit"
+                        disabled={loading}
                     >
 
+                        <FaSave />
 
-
-                        <FaSave/>
-
-
-                        {
-
-                        loading
-
-                        ?
-
-                        "Enregistrement..."
-
-                        :
-
-                        "Enregistrer"
-
+                        {loading
+                            ? "Enregistrement..."
+                            : "Enregistrer"
                         }
-
-
 
                     </button>
 
-
-
-
-
-
-
                 </form>
-
-
-
-
-
-
 
             </div>
 
-
-
         </div>
-
-
     );
-
-
-
 }
 
 

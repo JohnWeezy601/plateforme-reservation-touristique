@@ -1,280 +1,193 @@
-import { 
-    FaTimes, 
-    FaMapMarkerAlt, 
-    FaGlobeAfrica 
+import {
+    FaTimes,
+    FaMapMarkerAlt,
+    FaGlobeAfrica
 } from "react-icons/fa";
 
 import "./DestinationDetailsModal.css";
 
 
 function DestinationDetailsModal({
-
     open,
-
     close,
-
     destination
-
 }) {
 
+    // ==========================================
+    // Si la modale n'est pas ouverte
+    // ==========================================
 
-    if(!open || !destination)
+    if (!open || !destination) {
         return null;
+    }
 
 
+    // ==========================================
+    // URL IMAGE
+    // ==========================================
 
-    return(
+    const getImageUrl = (image) => {
+
+        if (!image) {
+            return null;
+        }
+
+        // Image Cloudinary ou autre URL distante
+        if (
+            image.startsWith("http://") ||
+            image.startsWith("https://")
+        ) {
+            return image;
+        }
+
+        // Anciennes images stockées localement
+        return `${import.meta.env.VITE_SERVER_URL}/uploads/${image}`;
+    };
 
 
+    return (
         <div className="detail-overlay">
-
-
 
             <div className="detail-modal">
 
-
-
-
-
-                {/* IMAGE */}
+                {/* ==========================================
+                    IMAGE
+                ========================================== */}
 
                 <div className="detail-image-container">
 
+                    {destination.image ? (
 
-                    {
+                        <img
+                            src={getImageUrl(destination.image)}
+                            alt={destination.nom}
+                            onError={(e) => {
 
-                    destination.image ?
+                                console.error(
+                                    "Erreur chargement image destination :",
+                                    destination.image
+                                );
 
+                                e.currentTarget.style.display = "none";
+                            }}
+                        />
 
-                    <img
+                    ) : (
 
-                    src={
-                    `${import.meta.env.VITE_SERVER_URL}/uploads/${destination.image}`
-                    }
+                        <p>
+                            Aucune image disponible
+                        </p>
 
-                    alt={
-                    destination.nom
-                    }
-
-                    />
-
-
-                    :
-
-
-                    <p>
-
-                    Aucune image disponible
-
-                    </p>
-
-
-                    }
-
-
+                    )}
 
                 </div>
 
 
-
-
-
-
-
-
-                {/* CONTENU */}
-
+                {/* ==========================================
+                    CONTENU
+                ========================================== */}
 
                 <div className="detail-content">
 
-
-
-
-
                     <h2>
-
                         {destination.nom}
-
                     </h2>
-
-
-
-
-
 
 
                     <div className="detail-info">
 
-
+                        {/* Région */}
 
                         <div className="detail-item">
 
-
-                            <FaMapMarkerAlt/>
-
+                            <FaMapMarkerAlt />
 
                             <span>
 
+                                <strong>
+                                    Région :
+                                </strong>
 
-                            <strong>
-                            Région :
-                            </strong>
+                                {" "}
 
-                            {" "}
-
-                            {destination.region}
-
+                                {destination.region || "-"}
 
                             </span>
-
-
 
                         </div>
 
 
-
-
-
-
-
+                        {/* Pays */}
 
                         <div className="detail-item">
 
-
-                            <FaGlobeAfrica/>
-
+                            <FaGlobeAfrica />
 
                             <span>
 
+                                <strong>
+                                    Pays :
+                                </strong>
 
-                            <strong>
-                            Pays :
-                            </strong>
+                                {" "}
 
-                            {" "}
-
-                            {destination.pays}
-
+                                {destination.pays || "-"}
 
                             </span>
 
-
-
                         </div>
-
-
 
                     </div>
 
 
-
-
-
-
-
-
-
-                    {/* DESCRIPTION */}
-
-
+                    {/* ==========================================
+                        DESCRIPTION
+                    ========================================== */}
 
                     <div className="detail-description">
 
-
                         <h3>
-
-                        Description
-
+                            Description
                         </h3>
-
-
 
                         <p>
 
-
-                        {
-
-                        destination.description
-
-                        ?
-
-                        destination.description
-
-                        :
-
-                        "Aucune description disponible"
-
-                        }
-
+                            {destination.description
+                                ? destination.description
+                                : "Aucune description disponible"
+                            }
 
                         </p>
 
-
-
                     </div>
-
-
-
-
 
                 </div>
 
 
-
-
-
-
-
-
-
-
-                {/* FOOTER */}
-
-
+                {/* ==========================================
+                    FOOTER
+                ========================================== */}
 
                 <div className="detail-footer">
 
-
-
                     <button
-
-                    className="btn-close-detail"
-
-                    onClick={close}
-
+                        className="btn-close-detail"
+                        onClick={close}
                     >
 
-
-                        <FaTimes/>
+                        <FaTimes />
 
                         Fermer
 
-
                     </button>
-
-
 
                 </div>
 
-
-
-
-
-
             </div>
 
-
-
-
         </div>
-
-
-
     );
-
-
 }
-
 
 
 export default DestinationDetailsModal;
