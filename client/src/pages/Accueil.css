@@ -10,9 +10,11 @@
 .home-page {
     width: 100%;
     max-width: 100%;
+
     overflow-x: hidden;
 
     background: #f8fafc;
+
     color: #1e293b;
 }
 
@@ -37,13 +39,19 @@
     min-height: 700px;
 
     background-image: url("/Bellefond.jpg");
+
     background-size: cover;
+
     background-position: center center;
+
     background-repeat: no-repeat;
 
     display: flex;
+
     flex-direction: column;
+
     justify-content: center;
+
     align-items: center;
 
     padding: 100px 30px;
@@ -55,6 +63,7 @@
 
 .hero-overlay {
     position: absolute;
+
     inset: 0;
 
     background:
@@ -69,9 +78,11 @@
 
 .hero-content {
     position: relative;
+
     z-index: 2;
 
     width: 100%;
+
     max-width: 900px;
 
     text-align: center;
@@ -79,23 +90,30 @@
 
 .hero-badge {
     display: inline-flex;
+
     align-items: center;
+
     justify-content: center;
 
     gap: 9px;
 
     padding: 9px 18px;
+
     margin-bottom: 25px;
 
-    background: rgba(255, 255, 255, 0.14);
+    background:
+        rgba(255, 255, 255, 0.14);
 
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
 
     border-radius: 30px;
 
     backdrop-filter: blur(10px);
 
     font-size: 13px;
+
     font-weight: 600;
 }
 
@@ -107,6 +125,7 @@
     margin: 0;
 
     font-size: 58px;
+
     line-height: 1.08;
 
     font-weight: 800;
@@ -126,6 +145,7 @@
 
 .hero-content p {
     width: 100%;
+
     max-width: 700px;
 
     margin: 25px auto;
@@ -133,6 +153,7 @@
     color: #e2e8f0;
 
     font-size: 19px;
+
     line-height: 1.7;
 
     overflow-wrap: break-word;
@@ -147,6 +168,7 @@
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
     gap: 15px;
@@ -163,6 +185,7 @@
     display: inline-flex;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 10px;
@@ -172,6 +195,7 @@
     border-radius: 12px;
 
     font-size: 15px;
+
     font-weight: 600;
 
     cursor: pointer;
@@ -193,7 +217,8 @@
 .hero-primary-btn span {
     display: flex;
 
-    transition: transform 0.3s ease;
+    transition:
+        transform 0.3s ease;
 }
 
 .hero-primary-btn:hover {
@@ -207,9 +232,12 @@
 }
 
 .hero-secondary-btn {
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.5);
 
-    background: rgba(255, 255, 255, 0.1);
+    background:
+        rgba(255, 255, 255, 0.1);
 
     color: white;
 
@@ -233,6 +261,7 @@
 .offers-section,
 .steps-section {
     width: 100%;
+
     max-width: 1200px;
 
     margin: auto;
@@ -244,6 +273,7 @@
     display: flex;
 
     justify-content: space-between;
+
     align-items: flex-end;
 
     gap: 30px;
@@ -257,6 +287,7 @@
     color: #2563eb;
 
     font-size: 11px;
+
     font-weight: 800;
 
     letter-spacing: 2px;
@@ -269,6 +300,7 @@
     color: #0f172a;
 
     font-size: 38px;
+
     line-height: 1.2;
 
     overflow-wrap: break-word;
@@ -281,6 +313,7 @@
     color: #64748b;
 
     font-size: 15px;
+
     line-height: 1.7;
 
     overflow-wrap: break-word;
@@ -296,6 +329,7 @@
     color: #2563eb;
 
     font-size: 14px;
+
     font-weight: 700;
 
     text-decoration: none;
@@ -315,145 +349,286 @@
 
 
 /* =========================================================
-   =========================================================
-   MONTAGE VIDÉO
-   =========================================================
+   VIDÉOS CINÉMATIQUES
 ========================================================= */
 
 .videos-section {
     width: 100%;
-    max-width: 1300px;
 
-    margin: 0 auto;
-
-    padding: 90px 30px 80px;
-
-    background: #f8fafc;
-}
-
-.videos-section .section-heading {
-    max-width: 850px;
-
-    margin-bottom: 35px;
-}
-
-.videos-section .section-heading h2 {
-    font-size: 38px;
-}
-
-
-/* =========================================================
-   ÉTAT VIDÉO VIDE
-========================================================= */
-
-.video-empty-state {
-    min-height: 280px;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: 40px;
-
-    border-radius: 24px;
-
-    background: white;
-
-    border: 1px solid #e2e8f0;
-
-    text-align: center;
-
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.05);
-}
-
-.video-empty-icon {
-    width: 70px;
-    height: 70px;
-
-    margin-bottom: 18px;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    border-radius: 50%;
-
-    background: #eff6ff;
-
-    color: #2563eb;
-
-    font-size: 30px;
-}
-
-.video-empty-state h3 {
-    margin: 0 0 8px;
-
-    color: #0f172a;
-
-    font-size: 22px;
-}
-
-.video-empty-state p {
-    max-width: 500px;
+    max-width: 100%;
 
     margin: 0;
 
-    color: #64748b;
+    padding: 120px 40px;
 
-    font-size: 14px;
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(37, 99, 235, 0.08),
+            transparent 45%
+        ),
+        #f8fafc;
 
-    line-height: 1.6;
+    overflow: hidden;
 }
 
 
 /* =========================================================
-   GRILLE MONTAGE
+   CONTENEUR
 ========================================================= */
 
-.video-montage {
+.videos-cinematic {
     width: 100%;
+
+    max-width: 1400px;
+
+    margin: 0 auto;
 
     display: grid;
 
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns:
+        0.75fr
+        1.25fr;
 
-    grid-template-rows: 260px 260px;
+    align-items: center;
 
-    gap: 15px;
+    gap: 90px;
 }
 
 
 /* =========================================================
-   CARTE VIDÉO
+   INTRODUCTION
 ========================================================= */
 
-.video-montage-card {
+.videos-cinematic-intro {
+    max-width: 500px;
+
     position: relative;
 
-    min-width: 0;
-    min-height: 0;
+    z-index: 5;
+}
+
+.videos-cinematic-intro .section-label {
+    display: inline-block;
+
+    margin-bottom: 18px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+.videos-cinematic-intro h2 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size:
+        clamp(
+            42px,
+            5vw,
+            72px
+        );
+
+    line-height: 1.05;
+
+    letter-spacing: -2.5px;
+}
+
+.videos-cinematic-intro h2 span {
+    display: block;
+
+    color: #2563eb;
+}
+
+.videos-cinematic-intro p {
+    max-width: 440px;
+
+    margin: 28px 0 0;
+
+    color: #64748b;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   BOUTON DÉCOUVRIR
+========================================================= */
+
+.cinematic-discover-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-top: 30px;
+
+    padding: 14px 20px;
+
+    border-radius: 11px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.3s ease,
+        background 0.3s ease;
+}
+
+.cinematic-discover-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-3px);
+}
+
+
+/* =========================================================
+   FENÊTRE VIDÉO
+========================================================= */
+
+.cinematic-video-window {
+    position: relative;
+
+    width: 100%;
+
+    height: 700px;
 
     overflow: hidden;
 
-    border-radius: 20px;
+    border-radius: 35px;
+
+    background: #020617;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 12%,
+            black 88%,
+            transparent 100%
+        );
+
+    -webkit-mask-image:
+        linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 12%,
+            black 88%,
+            transparent 100%
+        );
+}
+
+
+/* =========================================================
+   TRACK
+========================================================= */
+
+.cinematic-video-track {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 24px;
+
+    animation:
+        cinematicVerticalScroll
+        35s
+        linear
+        infinite;
+
+    will-change: transform;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes cinematicVerticalScroll {
+
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform:
+            translateY(
+                calc(-50% - 12px)
+            );
+    }
+
+}
+
+
+/* =========================================================
+   PAUSE SURVOL
+========================================================= */
+
+.cinematic-video-window:hover
+.cinematic-video-track {
+    animation-play-state: paused;
+}
+
+
+/* =========================================================
+   CARTE
+========================================================= */
+
+.cinematic-video-card {
+    position: relative;
+
+    width: 100%;
+
+    height: 430px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 28px;
 
     background: #0f172a;
 
     box-shadow:
-        0 12px 35px rgba(15, 23, 42, 0.12);
+        0 25px 60px
+        rgba(15, 23, 42, 0.18);
 
-    isolation: isolate;
+    transform: scale(0.94);
+
+    transition:
+        transform 0.6s ease,
+        box-shadow 0.6s ease;
 }
 
-.video-montage-card video {
+
+/* =========================================================
+   VIDÉO
+========================================================= */
+
+.cinematic-video-card video {
     position: absolute;
+
     inset: 0;
 
     width: 100%;
+
     height: 100%;
 
     object-fit: cover;
@@ -462,46 +637,35 @@
 
     transform: scale(1.01);
 
-    transition: transform 0.7s ease;
+    transition:
+        transform 1s ease;
 }
 
-.video-montage-card:hover video {
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.cinematic-video-card:hover {
+    transform: scale(0.98);
+
+    box-shadow:
+        0 35px 80px
+        rgba(15, 23, 42, 0.28);
+}
+
+.cinematic-video-card:hover video {
     transform: scale(1.07);
 }
 
 
 /* =========================================================
-   POSITIONS DES VIDÉOS
+   OVERLAY
 ========================================================= */
 
-.video-montage-1 {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-
-.video-montage-2 {
-    grid-column: span 1;
-}
-
-.video-montage-3 {
-    grid-column: span 1;
-}
-
-.video-montage-4 {
-    grid-column: span 1;
-}
-
-.video-montage-5 {
-    grid-column: span 1;
-}
-
-
-/* =========================================================
-   OVERLAY VIDÉO
-========================================================= */
-
-.video-montage-overlay {
+.cinematic-video-overlay {
     position: absolute;
+
     inset: 0;
 
     z-index: 1;
@@ -509,8 +673,9 @@
     background:
         linear-gradient(
             to top,
-            rgba(15, 23, 42, 0.9),
-            rgba(15, 23, 42, 0.05) 70%
+            rgba(2, 6, 23, 0.94),
+            rgba(2, 6, 23, 0.30) 52%,
+            rgba(2, 6, 23, 0.04)
         );
 
     pointer-events: none;
@@ -521,64 +686,119 @@
    CONTENU VIDÉO
 ========================================================= */
 
-.video-montage-content {
+.cinematic-video-content {
     position: absolute;
 
-    left: 22px;
-    right: 22px;
-    bottom: 22px;
+    left: 32px;
 
-    z-index: 2;
+    right: 32px;
+
+    bottom: 30px;
+
+    z-index: 3;
 
     color: white;
 }
 
-.video-category {
+.cinematic-video-content span {
     display: inline-flex;
 
-    align-items: center;
+    padding: 7px 12px;
 
-    padding: 6px 10px;
+    margin-bottom: 12px;
 
-    margin-bottom: 8px;
+    border-radius: 30px;
 
-    border-radius: 20px;
-
-    background: rgba(56, 189, 248, 0.9);
+    background:
+        rgba(56, 189, 248, 0.92);
 
     color: #0f172a;
 
     font-size: 9px;
+
     font-weight: 800;
 
-    letter-spacing: 0.8px;
-
-    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.video-montage-content h3 {
+.cinematic-video-content h3 {
     margin: 0;
 
     color: white;
 
-    font-size: 22px;
+    font-size: 29px;
+
     line-height: 1.2;
 
-    overflow-wrap: break-word;
+    letter-spacing: -0.5px;
 }
 
-.video-montage-content p {
+.cinematic-video-content p {
     max-width: 500px;
 
-    margin: 8px 0 0;
+    margin: 10px 0 0;
 
     color: #e2e8f0;
 
     font-size: 13px;
 
-    line-height: 1.5;
+    line-height: 1.6;
+}
 
-    overflow-wrap: break-word;
+
+/* =========================================================
+   FADE SUPÉRIEUR
+========================================================= */
+
+.cinematic-top-fade {
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 150px;
+
+    z-index: 10;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #f8fafc,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   FADE INFÉRIEUR
+========================================================= */
+
+.cinematic-bottom-fade {
+    position: absolute;
+
+    bottom: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 150px;
+
+    z-index: 10;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to top,
+            #f8fafc,
+            transparent
+        );
 }
 
 
@@ -590,9 +810,11 @@
     min-height: 250px;
 
     display: flex;
+
     flex-direction: column;
 
     justify-content: center;
+
     align-items: center;
 
     gap: 15px;
@@ -604,17 +826,25 @@
 
 .loading-spinner {
     width: 42px;
+
     height: 42px;
 
     flex-shrink: 0;
 
-    border: 4px solid #dbeafe;
+    border:
+        4px solid
+        #dbeafe;
 
-    border-top-color: #2563eb;
+    border-top-color:
+        #2563eb;
 
     border-radius: 50%;
 
-    animation: spin 0.8s linear infinite;
+    animation:
+        spin
+        0.8s
+        linear
+        infinite;
 }
 
 @keyframes spin {
@@ -626,6 +856,7 @@
     to {
         transform: rotate(360deg);
     }
+
 }
 
 
@@ -636,12 +867,15 @@
 .error-container,
 .empty-container {
     width: 100%;
+
     min-height: 220px;
 
     display: flex;
+
     flex-direction: column;
 
     justify-content: center;
+
     align-items: center;
 
     gap: 10px;
@@ -679,7 +913,8 @@
 
     display: grid;
 
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+        repeat(3, 1fr);
 
     gap: 20px;
 }
@@ -688,6 +923,7 @@
     position: relative;
 
     min-width: 0;
+
     min-height: 390px;
 
     overflow: hidden;
@@ -706,37 +942,45 @@
 }
 
 .destination-card:hover {
-    transform: translateY(-8px);
+    transform:
+        translateY(-8px);
 
     box-shadow:
-        0 20px 40px rgba(15, 23, 42, 0.2);
+        0 20px 40px
+        rgba(15, 23, 42, 0.2);
 }
 
 .destination-image {
     position: absolute;
+
     inset: 0;
 
     width: 100%;
+
     height: 100%;
 
     object-fit: cover;
 
     display: block;
 
-    transition: transform 0.5s ease;
+    transition:
+        transform 0.5s ease;
 }
 
-.destination-card:hover .destination-image {
+.destination-card:hover
+.destination-image {
     transform: scale(1.07);
 }
 
 .destination-no-image {
     position: absolute;
+
     inset: 0;
 
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
     background:
@@ -753,6 +997,7 @@
 
 .destination-overlay {
     position: absolute;
+
     inset: 0;
 
     z-index: 1;
@@ -771,7 +1016,9 @@
     z-index: 2;
 
     left: 22px;
+
     right: 22px;
+
     bottom: 22px;
 
     min-width: 0;
@@ -811,6 +1058,7 @@
     display: -webkit-box;
 
     -webkit-line-clamp: 2;
+
     -webkit-box-orient: vertical;
 
     overflow: hidden;
@@ -826,6 +1074,7 @@
     color: white;
 
     font-size: 13px;
+
     font-weight: 700;
 }
 
@@ -843,7 +1092,8 @@
 
     display: grid;
 
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+        repeat(3, 1fr);
 
     gap: 25px;
 }
@@ -858,7 +1108,8 @@
     border-radius: 20px;
 
     box-shadow:
-        0 8px 30px rgba(15, 23, 42, 0.07);
+        0 8px 30px
+        rgba(15, 23, 42, 0.07);
 
     transition:
         transform 0.3s ease,
@@ -866,10 +1117,12 @@
 }
 
 .offer-card:hover {
-    transform: translateY(-7px);
+    transform:
+        translateY(-7px);
 
     box-shadow:
-        0 18px 40px rgba(15, 23, 42, 0.14);
+        0 18px 40px
+        rgba(15, 23, 42, 0.14);
 }
 
 
@@ -881,6 +1134,7 @@
     position: relative;
 
     width: 100%;
+
     height: 220px;
 
     overflow: hidden;
@@ -890,26 +1144,31 @@
 
 .offer-image img {
     width: 100%;
+
     height: 100%;
 
     object-fit: cover;
 
     display: block;
 
-    transition: transform 0.5s ease;
+    transition:
+        transform 0.5s ease;
 }
 
-.offer-card:hover .offer-image img {
+.offer-card:hover
+.offer-image img {
     transform: scale(1.06);
 }
 
 .offer-no-image {
     width: 100%;
+
     height: 100%;
 
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
     background:
@@ -933,6 +1192,7 @@
     position: absolute;
 
     top: 15px;
+
     left: 15px;
 
     max-width: 180px;
@@ -952,6 +1212,7 @@
     border-radius: 20px;
 
     font-size: 10px;
+
     font-weight: 700;
 }
 
@@ -964,9 +1225,11 @@
     position: absolute;
 
     top: 14px;
+
     right: 14px;
 
     width: 38px;
+
     height: 38px;
 
     border: none;
@@ -980,6 +1243,7 @@
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
     font-size: 17px;
@@ -1021,6 +1285,7 @@
     color: #2563eb;
 
     font-size: 12px;
+
     font-weight: 700;
 
     overflow-wrap: break-word;
@@ -1034,6 +1299,7 @@
     color: #0f172a;
 
     font-size: 19px;
+
     line-height: 1.4;
 
     overflow-wrap: break-word;
@@ -1051,6 +1317,12 @@
 
 .offer-info span {
     max-width: 100%;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
 
     padding: 6px 9px;
 
@@ -1078,7 +1350,9 @@
 
     padding-top: 18px;
 
-    border-top: 1px solid #e2e8f0;
+    border-top:
+        1px solid
+        #e2e8f0;
 }
 
 .offer-price {
@@ -1114,6 +1388,7 @@
     display: inline-flex;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 7px;
@@ -1127,6 +1402,7 @@
     color: #2563eb;
 
     font-size: 12px;
+
     font-weight: 700;
 
     text-decoration: none;
@@ -1166,13 +1442,15 @@
 
 .advantages-container {
     width: 100%;
+
     max-width: 1200px;
 
     margin: auto;
 
     display: grid;
 
-    grid-template-columns: 0.8fr 1.2fr;
+    grid-template-columns:
+        0.8fr 1.2fr;
 
     gap: 70px;
 
@@ -1233,6 +1511,7 @@
     text-decoration: none;
 
     font-size: 14px;
+
     font-weight: 600;
 
     transition: 0.3s;
@@ -1249,7 +1528,8 @@
 
     display: grid;
 
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+        repeat(2, 1fr);
 
     gap: 18px;
 }
@@ -1259,9 +1539,12 @@
 
     padding: 25px;
 
-    background: rgba(255, 255, 255, 0.06);
+    background:
+        rgba(255, 255, 255, 0.06);
 
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
 
     border-radius: 17px;
 
@@ -1269,13 +1552,15 @@
 }
 
 .advantage-card:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background:
+        rgba(255, 255, 255, 0.1);
 
     transform: translateY(-4px);
 }
 
 .advantage-icon {
     width: 48px;
+
     height: 48px;
 
     margin-bottom: 18px;
@@ -1283,9 +1568,11 @@
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
-    background: rgba(56, 189, 248, 0.12);
+    background:
+        rgba(56, 189, 248, 0.12);
 
     border-radius: 12px;
 
@@ -1321,6 +1608,7 @@
 
 .section-title-center {
     width: 100%;
+
     max-width: 650px;
 
     margin: 0 auto 50px;
@@ -1333,7 +1621,8 @@
 
     display: grid;
 
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+        repeat(3, 1fr);
 
     gap: 25px;
 }
@@ -1352,7 +1641,8 @@
     border-radius: 18px;
 
     box-shadow:
-        0 8px 30px rgba(15, 23, 42, 0.06);
+        0 8px 30px
+        rgba(15, 23, 42, 0.06);
 
     transition: 0.3s;
 }
@@ -1365,16 +1655,19 @@
     position: absolute;
 
     top: 20px;
+
     right: 20px;
 
     color: #dbeafe;
 
     font-size: 30px;
+
     font-weight: 800;
 }
 
 .step-icon {
     width: 65px;
+
     height: 65px;
 
     margin: 10px auto 20px;
@@ -1382,6 +1675,7 @@
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
     background: #eff6ff;
@@ -1415,11 +1709,12 @@
 
 
 /* =========================================================
-   RECOMMANDATION IA
+   IA
 ========================================================= */
 
 .ia-section {
     width: 100%;
+
     max-width: 1200px;
 
     margin: 30px auto 80px;
@@ -1434,7 +1729,8 @@
 
     display: grid;
 
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns:
+        auto 1fr auto;
 
     align-items: center;
 
@@ -1449,16 +1745,20 @@
             #f0fdfa
         );
 
-    border: 1px solid #dbeafe;
+    border:
+        1px solid
+        #dbeafe;
 }
 
 .ia-icon {
     width: 65px;
+
     height: 65px;
 
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
     border-radius: 17px;
@@ -1468,7 +1768,8 @@
     color: #2563eb;
 
     box-shadow:
-        0 8px 20px rgba(37, 99, 235, 0.1);
+        0 8px 20px
+        rgba(37, 99, 235, 0.1);
 
     font-size: 30px;
 
@@ -1515,6 +1816,7 @@
     text-decoration: none;
 
     font-size: 13px;
+
     font-weight: 700;
 
     white-space: nowrap;
@@ -1540,7 +1842,8 @@
 
     min-height: 420px;
 
-    background-image: url("/Bellefond.jpg");
+    background-image:
+        url("/Bellefond.jpg");
 
     background-size: cover;
 
@@ -1549,6 +1852,7 @@
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 
     text-align: center;
@@ -1560,6 +1864,7 @@
 
 .contact-overlay {
     position: absolute;
+
     inset: 0;
 
     background:
@@ -1575,6 +1880,7 @@
     z-index: 2;
 
     width: 100%;
+
     max-width: 750px;
 
     padding: 50px 25px;
@@ -1584,6 +1890,7 @@
     color: #38bdf8;
 
     font-size: 11px;
+
     font-weight: 800;
 
     letter-spacing: 2px;
@@ -1637,6 +1944,7 @@
     display: inline-flex;
 
     justify-content: center;
+
     align-items: center;
 
     gap: 8px;
@@ -1646,6 +1954,7 @@
     border-radius: 10px;
 
     font-size: 14px;
+
     font-weight: 600;
 
     cursor: pointer;
@@ -1670,7 +1979,9 @@
 }
 
 .contact-secondary {
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.5);
 
     background: transparent;
 
@@ -1684,9 +1995,12 @@
 }
 
 .contact-chatbot {
-    border: 1px solid rgba(56, 189, 248, 0.5);
+    border:
+        1px solid
+        rgba(56, 189, 248, 0.5);
 
-    background: rgba(56, 189, 248, 0.12);
+    background:
+        rgba(56, 189, 248, 0.12);
 
     color: #38bdf8;
 }
@@ -1704,7 +2018,78 @@
    TABLETTE
 ========================================================= */
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
+
+    .videos-section {
+        padding: 90px 30px;
+    }
+
+    .videos-cinematic {
+        grid-template-columns: 1fr;
+
+        gap: 50px;
+
+        max-width: 850px;
+    }
+
+    .videos-cinematic-intro {
+        max-width: 700px;
+
+        text-align: center;
+
+        margin: 0 auto;
+    }
+
+    .videos-cinematic-intro p {
+        margin-left: auto;
+
+        margin-right: auto;
+    }
+
+    .cinematic-discover-button {
+        margin-left: auto;
+
+        margin-right: auto;
+    }
+
+    .cinematic-video-window {
+        height: 650px;
+    }
+
+    .destination-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .offers-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .advantages-container {
+        grid-template-columns: 1fr;
+
+        gap: 45px;
+    }
+
+    .ia-content {
+        grid-template-columns:
+            auto 1fr;
+    }
+
+    .ia-button {
+        grid-column: 2;
+
+        justify-self: start;
+    }
+}
+
+
+/* =========================================================
+   TABLETTE PETITE
+========================================================= */
+
+@media (max-width: 800px) {
 
     .home-hero {
         min-height: 650px;
@@ -1720,70 +2105,28 @@
         font-size: 18px;
     }
 
-
-    /* VIDÉOS */
-
     .videos-section {
-        padding: 75px 25px;
+        padding: 80px 25px;
     }
 
-    .video-montage {
-        grid-template-columns: repeat(2, 1fr);
-
-        grid-template-rows: repeat(3, 240px);
+    .cinematic-video-window {
+        height: 620px;
     }
 
-    .video-montage-1 {
-        grid-column: span 2;
-        grid-row: span 1;
+    .cinematic-video-card {
+        height: 390px;
     }
-
-    .video-montage-2,
-    .video-montage-3,
-    .video-montage-4,
-    .video-montage-5 {
-        grid-column: span 1;
-        grid-row: span 1;
-    }
-
-
-    /* DESTINATIONS */
 
     .destination-grid {
-        grid-template-columns: repeat(2, 1fr);
-
-        gap: 22px;
+        grid-template-columns: 1fr;
     }
-
-
-    /* OFFRES */
 
     .offers-grid {
-        grid-template-columns: repeat(2, 1fr);
-
-        gap: 22px;
-    }
-
-
-    /* AVANTAGES */
-
-    .advantages-container {
         grid-template-columns: 1fr;
-
-        gap: 45px;
     }
 
-
-    /* IA */
-
-    .ia-content {
-        grid-template-columns: auto 1fr;
-    }
-
-    .ia-button {
-        grid-column: 2;
-
-        justify-self: start;
+    .steps-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1796,15 +2139,14 @@
 
     .home-page {
         width: 100%;
+
         max-width: 100%;
 
         overflow-x: hidden;
     }
 
 
-    /* =====================================================
-       HERO
-    ===================================================== */
+    /* HERO */
 
     .home-hero {
         width: 100%;
@@ -1813,7 +2155,8 @@
 
         padding: 80px 22px 70px;
 
-        background-position: center center;
+        background-position:
+            center center;
 
         justify-content: center;
     }
@@ -1855,9 +2198,7 @@
     }
 
 
-    /* =====================================================
-       HERO BUTTONS
-    ===================================================== */
+    /* HERO BUTTONS */
 
     .hero-buttons {
         width: 100%;
@@ -1887,9 +2228,7 @@
     }
 
 
-    /* =====================================================
-       VIDÉOS
-    ===================================================== */
+    /* VIDÉOS */
 
     .videos-section {
         width: 100%;
@@ -1897,62 +2236,82 @@
         padding: 70px 20px 60px;
     }
 
-    .videos-section .section-heading {
-        margin-bottom: 25px;
+    .videos-cinematic {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 35px;
     }
 
-    .videos-section .section-heading h2 {
-        font-size: 30px;
-    }
-
-    .video-montage {
-        grid-template-columns: 1fr;
-
-        grid-template-rows: none;
-
-        gap: 15px;
-    }
-
-    .video-montage-card,
-    .video-montage-1,
-    .video-montage-2,
-    .video-montage-3,
-    .video-montage-4,
-    .video-montage-5 {
-        grid-column: auto;
-        grid-row: auto;
-
+    .videos-cinematic-intro {
         width: 100%;
 
-        height: 300px;
+        max-width: 100%;
 
-        min-height: 300px;
+        text-align: left;
+
+        margin: 0;
     }
 
-    .video-montage-1 {
-        height: 360px;
+    .videos-cinematic-intro h2 {
+        font-size: 42px;
 
-        min-height: 360px;
+        letter-spacing: -1.5px;
     }
 
-    .video-montage-content {
-        left: 18px;
-        right: 18px;
-        bottom: 18px;
+    .videos-cinematic-intro p {
+        max-width: 100%;
+
+        font-size: 14px;
+
+        line-height: 1.7;
     }
 
-    .video-montage-content h3 {
-        font-size: 21px;
+    .cinematic-discover-button {
+        margin-left: 0;
+
+        margin-right: 0;
     }
 
-    .video-montage-content p {
+    .cinematic-video-window {
+        width: 100%;
+
+        height: 620px;
+
+        border-radius: 25px;
+    }
+
+    .cinematic-video-card {
+        height: 380px;
+
+        border-radius: 23px;
+    }
+
+    .cinematic-video-content {
+        left: 22px;
+
+        right: 22px;
+
+        bottom: 23px;
+    }
+
+    .cinematic-video-content h3 {
+        font-size: 24px;
+    }
+
+    .cinematic-video-content p {
         font-size: 12px;
     }
 
+    .cinematic-video-track {
+        gap: 18px;
 
-    /* =====================================================
-       SECTIONS
-    ===================================================== */
+        animation-duration: 27s;
+    }
+
+
+    /* SECTIONS */
 
     .destinations-section,
     .offers-section,
@@ -1991,9 +2350,7 @@
     }
 
 
-    /* =====================================================
-       DESTINATIONS
-    ===================================================== */
+    /* DESTINATIONS */
 
     .destination-grid {
         grid-template-columns: 1fr;
@@ -2010,9 +2367,7 @@
     }
 
 
-    /* =====================================================
-       OFFRES
-    ===================================================== */
+    /* OFFRES */
 
     .offers-section {
         padding-top: 55px;
@@ -2063,9 +2418,7 @@
     }
 
 
-    /* =====================================================
-       AVANTAGES
-    ===================================================== */
+    /* AVANTAGES */
 
     .advantages-section {
         width: 100%;
@@ -2092,9 +2445,7 @@
     }
 
 
-    /* =====================================================
-       STEPS
-    ===================================================== */
+    /* STEPS */
 
     .steps-grid {
         grid-template-columns: 1fr;
@@ -2103,9 +2454,7 @@
     }
 
 
-    /* =====================================================
-       IA
-    ===================================================== */
+    /* IA */
 
     .ia-section {
         width: 100%;
@@ -2140,9 +2489,7 @@
     }
 
 
-    /* =====================================================
-       CONTACT
-    ===================================================== */
+    /* CONTACT */
 
     .home-contact {
         min-height: 500px;
@@ -2183,7 +2530,7 @@
 
 
 /* =========================================================
-   PETITS TÉLÉPHONES 480px
+   MOBILE 480px
 ========================================================= */
 
 @media (max-width: 480px) {
@@ -2206,34 +2553,60 @@
     /* VIDÉOS */
 
     .videos-section {
-        padding-left: 18px;
-        padding-right: 18px;
+        padding:
+            60px 16px;
     }
 
-    .videos-section .section-heading h2 {
-        font-size: 27px;
+    .videos-cinematic-intro h2 {
+        font-size: 35px;
+
+        line-height: 1.1;
     }
 
-    .video-montage-card {
-        height: 260px;
-
-        min-height: 260px;
-
-        border-radius: 16px;
+    .videos-cinematic-intro p {
+        font-size: 13px;
     }
 
-    .video-montage-1 {
-        height: 320px;
+    .cinematic-video-window {
+        height: 550px;
 
-        min-height: 320px;
+        border-radius: 20px;
     }
 
-    .video-montage-content h3 {
-        font-size: 19px;
+    .cinematic-video-card {
+        height: 330px;
+
+        border-radius: 19px;
     }
 
-    .video-montage-content p {
+    .cinematic-video-content {
+        left: 18px;
+
+        right: 18px;
+
+        bottom: 18px;
+    }
+
+    .cinematic-video-content span {
+        padding: 6px 9px;
+
+        font-size: 8px;
+    }
+
+    .cinematic-video-content h3 {
+        font-size: 20px;
+    }
+
+    .cinematic-video-content p {
         font-size: 11px;
+
+        margin-top: 7px;
+    }
+
+    .cinematic-video-track {
+        gap: 14px;
+
+        animation-duration: 23s;
     }
 
 
@@ -2328,7 +2701,7 @@
 
 
 /* =========================================================
-   TRÈS PETITS TÉLÉPHONES 360px
+   360px
 ========================================================= */
 
 @media (max-width: 360px) {
@@ -2366,49 +2739,55 @@
     /* VIDÉOS */
 
     .videos-section {
-        padding: 55px 14px 45px;
+        padding: 50px 12px;
     }
 
-    .videos-section .section-heading h2 {
-        font-size: 23px;
+    .videos-cinematic-intro h2 {
+        font-size: 30px;
     }
 
-    .video-montage {
-        gap: 12px;
+    .videos-cinematic-intro p {
+        font-size: 12px;
     }
 
-    .video-montage-card {
-        height: 230px;
+    .cinematic-video-window {
+        height: 480px;
 
-        min-height: 230px;
-
-        border-radius: 14px;
+        border-radius: 17px;
     }
 
-    .video-montage-1 {
-        height: 285px;
+    .cinematic-video-card {
+        height: 290px;
 
-        min-height: 285px;
+        border-radius: 16px;
     }
 
-    .video-montage-content {
+    .cinematic-video-content {
         left: 14px;
+
         right: 14px;
-        bottom: 14px;
+
+        bottom: 15px;
     }
 
-    .video-category {
-        padding: 5px 8px;
-
+    .cinematic-video-content span {
         font-size: 8px;
+
+        padding: 5px 8px;
     }
 
-    .video-montage-content h3 {
-        font-size: 17px;
+    .cinematic-video-content h3 {
+        font-size: 18px;
     }
 
-    .video-montage-content p {
+    .cinematic-video-content p {
         font-size: 10px;
+    }
+
+    .cinematic-video-track {
+        gap: 12px;
+
+        animation-duration: 20s;
     }
 
 
@@ -2417,7 +2796,8 @@
     .destinations-section,
     .offers-section,
     .steps-section {
-        padding: 55px 14px 40px;
+        padding:
+            55px 14px 40px;
     }
 
     .section-heading h2,
@@ -2441,7 +2821,9 @@
 
     .destination-content {
         left: 15px;
+
         right: 15px;
+
         bottom: 15px;
     }
 
@@ -2484,6 +2866,7 @@
 
     .offer-badge {
         top: 9px;
+
         left: 9px;
 
         max-width: 130px;
@@ -2495,9 +2878,11 @@
 
     .favorite-button {
         top: 9px;
+
         right: 9px;
 
         width: 31px;
+
         height: 31px;
 
         font-size: 13px;
@@ -2561,6 +2946,7 @@
 
     .step-icon {
         width: 57px;
+
         height: 57px;
 
         font-size: 24px;
@@ -2583,6 +2969,7 @@
 
     .ia-icon {
         width: 55px;
+
         height: 55px;
 
         font-size: 24px;
@@ -2671,39 +3058,47 @@
         padding: 45px 12px 40px;
     }
 
-    .videos-section .section-heading h2 {
-        font-size: 21px;
+    .videos-cinematic-intro h2 {
+        font-size: 26px;
     }
 
-    .video-montage-card {
-        height: 200px;
-
-        min-height: 200px;
+    .videos-cinematic-intro p {
+        font-size: 11px;
     }
 
-    .video-montage-1 {
+    .cinematic-video-window {
+        height: 420px;
+
+        border-radius: 15px;
+    }
+
+    .cinematic-video-card {
         height: 250px;
 
         min-height: 250px;
+
+        border-radius: 14px;
     }
 
-    .video-montage-content {
+    .cinematic-video-content {
         left: 11px;
+
         right: 11px;
+
         bottom: 11px;
     }
 
-    .video-category {
+    .cinematic-video-content span {
         font-size: 7px;
 
         padding: 4px 7px;
     }
 
-    .video-montage-content h3 {
+    .cinematic-video-content h3 {
         font-size: 15px;
     }
 
-    .video-montage-content p {
+    .cinematic-video-content p {
         font-size: 9px;
     }
 
@@ -2737,7 +3132,9 @@
 
     .destination-content {
         left: 13px;
+
         right: 13px;
+
         bottom: 13px;
     }
 

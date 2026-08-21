@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
+    FaGlobeAfrica,
     FaMapMarkerAlt,
-    FaArrowRight,
     FaHotel,
     FaStar,
     FaShieldAlt,
@@ -11,419 +11,167 @@ import {
     FaCreditCard,
     FaRobot,
     FaHeart,
-    FaGlobeAfrica,
-    FaCheckCircle
+    FaArrowRight,
+    FaPlay,
+    FaCheckCircle,
+    FaCalendarAlt,
+    FaUsers,
+    FaSearch
 } from "react-icons/fa";
 
 import api from "../api/api";
+
 import "./Accueil.css";
 
 
-function Accueil() {
+/* =========================================================
+   URL IMAGE
+========================================================= */
 
-    /* =========================================================
-       ETATS
-    ========================================================= */
+const getImageUrl = (image) => {
+
+    if (!image) {
+        return null;
+    }
+
+    if (
+        image.startsWith("http://") ||
+        image.startsWith("https://")
+    ) {
+        return image;
+    }
+
+    if (image.startsWith("/uploads/")) {
+        return image;
+    }
+
+    if (image.startsWith("/")) {
+        return image;
+    }
+
+    return `/uploads/${image}`;
+};
+
+
+/* =========================================================
+   FORMAT PRIX
+========================================================= */
+
+const formatPrixEuro = (prix) => {
+
+    if (
+        prix === null ||
+        prix === undefined ||
+        prix === ""
+    ) {
+        return "Prix sur demande";
+    }
+
+    const nombre = Number(prix);
+
+    if (Number.isNaN(nombre)) {
+        return prix;
+    }
+
+    return `${nombre.toLocaleString("fr-FR")} €`;
+};
+
+
+/* =========================================================
+   VIDÉOS CINÉMATIQUES
+========================================================= */
+
+const videoItems = [
+
+    {
+        id: 1,
+        src: "/videos/lemurien.mp4",
+        category: "FAUNE",
+        title: "À la rencontre des lémuriens",
+        description:
+            "Découvrez l'une des espèces les plus emblématiques de Madagascar."
+    },
+
+    {
+        id: 2,
+        src: "/videos/baobab.mp4",
+        category: "NATURE",
+        title: "L'allée des Baobabs",
+        description:
+            "Un paysage mythique au cœur de Madagascar."
+    },
+
+    {
+        id: 3,
+        src: "/videos/plage.mp4",
+        category: "OCÉAN",
+        title: "Les plages paradisiaques",
+        description:
+            "Des eaux turquoise et des paysages tropicaux exceptionnels."
+    },
+
+    {
+        id: 4,
+        src: "/videos/tsingy.mp4",
+        category: "AVENTURE",
+        title: "Les Tsingy de Madagascar",
+        description:
+            "Explorez des formations rocheuses parmi les plus spectaculaires."
+    },
+
+    {
+        id: 5,
+        src: "/videos/ocean.mp4",
+        category: "ÉVASION",
+        title: "Madagascar côté océan",
+        description:
+            "Laissez-vous transporter par les paysages de l'océan Indien."
+    }
+
+];
+
+
+/* =========================================================
+   COMPOSANT ACCUEIL
+========================================================= */
+
+function Accueil() {
 
     const [destinations, setDestinations] = useState([]);
     const [offres, setOffres] = useState([]);
 
-    const [loadingDestinations, setLoadingDestinations] =
-        useState(true);
+    const [loadingDestinations, setLoadingDestinations] = useState(true);
+    const [loadingOffres, setLoadingOffres] = useState(true);
 
-    const [loadingOffres, setLoadingOffres] =
-        useState(true);
-
-    const [errorDestinations, setErrorDestinations] =
-        useState("");
-
-    const [errorOffres, setErrorOffres] =
-        useState("");
-
-    const [videosDisponibles, setVideosDisponibles] =
-        useState([]);
-
-    const [videoPrincipale, setVideoPrincipale] =
-        useState(null);
+    const [errorDestinations, setErrorDestinations] = useState("");
+    const [errorOffres, setErrorOffres] = useState("");
 
 
-    /* =========================================================
-       VIDEOS ACCUEIL
-       
-       IMPORTANT :
-       Les fichiers sont dans :
-       client/public/videos-web/
-       
-       Donc les URLs commencent par :
-       /videos-web/
-    ========================================================= */
-
-    const videosAccueil = [
-
-        {
-            fichier: "/videos-web/lemurien.mp4",
-            categorie: "Nature",
-            titre: "La faune de Madagascar",
-            description:
-                "Découvrez la richesse exceptionnelle de la faune malgache."
-        },
-
-        {
-            fichier: "/videos-web/ville.mp4",
-            categorie: "Ville",
-            titre: "Découvrez les villes",
-            description:
-                "Explorez les villes et l'ambiance des destinations malgaches."
-        },
-
-        {
-            fichier: "/videos-web/ranomafana.mp4",
-            categorie: "Destination",
-            titre: "Ranomafana",
-            description:
-                "Découvrez les paysages et les merveilles naturelles de Ranomafana."
-        },
-
-        {
-            fichier: "/videos-web/hotel.mp4",
-            categorie: "Hébergement",
-            titre: "Séjournez confortablement",
-            description:
-                "Découvrez les hébergements et les espaces conçus pour votre séjour."
-        },
-
-        {
-            fichier: "/videos-web/nature.mp4",
-            categorie: "Nature",
-            titre: "Évasion et paysages",
-            description:
-                "Laissez-vous séduire par les paysages exceptionnels de Madagascar."
-        }
-
-    ];
-
-
-    /* =========================================================
-       PRIX
-    ========================================================= */
-
-    const formatPrixEuro = (prix) => {
-
-        if (
-            prix === null ||
-            prix === undefined ||
-            prix === ""
-        ) {
-            return "Prix sur demande";
-        }
-
-        const prixNumerique = Number(prix);
-
-        if (Number.isNaN(prixNumerique)) {
-            return "Prix sur demande";
-        }
-
-        return `${prixNumerique.toLocaleString(
-            "fr-FR",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        )} €`;
-    };
-
-
-    /* =========================================================
-       CONSTRUIRE URL IMAGE
-    ========================================================= */
-
-    const getImageUrl = (image) => {
-
-        if (!image) {
-            return null;
-        }
-
-        const imageString = String(image).trim();
-
-        if (!imageString) {
-            return null;
-        }
-
-
-        /* URL Cloudinary ou URL complète */
-
-        if (
-            imageString.startsWith("http://") ||
-            imageString.startsWith("https://")
-        ) {
-            return imageString;
-        }
-
-
-        const serverUrl =
-            import.meta.env.VITE_SERVER_URL || "";
-
-
-        /* Ancien système /uploads */
-
-        if (imageString.startsWith("/uploads/")) {
-
-            return `${serverUrl}${imageString}`;
-
-        }
-
-
-        /* Autre URL locale */
-
-        if (imageString.startsWith("/")) {
-
-            return `${serverUrl}${imageString}`;
-
-        }
-
-
-        /* Nom de fichier uniquement */
-
-        return `${serverUrl}/uploads/${imageString}`;
-    };
-
-
-    /* =========================================================
-       ERREUR IMAGE
-    ========================================================= */
-
-    const handleImageError = (event) => {
-
-        if (!event.currentTarget) {
-            return;
-        }
-
-        event.currentTarget.style.display = "none";
-
-        const parent =
-            event.currentTarget.parentElement;
-
-        if (parent) {
-
-            parent.classList.add(
-                "image-load-error"
-            );
-
-        }
-    };
-
-
-    /* =========================================================
-       VERIFIER LES VIDEOS DISPONIBLES
-       
-       On vérifie réellement chaque fichier.
-       
-       Les vidéos inexistantes sont ignorées.
-       Les vidéos disponibles sont affichées dans le montage.
-    ========================================================= */
+    /* =====================================================
+       CHARGEMENT DESTINATIONS
+    ===================================================== */
 
     useEffect(() => {
 
-        let actif = true;
-
-
-        const verifierVideos = async () => {
-
-            const resultats =
-                await Promise.all(
-
-                    videosAccueil.map(
-                        (video) => {
-
-                            return new Promise((resolve) => {
-
-                                const videoElement =
-                                    document.createElement("video");
-
-
-                                let termine = false;
-
-
-                                const terminer = (resultat) => {
-
-                                    if (termine) {
-                                        return;
-                                    }
-
-                                    termine = true;
-
-                                    resolve(resultat);
-
-                                };
-
-
-                                videoElement.preload =
-                                    "metadata";
-
-
-                                videoElement.muted = true;
-
-
-                                videoElement.onloadedmetadata =
-                                    () => {
-
-                                        terminer(video);
-
-                                    };
-
-
-                                videoElement.oncanplay =
-                                    () => {
-
-                                        terminer(video);
-
-                                    };
-
-
-                                videoElement.onerror =
-                                    () => {
-
-                                        terminer(null);
-
-                                    };
-
-
-                                videoElement.src =
-                                    video.fichier;
-
-
-                                videoElement.load();
-
-                            });
-
-                        }
-                    )
-                );
-
-
-            if (!actif) {
-                return;
-            }
-
-
-            const videosValides =
-                resultats.filter(Boolean);
-
-
-            setVideosDisponibles(
-                videosValides
-            );
-
-
-            /*
-             * Première vidéo = vidéo principale
-             */
-
-            if (videosValides.length > 0) {
-
-                setVideoPrincipale(
-                    videosValides[0]
-                );
-
-            }
-            else {
-
-                setVideoPrincipale(null);
-
-            }
-
-        };
-
-
-        verifierVideos();
-
-
-        return () => {
-
-            actif = false;
-
-        };
-
-    }, []);
-
-
-    /* =========================================================
-       CHARGER DESTINATIONS
-    ========================================================= */
-
-    useEffect(() => {
-
-        let actif = true;
-
-
-        const chargerDestinations = async () => {
+        const fetchDestinations = async () => {
 
             try {
 
                 setLoadingDestinations(true);
-
                 setErrorDestinations("");
 
+                const response = await api.get("/destinations");
 
-                const response =
-                    await api.get("/destinations");
+                const data = response.data;
 
-
-                console.log(
-                    "Destinations récupérées :",
-                    response.data
-                );
-
-
-                let data =
-                    response.data;
-
-
-                /* { destinations: [...] } */
-
-                if (
-                    data &&
-                    Array.isArray(
-                        data.destinations
-                    )
-                ) {
-
-                    data =
-                        data.destinations;
-
+                if (Array.isArray(data)) {
+                    setDestinations(data);
                 }
-
-
-                /* { data: [...] } */
-
-                else if (
-                    data &&
-                    Array.isArray(
-                        data.data
-                    )
-                ) {
-
-                    data =
-                        data.data;
-
+                else if (Array.isArray(data?.destinations)) {
+                    setDestinations(data.destinations);
                 }
-
-
-                if (actif) {
-
-                    if (
-                        Array.isArray(data)
-                    ) {
-
-                        setDestinations(data);
-
-                    }
-                    else {
-
-                        setDestinations([]);
-
-                    }
-
+                else {
+                    setDestinations([]);
                 }
 
             }
@@ -434,123 +182,50 @@ function Accueil() {
                     error
                 );
 
-
-                if (actif) {
-
-                    setErrorDestinations(
-                        "Impossible de charger les destinations."
-                    );
-
-
-                    setDestinations([]);
-
-                }
+                setErrorDestinations(
+                    "Impossible de charger les destinations."
+                );
 
             }
             finally {
 
-                if (actif) {
-
-                    setLoadingDestinations(
-                        false
-                    );
-
-                }
+                setLoadingDestinations(false);
 
             }
 
         };
 
 
-        chargerDestinations();
-
-
-        return () => {
-
-            actif = false;
-
-        };
+        fetchDestinations();
 
     }, []);
 
 
-    /* =========================================================
-       CHARGER OFFRES
-    ========================================================= */
+    /* =====================================================
+       CHARGEMENT OFFRES
+    ===================================================== */
 
     useEffect(() => {
 
-        let actif = true;
-
-
-        const chargerOffres = async () => {
+        const fetchOffres = async () => {
 
             try {
 
                 setLoadingOffres(true);
-
                 setErrorOffres("");
 
+                const response = await api.get("/offres");
 
-                const response =
-                    await api.get("/offres");
+                const data = response.data;
 
-
-                console.log(
-                    "Offres récupérées :",
-                    response.data
-                );
-
-
-                let data =
-                    response.data;
-
-
-                /* { offres: [...] } */
-
-                if (
-                    data &&
-                    Array.isArray(
-                        data.offres
-                    )
-                ) {
-
-                    data =
-                        data.offres;
-
+                if (Array.isArray(data)) {
+                    setOffres(data);
                 }
-
-
-                /* { data: [...] } */
-
-                else if (
-                    data &&
-                    Array.isArray(
-                        data.data
-                    )
-                ) {
-
-                    data =
-                        data.data;
-
+                else if (Array.isArray(data?.offres)) {
+                    setOffres(data.offres);
                 }
-
-
-                if (actif) {
-
-                    if (
-                        Array.isArray(data)
-                    ) {
-
-                        setOffres(data);
-
-                    }
-                    else {
-
-                        setOffres([]);
-
-                    }
-
+                else {
+                    setOffres([]);
                 }
 
             }
@@ -561,88 +236,53 @@ function Accueil() {
                     error
                 );
 
-
-                if (actif) {
-
-                    setErrorOffres(
-                        "Impossible de charger les offres."
-                    );
-
-
-                    setOffres([]);
-
-                }
+                setErrorOffres(
+                    "Impossible de charger les offres."
+                );
 
             }
             finally {
 
-                if (actif) {
-
-                    setLoadingOffres(
-                        false
-                    );
-
-                }
+                setLoadingOffres(false);
 
             }
 
         };
 
 
-        chargerOffres();
-
-
-        return () => {
-
-            actif = false;
-
-        };
+        fetchOffres();
 
     }, []);
 
 
-    /* =========================================================
-       ELEMENTS A AFFICHER
-    ========================================================= */
+    /* =====================================================
+       DESTINATIONS LIMITÉES
+    ===================================================== */
 
-    const destinationsAffichees =
-        destinations.slice(0, 3);
+    const displayedDestinations =
+        destinations.slice(0, 6);
 
 
-    const offresAffichees =
+    /* =====================================================
+       OFFRES LIMITÉES
+    ===================================================== */
+
+    const displayedOffers =
         offres.slice(0, 6);
 
 
-    /*
-     * Les vidéos secondaires :
-     * toutes les vidéos sauf la principale.
-     */
-
-    const videosSecondaires =
-        videosDisponibles.filter(
-            (video) =>
-                video.fichier !==
-                videoPrincipale?.fichier
-        );
-
-
-    /* =========================================================
-       RENDU
-    ========================================================= */
-
     return (
 
-        <div className="home-page">
+        <main className="home-page">
 
 
-            {/* =====================================================
+            {/* =================================================
                 HERO
-            ===================================================== */}
+            ================================================= */}
 
             <section className="home-hero">
 
                 <div className="hero-overlay"></div>
-
 
                 <div className="hero-content">
 
@@ -651,7 +291,7 @@ function Accueil() {
                         <FaGlobeAfrica />
 
                         <span>
-                            Votre voyage commence ici
+                            VOTRE VOYAGE COMMENCE ICI
                         </span>
 
                     </div>
@@ -659,10 +299,10 @@ function Accueil() {
 
                     <h1>
 
-                        Découvrez les plus belles
+                        Découvrez
 
                         <span>
-                            destinations touristiques
+                            Madagascar autrement
                         </span>
 
                     </h1>
@@ -670,9 +310,10 @@ function Accueil() {
 
                     <p>
 
-                        Explorez Madagascar et ses merveilles,
-                        découvrez nos offres touristiques et
-                        réservez facilement votre prochain séjour.
+                        Explorez les plus belles destinations,
+                        trouvez les meilleures offres touristiques
+                        et réservez votre prochaine aventure
+                        en toute simplicité.
 
                     </p>
 
@@ -680,27 +321,29 @@ function Accueil() {
                     <div className="hero-buttons">
 
                         <Link
-                            to="/destinations-public"
+                            to="/destinations"
                             className="hero-primary-btn"
                         >
 
                             <span>
-                                Explorer les destinations
+                                Explorer Madagascar
                             </span>
 
-                            <span>
-                                <FaArrowRight />
-                            </span>
+                            <FaArrowRight />
 
                         </Link>
 
 
                         <Link
-                            to="/offres-public"
+                            to="/offres"
                             className="hero-secondary-btn"
                         >
 
-                            Voir les offres
+                            <FaPlay />
+
+                            <span>
+                                Voir les offres
+                            </span>
 
                         </Link>
 
@@ -711,190 +354,177 @@ function Accueil() {
             </section>
 
 
-            {/* =====================================================
-                MONTAGE VIDEO
-            ===================================================== */}
+            {/* =================================================
+                VIDÉOS CINÉMATIQUES
+            ================================================= */}
 
             <section className="videos-section">
 
-                <div className="section-heading">
+                <div className="videos-cinematic">
 
-                    <div>
+
+                    {/* ================================
+                        TEXTE GAUCHE
+                    ================================= */}
+
+                    <div className="videos-cinematic-intro">
 
                         <span className="section-label">
-                            INSPIRATION
+
+                            EXPLOREZ MADAGASCAR
+
                         </span>
 
 
                         <h2>
-                            Laissez-vous inspirer par le voyage
+
+                            Découvrez Madagascar
+
+                            <span>
+                                autrement.
+                            </span>
+
                         </h2>
 
 
                         <p>
-                            Découvrez Madagascar à travers un
-                            montage de paysages, de villes,
-                            de nature et d'expériences.
+
+                            Des paysages uniques, une faune
+                            exceptionnelle et des expériences
+                            inoubliables. Faites défiler notre
+                            sélection et laissez-vous inspirer.
+
                         </p>
+
+
+                        <Link
+                            to="/destinations"
+                            className="cinematic-discover-button"
+                        >
+
+                            Découvrir les destinations
+
+                            <FaArrowRight />
+
+                        </Link>
+
+                    </div>
+
+
+                    {/* ================================
+                        MUR VIDÉO
+                    ================================= */}
+
+                    <div className="cinematic-video-window">
+
+
+                        <div className="cinematic-video-track">
+
+
+                            {/* PREMIÈRE SÉRIE */}
+
+                            {videoItems.map((video) => (
+
+                                <article
+                                    className="cinematic-video-card"
+                                    key={`first-${video.id}`}
+                                >
+
+                                    <video
+                                        src={video.src}
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
+                                        preload="metadata"
+                                    />
+
+
+                                    <div className="cinematic-video-overlay"></div>
+
+
+                                    <div className="cinematic-video-content">
+
+                                        <span>
+                                            {video.category}
+                                        </span>
+
+                                        <h3>
+                                            {video.title}
+                                        </h3>
+
+                                        <p>
+                                            {video.description}
+                                        </p>
+
+                                    </div>
+
+                                </article>
+
+                            ))}
+
+
+                            {/* DEUXIÈME SÉRIE
+                                pour créer une boucle continue */}
+
+                            {videoItems.map((video) => (
+
+                                <article
+                                    className="cinematic-video-card"
+                                    key={`second-${video.id}`}
+                                    aria-hidden="true"
+                                >
+
+                                    <video
+                                        src={video.src}
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
+                                        preload="metadata"
+                                    />
+
+
+                                    <div className="cinematic-video-overlay"></div>
+
+
+                                    <div className="cinematic-video-content">
+
+                                        <span>
+                                            {video.category}
+                                        </span>
+
+                                        <h3>
+                                            {video.title}
+                                        </h3>
+
+                                        <p>
+                                            {video.description}
+                                        </p>
+
+                                    </div>
+
+                                </article>
+
+                            ))}
+
+                        </div>
+
+
+                        <div className="cinematic-top-fade"></div>
+
+                        <div className="cinematic-bottom-fade"></div>
 
                     </div>
 
                 </div>
 
-
-                {videosDisponibles.length === 0 ? (
-
-                    /* =================================================
-                       AUCUNE VIDEO
-                    ================================================= */
-
-                    <div className="video-empty-state">
-
-                        <div className="video-empty-icon">
-
-                            <FaGlobeAfrica />
-
-                        </div>
-
-
-                        <h3>
-                            Découvrez bientôt nos vidéos
-                        </h3>
-
-
-                        <p>
-                            Notre sélection de clips touristiques
-                            sera bientôt disponible.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    /* =================================================
-                       MONTAGE
-                    ================================================= */
-
-                    <div className="video-montage">
-
-
-                        {/* =============================================
-                            VIDEO PRINCIPALE
-                        ============================================= */}
-
-                        {videoPrincipale && (
-
-                            <div
-                                className="video-montage-card video-montage-main"
-                            >
-
-                                <video
-                                    src={
-                                        videoPrincipale.fichier
-                                    }
-                                    autoPlay
-                                    muted
-                                    loop
-                                    playsInline
-                                    preload="metadata"
-                                />
-
-
-                                <div className="video-montage-overlay"></div>
-
-
-                                <div className="video-montage-content">
-
-                                    <span className="video-category">
-
-                                        {videoPrincipale.categorie}
-
-                                    </span>
-
-
-                                    <h3>
-
-                                        {videoPrincipale.titre}
-
-                                    </h3>
-
-
-                                    <p>
-
-                                        {videoPrincipale.description}
-
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        )}
-
-
-                        {/* =============================================
-                            VIDEOS SECONDAIRES
-                        ============================================= */}
-
-                        <div className="video-montage-side">
-
-                            {videosSecondaires.map(
-                                (video, index) => (
-
-                                    <div
-                                        className={`video-montage-card video-montage-small video-montage-small-${index + 1}`}
-                                        key={`${video.fichier}-${index}`}
-                                    >
-
-                                        <video
-                                            src={
-                                                video.fichier
-                                            }
-                                            autoPlay
-                                            muted
-                                            loop
-                                            playsInline
-                                            preload="metadata"
-                                        />
-
-
-                                        <div className="video-montage-overlay"></div>
-
-
-                                        <div className="video-montage-content">
-
-                                            <span className="video-category">
-
-                                                {video.categorie}
-
-                                            </span>
-
-
-                                            <h3>
-
-                                                {video.titre}
-
-                                            </h3>
-
-                                        </div>
-
-                                    </div>
-
-                                )
-                            )}
-
-                        </div>
-
-                    </div>
-
-                )}
-
             </section>
 
 
-            {/* =====================================================
+            {/* =================================================
                 DESTINATIONS
-            ===================================================== */}
+            ================================================= */}
 
             <section className="destinations-section">
 
@@ -906,22 +536,20 @@ function Accueil() {
                             DESTINATIONS
                         </span>
 
-
                         <h2>
-                            Explorez Madagascar
+                            Des lieux qui font rêver
                         </h2>
 
-
                         <p>
-                            Découvrez les destinations les plus
-                            remarquables proposées sur notre plateforme.
+                            Découvrez les destinations
+                            incontournables de Madagascar.
                         </p>
 
                     </div>
 
 
                     <Link
-                        to="/destinations-public"
+                        to="/destinations"
                         className="see-all-link"
                     >
 
@@ -950,9 +578,7 @@ function Accueil() {
 
                     <div className="error-container">
 
-                        <span>
-                            ⚠️
-                        </span>
+                        <span>⚠️</span>
 
                         <p>
                             {errorDestinations}
@@ -960,16 +586,14 @@ function Accueil() {
 
                     </div>
 
-                ) : destinationsAffichees.length === 0 ? (
+                ) : displayedDestinations.length === 0 ? (
 
                     <div className="empty-container">
 
-                        <span>
-                            🌍
-                        </span>
+                        <span>🌍</span>
 
                         <p>
-                            Aucune destination disponible pour le moment.
+                            Aucune destination disponible.
                         </p>
 
                     </div>
@@ -978,8 +602,8 @@ function Accueil() {
 
                     <div className="destination-grid">
 
-                        {destinationsAffichees.map(
-                            (destination, index) => {
+                        {displayedDestinations.map(
+                            (destination) => {
 
                                 const image =
                                     getImageUrl(
@@ -989,40 +613,30 @@ function Accueil() {
                                     );
 
 
-                                const id =
-                                    destination.id_destination ||
-                                    destination.id;
-
-
-                                const nom =
-                                    destination.nom ||
-                                    destination.nom_destination ||
-                                    "Destination";
-
-
-                                const description =
-                                    destination.description ||
-                                    "Découvrez cette magnifique destination touristique.";
-
-
                                 return (
 
                                     <Link
-                                        to="/destinations-public"
+                                        key={
+                                            destination.id_destination ||
+                                            destination.id
+                                        }
+                                        to={`/destinations/${
+                                            destination.id_destination ||
+                                            destination.id
+                                        }`}
                                         className="destination-card"
-                                        key={id || index}
                                     >
 
                                         {image ? (
 
                                             <img
                                                 src={image}
-                                                alt={nom}
-                                                className="destination-image"
-                                                loading="lazy"
-                                                onError={
-                                                    handleImageError
+                                                alt={
+                                                    destination.nom ||
+                                                    destination.nom_destination ||
+                                                    "Destination"
                                                 }
+                                                className="destination-image"
                                             />
 
                                         ) : (
@@ -1041,32 +655,45 @@ function Accueil() {
 
                                         <div className="destination-content">
 
-                                            <span className="destination-location">
+                                            <div className="destination-location">
 
                                                 <FaMapMarkerAlt />
 
-                                                Madagascar
+                                                <span>
+                                                    Madagascar
+                                                </span>
 
-                                            </span>
+                                            </div>
 
 
                                             <h3>
-                                                {nom}
+
+                                                {
+                                                    destination.nom ||
+                                                    destination.nom_destination ||
+                                                    "Destination"
+                                                }
+
                                             </h3>
 
 
                                             <p>
-                                                {description}
+
+                                                {
+                                                    destination.description ||
+                                                    "Découvrez cette magnifique destination touristique."
+                                                }
+
                                             </p>
 
 
-                                            <span className="destination-link">
+                                            <div className="destination-link">
 
                                                 Découvrir
 
                                                 <FaArrowRight />
 
-                                            </span>
+                                            </div>
 
                                         </div>
 
@@ -1084,9 +711,9 @@ function Accueil() {
             </section>
 
 
-            {/* =====================================================
+            {/* =================================================
                 OFFRES
-            ===================================================== */}
+            ================================================= */}
 
             <section className="offers-section">
 
@@ -1098,22 +725,20 @@ function Accueil() {
                             NOS OFFRES
                         </span>
 
-
                         <h2>
-                            Des séjours pour tous les goûts
+                            Préparez votre prochaine aventure
                         </h2>
 
-
                         <p>
-                            Trouvez l'offre idéale pour votre prochain
-                            voyage.
+                            Des expériences sélectionnées
+                            pour rendre votre séjour inoubliable.
                         </p>
 
                     </div>
 
 
                     <Link
-                        to="/offres-public"
+                        to="/offres"
                         className="see-all-link"
                     >
 
@@ -1142,9 +767,7 @@ function Accueil() {
 
                     <div className="error-container">
 
-                        <span>
-                            ⚠️
-                        </span>
+                        <span>⚠️</span>
 
                         <p>
                             {errorOffres}
@@ -1152,16 +775,14 @@ function Accueil() {
 
                     </div>
 
-                ) : offresAffichees.length === 0 ? (
+                ) : displayedOffers.length === 0 ? (
 
                     <div className="empty-container">
 
-                        <span>
-                            🏨
-                        </span>
+                        <span>🏨</span>
 
                         <p>
-                            Aucune offre disponible pour le moment.
+                            Aucune offre disponible.
                         </p>
 
                     </div>
@@ -1170,221 +791,162 @@ function Accueil() {
 
                     <div className="offers-grid">
 
-                        {offresAffichees.map(
-                            (offre, index) => {
+                        {displayedOffers.map((offre) => {
 
-                                const image =
-                                    getImageUrl(
-                                        offre.image ||
-                                        offre.photo ||
-                                        offre.image_offre
-                                    );
-
-
-                                const id =
-                                    offre.id_offre ||
-                                    offre.id;
+                            const image =
+                                getImageUrl(
+                                    offre.image ||
+                                    offre.photo ||
+                                    offre.image_offre
+                                );
 
 
-                                const titre =
-                                    offre.titre ||
-                                    "Offre touristique";
+                            return (
+
+                                <article
+                                    key={
+                                        offre.id_offre ||
+                                        offre.id
+                                    }
+                                    className="offer-card"
+                                >
 
 
-                                const destination =
-                                    offre.destination ||
-                                    offre.nom_destination ||
-                                    "Madagascar";
+                                    <div className="offer-image">
+
+                                        {image ? (
+
+                                            <img
+                                                src={image}
+                                                alt={
+                                                    offre.titre ||
+                                                    offre.nom ||
+                                                    "Offre touristique"
+                                                }
+                                            />
+
+                                        ) : (
+
+                                            <div className="offer-no-image">
+
+                                                <FaHotel />
+
+                                            </div>
+
+                                        )}
 
 
-                                return (
+                                        <span className="offer-badge">
 
-                                    <article
-                                        className="offer-card"
-                                        key={id || index}
-                                    >
+                                            {
+                                                offre.categorie ||
+                                                "OFFRE TOURISTIQUE"
+                                            }
 
-                                        <div className="offer-image">
-
-                                            {image ? (
-
-                                                <img
-                                                    src={image}
-                                                    alt={titre}
-                                                    loading="lazy"
-                                                    onError={
-                                                        handleImageError
-                                                    }
-                                                />
-
-                                            ) : (
-
-                                                <div className="offer-no-image">
-
-                                                    <FaHotel />
-
-                                                </div>
-
-                                            )}
+                                        </span>
 
 
-                                            {offre.categorie && (
+                                        <button
+                                            type="button"
+                                            className="favorite-button"
+                                            aria-label="Ajouter aux favoris"
+                                        >
 
-                                                <span className="offer-badge">
+                                            <FaHeart />
 
-                                                    {offre.categorie}
+                                        </button>
 
-                                                </span>
-
-                                            )}
-
-
-                                            <button
-                                                type="button"
-                                                className="favorite-button"
-                                                aria-label="Ajouter aux favoris"
-                                                onClick={(event) => {
-
-                                                    event.preventDefault();
-
-                                                    event.stopPropagation();
-
-                                                }}
-                                            >
-
-                                                <FaHeart />
-
-                                            </button>
-
-                                        </div>
+                                    </div>
 
 
-                                        <div className="offer-content">
+                                    <div className="offer-content">
 
-                                            <span className="offer-location">
 
-                                                <FaMapMarkerAlt />
+                                        <div className="offer-location">
 
-                                                {destination}
+                                            <FaMapMarkerAlt />
+
+                                            <span>
+
+                                                {
+                                                    offre.destination ||
+                                                    offre.nom_destination ||
+                                                    "Madagascar"
+                                                }
 
                                             </span>
 
-
-                                            <h3>
-                                                {titre}
-                                            </h3>
+                                        </div>
 
 
-                                            <div className="offer-info">
+                                        <h3>
 
-                                                {offre.capacite !==
-                                                    undefined &&
-                                                    offre.capacite !==
-                                                    null &&
-                                                    offre.capacite !==
-                                                    "" && (
+                                            {
+                                                offre.titre ||
+                                                offre.nom ||
+                                                "Offre touristique"
+                                            }
 
-                                                        <span>
-
-                                                            👥{" "}
-
-                                                            {offre.capacite}
-
-                                                            {" "}
-                                                            personnes
-
-                                                        </span>
-
-                                                    )}
+                                        </h3>
 
 
-                                                {offre.disponibilite !==
-                                                    undefined && (
+                                        <div className="offer-info">
 
-                                                        <span>
+                                            <span>
+                                                <FaCalendarAlt />
+                                                Séjour touristique
+                                            </span>
 
-                                                            ✓ Disponible
-
-                                                        </span>
-
-                                                    )}
-
-
-                                                {offre.date_debut && (
-
-                                                    <span>
-
-                                                        📅{" "}
-
-                                                        {new Date(
-                                                            offre.date_debut
-                                                        ).toLocaleDateString(
-                                                            "fr-FR"
-                                                        )}
-
-                                                    </span>
-
-                                                )}
-
-                                            </div>
-
-
-                                            <div className="offer-bottom">
-
-                                                <div className="offer-price">
-
-                                                    <small>
-                                                        À partir de
-                                                    </small>
-
-
-                                                    <strong>
-                                                        {formatPrixEuro(
-                                                            offre.prix
-                                                        )}
-                                                    </strong>
-
-                                                </div>
-
-
-                                                {id ? (
-
-                                                    <Link
-                                                        to={`/detail-offre/${id}`}
-                                                        className="offer-button"
-                                                    >
-
-                                                        Voir l'offre
-
-                                                        <FaArrowRight />
-
-                                                    </Link>
-
-                                                ) : (
-
-                                                    <Link
-                                                        to="/offres-public"
-                                                        className="offer-button"
-                                                    >
-
-                                                        Voir les offres
-
-                                                        <FaArrowRight />
-
-                                                    </Link>
-
-                                                )}
-
-                                            </div>
+                                            <span>
+                                                <FaUsers />
+                                                Disponible
+                                            </span>
 
                                         </div>
 
-                                    </article>
 
-                                );
+                                        <div className="offer-bottom">
 
-                            }
-                        )}
+                                            <div className="offer-price">
+
+                                                <small>
+                                                    À partir de
+                                                </small>
+
+                                                <strong>
+
+                                                    {formatPrixEuro(
+                                                        offre.prix
+                                                    )}
+
+                                                </strong>
+
+                                            </div>
+
+
+                                            <Link
+                                                to={`/offres/${
+                                                    offre.id_offre ||
+                                                    offre.id
+                                                }`}
+                                                className="offer-button"
+                                            >
+
+                                                Voir l'offre
+
+                                                <FaArrowRight />
+
+                                            </Link>
+
+                                        </div>
+
+                                    </div>
+
+                                </article>
+
+                            );
+
+                        })}
 
                     </div>
 
@@ -1393,27 +955,28 @@ function Accueil() {
             </section>
 
 
-            {/* =====================================================
+            {/* =================================================
                 AVANTAGES
-            ===================================================== */}
+            ================================================= */}
 
             <section className="advantages-section">
 
                 <div className="advantages-container">
 
+
                     <div className="advantages-intro">
 
                         <span className="section-label">
-                            POURQUOI NOUS CHOISIR ?
+                            POURQUOI NOUS ?
                         </span>
 
 
                         <h2>
 
-                            Voyagez en toute
+                            Voyagez
 
                             <span>
-                                simplicité.
+                                en toute confiance.
                             </span>
 
                         </h2>
@@ -1421,19 +984,20 @@ function Accueil() {
 
                         <p>
 
-                            Notre plateforme vous accompagne de la
-                            recherche de votre destination jusqu'à
-                            la réservation de votre séjour.
+                            Notre plateforme vous accompagne
+                            à chaque étape pour rendre votre
+                            expérience touristique simple,
+                            sécurisée et agréable.
 
                         </p>
 
 
                         <Link
-                            to="/destinations-public"
+                            to="/contact"
                             className="advantages-button"
                         >
 
-                            Commencer maintenant
+                            Besoin d'aide ?
 
                             <FaArrowRight />
 
@@ -1444,21 +1008,22 @@ function Accueil() {
 
                     <div className="advantages-grid">
 
+
                         <div className="advantage-card">
 
                             <div className="advantage-icon">
-                                <FaShieldAlt />
-                            </div>
 
+                                <FaShieldAlt />
+
+                            </div>
 
                             <h3>
                                 Réservation sécurisée
                             </h3>
 
-
                             <p>
-                                Vos réservations sont traitées
-                                de manière fiable et sécurisée.
+                                Vos réservations et vos données
+                                sont protégées.
                             </p>
 
                         </div>
@@ -1467,18 +1032,18 @@ function Accueil() {
                         <div className="advantage-card">
 
                             <div className="advantage-icon">
+
                                 <FaCreditCard />
+
                             </div>
 
-
                             <h3>
-                                Paiement simple
+                                Paiement sécurisé
                             </h3>
 
-
                             <p>
-                                Profitez d'un processus de paiement
-                                simple et pratique.
+                                Effectuez vos paiements en toute
+                                tranquillité.
                             </p>
 
                         </div>
@@ -1487,38 +1052,38 @@ function Accueil() {
                         <div className="advantage-card">
 
                             <div className="advantage-icon">
-                                <FaStar />
-                            </div>
 
-
-                            <h3>
-                                Offres sélectionnées
-                            </h3>
-
-
-                            <p>
-                                Découvrez des offres touristiques
-                                adaptées à vos besoins.
-                            </p>
-
-                        </div>
-
-
-                        <div className="advantage-card">
-
-                            <div className="advantage-icon">
                                 <FaHeadset />
-                            </div>
 
+                            </div>
 
                             <h3>
                                 Assistance
                             </h3>
 
+                            <p>
+                                Une équipe disponible pour vous
+                                accompagner.
+                            </p>
+
+                        </div>
+
+
+                        <div className="advantage-card">
+
+                            <div className="advantage-icon">
+
+                                <FaStar />
+
+                            </div>
+
+                            <h3>
+                                Expériences sélectionnées
+                            </h3>
 
                             <p>
-                                Notre équipe reste disponible pour
-                                répondre à vos questions.
+                                Des offres et destinations choisies
+                                pour leur qualité.
                             </p>
 
                         </div>
@@ -1530,27 +1095,25 @@ function Accueil() {
             </section>
 
 
-            {/* =====================================================
+            {/* =================================================
                 COMMENT ÇA MARCHE
-            ===================================================== */}
+            ================================================= */}
 
             <section className="steps-section">
 
                 <div className="section-title-center">
 
                     <span className="section-label">
-                        COMMENT ÇA MARCHE ?
+                        SIMPLE ET RAPIDE
                     </span>
 
-
                     <h2>
-                        Réservez votre séjour en quelques étapes
+                        Comment ça marche ?
                     </h2>
 
-
                     <p>
-                        Un processus simple et rapide pour organiser
-                        votre prochain voyage.
+                        Quelques étapes suffisent pour préparer
+                        votre prochaine aventure.
                     </p>
 
                 </div>
@@ -1558,28 +1121,26 @@ function Accueil() {
 
                 <div className="steps-grid">
 
+
                     <div className="step-card">
 
                         <span className="step-number">
                             01
                         </span>
 
-
                         <div className="step-icon">
 
-                            <FaGlobeAfrica />
+                            <FaSearch />
 
                         </div>
 
-
                         <h3>
-                            Explorez
+                            Recherchez
                         </h3>
 
-
                         <p>
-                            Explorez les destinations et les offres
-                            disponibles sur notre plateforme.
+                            Explorez les destinations et offres
+                            disponibles.
                         </p>
 
                     </div>
@@ -1591,22 +1152,19 @@ function Accueil() {
                             02
                         </span>
 
-
                         <div className="step-icon">
 
-                            <FaCheckCircle />
+                            <FaCalendarAlt />
 
                         </div>
-
 
                         <h3>
                             Choisissez
                         </h3>
 
-
                         <p>
-                            Sélectionnez l'offre touristique qui
-                            correspond le mieux à vos besoins.
+                            Sélectionnez l'expérience qui vous
+                            correspond.
                         </p>
 
                     </div>
@@ -1618,22 +1176,19 @@ function Accueil() {
                             03
                         </span>
 
-
                         <div className="step-icon">
 
-                            <FaCreditCard />
+                            <FaCheckCircle />
 
                         </div>
-
 
                         <h3>
                             Réservez
                         </h3>
 
-
                         <p>
-                            Effectuez votre réservation et préparez
-                            votre prochain voyage.
+                            Confirmez votre réservation simplement
+                            et rapidement.
                         </p>
 
                     </div>
@@ -1643,13 +1198,14 @@ function Accueil() {
             </section>
 
 
-            {/* =====================================================
-                IA
-            ===================================================== */}
+            {/* =================================================
+                RECOMMANDATION IA
+            ================================================= */}
 
             <section className="ia-section">
 
                 <div className="ia-content">
+
 
                     <div className="ia-icon">
 
@@ -1664,24 +1220,21 @@ function Accueil() {
                             RECOMMANDATION INTELLIGENTE
                         </span>
 
-
                         <h2>
                             Laissez notre IA vous guider
                         </h2>
 
-
                         <p>
-
-                            Recevez des recommandations touristiques
-                            personnalisées selon vos préférences.
-
+                            Obtenez des recommandations adaptées
+                            à vos envies pour trouver votre
+                            prochaine destination.
                         </p>
 
                     </div>
 
 
                     <Link
-                        to="/recommandations"
+                        to="/recommandation"
                         className="ia-button"
                     >
 
@@ -1696,9 +1249,9 @@ function Accueil() {
             </section>
 
 
-            {/* =====================================================
+            {/* =================================================
                 CONTACT
-            ===================================================== */}
+            ================================================= */}
 
             <section className="home-contact">
 
@@ -1708,16 +1261,16 @@ function Accueil() {
                 <div className="contact-content">
 
                     <span className="contact-label">
-                        BESOIN D'AIDE ?
+                        PRÊT À PARTIR ?
                     </span>
 
 
                     <h2>
 
-                        Préparez votre prochain
+                        Votre prochaine aventure
 
                         <span>
-                            voyage avec nous.
+                            commence ici.
                         </span>
 
                     </h2>
@@ -1725,9 +1278,9 @@ function Accueil() {
 
                     <p>
 
-                        Une question concernant une destination,
-                        une offre ou une réservation ?
-                        Notre équipe est là pour vous accompagner.
+                        Explorez Madagascar, choisissez
+                        votre destination et préparez-vous
+                        à vivre une expérience inoubliable.
 
                     </p>
 
@@ -1735,13 +1288,23 @@ function Accueil() {
                     <div className="contact-buttons">
 
                         <Link
-                            to="/contact"
+                            to="/offres"
                             className="contact-primary"
                         >
 
-                            Contactez-nous
+                            Explorer les offres
 
                             <FaArrowRight />
+
+                        </Link>
+
+
+                        <Link
+                            to="/contact"
+                            className="contact-secondary"
+                        >
+
+                            Nous contacter
 
                         </Link>
 
@@ -1749,32 +1312,13 @@ function Accueil() {
                         <button
                             type="button"
                             className="contact-chatbot"
-                            onClick={() => {
-
-                                window.dispatchEvent(
-                                    new Event(
-                                        "open-chatbot"
-                                    )
-                                );
-
-                            }}
                         >
 
                             <FaRobot />
 
-                            Assistant chatbot
+                            Assistant IA
 
                         </button>
-
-
-                        <Link
-                            to="/destinations-public"
-                            className="contact-secondary"
-                        >
-
-                            Explorer
-
-                        </Link>
 
                     </div>
 
@@ -1782,10 +1326,9 @@ function Accueil() {
 
             </section>
 
-        </div>
 
+        </main>
     );
-
 }
 
 
