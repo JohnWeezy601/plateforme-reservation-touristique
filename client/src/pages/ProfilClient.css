@@ -1,258 +1,299 @@
-
 /* =========================================================
    PROFIL CLIENT
-========================================================= */
+   ========================================================= */
 
 .profil-client-page {
     min-height: 100vh;
-    background: #f0f2f5;
-    color: #1c1e21;
-    padding: 30px 45px 50px;
+    padding: 40px 30px 70px;
+    background: #f5f7fb;
+    color: #1f2937;
     box-sizing: border-box;
-}
-
-
-/* =========================================================
-   CHARGEMENT
-========================================================= */
-
-.profil-client-loading {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f0f2f5;
-    color: #64748b;
-    font-size: 15px;
 }
 
 
 /* =========================================================
    HEADER
-========================================================= */
+   ========================================================= */
 
 .profil-client-header {
-    max-width: 1100px;
-    margin: 0 auto 25px;
+    max-width: 1200px;
+    margin: 0 auto 30px;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+}
+
+.profil-client-header > div {
+    flex: 1;
 }
 
 .profil-client-back {
-    border: none;
-    background: transparent;
-    color: #2563eb;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 0;
-    margin-bottom: 22px;
+    gap: 9px;
+
+    border: none;
+    background: white;
+    color: #374151;
+
+    padding: 11px 16px;
+    border-radius: 10px;
+
     font-size: 14px;
     font-weight: 600;
+
     cursor: pointer;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .profil-client-back:hover {
-    color: #1d4ed8;
+    background: #111827;
+    color: white;
+    transform: translateX(-2px);
 }
 
 .profil-client-label {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    display: inline-block;
+
+    margin-bottom: 7px;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+
     color: #2563eb;
-    margin-bottom: 5px;
 }
 
 .profil-client-header h1 {
-    margin: 0 0 6px;
-    font-size: 30px;
-    font-weight: 700;
+    margin: 0 0 7px;
+
+    font-size: 34px;
+    line-height: 1.2;
+
     color: #111827;
 }
 
 .profil-client-header p {
     margin: 0;
-    color: #64748b;
-    font-size: 14px;
+
+    color: #6b7280;
+    font-size: 15px;
+    line-height: 1.6;
 }
 
 
 /* =========================================================
    MESSAGES
-========================================================= */
+   ========================================================= */
 
 .profil-client-success,
 .profil-client-error {
-    max-width: 1100px;
-    margin: 0 auto 18px;
-    border-radius: 10px;
-    padding: 12px 15px;
+    max-width: 1200px;
+    margin: 0 auto 22px;
+
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 13px;
+    gap: 12px;
+
+    padding: 14px 17px;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+
     box-sizing: border-box;
 }
 
 .profil-client-success {
     background: #ecfdf5;
-    border: 1px solid #bbf7d0;
-    color: #15803d;
+    border: 1px solid #a7f3d0;
+    color: #047857;
 }
 
 .profil-client-error {
     background: #fef2f2;
     border: 1px solid #fecaca;
     color: #dc2626;
-    justify-content: space-between;
 }
 
-.profil-client-error > span {
+.profil-client-success svg {
+    flex-shrink: 0;
+}
+
+.profil-client-error span {
     flex: 1;
 }
 
 .profil-client-error button {
+    width: 30px;
+    height: 30px;
+
     border: none;
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     background: transparent;
-    color: #dc2626;
+    color: inherit;
+
     cursor: pointer;
-    font-size: 14px;
+}
+
+.profil-client-error button:hover {
+    background: rgba(220, 38, 38, 0.1);
 }
 
 
 /* =========================================================
-   CONTENEUR
-========================================================= */
+   CONTAINER PRINCIPAL
+   ========================================================= */
 
 .profil-client-container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
+
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 25px;
 }
 
 
 /* =========================================================
    CARTE PHOTO PROFIL
-========================================================= */
+   ========================================================= */
 
-.profil-client-photo-card {
+.profil-client-photo-card,
+.profil-client-gallery-card,
+.profil-client-form-card {
     background: #ffffff;
-    border-radius: 10px;
-    border: 1px solid #dddfe2;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+
     overflow: hidden;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    box-shadow:
+        0 5px 20px rgba(15, 23, 42, 0.05);
 }
 
 
 /* =========================================================
-   COUVERTURE STYLE FACEBOOK
-========================================================= */
+   COVER PROFIL
+   ========================================================= */
 
 .profil-facebook-cover {
-    height: 230px;
     position: relative;
+
+    height: 190px;
 
     background:
         linear-gradient(
             135deg,
-            #dbeafe 0%,
-            #eff6ff 45%,
-            #e0f2fe 100%
+            #1d4ed8,
+            #2563eb 45%,
+            #60a5fa
         );
 
     display: flex;
     align-items: flex-end;
     justify-content: center;
 
-    border-bottom: 1px solid #d8dbe0;
+    padding-bottom: 0;
 }
-
-
-/* décoration couverture */
 
 .profil-facebook-cover::before {
     content: "";
-    position: absolute;
-    width: 420px;
-    height: 420px;
-    border-radius: 50%;
-    background: rgba(37, 99, 235, 0.08);
-    top: -260px;
-    left: -100px;
-}
 
-.profil-facebook-cover::after {
-    content: "";
     position: absolute;
-    width: 330px;
-    height: 330px;
-    border-radius: 50%;
-    background: rgba(14, 165, 233, 0.08);
-    right: -80px;
-    bottom: -230px;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 15% 25%,
+            rgba(255, 255, 255, 0.16),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 75%,
+            rgba(255, 255, 255, 0.12),
+            transparent 30%
+        );
 }
 
 
 /* =========================================================
-   PHOTO PRINCIPALE
-========================================================= */
+   AVATAR
+   ========================================================= */
 
 .profil-facebook-avatar {
     position: relative;
     z-index: 2;
 
-    width: 170px;
-    height: 170px;
+    width: 145px;
+    height: 145px;
 
-    margin-bottom: -55px;
+    margin-bottom: -72px;
 
     border-radius: 50%;
 
-    background: #e4e6eb;
+    background: #f3f4f6;
 
-    border: 6px solid #ffffff;
+    border: 6px solid white;
+
+    overflow: hidden;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    overflow: hidden;
+    color: #9ca3af;
 
-    color: #64748b;
-    font-size: 65px;
+    font-size: 55px;
 
     box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.12);
+        0 7px 20px rgba(0, 0, 0, 0.18);
 }
 
 .profil-facebook-avatar img {
     width: 100%;
     height: 100%;
+
+    display: block;
+
     object-fit: cover;
 }
 
 
 /* =========================================================
    BOUTON VOIR PHOTO
-========================================================= */
+   ========================================================= */
 
 .profil-view-photo {
     position: absolute;
     z-index: 4;
 
-    bottom: 18px;
-    right: 24px;
+    right: calc(50% - 88px);
+    bottom: 8px;
 
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
 
-    border: 3px solid #ffffff;
     border-radius: 50%;
 
-    background: #e4e6eb;
-    color: #1c1e21;
+    border: 3px solid white;
+
+    background: #111827;
+    color: white;
 
     display: flex;
     align-items: center;
@@ -260,145 +301,176 @@
 
     cursor: pointer;
 
-    transition: 0.2s ease;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
 }
 
-.profil-view-photo:hover {
-    background: #d8dadf;
-    transform: scale(1.05);
+.profil-view-photo:hover:not(:disabled) {
+    background: #2563eb;
+    transform: scale(1.08);
 }
 
 .profil-view-photo:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
 }
 
 
 /* =========================================================
    INFORMATIONS PHOTO
-========================================================= */
+   ========================================================= */
 
 .profil-client-photo-info {
-    padding: 72px 30px 25px;
+    padding: 90px 30px 30px;
+
     text-align: center;
 }
 
 .profil-client-photo-info h2 {
-    margin: 0 0 5px;
-    font-size: 24px;
-    font-weight: 700;
+    margin: 0 0 8px;
+
     color: #111827;
+
+    font-size: 25px;
+    font-weight: 750;
 }
 
 .profil-client-photo-info p {
     margin: 0;
-    color: #65676b;
+
+    color: #6b7280;
+
     font-size: 14px;
 }
 
 
 /* =========================================================
-   BOUTON CHOISIR PHOTO
-========================================================= */
+   ACTION PHOTO
+   ========================================================= */
 
 .profil-photo-actions {
-    margin-top: 20px;
+    margin-top: 22px;
+
     display: flex;
+    align-items: center;
     justify-content: center;
 }
 
 .profil-client-photo-button {
+    position: relative;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 9px;
 
-    background: #e7f3ff;
-    color: #1877f2;
+    padding: 12px 18px;
 
-    border-radius: 7px;
+    border-radius: 10px;
 
-    padding: 10px 16px;
+    background: #eff6ff;
+    color: #2563eb;
 
-    font-size: 13px;
-    font-weight: 600;
+    border: 1px solid #bfdbfe;
+
+    font-size: 14px;
+    font-weight: 700;
 
     cursor: pointer;
 
-    transition: 0.2s ease;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .profil-client-photo-button:hover {
     background: #dbeafe;
+    border-color: #93c5fd;
+
+    transform: translateY(-1px);
 }
 
 .profil-client-photo-button input {
-    display: none;
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+
+    pointer-events: none;
 }
 
 
 /* =========================================================
    COMPARAISON PHOTO
-========================================================= */
+   ========================================================= */
 
 .photo-comparison {
-    margin: 0 25px 25px;
+    margin: 0 30px 30px;
+
+    padding: 22px;
 
     background: #f8fafc;
 
     border: 1px solid #e2e8f0;
-
-    border-radius: 12px;
-
-    padding: 20px;
+    border-radius: 15px;
 }
-
-
-/* =========================================================
-   HEADER COMPARAISON
-========================================================= */
 
 .photo-comparison-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+}
+
+.photo-comparison-header > div {
+    min-width: 0;
 }
 
 .photo-comparison-header span {
     display: block;
 
-    font-size: 10px;
-    font-weight: 700;
-
-    letter-spacing: 0.8px;
-
-    color: #64748b;
-
     margin-bottom: 4px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
 }
 
 .photo-comparison-header h3 {
     margin: 0;
 
-    font-size: 17px;
     color: #111827;
+
+    font-size: 17px;
 }
 
 .photo-comparison-header > svg {
-    font-size: 23px;
     color: #2563eb;
+
+    font-size: 25px;
 }
 
 
 /* =========================================================
-   GRILLE ANCIENNE / NOUVELLE
-========================================================= */
+   GRILLE COMPARAISON
+   ========================================================= */
 
 .photo-comparison-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
     gap: 18px;
 }
 
@@ -409,37 +481,24 @@
 .photo-version > span {
     display: block;
 
-    margin-bottom: 8px;
+    margin-bottom: 9px;
 
-    font-size: 12px;
-    font-weight: 600;
+    color: #4b5563;
 
-    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
 }
-
-
-/* =========================================================
-   IMAGE COMPARAISON
-========================================================= */
 
 .photo-version-image {
     position: relative;
 
-    width: 100%;
-    height: 230px;
-
-    border-radius: 10px;
+    height: 240px;
 
     overflow: hidden;
 
+    border-radius: 12px;
+
     background: #e5e7eb;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #64748b;
-    font-size: 45px;
 
     cursor: pointer;
 }
@@ -447,28 +506,42 @@
 .photo-version-image img {
     width: 100%;
     height: 100%;
+
+    display: block;
+
     object-fit: cover;
 }
 
+.photo-version-image > svg {
+    position: absolute;
 
-/* =========================================================
-   OVERLAY IMAGE
-========================================================= */
+    inset: 0;
+
+    margin: auto;
+
+    color: #9ca3af;
+
+    font-size: 45px;
+}
+
+.photo-new {
+    border: 2px solid #2563eb;
+}
 
 .photo-overlay {
     position: absolute;
 
     inset: 0;
 
-    background: rgba(0, 0, 0, 0.38);
+    background: rgba(15, 23, 42, 0.45);
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    color: #ffffff;
+    color: white;
 
-    font-size: 25px;
+    font-size: 28px;
 
     opacity: 0;
 
@@ -481,89 +554,64 @@
 
 
 /* =========================================================
-   NOUVELLE PHOTO
-========================================================= */
-
-.photo-new {
-    border: 3px solid #2563eb;
-}
-
-.photo-new::after {
-    content: "NOUVELLE";
-
-    position: absolute;
-
-    top: 10px;
-    left: 10px;
-
-    background: #2563eb;
-    color: #ffffff;
-
-    padding: 5px 8px;
-
-    border-radius: 5px;
-
-    font-size: 9px;
-    font-weight: 700;
-
-    letter-spacing: 0.5px;
-}
-
-
-/* =========================================================
    ACTIONS COMPARAISON
-========================================================= */
+   ========================================================= */
 
 .photo-comparison-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-
     margin-top: 20px;
 
-    padding-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 
-    border-top: 1px solid #e2e8f0;
+    gap: 12px;
 }
 
 .photo-cancel-button,
 .photo-save-button {
-    border: none;
+    min-height: 43px;
 
-    border-radius: 7px;
+    padding: 10px 16px;
 
-    padding: 10px 15px;
+    border-radius: 9px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     gap: 8px;
 
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
 
     cursor: pointer;
 
-    transition: 0.2s ease;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .photo-cancel-button {
-    background: #e4e6eb;
-    color: #1c1e21;
+    border: 1px solid #d1d5db;
+
+    background: white;
+    color: #4b5563;
 }
 
-.photo-cancel-button:hover {
-    background: #d8dadf;
+.photo-cancel-button:hover:not(:disabled) {
+    background: #f3f4f6;
 }
 
 .photo-save-button {
-    background: #1877f2;
-    color: #ffffff;
+    border: 1px solid #2563eb;
+
+    background: #2563eb;
+    color: white;
 }
 
-.photo-save-button:hover {
-    background: #166fe5;
+.photo-save-button:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-1px);
 }
 
 .photo-cancel-button:disabled,
@@ -574,227 +622,337 @@
 
 
 /* =========================================================
-   FORMULAIRE INFORMATIONS
-========================================================= */
-
-.profil-client-form-card {
-    background: #ffffff;
-
-    border: 1px solid #dddfe2;
-
-    border-radius: 10px;
-
-    padding: 28px;
-
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-
-/* =========================================================
-   TITRE SECTION
-========================================================= */
+   TITRES DES SECTIONS
+   ========================================================= */
 
 .profil-client-section-title {
-    margin-bottom: 25px;
+    padding: 25px 28px 0;
 }
 
 .profil-client-section-title > span {
     display: block;
 
-    color: #64748b;
+    margin-bottom: 7px;
 
-    font-size: 10px;
+    color: #2563eb;
 
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 800;
 
-    letter-spacing: 0.8px;
-
-    margin-bottom: 5px;
+    letter-spacing: 1.3px;
 }
 
 .profil-client-section-title h2 {
-    margin: 0 0 5px;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
     color: #111827;
+
+    font-size: 22px;
+}
+
+.profil-client-section-title h2 svg {
+    color: #2563eb;
 
     font-size: 20px;
 }
 
 .profil-client-section-title p {
-    margin: 0;
+    margin: 8px 0 0;
 
-    color: #64748b;
+    color: #6b7280;
 
-    font-size: 13px;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 
 /* =========================================================
-   GRID FORMULAIRE
-========================================================= */
+   GALERIE
+   ========================================================= */
+
+.profil-client-gallery-card {
+    padding-bottom: 28px;
+}
+
+.profil-gallery-loading,
+.profil-gallery-empty {
+    min-height: 160px;
+
+    margin: 22px 28px 0;
+
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+
+    background: #f9fafb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    gap: 10px;
+
+    color: #6b7280;
+
+    text-align: center;
+
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+.profil-gallery-loading {
+    font-size: 14px;
+}
+
+.profil-gallery-empty svg {
+    font-size: 34px;
+    color: #9ca3af;
+}
+
+.profil-gallery-empty span {
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   GRILLE PHOTOS
+   ========================================================= */
+
+.profil-gallery-grid {
+    margin: 23px 28px 0;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+.profil-gallery-item {
+    position: relative;
+
+    height: 190px;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    background: #e5e7eb;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 8px rgba(15, 23, 42, 0.08);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profil-gallery-item:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 20px rgba(15, 23, 42, 0.14);
+}
+
+.profil-gallery-item img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.profil-gallery-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(15, 23, 42, 0.45);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-size: 25px;
+
+    opacity: 0;
+
+    transition: opacity 0.2s ease;
+}
+
+.profil-gallery-item:hover .profil-gallery-overlay {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   FORMULAIRE
+   ========================================================= */
+
+.profil-client-form-card {
+    padding-bottom: 30px;
+}
+
+.profil-client-form-card form {
+    padding: 25px 28px 0;
+}
 
 .profil-client-grid {
     display: grid;
 
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     gap: 20px;
 }
 
-
-/* =========================================================
-   CHAMP
-========================================================= */
-
 .profil-client-field {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
+    min-width: 0;
 }
 
 .profil-client-field label {
-    font-size: 12px;
+    display: block;
 
-    font-weight: 600;
+    margin-bottom: 8px;
 
     color: #374151;
+
+    font-size: 13px;
+    font-weight: 700;
 }
 
-
-/* =========================================================
-   INPUT
-========================================================= */
-
 .profil-client-input {
-    height: 45px;
+    min-height: 48px;
 
     display: flex;
-
     align-items: center;
 
     gap: 10px;
 
-    padding: 0 13px;
-
-    box-sizing: border-box;
-
-    background: #f8fafc;
+    padding: 0 14px;
 
     border: 1px solid #d1d5db;
 
-    border-radius: 8px;
+    border-radius: 10px;
 
-    transition: 0.2s ease;
+    background: white;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .profil-client-input:focus-within {
-    background: #ffffff;
-
     border-color: #2563eb;
 
     box-shadow:
-        0 0 0 3px rgba(37, 99, 235, 0.10);
+        0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .profil-client-input svg {
     flex-shrink: 0;
 
-    color: #64748b;
+    color: #6b7280;
 
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .profil-client-input input {
     width: 100%;
 
-    height: 100%;
+    min-width: 0;
 
     border: none;
-
     outline: none;
 
     background: transparent;
 
     color: #111827;
 
-    font-size: 13px;
+    font-family: inherit;
+
+    font-size: 14px;
 }
 
 .profil-client-input input::placeholder {
-    color: #94a3b8;
+    color: #9ca3af;
 }
 
 
 /* =========================================================
    ACTIONS FORMULAIRE
-========================================================= */
+   ========================================================= */
 
 .profil-client-actions {
-    display: flex;
+    margin-top: 28px;
 
-    justify-content: flex-end;
-
-    align-items: center;
-
-    gap: 10px;
-
-    margin-top: 25px;
-
-    padding-top: 20px;
+    padding-top: 22px;
 
     border-top: 1px solid #e5e7eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
 }
 
 .profil-client-cancel,
 .profil-client-save {
-    border: none;
+    min-height: 44px;
 
-    border-radius: 7px;
+    padding: 10px 18px;
 
-    padding: 10px 16px;
+    border-radius: 9px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
     font-size: 13px;
-
-    font-weight: 600;
+    font-weight: 700;
 
     cursor: pointer;
 
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 8px;
-
-    transition: 0.2s ease;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .profil-client-cancel {
-    background: #e4e6eb;
+    border: 1px solid #d1d5db;
 
-    color: #1c1e21;
+    background: white;
+    color: #4b5563;
 }
 
 .profil-client-cancel:hover {
-    background: #d8dadf;
+    background: #f3f4f6;
 }
 
 .profil-client-save {
-    background: #1877f2;
+    border: 1px solid #2563eb;
 
-    color: #ffffff;
+    background: #2563eb;
+    color: white;
 }
 
-.profil-client-save:hover {
-    background: #166fe5;
+.profil-client-save:hover:not(:disabled) {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
 }
 
-.profil-client-cancel:disabled,
 .profil-client-save:disabled {
     opacity: 0.6;
 
@@ -803,8 +961,8 @@
 
 
 /* =========================================================
-   VISIONNEUSE PHOTO
-========================================================= */
+   MODAL PHOTO
+   ========================================================= */
 
 .photo-viewer-overlay {
     position: fixed;
@@ -813,77 +971,45 @@
 
     z-index: 9999;
 
-    background: rgba(0, 0, 0, 0.78);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
     padding: 25px;
 
+    background: rgba(15, 23, 42, 0.82);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     box-sizing: border-box;
-
-    animation: photoViewerFade 0.2s ease;
 }
-
-
-@keyframes photoViewerFade {
-
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-
-}
-
-
-/* =========================================================
-   CONTENU VISIONNEUSE
-========================================================= */
 
 .photo-viewer {
-    width: min(900px, 100%);
+    width: min(950px, 100%);
 
-    max-height: 90vh;
+    max-height: calc(100vh - 50px);
 
-    background: #111827;
-
-    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
 
     overflow: hidden;
 
+    border-radius: 16px;
+
+    background: #ffffff;
+
     box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.4);
-
-    display: flex;
-
-    flex-direction: column;
+        0 25px 70px rgba(0, 0, 0, 0.35);
 }
 
-
-/* =========================================================
-   HEADER VISIONNEUSE
-========================================================= */
-
 .photo-viewer-header {
-    min-height: 55px;
+    min-height: 58px;
 
-    padding: 0 18px;
+    padding: 0 18px 0 22px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
-    background: #111827;
-
-    color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
 
     box-sizing: border-box;
 }
@@ -891,95 +1017,79 @@
 .photo-viewer-header h3 {
     margin: 0;
 
-    font-size: 15px;
+    color: #111827;
 
-    font-weight: 600;
+    font-size: 16px;
 }
 
 .photo-viewer-header button {
-    width: 35px;
-
-    height: 35px;
+    width: 36px;
+    height: 36px;
 
     border: none;
+    border-radius: 8px;
 
-    border-radius: 50%;
+    background: #f3f4f6;
+    color: #374151;
 
-    background: #374151;
-
-    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     cursor: pointer;
 
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    transition: 0.2s ease;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 .photo-viewer-header button:hover {
-    background: #4b5563;
+    background: #fee2e2;
+    color: #dc2626;
 }
 
-
-/* =========================================================
-   PHOTO GRAND FORMAT
-========================================================= */
-
 .photo-viewer-content {
-    flex: 1;
+    min-height: 300px;
+    max-height: calc(100vh - 110px);
 
-    min-height: 400px;
+    padding: 20px;
 
-    max-height: calc(90vh - 55px);
-
-    background: #000000;
+    background: #111827;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    overflow: hidden;
+    overflow: auto;
+
+    box-sizing: border-box;
 }
 
 .photo-viewer-content img {
     display: block;
 
     max-width: 100%;
-
-    max-height: calc(90vh - 55px);
+    max-height: calc(100vh - 150px);
 
     width: auto;
-
     height: auto;
 
     object-fit: contain;
+
+    border-radius: 8px;
 }
 
-
-/* =========================================================
-   PHOTO VIDE
-========================================================= */
-
 .photo-viewer-empty {
-    color: #94a3b8;
+    min-height: 300px;
 
     display: flex;
-
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
 
-    align-items: center;
+    gap: 12px;
 
-    justify-content: center;
-
-    gap: 10px;
-
-    font-size: 14px;
+    color: #9ca3af;
 }
 
 .photo-viewer-empty svg {
@@ -988,179 +1098,211 @@
 
 
 /* =========================================================
-   TABLETTE
-========================================================= */
+   LOADING PAGE
+   ========================================================= */
+
+.profil-client-loading {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f7fb;
+
+    color: #4b5563;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   RESPONSIVE TABLETTE
+   ========================================================= */
 
 @media (max-width: 900px) {
 
     .profil-client-page {
-        padding: 25px;
+        padding: 30px 20px 50px;
     }
 
-    .profil-facebook-cover {
-        height: 210px;
+    .profil-client-header {
+        flex-direction: column;
+
+        gap: 18px;
     }
 
-    .profil-facebook-avatar {
-        width: 150px;
-        height: 150px;
-        font-size: 55px;
+    .profil-client-header h1 {
+        font-size: 30px;
     }
 
-    .profil-client-photo-info {
-        padding-top: 65px;
+    .profil-gallery-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .profil-gallery-item {
+        height: 180px;
     }
 
 }
 
 
 /* =========================================================
-   MOBILE
-========================================================= */
+   RESPONSIVE MOBILE
+   ========================================================= */
 
-@media (max-width: 650px) {
+@media (max-width: 700px) {
 
     .profil-client-page {
-        padding: 18px 12px 35px;
+        padding: 20px 12px 40px;
     }
-
 
     .profil-client-header {
-        margin-bottom: 18px;
+        margin-bottom: 22px;
     }
-
 
     .profil-client-back {
-        margin-bottom: 17px;
+        width: 100%;
+
+        justify-content: center;
     }
-
-
-    .profil-client-back span {
-        display: inline;
-    }
-
 
     .profil-client-header h1 {
-        font-size: 25px;
+        font-size: 27px;
     }
-
 
     .profil-client-header p {
-        line-height: 1.5;
+        font-size: 14px;
     }
 
-
-    /* PHOTO */
+    .profil-client-container {
+        gap: 18px;
+    }
 
     .profil-facebook-cover {
-        height: 175px;
+        height: 160px;
     }
 
-
     .profil-facebook-avatar {
-        width: 125px;
-        height: 125px;
+        width: 120px;
+        height: 120px;
 
-        margin-bottom: -45px;
-
-        border-width: 5px;
+        margin-bottom: -60px;
 
         font-size: 45px;
     }
 
-
     .profil-view-photo {
-        right: 14px;
-        bottom: 13px;
+        right: calc(50% - 75px);
+        bottom: 7px;
 
-        width: 38px;
-        height: 38px;
+        width: 34px;
+        height: 34px;
     }
-
 
     .profil-client-photo-info {
-        padding:
-            60px
-            18px
-            20px;
+        padding: 76px 18px 25px;
     }
-
 
     .profil-client-photo-info h2 {
-        font-size: 20px;
+        font-size: 22px;
     }
 
+    .profil-client-photo-button {
+        width: 100%;
 
-    /* COMPARAISON */
+        box-sizing: border-box;
+    }
 
     .photo-comparison {
-        margin: 0 15px 18px;
-        padding: 15px;
-    }
+        margin: 0 16px 20px;
 
+        padding: 16px;
+    }
 
     .photo-comparison-grid {
         grid-template-columns: 1fr;
-        gap: 15px;
-    }
 
+        gap: 18px;
+    }
 
     .photo-version-image {
-        height: 220px;
+        height: 230px;
     }
-
 
     .photo-comparison-actions {
         flex-direction: column-reverse;
     }
-
 
     .photo-cancel-button,
     .photo-save-button {
         width: 100%;
     }
 
-
-    /* FORM */
-
-    .profil-client-form-card {
-        padding: 20px 16px;
+    .profil-client-section-title {
+        padding: 22px 18px 0;
     }
 
+    .profil-client-section-title h2 {
+        font-size: 20px;
+    }
+
+    .profil-gallery-grid {
+        margin: 20px 18px 0;
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+    }
+
+    .profil-gallery-item {
+        height: 170px;
+    }
+
+    .profil-gallery-loading,
+    .profil-gallery-empty {
+        margin-left: 18px;
+        margin-right: 18px;
+    }
+
+    .profil-client-form-card form {
+        padding: 22px 18px 0;
+    }
 
     .profil-client-grid {
         grid-template-columns: 1fr;
-        gap: 15px;
-    }
 
+        gap: 17px;
+    }
 
     .profil-client-actions {
         flex-direction: column-reverse;
     }
-
 
     .profil-client-cancel,
     .profil-client-save {
         width: 100%;
     }
 
-
-    /* MODAL */
-
     .photo-viewer-overlay {
         padding: 10px;
     }
 
-
     .photo-viewer {
-        width: 100%;
-        max-height: 92vh;
-        border-radius: 9px;
+        max-height: calc(100vh - 20px);
+
+        border-radius: 12px;
     }
 
-
     .photo-viewer-content {
-        min-height: 300px;
+        padding: 10px;
+
+        max-height: calc(100vh - 80px);
+    }
+
+    .photo-viewer-content img {
+        max-height: calc(100vh - 110px);
     }
 
 }
@@ -1168,54 +1310,89 @@
 
 /* =========================================================
    PETIT MOBILE
-========================================================= */
+   ========================================================= */
 
-@media (max-width: 400px) {
+@media (max-width: 430px) {
 
     .profil-client-page {
-        padding: 15px 10px 30px;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
+    .profil-client-header h1 {
+        font-size: 24px;
+    }
+
+    .profil-client-header p {
+        font-size: 13px;
+    }
 
     .profil-facebook-cover {
-        height: 150px;
+        height: 145px;
     }
-
 
     .profil-facebook-avatar {
         width: 105px;
         height: 105px;
 
-        margin-bottom: -38px;
+        margin-bottom: -52px;
+
+        border-width: 5px;
 
         font-size: 38px;
     }
 
+    .profil-view-photo {
+        right: calc(50% - 67px);
+
+        width: 31px;
+        height: 31px;
+    }
 
     .profil-client-photo-info {
-        padding-top: 52px;
+        padding-top: 66px;
     }
 
+    .profil-client-photo-info h2 {
+        font-size: 20px;
+    }
+
+    .profil-client-photo-info p {
+        font-size: 13px;
+
+        word-break: break-word;
+    }
 
     .profil-client-photo-button {
-        width: 100%;
-        box-sizing: border-box;
+        font-size: 12px;
     }
 
+    .profil-client-section-title h2 {
+        font-size: 18px;
+    }
+
+    .profil-client-section-title p {
+        font-size: 13px;
+    }
+
+    .profil-gallery-item {
+        height: 145px;
+    }
+
+    .profil-gallery-overlay {
+        font-size: 21px;
+    }
+
+    .profil-client-input {
+        min-height: 46px;
+    }
+
+    .profil-client-input input {
+        font-size: 13px;
+    }
 
     .photo-version-image {
-        height: 190px;
-    }
-
-
-    .profil-client-form-card {
-        padding: 18px 13px;
-    }
-
-
-    .photo-viewer-header {
-        padding: 0 12px;
+        height: 200px;
     }
 
 }
-

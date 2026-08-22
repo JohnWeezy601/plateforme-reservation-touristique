@@ -9,135 +9,130 @@ const upload =
     require("../middleware/upload");
 
 
-// =============================
+// =====================================================
 // AFFICHER UTILISATEURS
-// =============================
+// =====================================================
 
 router.get(
-
     "/",
-
     utilisateurController.getUtilisateurs
-
 );
 
 
-// =============================
+// =====================================================
 // AJOUTER UTILISATEUR - ADMIN
-// =============================
+// =====================================================
 
 router.post(
-
     "/",
-
     utilisateurController.register
-
 );
 
 
-// =============================
-// AFFICHER UN UTILISATEUR PAR ID
-// =============================
+// =====================================================
+// INSCRIPTION PUBLIC
+// =====================================================
+
+router.post(
+    "/register",
+    utilisateurController.register
+);
+
+
+// =====================================================
+// CONNEXION CLASSIQUE
+// =====================================================
+
+router.post(
+    "/login",
+    utilisateurController.login
+);
+
+
+// =====================================================
+// CONNEXION GOOGLE
+// =====================================================
+
+router.post(
+    "/google",
+    utilisateurController.googleLogin
+);
+
+
+// =====================================================
+// CONNEXION FACEBOOK
+// =====================================================
+
+router.post(
+    "/facebook",
+    utilisateurController.facebookLogin
+);
+
+
+// =====================================================
+// =====================================================
+// HISTORIQUE DES PHOTOS DE PROFIL
+// IMPORTANT : AVANT /:id
+// =====================================================
+// =====================================================
 
 router.get(
-
-    "/:id",
-
-    utilisateurController.getUtilisateurById
-
+    "/photo-history/:id",
+    utilisateurController.getPhotosProfil
 );
 
 
-// =============================
-// INSCRIPTION PUBLIC
-// =============================
+// =====================================================
+// MES POSTS
+// Photos publiées par le client
+// Les photos viennent de avis_photo
+// =====================================================
 
-router.post(
-
-    "/register",
-
-    utilisateurController.register
-
+router.get(
+    "/posts/:id",
+    utilisateurController.getPostsUtilisateur
 );
 
 
-// =============================
-// CONNEXION CLASSIQUE
-// =============================
-
-router.post(
-
-    "/login",
-
-    utilisateurController.login
-
-);
-
-
-// =============================
-// CONNEXION AVEC GOOGLE
-// =============================
-
-router.post(
-
-    "/google",
-
-    utilisateurController.googleLogin
-
-);
-
-
-// =============================
-// CONNEXION AVEC FACEBOOK
-// =============================
-
-router.post(
-
-    "/facebook",
-
-    utilisateurController.facebookLogin
-
-);
-
-
-// =============================
-// MODIFIER UTILISATEUR
-// =============================
+// =====================================================
+// PHOTO UTILISATEUR
+// =====================================================
 
 router.put(
-
-    "/:id",
-
-    utilisateurController.updateUtilisateur
-
+    "/photo/:id",
+    upload.single("photo"),
+    utilisateurController.updatePhoto
 );
 
 
-// =============================
+// =====================================================
+// MODIFIER UTILISATEUR
+// =====================================================
+
+router.put(
+    "/:id",
+    utilisateurController.updateUtilisateur
+);
+
+
+// =====================================================
 // SUPPRIMER UTILISATEUR
-// =============================
+// =====================================================
 
 router.delete(
-
     "/:id",
-
     utilisateurController.deleteUtilisateur
-
 );
 
 
-// =============================
-// PHOTO UTILISATEUR
-// =============================
+// =====================================================
+// AFFICHER UN UTILISATEUR PAR ID
+// IMPORTANT : CETTE ROUTE DOIT RESTER À LA FIN
+// =====================================================
 
-router.put(
-
-    "/photo/:id",
-
-    upload.single("photo"),
-
-    utilisateurController.updatePhoto
-
+router.get(
+    "/:id",
+    utilisateurController.getUtilisateurById
 );
 
 

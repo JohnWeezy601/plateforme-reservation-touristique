@@ -11,7 +11,9 @@ import {
     FaTimes,
     FaEye,
     FaCheck,
-    FaImage
+    FaImage,
+    FaImages,
+    FaNewspaper
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -43,10 +45,38 @@ function ProfilClient() {
 
     const [photoOriginale, setPhotoOriginale] = useState(null);
 
+
+    // =====================================================
+    // NOUVEAUX ÉTATS
+    // =====================================================
+
+    // Anciennes photos de profil
+    const [mesPhotos, setMesPhotos] = useState([]);
+
+    // Photos publiées dans les avis
+    const [mesPostes, setMesPostes] = useState([]);
+
+    const [loadingPhotos, setLoadingPhotos] = useState(false);
+
+    const [loadingPostes, setLoadingPostes] = useState(false);
+
+
+    // =====================================================
+    // MODAL PHOTO
+    // =====================================================
+
     const [photoModal, setPhotoModal] = useState(false);
 
     const [photoModalTitle, setPhotoModalTitle] =
         useState("Photo de profil");
+
+    const [photoModalUrl, setPhotoModalUrl] =
+        useState(null);
+
+
+    // =====================================================
+    // CHARGEMENT
+    // =====================================================
 
     const [loading, setLoading] = useState(true);
 
@@ -69,8 +99,9 @@ function ProfilClient() {
             return null;
         }
 
+
         // =====================================================
-        // URL CLOUDINARY OU URL EXTERNE
+        // CLOUDINARY / URL EXTERNE / BLOB
         // =====================================================
 
         if (
@@ -81,19 +112,32 @@ function ProfilClient() {
             return photoValue;
         }
 
+
         // =====================================================
         // ANCIENNES PHOTOS LOCALES
         // =====================================================
 
+        const apiUrl =
+            import.meta.env.VITE_API_URL ||
+            "http://localhost:8081";
+
+
         if (photoValue.startsWith("/uploads/")) {
-            return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
+
+            return `${apiUrl}${photoValue}`;
+
         }
+
 
         if (photoValue.startsWith("/")) {
-            return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
+
+            return `${apiUrl}${photoValue}`;
+
         }
 
-        return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}/uploads/${photoValue}`;
+
+        return `${apiUrl}/uploads/${photoValue}`;
+
     };
 
 
@@ -112,6 +156,7 @@ function ProfilClient() {
             navigate("/login-client");
 
             return;
+
         }
 
 
@@ -127,9 +172,9 @@ function ProfilClient() {
                     : parsedData;
 
 
-            // =====================================================
-            // NORMALISER L'ID UTILISATEUR
-            // =====================================================
+            // =================================================
+            // NORMALISER ID
+            // =================================================
 
             const utilisateurNormalise = {
 
@@ -138,10 +183,6 @@ function ProfilClient() {
                 id_utilisateur:
                     user.id_utilisateur ||
                     user.id,
-
-                // =================================================
-                // RÉCUPÉRER AUTOMATIQUEMENT LE TÉLÉPHONE
-                // =================================================
 
                 telephone:
                     user.telephone || ""
@@ -154,9 +195,9 @@ function ProfilClient() {
             );
 
 
-            // =====================================================
-            // REMPLIR AUTOMATIQUEMENT LE FORMULAIRE
-            // =====================================================
+            // =================================================
+            // FORMULAIRE
+            // =================================================
 
             setFormData({
 
@@ -175,9 +216,9 @@ function ProfilClient() {
             });
 
 
-            // =====================================================
-            // PHOTO EXISTANTE
-            // =====================================================
+            // =================================================
+            // PHOTO ACTUELLE
+            // =================================================
 
             const anciennePhoto =
                 getPhotoUrl(
@@ -187,6 +228,24 @@ function ProfilClient() {
 
             setPhotoOriginale(
                 anciennePhoto
+            );
+
+
+            // =================================================
+            // RÉCUPÉRER MES PHOTOS
+            // =================================================
+
+            chargerMesPhotos(
+                utilisateurNormalise.id_utilisateur
+            );
+
+
+            // =================================================
+            // RÉCUPÉRER MES POSTES
+            // =================================================
+
+            chargerMesPostes(
+                utilisateurNormalise.id_utilisateur
             );
 
         }
@@ -213,6 +272,106 @@ function ProfilClient() {
         }
 
     }, [navigate]);
+
+
+    // =====================================================
+    // RÉCUPÉRER MES ANCIENNES PHOTOS
+    // =====================================================
+
+    const chargerMesPhotos = async (idUtilisateur) => {
+
+        if (!idUtilisateur) {
+            return;
+        }
+
+
+        setLoadingPhotos(true);
+
+
+        try {
+
+            const response =
+                await api.get(
+                    `/utilisateurs/${idUtilisateur}/photos-profil`
+                );
+
+
+            const photos =
+                response.data?.photos || [];
+
+
+            setMesPhotos(
+                photos
+            );
+
+        }
+        catch (err) {
+
+            console.error(
+                "Erreur récupération Mes photos :",
+                err
+            );
+
+            setMesPhotos([]);
+
+        }
+        finally {
+
+            setLoadingPhotos(false);
+
+        }
+
+    };
+
+
+    // =====================================================
+    // RÉCUPÉRER MES POSTES
+    // =====================================================
+
+    const chargerMesPostes = async (idUtilisateur) => {
+
+        if (!idUtilisateur) {
+            return;
+        }
+
+
+        setLoadingPostes(true);
+
+
+        try {
+
+            const response =
+                await api.get(
+                    `/avis-photo/utilisateur/${idUtilisateur}`
+                );
+
+
+            const photos =
+                response.data?.photos || [];
+
+
+            setMesPostes(
+                photos
+            );
+
+        }
+        catch (err) {
+
+            console.error(
+                "Erreur récupération Mes postes :",
+                err
+            );
+
+            setMesPostes([]);
+
+        }
+        finally {
+
+            setLoadingPostes(false);
+
+        }
+
+    };
 
 
     // =====================================================
@@ -279,8 +438,6 @@ function ProfilClient() {
         }
 
 
-        // Vérifier type
-
         if (!file.type.startsWith("image/")) {
 
             setError(
@@ -292,8 +449,6 @@ function ProfilClient() {
         }
 
 
-        // Vérifier taille
-
         if (file.size > 5 * 1024 * 1024) {
 
             setError(
@@ -304,8 +459,6 @@ function ProfilClient() {
 
         }
 
-
-        // Supprimer ancienne preview
 
         if (photoPreview) {
 
@@ -422,7 +575,7 @@ function ProfilClient() {
 
 
             // =================================================
-            // RÉCUPÉRER PHOTO RENVOYÉE PAR LE BACKEND
+            // NOUVELLE PHOTO
             // =================================================
 
             const nouvellePhoto =
@@ -439,11 +592,16 @@ function ProfilClient() {
             }
 
 
+            // =================================================
+            // UTILISATEUR MIS À JOUR
+            // =================================================
+
             const utilisateurMisAJour = {
 
                 ...utilisateur,
 
-                photo: nouvellePhoto
+                photo:
+                    nouvellePhoto
 
             };
 
@@ -464,7 +622,7 @@ function ProfilClient() {
 
 
             // =================================================
-            // ÉTATS
+            // ÉTAT UTILISATEUR
             // =================================================
 
             setUtilisateur(
@@ -473,9 +631,15 @@ function ProfilClient() {
 
 
             setPhotoOriginale(
-                getPhotoUrl(nouvellePhoto)
+                getPhotoUrl(
+                    nouvellePhoto
+                )
             );
 
+
+            // =================================================
+            // NETTOYER PREVIEW
+            // =================================================
 
             if (photoPreview) {
 
@@ -492,6 +656,15 @@ function ProfilClient() {
 
 
             // =================================================
+            // RECHARGER MES PHOTOS
+            // =================================================
+
+            await chargerMesPhotos(
+                utilisateur.id_utilisateur
+            );
+
+
+            // =================================================
             // INFORMER NAVBAR
             // =================================================
 
@@ -505,7 +678,6 @@ function ProfilClient() {
             setMessage(
                 "Votre photo de profil a été mise à jour avec succès."
             );
-
 
         }
         catch (err) {
@@ -545,10 +717,6 @@ function ProfilClient() {
         }
 
 
-        // =====================================================
-        // VÉRIFIER ID
-        // =====================================================
-
         const idUtilisateur =
             utilisateur.id_utilisateur ||
             utilisateur.id;
@@ -574,10 +742,6 @@ function ProfilClient() {
 
         try {
 
-            // =================================================
-            // DONNÉES ENVOYÉES AU BACKEND
-            // =================================================
-
             const donneesModification = {
 
                 nom:
@@ -592,23 +756,11 @@ function ProfilClient() {
                 telephone:
                     formData.telephone.trim(),
 
-                // =================================================
-                // IMPORTANT :
-                // Le backend updateUtilisateur exige le rôle.
-                // Le client ne modifie pas son rôle, on conserve
-                // simplement celui qui existe déjà.
-                // =================================================
-
                 role:
-                    utilisateur.role || "Touriste"
+                    utilisateur.role ||
+                    "Touriste"
 
             };
-
-
-            console.log(
-                "📤 Modification profil :",
-                donneesModification
-            );
 
 
             const response =
@@ -621,18 +773,10 @@ function ProfilClient() {
                 );
 
 
-            // =================================================
-            // RÉCUPÉRER UTILISATEUR RETOURNÉ PAR LE BACKEND
-            // =================================================
-
             const updatedUser =
                 response.data?.utilisateur ||
                 {};
 
-
-            // =================================================
-            // CONSTRUIRE UTILISATEUR FINAL
-            // =================================================
 
             const utilisateurFinal = {
 
@@ -661,10 +805,6 @@ function ProfilClient() {
             };
 
 
-            // =================================================
-            // LOCAL STORAGE
-            // =================================================
-
             localStorage.setItem(
 
                 "utilisateur",
@@ -676,18 +816,10 @@ function ProfilClient() {
             );
 
 
-            // =================================================
-            // ÉTAT UTILISATEUR
-            // =================================================
-
             setUtilisateur(
                 utilisateurFinal
             );
 
-
-            // =================================================
-            // METTRE À JOUR LE FORMULAIRE
-            // =================================================
 
             setFormData({
 
@@ -706,10 +838,6 @@ function ProfilClient() {
             });
 
 
-            // =================================================
-            // INFORMER NAVBAR
-            // =================================================
-
             window.dispatchEvent(
                 new Event(
                     "utilisateurConnecte"
@@ -721,19 +849,12 @@ function ProfilClient() {
                 "Vos informations ont été mises à jour avec succès."
             );
 
-
         }
         catch (err) {
 
             console.error(
                 "Erreur modification profil :",
                 err
-            );
-
-
-            console.error(
-                "Réponse serveur :",
-                err.response?.data
             );
 
 
@@ -758,7 +879,7 @@ function ProfilClient() {
 
     const voirPhoto = (
         photoUrl,
-        titre = "Photo de profil"
+        titre = "Photo"
     ) => {
 
         if (!photoUrl) {
@@ -776,8 +897,13 @@ function ProfilClient() {
             titre
         );
 
+        setPhotoModalUrl(
+            photoUrl
+        );
 
-        setPhotoModal(true);
+        setPhotoModal(
+            true
+        );
 
     };
 
@@ -788,7 +914,13 @@ function ProfilClient() {
 
     const fermerPhotoModal = () => {
 
-        setPhotoModal(false);
+        setPhotoModal(
+            false
+        );
+
+        setPhotoModalUrl(
+            null
+        );
 
     };
 
@@ -835,9 +967,7 @@ function ProfilClient() {
 
 
     if (!utilisateur) {
-
         return null;
-
     }
 
 
@@ -856,10 +986,11 @@ function ProfilClient() {
 
             <div className="profil-client-header">
 
-
                 <button
                     className="profil-client-back"
-                    onClick={retourEspaceClient}
+                    onClick={
+                        retourEspaceClient
+                    }
                 >
 
                     <FaArrowLeft />
@@ -887,7 +1018,6 @@ function ProfilClient() {
                     </p>
 
                 </div>
-
 
             </div>
 
@@ -956,7 +1086,9 @@ function ProfilClient() {
                             {photoActuelle ? (
 
                                 <img
-                                    src={photoActuelle}
+                                    src={
+                                        photoActuelle
+                                    }
                                     alt="Photo de profil"
                                 />
 
@@ -980,7 +1112,9 @@ function ProfilClient() {
                                         : "Photo de profil"
                                 )
                             }
-                            disabled={!photoActuelle}
+                            disabled={
+                                !photoActuelle
+                            }
                         >
 
                             <FaEye />
@@ -1041,7 +1175,7 @@ function ProfilClient() {
 
 
                     {/* =================================================
-                        COMPARAISON ANCIENNE / NOUVELLE PHOTO
+                        COMPARAISON
                     ================================================= */}
 
                     {photoPreview && (
@@ -1062,7 +1196,6 @@ function ProfilClient() {
                                     </h3>
 
                                 </div>
-
 
                                 <FaImage />
 
@@ -1094,7 +1227,9 @@ function ProfilClient() {
                                         {photoOriginale ? (
 
                                             <img
-                                                src={photoOriginale}
+                                                src={
+                                                    photoOriginale
+                                                }
                                                 alt="Ancienne photo"
                                             />
 
@@ -1140,7 +1275,9 @@ function ProfilClient() {
                                     >
 
                                         <img
-                                            src={photoPreview}
+                                            src={
+                                                photoPreview
+                                            }
                                             alt="Nouvelle photo"
                                         />
 
@@ -1168,7 +1305,9 @@ function ProfilClient() {
                                     onClick={
                                         annulerNouvellePhoto
                                     }
-                                    disabled={savingPhoto}
+                                    disabled={
+                                        savingPhoto
+                                    }
                                 >
 
                                     <FaTimes />
@@ -1184,7 +1323,9 @@ function ProfilClient() {
                                     onClick={
                                         enregistrerPhoto
                                     }
-                                    disabled={savingPhoto}
+                                    disabled={
+                                        savingPhoto
+                                    }
                                 >
 
                                     <FaSave />
@@ -1204,6 +1345,197 @@ function ProfilClient() {
 
                     )}
 
+
+                </section>
+
+
+                {/* =================================================
+                    MES PHOTOS
+                ================================================= */}
+
+                <section className="profil-client-gallery-card">
+
+                    <div className="profil-client-section-title">
+
+                        <span>
+                            GALERIE PERSONNELLE
+                        </span>
+
+                        <h2>
+                            <FaImages />
+                            Mes photos
+                        </h2>
+
+                        <p>
+                            Retrouvez ici vos anciennes photos de profil.
+                        </p>
+
+                    </div>
+
+
+                    {loadingPhotos ? (
+
+                        <div className="profil-gallery-loading">
+                            Chargement de vos photos...
+                        </div>
+
+                    ) : mesPhotos.length === 0 ? (
+
+                        <div className="profil-gallery-empty">
+
+                            <FaImages />
+
+                            <span>
+                                Vous n'avez pas encore d'ancienne photo de profil.
+                            </span>
+
+                        </div>
+
+                    ) : (
+
+                        <div className="profil-gallery-grid">
+
+                            {mesPhotos.map((item) => {
+
+                                const url =
+                                    getPhotoUrl(
+                                        item.photo
+                                    );
+
+
+                                return (
+
+                                    <div
+                                        className="profil-gallery-item"
+                                        key={
+                                            item.id_photo
+                                        }
+                                        onClick={() =>
+                                            voirPhoto(
+                                                url,
+                                                "Mes photos"
+                                            )
+                                        }
+                                    >
+
+                                        <img
+                                            src={
+                                                url
+                                            }
+                                            alt="Ancienne photo de profil"
+                                        />
+
+                                        <div className="profil-gallery-overlay">
+
+                                            <FaEye />
+
+                                        </div>
+
+                                    </div>
+
+                                );
+
+                            })}
+
+                        </div>
+
+                    )}
+
+                </section>
+
+
+                {/* =================================================
+                    MES POSTES
+                ================================================= */}
+
+                <section className="profil-client-gallery-card">
+
+                    <div className="profil-client-section-title">
+
+                        <span>
+                            PUBLICATIONS
+                        </span>
+
+                        <h2>
+                            <FaNewspaper />
+                            Mes postes
+                        </h2>
+
+                        <p>
+                            Retrouvez ici les photos que vous avez publiées
+                            dans vos avis.
+                        </p>
+
+                    </div>
+
+
+                    {loadingPostes ? (
+
+                        <div className="profil-gallery-loading">
+                            Chargement de vos publications...
+                        </div>
+
+                    ) : mesPostes.length === 0 ? (
+
+                        <div className="profil-gallery-empty">
+
+                            <FaNewspaper />
+
+                            <span>
+                                Vous n'avez pas encore publié de photo.
+                            </span>
+
+                        </div>
+
+                    ) : (
+
+                        <div className="profil-gallery-grid">
+
+                            {mesPostes.map((item) => {
+
+                                const url =
+                                    getPhotoUrl(
+                                        item.photo
+                                    );
+
+
+                                return (
+
+                                    <div
+                                        className="profil-gallery-item"
+                                        key={
+                                            item.id_photo
+                                        }
+                                        onClick={() =>
+                                            voirPhoto(
+                                                url,
+                                                "Mes postes"
+                                            )
+                                        }
+                                    >
+
+                                        <img
+                                            src={
+                                                url
+                                            }
+                                            alt="Photo publiée dans un avis"
+                                        />
+
+                                        <div className="profil-gallery-overlay">
+
+                                            <FaEye />
+
+                                        </div>
+
+                                    </div>
+
+                                );
+
+                            })}
+
+                        </div>
+
+                    )}
 
                 </section>
 
@@ -1234,7 +1566,9 @@ function ProfilClient() {
 
 
                     <form
-                        onSubmit={handleSubmit}
+                        onSubmit={
+                            handleSubmit
+                        }
                     >
 
 
@@ -1383,7 +1717,9 @@ function ProfilClient() {
                             <button
                                 type="submit"
                                 className="profil-client-save"
-                                disabled={saving}
+                                disabled={
+                                    saving
+                                }
                             >
 
                                 <FaSave />
@@ -1454,33 +1790,11 @@ function ProfilClient() {
                         <div className="photo-viewer-content">
 
 
-                            {(
-                                photoPreview &&
-                                photoModalTitle ===
-                                "Nouvelle photo"
-                            ) ||
-
-                            (
-                                photoOriginale &&
-                                photoModalTitle ===
-                                "Photo actuelle"
-                            ) ||
-
-                            (
-                                photoActuelle &&
-                                photoModalTitle ===
-                                "Photo de profil"
-                            ) ? (
+                            {photoModalUrl ? (
 
                                 <img
                                     src={
-                                        photoModalTitle ===
-                                        "Nouvelle photo"
-                                            ? photoPreview
-                                            : photoModalTitle ===
-                                              "Photo actuelle"
-                                                ? photoOriginale
-                                                : photoActuelle
+                                        photoModalUrl
                                     }
                                     alt={
                                         photoModalTitle
@@ -1500,6 +1814,7 @@ function ProfilClient() {
                                 </div>
 
                             )}
+
 
                         </div>
 

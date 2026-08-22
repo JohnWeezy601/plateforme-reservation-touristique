@@ -38,6 +38,11 @@ router.get(
 
 );
 
+router.get(
+    "/utilisateur/:id",
+    avisPhotoController.getPhotosUtilisateur
+);
+
 
 // =======================================
 // Supprimer une photo

@@ -294,3 +294,79 @@ exports.supprimerPhotoAvis = async (req, res) => {
     }
 
 };
+
+
+
+// =====================================================
+// RÉCUPÉRER LES PHOTOS PUBLIÉES PAR UN UTILISATEUR
+// =====================================================
+
+exports.getPhotosUtilisateur = async (req, res) => {
+
+    const idUtilisateur =
+        req.params.id;
+
+
+    try {
+
+        const [photos] =
+            await db.query(
+
+                `
+                SELECT
+
+                    ap.id_photo,
+
+                    ap.id_avis,
+
+                    ap.photo,
+
+                    ap.public_id,
+
+                    ap.date_ajout
+
+                FROM avis_photo ap
+
+                INNER JOIN avis a
+                    ON a.id_avis = ap.id_avis
+
+                WHERE a.id_utilisateur=?
+
+                ORDER BY ap.date_ajout DESC
+                `,
+
+                [
+                    idUtilisateur
+                ]
+
+            );
+
+
+        res.json({
+
+            photos
+
+        });
+
+    }
+    catch (error) {
+
+        console.error(
+            "❌ Erreur récupération photos des avis :",
+            error
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Erreur récupération des photos publiées",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+};
