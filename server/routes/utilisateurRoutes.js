@@ -1,4 +1,3 @@
-
 const express = require("express");
 
 const router = express.Router();
@@ -89,6 +88,19 @@ router.post(
 
 
 // =============================
+// CONNEXION AVEC FACEBOOK
+// =============================
+
+router.post(
+
+    "/facebook",
+
+    utilisateurController.facebookLogin
+
+);
+
+
+// =============================
 // MODIFIER UTILISATEUR
 // =============================
 
@@ -130,4 +142,3 @@ router.put(
 
 
 module.exports = router;
-

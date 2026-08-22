@@ -243,3 +243,62 @@ color:#333;
     }
 
 }
+
+
+/* =====================================================
+   CONNEXION FACEBOOK
+===================================================== */
+
+.facebook-login-container {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.facebook-login-button {
+    width: 100%;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background-color: #1877f2;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.facebook-login-button svg {
+    font-size: 19px;
+}
+
+.facebook-login-button:hover {
+    background-color: #166fe5;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 10px rgba(24, 119, 242, 0.25);
+}
+
+.facebook-login-button:active {
+    transform: translateY(0);
+}
+
+.facebook-login-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}

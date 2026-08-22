@@ -1,4 +1,3 @@
-
 const db = require("../db");
 
 const bcrypt = require("bcrypt");
@@ -295,7 +294,7 @@ exports.login = async (req, res) => {
             return res.status(401).json({
 
                 message:
-                    "Ce compte utilise une connexion Google"
+                    "Ce compte utilise une connexion Google ou Facebook"
 
             });
 
@@ -752,8 +751,11 @@ exports.googleLogin = async (req, res) => {
     catch (error) {
 
         console.log(
+
             "❌ Erreur connexion Google :",
+
             error
+
         );
 
 
@@ -761,6 +763,411 @@ exports.googleLogin = async (req, res) => {
 
             message:
                 "Erreur lors de la connexion avec Google",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+};
+
+
+// =====================================================
+// CONNEXION AVEC FACEBOOK
+// =====================================================
+
+exports.facebookLogin = async (req, res) => {
+
+    const { accessToken } = req.body;
+
+
+    try {
+
+        // =====================================================
+        // VÉRIFIER LE TOKEN FACEBOOK
+        // =====================================================
+
+        if (!accessToken) {
+
+            return res.status(400).json({
+
+                message:
+                    "Token Facebook manquant"
+
+            });
+
+        }
+
+
+        // =====================================================
+        // RÉCUPÉRER LES INFORMATIONS FACEBOOK
+        // =====================================================
+
+        const url =
+            `https://graph.facebook.com/me?fields=id,email,first_name,last_name,picture.type(large)&access_token=${encodeURIComponent(accessToken)}`;
+
+
+        const response =
+            await fetch(url);
+
+
+        const data =
+            await response.json();
+
+
+        // =====================================================
+        // VÉRIFIER ERREUR FACEBOOK
+        // =====================================================
+
+        if (!response.ok || data.error) {
+
+            console.log(
+
+                "❌ Erreur API Facebook :",
+
+                data
+
+            );
+
+
+            return res.status(401).json({
+
+                message:
+                    "Token Facebook invalide ou expiré"
+
+            });
+
+        }
+
+
+        // =====================================================
+        // INFORMATIONS FACEBOOK
+        // =====================================================
+
+        const facebookId =
+            data.id;
+
+        const email =
+            data.email || null;
+
+        const nom =
+            data.last_name || "";
+
+        const prenom =
+            data.first_name || "";
+
+        const photo =
+            data.picture &&
+            data.picture.data
+                ? data.picture.data.url
+                : null;
+
+
+        // =====================================================
+        // EMAIL OBLIGATOIRE
+        // =====================================================
+
+        if (!email) {
+
+            return res.status(400).json({
+
+                message:
+                    "Impossible de récupérer l'adresse email Facebook"
+
+            });
+
+        }
+
+
+        // =====================================================
+        // CHERCHER COMPTE FACEBOOK EXISTANT
+        // =====================================================
+
+        const [utilisateursFacebook] =
+            await db.query(
+
+                `
+                SELECT *
+
+                FROM utilisateur
+
+                WHERE provider=?
+
+                AND provider_id=?
+                `,
+
+                [
+
+                    "facebook",
+
+                    facebookId
+
+                ]
+
+            );
+
+
+        let utilisateur;
+
+
+        // =====================================================
+        // COMPTE FACEBOOK EXISTANT
+        // =====================================================
+
+        if (utilisateursFacebook.length > 0) {
+
+            utilisateur =
+                utilisateursFacebook[0];
+
+        }
+
+        else {
+
+            // =====================================================
+            // CHERCHER PAR EMAIL
+            // =====================================================
+
+            const [utilisateursEmail] =
+                await db.query(
+
+                    `
+                    SELECT *
+
+                    FROM utilisateur
+
+                    WHERE email=?
+                    `,
+
+                    [
+
+                        email
+
+                    ]
+
+                );
+
+
+            // =====================================================
+            // EMAIL DÉJÀ EXISTANT
+            // =====================================================
+
+            if (utilisateursEmail.length > 0) {
+
+                utilisateur =
+                    utilisateursEmail[0];
+
+
+                // =====================================================
+                // ASSOCIER LE COMPTE EXISTANT À FACEBOOK
+                // =====================================================
+
+                await db.query(
+
+                    `
+                    UPDATE utilisateur
+
+                    SET
+
+                        provider=?,
+
+                        provider_id=?,
+
+                        photo=COALESCE(photo, ?)
+
+                    WHERE id_utilisateur=?
+                    `,
+
+                    [
+
+                        "facebook",
+
+                        facebookId,
+
+                        photo,
+
+                        utilisateur.id_utilisateur
+
+                    ]
+
+                );
+
+
+                utilisateur.provider =
+                    "facebook";
+
+                utilisateur.provider_id =
+                    facebookId;
+
+                if (!utilisateur.photo) {
+
+                    utilisateur.photo =
+                        photo;
+
+                }
+
+            }
+
+            else {
+
+                // =====================================================
+                // CRÉER NOUVEL UTILISATEUR FACEBOOK
+                // =====================================================
+
+                const [result] =
+                    await db.query(
+
+                        `
+                        INSERT INTO utilisateur
+                        (
+                            nom,
+                            prenom,
+                            email,
+                            mot_de_passe,
+                            provider,
+                            provider_id,
+                            telephone,
+                            role,
+                            photo
+                        )
+
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        `,
+
+                        [
+
+                            nom,
+
+                            prenom,
+
+                            email,
+
+                            null,
+
+                            "facebook",
+
+                            facebookId,
+
+                            null,
+
+                            "Touriste",
+
+                            photo
+
+                        ]
+
+                    );
+
+
+                const [nouvelUtilisateur] =
+                    await db.query(
+
+                        `
+                        SELECT *
+
+                        FROM utilisateur
+
+                        WHERE id_utilisateur=?
+                        `,
+
+                        [
+
+                            result.insertId
+
+                        ]
+
+                    );
+
+
+                utilisateur =
+                    nouvelUtilisateur[0];
+
+            }
+
+        }
+
+
+        // =====================================================
+        // CRÉER JWT
+        // =====================================================
+
+        const token =
+            jwt.sign(
+
+                {
+
+                    id:
+                        utilisateur.id_utilisateur,
+
+                    role:
+                        utilisateur.role
+
+                },
+
+                process.env.JWT_SECRET,
+
+                {
+
+                    expiresIn: "1h"
+
+                }
+
+            );
+
+
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
+
+        res.json({
+
+            message:
+                "Connexion Facebook réussie",
+
+            token,
+
+            utilisateur: {
+
+                id:
+                    utilisateur.id_utilisateur,
+
+                nom:
+                    utilisateur.nom,
+
+                prenom:
+                    utilisateur.prenom,
+
+                email:
+                    utilisateur.email,
+
+                role:
+                    utilisateur.role,
+
+                photo:
+                    utilisateur.photo
+
+            }
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(
+
+            "❌ Erreur connexion Facebook :",
+
+            error
+
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Erreur lors de la connexion avec Facebook",
 
             error:
                 error.message
@@ -1052,7 +1459,9 @@ exports.getUtilisateurs = async (req, res) => {
 
 
         res.json(
+
             utilisateurs
+
         );
 
     }
@@ -1135,7 +1544,9 @@ exports.getUtilisateurById = async (req, res) => {
 
 
         res.json(
+
             utilisateur[0]
+
         );
 
     }
@@ -1218,7 +1629,9 @@ exports.updatePhoto = async (req, res) => {
 
 
         console.log(
+
             "☁️ Upload photo utilisateur vers Cloudinary..."
+
         );
 
 
@@ -1241,19 +1654,27 @@ exports.updatePhoto = async (req, res) => {
 
 
         console.log(
+
             "✅ Upload Cloudinary réussi"
+
         );
 
 
         console.log(
+
             "URL :",
+
             resultat.secure_url
+
         );
 
 
         console.log(
+
             "Public ID :",
+
             resultat.public_id
+
         );
 
 
@@ -1283,7 +1704,9 @@ exports.updatePhoto = async (req, res) => {
 
 
         console.log(
+
             "✅ Base de données mise à jour"
+
         );
 
 
@@ -1292,7 +1715,9 @@ exports.updatePhoto = async (req, res) => {
             anciennePhoto &&
 
             anciennePhoto.includes(
+
                 "res.cloudinary.com"
+
             )
 
         ) {
@@ -1301,7 +1726,9 @@ exports.updatePhoto = async (req, res) => {
 
                 const partie =
                     anciennePhoto.split(
+
                         "/upload/"
+
                     )[1];
 
 
@@ -1309,21 +1736,30 @@ exports.updatePhoto = async (req, res) => {
 
                     const sansVersion =
                         partie.replace(
+
                             /^v\d+\//,
+
                             ""
+
                         );
 
 
                     const publicIdAncien =
                         sansVersion.replace(
+
                             /\.[^/.]+$/,
+
                             ""
+
                         );
 
 
                     console.log(
+
                         "🗑️ Suppression ancienne photo :",
+
                         publicIdAncien
+
                     );
 
 
@@ -1342,7 +1778,9 @@ exports.updatePhoto = async (req, res) => {
 
 
                     console.log(
+
                         "✅ Ancienne photo supprimée de Cloudinary"
+
                     );
 
                 }
@@ -1371,17 +1809,24 @@ exports.updatePhoto = async (req, res) => {
                 req.file.path &&
 
                 fs.existsSync(
+
                     req.file.path
+
                 )
 
             ) {
 
                 fs.unlinkSync(
+
                     req.file.path
+
                 );
 
+
                 console.log(
+
                     "🗑️ Fichier local temporaire supprimé"
+
                 );
 
             }
@@ -1419,8 +1864,11 @@ exports.updatePhoto = async (req, res) => {
     catch (error) {
 
         console.log(
+
             "❌ Erreur modification photo :",
+
             error
+
         );
 
 
@@ -1437,4 +1885,3 @@ exports.updatePhoto = async (req, res) => {
     }
 
 };
-

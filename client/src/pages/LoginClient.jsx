@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -9,7 +9,8 @@ import "./LoginClient.css";
 
 import {
     FaEye,
-    FaEyeSlash
+    FaEyeSlash,
+    FaFacebookF
 } from "react-icons/fa";
 
 import { GoogleLogin } from "@react-oauth/google";
@@ -29,10 +30,102 @@ function LoginClient(){
 
     const [voirMotDePasse,setVoirMotDePasse] = useState(false);
 
+    const [facebookReady,setFacebookReady] = useState(false);
+
 
     // =====================================================
-    // FONCTION COMMUNE POUR SAUVEGARDER L'UTILISATEUR
-    // APRÈS CONNEXION GOOGLE
+    // CHARGER LE SDK FACEBOOK
+    // =====================================================
+
+    useEffect(() => {
+
+        // Facebook est déjà chargé
+        if(window.FB){
+
+            setFacebookReady(true);
+
+            return;
+
+        }
+
+
+        // Éviter de charger plusieurs fois le SDK
+        if(
+            document.getElementById(
+                "facebook-jssdk"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        window.fbAsyncInit = function(){
+
+            window.FB.init({
+
+                appId:
+                    "1385966007059754",
+
+                cookie:
+                    true,
+
+                xfbml:
+                    true,
+
+                version:
+                    "v23.0"
+
+            });
+
+
+            setFacebookReady(true);
+
+        };
+
+
+        const script =
+            document.createElement("script");
+
+
+        script.id =
+            "facebook-jssdk";
+
+
+        script.src =
+            "https://connect.facebook.net/fr_FR/sdk.js";
+
+
+        script.async =
+            true;
+
+
+        script.defer =
+            true;
+
+
+        script.crossOrigin =
+            "anonymous";
+
+
+        document.body.appendChild(
+            script
+        );
+
+
+        return () => {
+
+            window.fbAsyncInit =
+                undefined;
+
+        };
+
+    }, []);
+
+
+    // =====================================================
+    // FONCTION COMMUNE POUR FINALISER LA CONNEXION
     // =====================================================
 
     const finaliserConnexion = (res) => {
@@ -146,6 +239,7 @@ function LoginClient(){
                     "retourApresLogin"
                 );
 
+
                 navigate(
                     retour
                 );
@@ -177,7 +271,6 @@ function LoginClient(){
 
         try{
 
-
             setLoading(true);
 
 
@@ -205,7 +298,7 @@ function LoginClient(){
 
 
             // =====================================================
-            // Sauvegarder le token JWT
+            // TOKEN JWT
             // =====================================================
 
             localStorage.setItem(
@@ -215,7 +308,7 @@ function LoginClient(){
 
 
             // =====================================================
-            // Sauvegarder utilisateur
+            // UTILISATEUR
             // =====================================================
 
             const utilisateurConnecte = {
@@ -258,7 +351,7 @@ function LoginClient(){
 
 
             // =====================================================
-            // REDIRECTION SELON LE RÔLE
+            // REDIRECTION
             // =====================================================
 
             const role =
@@ -307,6 +400,7 @@ function LoginClient(){
                         "retourApresLogin"
                     );
 
+
                     navigate(
                         retour
                     );
@@ -314,9 +408,6 @@ function LoginClient(){
                 }
 
                 else{
-
-                    // Aucun chemin sauvegardé :
-                    // revenir à la page précédente
 
                     navigate(
                         -1
@@ -341,6 +432,8 @@ function LoginClient(){
 
             alert(
 
+                error.response?.data?.message ||
+
                 "Email ou mot de passe incorrect"
 
             );
@@ -362,9 +455,11 @@ function LoginClient(){
     // CONNEXION GOOGLE
     // =====================================================
 
-    const connexionGoogle = async (credentialResponse) => {
+    const connexionGoogle = async(
+        credentialResponse
+    ) => {
 
-        try {
+        try{
 
             setLoading(true);
 
@@ -409,7 +504,11 @@ function LoginClient(){
 
 
             alert(
+
+                error.response?.data?.message ||
+
                 "Impossible de se connecter avec Google"
+
             );
 
         }
@@ -422,6 +521,182 @@ function LoginClient(){
 
     };
 
+
+    // =====================================================
+    // CONNEXION FACEBOOK
+    // =====================================================
+
+    const connexionFacebook = () => {
+
+
+        if(!window.FB){
+
+            alert(
+                "Facebook n'est pas encore chargé. Veuillez patienter quelques secondes."
+            );
+
+            return;
+
+        }
+
+
+        try{
+
+            setLoading(true);
+
+
+            console.log(
+                "Connexion Facebook..."
+            );
+
+
+            window.FB.login(
+
+                async (response) => {
+
+                    try{
+
+                        console.log(
+                            "Réponse Facebook :",
+                            response
+                        );
+
+
+                        // =====================================================
+                        // UTILISATEUR A ANNULÉ
+                        // =====================================================
+
+                        if(
+                            !response ||
+                            !response.authResponse
+                        ){
+
+                            console.log(
+                                "Connexion Facebook annulée"
+                            );
+
+
+                            setLoading(false);
+
+
+                            return;
+
+                        }
+
+
+                        // =====================================================
+                        // TOKEN FACEBOOK
+                        // =====================================================
+
+                        const accessToken =
+                            response.authResponse.accessToken;
+
+
+                        if(!accessToken){
+
+                            throw new Error(
+                                "Token Facebook manquant"
+                            );
+
+                        }
+
+
+                        // =====================================================
+                        // ENVOYER LE TOKEN AU BACKEND
+                        // =====================================================
+
+                        const res = await api.post(
+
+                            "/utilisateurs/facebook",
+
+                            {
+
+                                accessToken:
+                                    accessToken
+
+                            }
+
+                        );
+
+
+                        console.log(
+                            "Connexion Facebook réussie :",
+                            res.data
+                        );
+
+
+                        // =====================================================
+                        // FINALISER LA CONNEXION
+                        // =====================================================
+
+                        finaliserConnexion(
+                            res
+                        );
+
+                    }
+
+                    catch(error){
+
+                        console.log(
+                            "Erreur connexion Facebook :",
+                            error
+                        );
+
+
+                        alert(
+
+                            error.response?.data?.message ||
+
+                            error.message ||
+
+                            "Impossible de se connecter avec Facebook"
+
+                        );
+
+                    }
+
+                    finally{
+
+                        setLoading(false);
+
+                    }
+
+                },
+
+                {
+
+                    scope:
+                        "public_profile,email"
+
+                }
+
+            );
+
+        }
+
+        catch(error){
+
+            console.log(
+                "Erreur Facebook :",
+                error
+            );
+
+
+            setLoading(false);
+
+
+            alert(
+                "Impossible d'ouvrir la connexion Facebook"
+            );
+
+        }
+
+    };
+
+
+    // =====================================================
+    // AFFICHAGE
+    // =====================================================
 
     return(
 
@@ -447,6 +722,10 @@ function LoginClient(){
                 >
 
 
+                    {/* =====================================================
+                        EMAIL
+                    ===================================================== */}
+
                     <label>
                         Email
                     </label>
@@ -461,11 +740,17 @@ function LoginClient(){
                         value={email}
 
                         onChange={(e)=>
-                            setEmail(e.target.value)
+                            setEmail(
+                                e.target.value
+                            )
                         }
 
                     />
 
+
+                    {/* =====================================================
+                        MOT DE PASSE
+                    ===================================================== */}
 
                     <label>
                         Mot de passe
@@ -530,6 +815,10 @@ function LoginClient(){
                     </div>
 
 
+                    {/* =====================================================
+                        CONNEXION CLASSIQUE
+                    ===================================================== */}
+
                     <button
 
                         type="submit"
@@ -569,48 +858,110 @@ function LoginClient(){
 
 
                     {/* =====================================================
-                        CONNEXION GOOGLE
+                        GOOGLE
                     ===================================================== */}
 
-                   <div className="google-login-container">
+                    <div className="google-login-container">
 
-    <GoogleLogin
 
-        onSuccess={
-            connexionGoogle
-        }
+                        <GoogleLogin
 
-        onError={() => {
+                            onSuccess={
+                                connexionGoogle
+                            }
 
-            console.log(
-                "Échec de la connexion Google"
-            );
+                            onError={() => {
 
-            alert(
-                "La connexion avec Google a échoué"
-            );
+                                console.log(
+                                    "Échec de la connexion Google"
+                                );
 
-        }}
 
-        text="continue_with"
+                                alert(
+                                    "La connexion avec Google a échoué"
+                                );
 
-        shape="rectangular"
+                            }}
 
-        theme="outline"
+                            text="continue_with"
 
-        size="large"
+                            shape="rectangular"
 
-    />
+                            theme="outline"
 
-</div>
+                            size="large"
+
+                        />
+
+
+                    </div>
+
+
+                    {/* =====================================================
+                        FACEBOOK
+                    ===================================================== */}
+
+                    <div className="facebook-login-container">
+
+
+                        <button
+
+                            type="button"
+
+                            className="facebook-login-button"
+
+                            onClick={
+                                connexionFacebook
+                            }
+
+                            disabled={
+                                loading ||
+                                !facebookReady
+                            }
+
+                        >
+
+                            <FaFacebookF/>
+
+
+                            <span>
+
+                                {
+
+                                    !facebookReady
+
+                                    ?
+
+                                    "Chargement de Facebook..."
+
+                                    :
+
+                                    "Continuer avec Facebook"
+
+                                }
+
+                            </span>
+
+
+                        </button>
+
+
+                    </div>
+
+
+                    {/* =====================================================
+                        INSCRIPTION
+                    ===================================================== */}
 
                     <div className="register-link">
+
 
                         <p>
 
                             Vous n'avez pas de compte ?
 
                             {" "}
+
 
                             <span
 
@@ -629,6 +980,7 @@ function LoginClient(){
                             </span>
 
                         </p>
+
 
                     </div>
 
