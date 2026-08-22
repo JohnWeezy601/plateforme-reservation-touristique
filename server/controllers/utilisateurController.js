@@ -1569,7 +1569,6 @@ exports.getUtilisateurById = async (req, res) => {
 
 
 
-
 // =====================================================
 // MODIFIER PHOTO UTILISATEUR
 // =====================================================
@@ -1585,9 +1584,7 @@ exports.updatePhoto = async (req, res) => {
     if (!req.file) {
 
         return res.status(400).json({
-
             message: "Aucune photo envoyée"
-
         });
 
     }
@@ -1595,7 +1592,7 @@ exports.updatePhoto = async (req, res) => {
     try {
 
         // =====================================================
-        // RÉCUPÉRER ANCIENNE PHOTO
+        // RÉCUPÉRER PHOTO ACTUELLE
         // =====================================================
 
         const [utilisateurs] = await db.query(
@@ -1616,25 +1613,21 @@ exports.updatePhoto = async (req, res) => {
         if (utilisateurs.length === 0) {
 
             return res.status(404).json({
-
                 message: "Utilisateur introuvable"
-
             });
 
         }
 
 
+        const utilisateur =
+            utilisateurs[0];
+
         const anciennePhoto =
-            utilisateurs[0].photo;
-
-
-        console.log(
-            "☁️ Upload nouvelle photo vers Cloudinary..."
-        );
+            utilisateur.photo;
 
 
         // =====================================================
-        // UPLOAD BUFFER VERS CLOUDINARY
+        // UPLOAD NOUVELLE PHOTO CLOUDINARY
         // =====================================================
 
         const resultat =
@@ -1654,20 +1647,15 @@ exports.updatePhoto = async (req, res) => {
                         (error, result) => {
 
                             if (error) {
-
                                 reject(error);
-
                             }
                             else {
-
                                 resolve(result);
-
                             }
 
                         }
 
                     );
-
 
                 stream.end(
                     req.file.buffer
@@ -1676,76 +1664,33 @@ exports.updatePhoto = async (req, res) => {
             });
 
 
-        console.log(
-            "✅ Upload Cloudinary réussi"
-        );
-
-
-        console.log(
-            "URL :",
-            resultat.secure_url
-        );
-
-
-        console.log(
-            "Public ID :",
-            resultat.public_id
-        );
-
-
-        // =====================================================
-        // NOUVELLE PHOTO
-        // =====================================================
-
         const nouvellePhoto =
             resultat.secure_url;
 
 
-        // =====================================================
-        // METTRE À JOUR LA BASE
-        // =====================================================
-
-        await db.query(
-
-            `
-            UPDATE utilisateur
-            SET photo=?
-            WHERE id_utilisateur=?
-            `,
-
-            [
-                nouvellePhoto,
-                id
-            ]
-
-        );
+        const nouveauPublicId =
+            resultat.public_id;
 
 
         console.log(
-            "✅ Base de données mise à jour"
+            "✅ Nouvelle photo Cloudinary :",
+            nouvellePhoto
         );
 
 
         // =====================================================
-        // SUPPRIMER ANCIENNE PHOTO CLOUDINARY
+        // SAUVEGARDER L'ANCIENNE PHOTO DANS L'HISTORIQUE
         // =====================================================
 
         if (
-
             anciennePhoto &&
-
-            anciennePhoto.includes(
-                "res.cloudinary.com"
-            )
-
+            anciennePhoto.includes("res.cloudinary.com")
         ) {
 
             try {
 
                 const partie =
-                    anciennePhoto.split(
-                        "/upload/"
-                    )[1];
+                    anciennePhoto.split("/upload/")[1];
 
 
                 if (partie) {
@@ -1765,9 +1710,115 @@ exports.updatePhoto = async (req, res) => {
 
 
                     console.log(
-                        "🗑️ Suppression ancienne photo :",
+                        "📸 Sauvegarde ancienne photo :",
+                        anciennePhoto
+                    );
+
+
+                    console.log(
+                        "🔑 Ancien public_id :",
                         publicIdAncien
                     );
+
+
+                    // =====================================================
+                    // ENREGISTRER DANS L'HISTORIQUE
+                    // =====================================================
+
+                    await db.query(
+
+                        `
+                        INSERT INTO photo_profil_client
+                        (
+                            id_utilisateur,
+                            photo,
+                            public_id
+                        )
+                        VALUES (?, ?, ?)
+                        `,
+
+                        [
+                            id,
+                            anciennePhoto,
+                            publicIdAncien
+                        ]
+
+                    );
+
+
+                    console.log(
+                        "✅ Ancienne photo enregistrée dans l'historique"
+                    );
+
+                }
+
+            }
+            catch (historiqueError) {
+
+                console.error(
+                    "❌ Erreur sauvegarde historique :",
+                    historiqueError
+                );
+
+            }
+
+        }
+
+
+        // =====================================================
+        // METTRE À JOUR UTILISATEUR
+        // =====================================================
+
+        await db.query(
+
+            `
+            UPDATE utilisateur
+            SET photo=?
+            WHERE id_utilisateur=?
+            `,
+
+            [
+                nouvellePhoto,
+                id
+            ]
+
+        );
+
+
+        console.log(
+            "✅ Photo utilisateur mise à jour"
+        );
+
+
+        // =====================================================
+        // SUPPRIMER ANCIENNE PHOTO CLOUDINARY
+        // =====================================================
+
+        if (
+            anciennePhoto &&
+            anciennePhoto.includes("res.cloudinary.com")
+        ) {
+
+            try {
+
+                const partie =
+                    anciennePhoto.split("/upload/")[1];
+
+
+                if (partie) {
+
+                    const sansVersion =
+                        partie.replace(
+                            /^v\d+\//,
+                            ""
+                        );
+
+
+                    const publicIdAncien =
+                        sansVersion.replace(
+                            /\.[^/.]+$/,
+                            ""
+                        );
 
 
                     await cloudinary.uploader.destroy(
@@ -1791,12 +1842,9 @@ exports.updatePhoto = async (req, res) => {
             }
             catch (cloudinaryError) {
 
-                console.log(
-
-                    "⚠️ Impossible de supprimer l'ancienne photo :",
-
+                console.error(
+                    "⚠️ Impossible de supprimer ancienne photo Cloudinary :",
                     cloudinaryError.message
-
                 );
 
             }
@@ -1808,7 +1856,7 @@ exports.updatePhoto = async (req, res) => {
         // RÉCUPÉRER UTILISATEUR MIS À JOUR
         // =====================================================
 
-        const [utilisateurMisAJour] =
+        const [utilisateursMisAJour] =
             await db.query(
 
                 `
@@ -1837,16 +1885,16 @@ exports.updatePhoto = async (req, res) => {
         res.json({
 
             message:
-                "Photo modifiée avec succès",
+                "Photo de profil mise à jour avec succès",
 
             photo:
                 nouvellePhoto,
 
             public_id:
-                resultat.public_id,
+                nouveauPublicId,
 
             utilisateur:
-                utilisateurMisAJour[0]
+                utilisateursMisAJour[0]
 
         });
 

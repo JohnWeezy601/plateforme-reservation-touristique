@@ -1,38 +1,27 @@
 /* =========================================================
-   PROFIL CLIENT
-   ========================================================= */
+   PAGE
+========================================================= */
 
 .profil-client-page {
     min-height: 100vh;
-    width: 100%;
-    padding: 40px 30px 70px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #f8fafc 0%,
-            #eef2f7 100%
-        );
-
-    color: #172033;
-    box-sizing: border-box;
+    padding: 35px 45px 60px;
+    background: #f5f7fb;
+    color: #1f2937;
 }
 
 
 /* =========================================================
    HEADER
-   ========================================================= */
+========================================================= */
 
 .profil-client-header {
-    width: 100%;
     max-width: 1180px;
-    margin: 0 auto 30px;
+    margin: 0 auto 25px;
 
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 18px;
 }
-
 
 .profil-client-back {
     width: fit-content;
@@ -41,49 +30,29 @@
     align-items: center;
     gap: 9px;
 
-    padding: 10px 16px;
+    border: none;
+    background: transparent;
 
-    border: 1px solid #dce3ec;
-    border-radius: 10px;
-
-    background: #ffffff;
-    color: #344054;
+    color: #4f46e5;
 
     font-size: 14px;
     font-weight: 600;
 
     cursor: pointer;
 
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    padding: 0;
 }
-
 
 .profil-client-back:hover {
-    background: #f1f5f9;
-    color: #2563eb;
-
-    transform: translateX(-2px);
-
-    box-shadow:
-        0 5px 15px rgba(15, 23, 42, 0.07);
+    color: #3730a3;
 }
-
-
-.profil-client-back svg {
-    font-size: 14px;
-}
-
 
 .profil-client-label {
     display: inline-block;
 
     margin-bottom: 7px;
 
-    color: #2563eb;
+    color: #6366f1;
 
     font-size: 12px;
     font-weight: 800;
@@ -91,231 +60,162 @@
     letter-spacing: 1.5px;
 }
 
-
 .profil-client-header h1 {
     margin: 0;
 
-    color: #111827;
-
-    font-size: clamp(30px, 4vw, 44px);
-    line-height: 1.15;
-
+    font-size: 34px;
     font-weight: 800;
+
+    color: #111827;
 }
 
-
 .profil-client-header p {
-    margin: 10px 0 0;
+    margin: 8px 0 0;
 
-    color: #667085;
+    color: #6b7280;
 
     font-size: 15px;
-    line-height: 1.6;
 }
 
 
 /* =========================================================
    MESSAGES
-   ========================================================= */
+========================================================= */
 
 .profil-client-success,
 .profil-client-error {
-    width: 100%;
     max-width: 1180px;
 
-    margin: 0 auto 22px;
+    margin: 0 auto 20px;
 
-    box-sizing: border-box;
-
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    padding: 14px 17px;
+    padding: 14px 18px;
 
     border-radius: 12px;
 
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-
-.profil-client-success {
-    border: 1px solid #bbf7d0;
-    background: #f0fdf4;
-    color: #166534;
-}
-
-
-.profil-client-error {
-    border: 1px solid #fecaca;
-    background: #fef2f2;
-    color: #b91c1c;
-}
-
-
-.profil-client-success svg {
-    flex-shrink: 0;
-}
-
-
-.profil-client-error span {
-    flex: 1;
-}
-
-
-.profil-client-error button {
-    width: 30px;
-    height: 30px;
-
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 12px;
 
-    border: none;
-    border-radius: 7px;
-
-    background: transparent;
-    color: #b91c1c;
-
-    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
 }
 
+.profil-client-success {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #047857;
+}
 
-.profil-client-error button:hover {
-    background: rgba(185, 28, 28, 0.08);
+.profil-client-success svg {
+    margin-right: 8px;
+}
+
+.profil-client-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+}
+
+.profil-client-error button {
+    border: none;
+    background: transparent;
+
+    color: inherit;
+
+    cursor: pointer;
+
+    font-size: 16px;
 }
 
 
 /* =========================================================
    CONTAINER
-   ========================================================= */
+========================================================= */
 
 .profil-client-container {
-    width: 100%;
     max-width: 1180px;
-
     margin: 0 auto;
 
     display: flex;
     flex-direction: column;
+
     gap: 24px;
 }
 
 
 /* =========================================================
-   CARTE PROFIL
-   ========================================================= */
+   CARTE PHOTO PROFIL
+========================================================= */
 
-.profil-client-photo-card {
-    overflow: hidden;
-
+.profil-client-photo-card,
+.profil-client-gallery-card,
+.profil-client-form-card {
     background: #ffffff;
 
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e5e7eb;
+
     border-radius: 20px;
 
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.07);
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+
+    overflow: hidden;
 }
 
 
 /* =========================================================
    COVER
-   ========================================================= */
+========================================================= */
 
 .profil-facebook-cover {
+    height: 210px;
+
     position: relative;
-
-    height: 180px;
-
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-
-    padding-bottom: 0;
 
     background:
         linear-gradient(
             135deg,
-            #2563eb 0%,
-            #1d4ed8 45%,
-            #0f172a 100%
+            #4f46e5,
+            #7c3aed,
+            #2563eb
         );
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
 }
-
-
-.profil-facebook-cover::before {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    opacity: 0.12;
-
-    background:
-        radial-gradient(
-            circle at 20% 30%,
-            #ffffff 0,
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at 80% 70%,
-            #ffffff 0,
-            transparent 30%
-        );
-}
-
-
-/* =========================================================
-   AVATAR
-   ========================================================= */
 
 .profil-facebook-avatar {
-    position: relative;
-    z-index: 2;
-
-    width: 150px;
-    height: 150px;
+    width: 155px;
+    height: 155px;
 
     margin-bottom: -55px;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    border: 7px solid #ffffff;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+
+    overflow: hidden;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    overflow: hidden;
+    color: #9ca3af;
 
-    border: 6px solid #ffffff;
-    border-radius: 50%;
-
-    background: #eef2f7;
-
-    color: #64748b;
-
-    box-shadow:
-        0 8px 25px rgba(15, 23, 42, 0.2);
+    font-size: 60px;
 }
-
 
 .profil-facebook-avatar img {
     width: 100%;
     height: 100%;
 
-    display: block;
-
     object-fit: cover;
 }
-
-
-.profil-facebook-avatar > svg {
-    font-size: 55px;
-}
-
-
-/* =========================================================
-   BOUTON VOIR PHOTO
-   ========================================================= */
 
 .profil-view-photo {
     position: absolute;
@@ -323,54 +223,47 @@
     right: 25px;
     bottom: 20px;
 
-    z-index: 5;
-
     width: 42px;
     height: 42px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    color: #4f46e5;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-
-    background: rgba(15, 23, 42, 0.65);
-
-    color: #ffffff;
-
     cursor: pointer;
 
-    backdrop-filter: blur(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
+    transition: 0.2s;
 }
-
 
 .profil-view-photo:hover:not(:disabled) {
     transform: scale(1.08);
-    background: rgba(15, 23, 42, 0.85);
 }
 
-
 .profil-view-photo:disabled {
-    opacity: 0.45;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
 
 /* =========================================================
-   INFOS PHOTO
-   ========================================================= */
+   INFORMATIONS PHOTO
+========================================================= */
 
 .profil-client-photo-info {
     padding: 75px 30px 28px;
 
     text-align: center;
 }
-
 
 .profil-client-photo-info h2 {
     margin: 0;
@@ -381,492 +274,442 @@
     font-weight: 800;
 }
 
-
 .profil-client-photo-info p {
     margin: 7px 0 20px;
 
-    color: #667085;
+    color: #6b7280;
 
     font-size: 14px;
 }
-
-
-/* =========================================================
-   ACTION PHOTO
-   ========================================================= */
 
 .profil-photo-actions {
     display: flex;
     justify-content: center;
 }
 
-
 .profil-client-photo-button {
-    position: relative;
-
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 9px;
 
-    min-height: 44px;
-
-    padding: 0 20px;
+    padding: 11px 18px;
 
     border-radius: 10px;
 
-    background: #2563eb;
-    color: #ffffff;
+    background: #eef2ff;
+    color: #4f46e5;
 
     font-size: 14px;
     font-weight: 700;
 
     cursor: pointer;
 
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: 0.2s;
 }
-
 
 .profil-client-photo-button:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 8px 18px rgba(37, 99, 235, 0.22);
+    background: #e0e7ff;
 }
 
-
 .profil-client-photo-button input {
-    position: absolute;
-
-    width: 1px;
-    height: 1px;
-
-    opacity: 0;
-
-    pointer-events: none;
+    display: none;
 }
 
 
 /* =========================================================
    COMPARAISON PHOTO
-   ========================================================= */
+========================================================= */
 
 .photo-comparison {
     margin: 0 30px 30px;
 
     padding: 22px;
 
-    border: 1px solid #dbe4f0;
     border-radius: 16px;
 
     background: #f8fafc;
-}
 
+    border: 1px solid #e5e7eb;
+}
 
 .photo-comparison-header {
     display: flex;
+
     align-items: center;
     justify-content: space-between;
 
     margin-bottom: 20px;
 }
 
-
 .photo-comparison-header span {
-    display: block;
-
-    margin-bottom: 4px;
-
-    color: #2563eb;
-
     font-size: 11px;
+
     font-weight: 800;
 
-    letter-spacing: 1.3px;
-}
+    color: #6366f1;
 
+    letter-spacing: 1.2px;
+}
 
 .photo-comparison-header h3 {
-    margin: 0;
-
-    color: #172033;
+    margin: 5px 0 0;
 
     font-size: 17px;
-}
 
+    color: #111827;
+}
 
 .photo-comparison-header > svg {
-    color: #2563eb;
-
     font-size: 25px;
+
+    color: #6366f1;
 }
-
-
-/* =========================================================
-   GRID COMPARAISON
-   ========================================================= */
 
 .photo-comparison-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    grid-template-columns: repeat(2, 1fr);
 
     gap: 18px;
 }
 
-
-.photo-version {
-    min-width: 0;
-}
-
-
 .photo-version > span {
     display: block;
 
-    margin-bottom: 9px;
+    margin-bottom: 8px;
 
-    color: #667085;
+    color: #6b7280;
 
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
 }
-
 
 .photo-version-image {
     position: relative;
 
-    height: 220px;
+    height: 230px;
+
+    border-radius: 14px;
 
     overflow: hidden;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 13px;
-
-    background: #e2e8f0;
+    background: #e5e7eb;
 
     cursor: pointer;
 }
-
 
 .photo-version-image img {
     width: 100%;
     height: 100%;
 
-    display: block;
-
     object-fit: cover;
 }
 
-
 .photo-version-image > svg {
-    color: #94a3b8;
-    font-size: 45px;
-}
+    position: absolute;
 
+    inset: 0;
+
+    margin: auto;
+
+    color: #9ca3af;
+
+    font-size: 50px;
+}
 
 .photo-overlay {
     position: absolute;
+
     inset: 0;
+
+    background: rgba(0, 0, 0, 0.35);
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    opacity: 0;
-
-    background: rgba(15, 23, 42, 0.48);
-
     color: #ffffff;
 
-    transition: opacity 0.2s ease;
-}
+    font-size: 28px;
 
+    opacity: 0;
+
+    transition: 0.2s;
+}
 
 .photo-version-image:hover .photo-overlay {
     opacity: 1;
 }
 
-
-.photo-overlay svg {
-    font-size: 27px;
-}
-
-
-/* =========================================================
-   BOUTONS COMPARAISON
-   ========================================================= */
-
 .photo-comparison-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-
     margin-top: 20px;
-}
 
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+}
 
 .photo-cancel-button,
 .photo-save-button {
-    min-height: 43px;
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 11px 16px;
 
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
 
-    padding: 0 17px;
-
-    border-radius: 9px;
-
-    font-size: 13px;
     font-weight: 700;
 
     cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        opacity 0.2s ease;
 }
-
 
 .photo-cancel-button {
-    border: 1px solid #d0d5dd;
-
-    background: #ffffff;
-    color: #344054;
+    background: #e5e7eb;
+    color: #374151;
 }
-
-
-.photo-cancel-button:hover:not(:disabled) {
-    background: #f2f4f7;
-}
-
 
 .photo-save-button {
-    border: 1px solid #2563eb;
-
-    background: #2563eb;
+    background: #4f46e5;
     color: #ffffff;
 }
 
-
 .photo-save-button:hover:not(:disabled) {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
+    background: #4338ca;
 }
-
 
 .photo-cancel-button:disabled,
 .photo-save-button:disabled {
-    opacity: 0.55;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
 
 /* =========================================================
-   CARTES GALERIES
-   ========================================================= */
-
-.profil-client-gallery-card {
-    padding: 27px 30px;
-
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-
-    background: #ffffff;
-
-    box-shadow:
-        0 7px 25px rgba(15, 23, 42, 0.05);
-}
-
-
-/* =========================================================
-   TITRES SECTIONS
-   ========================================================= */
+   TITRE SECTIONS
+========================================================= */
 
 .profil-client-section-title {
-    margin-bottom: 20px;
+    padding: 25px 28px 15px;
 }
 
-
 .profil-client-section-title > span {
-    display: block;
-
-    margin-bottom: 6px;
-
-    color: #2563eb;
+    color: #6366f1;
 
     font-size: 11px;
+
     font-weight: 800;
 
     letter-spacing: 1.4px;
 }
 
-
 .profil-client-section-title h2 {
-    margin: 0;
+    margin: 7px 0 5px;
 
     display: flex;
     align-items: center;
     gap: 9px;
 
-    color: #172033;
+    color: #111827;
 
-    font-size: 21px;
-    font-weight: 800;
+    font-size: 22px;
 }
-
 
 .profil-client-section-title h2 svg {
-    color: #2563eb;
-    font-size: 20px;
+    color: #6366f1;
 }
 
-
 .profil-client-section-title p {
-    margin: 7px 0 0;
+    margin: 0;
 
-    color: #667085;
+    color: #6b7280;
 
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: 14px;
 }
 
 
 /* =========================================================
-   BLOC RÉSUMÉ GALERIE
-   ========================================================= */
+   BLOCS GALERIES
+========================================================= */
 
-/*
-   Le JSX corrigé peut utiliser ce bloc pour afficher
-   uniquement un résumé avant l'ouverture du modal.
-*/
-
-.profil-gallery-summary {
-    position: relative;
-
-    min-height: 125px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-
-    padding: 20px;
-
-    overflow: hidden;
-
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f8fafc,
-            #eef4ff
-        );
-
+.profil-client-gallery-card {
     cursor: pointer;
 
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-
-.profil-gallery-summary:hover {
-    border-color: #93c5fd;
-
+.profil-client-gallery-card:hover {
     transform: translateY(-2px);
 
     box-shadow:
-        0 10px 24px rgba(37, 99, 235, 0.09);
-}
-
-
-.profil-gallery-summary-content {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-
-.profil-gallery-summary-icon {
-    width: 58px;
-    height: 58px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 14px;
-
-    background: #dbeafe;
-    color: #2563eb;
-
-    font-size: 24px;
-}
-
-
-.profil-gallery-summary-text h3 {
-    margin: 0 0 5px;
-
-    color: #172033;
-
-    font-size: 16px;
-    font-weight: 800;
-}
-
-
-.profil-gallery-summary-text p {
-    margin: 0;
-
-    color: #667085;
-
-    font-size: 13px;
-}
-
-
-.profil-gallery-summary-arrow {
-    width: 38px;
-    height: 38px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #ffffff;
-    color: #2563eb;
-
-    box-shadow:
-        0 3px 10px rgba(15, 23, 42, 0.08);
+        0 14px 35px rgba(15, 23, 42, 0.10);
 }
 
 
 /* =========================================================
-   ANCIENS ÉTATS GALERIE
-   ========================================================= */
+   APERÇU 2 PHOTOS
+========================================================= */
 
-.profil-gallery-loading,
+.profil-gallery-preview-grid {
+    position: relative;
+
+    margin: 5px 28px 18px;
+
+    height: 180px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 8px;
+
+    overflow: hidden;
+
+    border-radius: 14px;
+}
+
+.profil-gallery-preview-photo {
+    overflow: hidden;
+
+    background: #e5e7eb;
+}
+
+.profil-gallery-preview-photo img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform 0.3s ease;
+}
+
+.profil-client-gallery-card:hover
+.profil-gallery-preview-photo img {
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   + N PHOTOS
+========================================================= */
+
+.profil-gallery-more {
+    position: absolute;
+
+    right: 12px;
+    bottom: 12px;
+
+    min-width: 48px;
+    height: 42px;
+
+    padding: 0 12px;
+
+    border-radius: 10px;
+
+    background: rgba(17, 24, 39, 0.85);
+
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    backdrop-filter: blur(5px);
+}
+
+
+/* =========================================================
+   RÉSUMÉ
+========================================================= */
+
+.profil-gallery-summary {
+    margin: 0 28px 25px;
+
+    padding: 15px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    border-radius: 13px;
+
+    background: #f8fafc;
+
+    border: 1px solid #edf0f4;
+}
+
+.profil-gallery-summary-icon {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background: #eef2ff;
+
+    color: #6366f1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 19px;
+}
+
+.profil-gallery-summary-content {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.profil-gallery-summary-content strong {
+    color: #111827;
+
+    font-size: 14px;
+}
+
+.profil-gallery-summary-content span {
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+.profil-gallery-summary-arrow {
+    color: #6366f1;
+
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   EMPTY / LOADING
+========================================================= */
+
 .profil-gallery-empty {
-    min-height: 120px;
+    min-height: 150px;
+
+    margin: 0 28px 25px;
+
+    border-radius: 14px;
+
+    background: #f8fafc;
+
+    border: 1px dashed #d1d5db;
 
     display: flex;
     flex-direction: column;
@@ -875,437 +718,259 @@
 
     gap: 10px;
 
-    padding: 20px;
-
-    border: 1px dashed #cbd5e1;
-    border-radius: 13px;
-
-    background: #f8fafc;
-
-    color: #64748b;
+    color: #9ca3af;
 
     text-align: center;
-}
-
-
-.profil-gallery-empty svg {
-    color: #94a3b8;
-    font-size: 30px;
-}
-
-
-.profil-gallery-empty span {
-    max-width: 500px;
 
     font-size: 13px;
 }
 
-
-/* =========================================================
-   SI LES MINIATURES SONT UTILISÉES
-   ========================================================= */
-
-.profil-gallery-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-
-    gap: 12px;
+.profil-gallery-empty svg {
+    font-size: 30px;
 }
 
-
-.profil-gallery-item {
-    position: relative;
-
-    height: 150px;
-
-    overflow: hidden;
-
-    border-radius: 12px;
-
-    background: #e2e8f0;
-
-    cursor: pointer;
-}
-
-
-.profil-gallery-item img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    display: block;
-
-    transition:
-        transform 0.3s ease;
-}
-
-
-.profil-gallery-item:hover img {
-    transform: scale(1.06);
-}
-
-
-.profil-gallery-overlay {
-    position: absolute;
-    inset: 0;
+.profil-gallery-loading {
+    min-height: 130px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    opacity: 0;
+    gap: 12px;
 
-    background: rgba(15, 23, 42, 0.5);
+    color: #6b7280;
 
-    color: #ffffff;
-
-    transition: opacity 0.2s ease;
+    font-size: 13px;
 }
 
+.profil-loading-spinner {
+    width: 22px;
+    height: 22px;
 
-.profil-gallery-item:hover .profil-gallery-overlay {
-    opacity: 1;
+    border-radius: 50%;
+
+    border: 3px solid #e5e7eb;
+    border-top-color: #6366f1;
+
+    animation: profilSpin 0.8s linear infinite;
 }
 
+@keyframes profilSpin {
 
-.profil-gallery-overlay svg {
-    font-size: 24px;
-}
+    to {
+        transform: rotate(360deg);
+    }
 
-
-/* =========================================================
-   CARTE INFORMATIONS
-   ========================================================= */
-
-.profil-client-form-card {
-    padding: 30px;
-
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-
-    background: #ffffff;
-
-    box-shadow:
-        0 7px 25px rgba(15, 23, 42, 0.05);
 }
 
 
 /* =========================================================
    FORMULAIRE
-   ========================================================= */
+========================================================= */
+
+.profil-client-form-card {
+    padding-bottom: 28px;
+}
+
+.profil-client-form-card form {
+    padding: 0 28px;
+}
 
 .profil-client-grid {
     display: grid;
 
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
 
-    gap: 22px;
-
-    margin-top: 25px;
+    gap: 20px;
 }
-
 
 .profil-client-field {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-}
 
+    gap: 7px;
+}
 
 .profil-client-field label {
-    color: #344054;
+    color: #374151;
 
     font-size: 13px;
+
     font-weight: 700;
 }
-
 
 .profil-client-input {
     min-height: 48px;
 
+    padding: 0 14px;
+
     display: flex;
     align-items: center;
 
-    border: 1px solid #d0d5dd;
+    gap: 10px;
+
+    border: 1px solid #d1d5db;
+
     border-radius: 10px;
 
     background: #ffffff;
 
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: 0.2s;
 }
-
 
 .profil-client-input:focus-within {
-    border-color: #2563eb;
+    border-color: #6366f1;
 
     box-shadow:
-        0 0 0 3px rgba(37, 99, 235, 0.1);
+        0 0 0 3px rgba(99, 102, 241, 0.10);
 }
-
 
 .profil-client-input svg {
+    color: #9ca3af;
+
     flex-shrink: 0;
-
-    margin-left: 15px;
-
-    color: #667085;
-
-    font-size: 15px;
 }
-
 
 .profil-client-input input {
     width: 100%;
-
-    min-width: 0;
-
-    height: 46px;
-
-    padding: 0 14px 0 11px;
 
     border: none;
     outline: none;
 
     background: transparent;
 
-    color: #172033;
+    color: #111827;
 
     font-size: 14px;
-
-    box-sizing: border-box;
 }
-
 
 .profil-client-input input::placeholder {
-    color: #98a2b3;
+    color: #9ca3af;
 }
-
-
-/* =========================================================
-   ACTIONS FORMULAIRE
-   ========================================================= */
 
 .profil-client-actions {
+    margin-top: 25px;
+
     display: flex;
     justify-content: flex-end;
-    align-items: center;
-    gap: 12px;
 
-    margin-top: 28px;
-
-    padding-top: 22px;
-
-    border-top: 1px solid #eaecf0;
+    gap: 10px;
 }
-
 
 .profil-client-cancel,
 .profil-client-save {
-    min-height: 44px;
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 12px 18px;
 
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+
     gap: 8px;
 
-    padding: 0 18px;
-
-    border-radius: 9px;
-
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
 
     cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        opacity 0.2s ease;
 }
-
 
 .profil-client-cancel {
-    border: 1px solid #d0d5dd;
+    background: #e5e7eb;
 
-    background: #ffffff;
-    color: #344054;
+    color: #374151;
 }
-
-
-.profil-client-cancel:hover {
-    background: #f2f4f7;
-}
-
 
 .profil-client-save {
-    border: 1px solid #2563eb;
+    background: #4f46e5;
 
-    background: #2563eb;
     color: #ffffff;
 }
 
-
 .profil-client-save:hover:not(:disabled) {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 7px 16px rgba(37, 99, 235, 0.18);
+    background: #4338ca;
 }
-
 
 .profil-client-save:disabled {
     opacity: 0.6;
+
     cursor: not-allowed;
 }
 
 
 /* =========================================================
-   MODAL PHOTO
-   ========================================================= */
+   MODAL PHOTO SIMPLE
+========================================================= */
 
 .photo-viewer-overlay {
     position: fixed;
 
     inset: 0;
 
-    z-index: 9999;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 2000;
 
     padding: 25px;
 
     background: rgba(15, 23, 42, 0.78);
 
-    backdrop-filter: blur(6px);
-
-    animation: photoModalFade 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-
-@keyframes photoModalFade {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-
-/* =========================================================
-   MODAL PRINCIPAL
-   ========================================================= */
 
 .photo-viewer {
-    width: 100%;
-    max-width: 900px;
-    max-height: 90vh;
+    width: min(900px, 100%);
 
-    display: flex;
-    flex-direction: column;
+    max-height: 90vh;
 
     overflow: hidden;
 
-    border-radius: 16px;
+    border-radius: 18px;
 
     background: #ffffff;
 
     box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.35);
-
-    animation: photoModalScale 0.2s ease;
+        0 25px 80px rgba(0, 0, 0, 0.35);
 }
-
-
-@keyframes photoModalScale {
-    from {
-        opacity: 0;
-        transform: scale(0.96);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-
-/* =========================================================
-   HEADER MODAL
-   ========================================================= */
 
 .photo-viewer-header {
     min-height: 60px;
+
+    padding: 0 18px;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    padding: 0 18px;
-
-    border-bottom: 1px solid #eaecf0;
-
-    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
 }
-
 
 .photo-viewer-header h3 {
     margin: 0;
 
-    color: #172033;
+    color: #111827;
 
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 17px;
 }
-
 
 .photo-viewer-header button {
     width: 36px;
     height: 36px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     border: none;
-    border-radius: 8px;
 
-    background: #f2f4f7;
-    color: #344054;
+    border-radius: 50%;
+
+    background: #f3f4f6;
+
+    color: #374151;
 
     cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
 }
-
-
-.photo-viewer-header button:hover {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-
-/* =========================================================
-   CONTENU PHOTO
-   ========================================================= */
 
 .photo-viewer-content {
-    min-height: 350px;
-
-    flex: 1;
+    height: calc(90vh - 60px);
 
     display: flex;
     align-items: center;
@@ -1313,23 +978,17 @@
 
     padding: 20px;
 
-    overflow: auto;
-
     background: #111827;
 }
 
-
 .photo-viewer-content img {
     max-width: 100%;
-    max-height: 70vh;
-
-    display: block;
+    max-height: 100%;
 
     object-fit: contain;
 
-    border-radius: 5px;
+    border-radius: 8px;
 }
-
 
 .photo-viewer-empty {
     display: flex;
@@ -1337,132 +996,151 @@
     align-items: center;
     gap: 12px;
 
-    color: #cbd5e1;
+    color: #9ca3af;
 }
 
-
 .photo-viewer-empty svg {
-    font-size: 50px;
+    font-size: 45px;
 }
 
 
 /* =========================================================
-   MODAL GALERIE AVEC NAVIGATION
-   ========================================================= */
+   MODAL GALERIE
+========================================================= */
 
-/*
-   Ces classes sont prévues pour le JSX de galerie modale :
-   .photo-gallery-modal
-   .photo-gallery-header
-   .photo-gallery-content
-   .photo-gallery-image
-   .photo-gallery-prev
-   .photo-gallery-next
-   .photo-gallery-counter
-*/
+.profil-gallery-modal-overlay {
+    position: fixed;
 
-.photo-gallery-modal {
-    width: 100%;
-    max-width: 1000px;
-    max-height: 92vh;
+    inset: 0;
+
+    z-index: 3000;
+
+    padding: 25px;
+
+    background: rgba(8, 15, 30, 0.88);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.profil-gallery-modal {
+    width: min(1050px, 100%);
+
+    max-height: 94vh;
+
+    overflow: hidden;
 
     display: flex;
     flex-direction: column;
 
-    overflow: hidden;
-
-    border-radius: 18px;
-
     background: #ffffff;
+
+    border-radius: 20px;
 
     box-shadow:
-        0 25px 80px rgba(0, 0, 0, 0.4);
-}
-
-
-.photo-gallery-header {
-    min-height: 62px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 20px;
-
-    border-bottom: 1px solid #eaecf0;
-
-    background: #ffffff;
-}
-
-
-.photo-gallery-header h3 {
-    margin: 0;
-
-    color: #172033;
-
-    font-size: 17px;
-    font-weight: 800;
-}
-
-
-.photo-gallery-header button {
-    width: 38px;
-    height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    border-radius: 8px;
-
-    background: #f2f4f7;
-
-    color: #344054;
-
-    cursor: pointer;
-}
-
-
-.photo-gallery-header button:hover {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-
-.photo-gallery-content {
-    position: relative;
-
-    min-height: 500px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 30px;
-
-    background: #111827;
-}
-
-
-.photo-gallery-image {
-    max-width: calc(100% - 120px);
-    max-height: 68vh;
-
-    object-fit: contain;
-
-    border-radius: 6px;
-
-    user-select: none;
+        0 30px 100px rgba(0, 0, 0, 0.45);
 }
 
 
 /* =========================================================
-   BOUTON PREVIOUS / NEXT
-   ========================================================= */
+   MODAL HEADER
+========================================================= */
 
-.photo-gallery-prev,
-.photo-gallery-next {
+.profil-gallery-modal-header {
+    min-height: 70px;
+
+    padding: 12px 20px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profil-gallery-modal-header span {
+    color: #6366f1;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.3px;
+}
+
+.profil-gallery-modal-header h2 {
+    margin: 4px 0 0;
+
+    color: #111827;
+
+    font-size: 20px;
+}
+
+.profil-gallery-modal-close {
+    width: 40px;
+    height: 40px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f3f4f6;
+
+    color: #374151;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+}
+
+.profil-gallery-modal-close:hover {
+    background: #e5e7eb;
+
+    transform: rotate(90deg);
+}
+
+
+/* =========================================================
+   GRANDE PHOTO
+========================================================= */
+
+.profil-gallery-main {
+    position: relative;
+
+    height: 470px;
+
+    padding: 18px;
+
+    background: #111827;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.profil-gallery-main img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    border-radius: 8px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.profil-gallery-nav {
     position: absolute;
 
     top: 50%;
@@ -1472,200 +1150,238 @@
     width: 48px;
     height: 48px;
 
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    color: #374151;
+
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 50%;
-
-    background: rgba(15, 23, 42, 0.72);
-
-    color: #ffffff;
-
     cursor: pointer;
 
-    z-index: 5;
+    font-size: 18px;
 
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.25);
+
+    transition: 0.2s;
 }
 
+.profil-gallery-nav:hover {
+    background: #ffffff;
 
-.photo-gallery-prev {
+    transform:
+        translateY(-50%)
+        scale(1.08);
+}
+
+.profil-gallery-nav-left {
     left: 20px;
 }
 
-
-.photo-gallery-next {
+.profil-gallery-nav-right {
     right: 20px;
 }
 
 
-.photo-gallery-prev:hover,
-.photo-gallery-next:hover {
-    background: rgba(37, 99, 235, 0.9);
-
-    transform:
-        translateY(-50%)
-        scale(1.05);
-}
-
-
-.photo-gallery-prev:disabled,
-.photo-gallery-next:disabled {
-    opacity: 0.3;
-
-    cursor: not-allowed;
-}
-
-
 /* =========================================================
-   COMPTEUR GALERIE
-   ========================================================= */
+   MINIATURES TYPE GALERIE MOBILE
+========================================================= */
 
-.photo-gallery-counter {
-    position: absolute;
+.profil-gallery-thumbnails {
+    min-height: 95px;
 
-    bottom: 18px;
-    left: 50%;
+    padding: 10px 14px;
 
-    transform: translateX(-50%);
-
-    padding: 7px 13px;
-
-    border-radius: 20px;
-
-    background: rgba(15, 23, 42, 0.78);
-
-    color: #ffffff;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    backdrop-filter: blur(5px);
-}
-
-
-/* =========================================================
-   MINI APERÇU GALERIE
-   ========================================================= */
-
-.photo-gallery-thumbnails {
     display: flex;
+
     align-items: center;
 
     gap: 8px;
 
-    padding: 12px 16px;
-
     overflow-x: auto;
 
-    background: #ffffff;
+    background: #f8fafc;
 
-    border-top: 1px solid #eaecf0;
+    border-top: 1px solid #e5e7eb;
+
+    border-bottom: 1px solid #e5e7eb;
 }
 
+.profil-gallery-thumbnails::-webkit-scrollbar {
+    height: 5px;
+}
 
-.photo-gallery-thumbnail {
-    width: 65px;
-    height: 52px;
+.profil-gallery-thumbnails::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
 
-    flex-shrink: 0;
+    border-radius: 10px;
+}
+
+.profil-gallery-thumbnail {
+    flex: 0 0 75px;
+
+    width: 75px;
+    height: 70px;
+
+    padding: 2px;
+
+    border: 2px solid transparent;
+
+    border-radius: 9px;
+
+    background: transparent;
 
     overflow: hidden;
 
-    padding: 0;
-
-    border: 2px solid transparent;
-    border-radius: 7px;
-
-    background: #e2e8f0;
-
     cursor: pointer;
 
-    opacity: 0.65;
-
-    transition:
-        opacity 0.2s ease,
-        border-color 0.2s ease;
+    transition: 0.2s;
 }
 
-
-.photo-gallery-thumbnail:hover {
-    opacity: 1;
-}
-
-
-.photo-gallery-thumbnail.active {
-    border-color: #2563eb;
-
-    opacity: 1;
-}
-
-
-.photo-gallery-thumbnail img {
+.profil-gallery-thumbnail img {
     width: 100%;
     height: 100%;
 
-    display: block;
-
     object-fit: cover;
+
+    border-radius: 6px;
+
+    display: block;
+}
+
+.profil-gallery-thumbnail:hover {
+    transform: translateY(-2px);
+}
+
+.profil-gallery-thumbnail.active {
+    border-color: #6366f1;
+
+    box-shadow:
+        0 0 0 2px rgba(99, 102, 241, 0.15);
 }
 
 
 /* =========================================================
-   LOADING PROFIL
-   ========================================================= */
+   FOOTER GALERIE
+========================================================= */
 
-.profil-client-loading {
-    min-height: 100vh;
+.profil-gallery-modal-footer {
+    min-height: 65px;
+
+    padding: 10px 18px;
 
     display: flex;
+
     align-items: center;
-    justify-content: center;
 
-    padding: 30px;
+    gap: 15px;
 
-    background: #f8fafc;
+    background: #ffffff;
+}
 
-    color: #475467;
+.profil-gallery-counter {
+    min-width: 60px;
 
-    font-size: 15px;
-    font-weight: 600;
+    color: #4f46e5;
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+.profil-gallery-modal-footer > span {
+    flex: 1;
+
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+.profil-gallery-modal-actions {
+    display: flex;
+
+    gap: 7px;
+}
+
+.profil-gallery-modal-actions button {
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 9px 12px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    background: #eef2ff;
+
+    color: #4f46e5;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.profil-gallery-modal-actions button:hover {
+    background: #e0e7ff;
 }
 
 
 /* =========================================================
    RESPONSIVE TABLETTE
-   ========================================================= */
+========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
 
     .profil-client-page {
-        padding: 30px 20px 60px;
+        padding: 25px 18px 45px;
     }
 
-
-    .profil-gallery-grid {
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
+    .profil-client-header h1 {
+        font-size: 28px;
     }
 
-
-    .profil-gallery-item {
-        height: 140px;
+    .profil-facebook-cover {
+        height: 180px;
     }
 
+    .profil-facebook-avatar {
+        width: 130px;
+        height: 130px;
 
-    .photo-gallery-content {
-        min-height: 430px;
+        font-size: 50px;
     }
 
+    .profil-client-photo-info {
+        padding-top: 65px;
+    }
 
-    .photo-gallery-image {
-        max-height: 62vh;
+    .photo-comparison-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profil-client-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profil-gallery-main {
+        height: 390px;
+    }
+
+    .profil-gallery-modal-footer {
+        flex-wrap: wrap;
     }
 
 }
@@ -1673,472 +1389,178 @@
 
 /* =========================================================
    RESPONSIVE MOBILE
-   ========================================================= */
+========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 520px) {
 
     .profil-client-page {
-        padding: 20px 14px 45px;
+        padding: 18px 12px 35px;
     }
-
 
     .profil-client-header {
-        margin-bottom: 22px;
+        gap: 12px;
     }
-
-
-    .profil-client-back {
-        padding: 9px 13px;
-
-        font-size: 13px;
-    }
-
 
     .profil-client-back span {
-        display: inline;
+        font-size: 12px;
     }
-
 
     .profil-client-header h1 {
-        font-size: 30px;
+        font-size: 24px;
     }
-
 
     .profil-client-header p {
         font-size: 13px;
     }
 
-
-    .profil-client-container {
-        gap: 17px;
-    }
-
-
-    /* ===============================
-       CARTE PROFIL
-       =============================== */
-
     .profil-facebook-cover {
-        height: 145px;
+        height: 155px;
     }
-
 
     .profil-facebook-avatar {
-        width: 120px;
-        height: 120px;
+        width: 110px;
+        height: 110px;
 
         margin-bottom: -45px;
 
         border-width: 5px;
-    }
 
-
-    .profil-facebook-avatar > svg {
         font-size: 42px;
     }
 
-
     .profil-view-photo {
-        right: 15px;
-        bottom: 15px;
+        right: 12px;
+        bottom: 12px;
 
         width: 38px;
         height: 38px;
     }
 
-
     .profil-client-photo-info {
-        padding: 62px 18px 22px;
+        padding:
+            58px
+            18px
+            22px;
     }
-
 
     .profil-client-photo-info h2 {
         font-size: 21px;
     }
 
-
-    .profil-client-photo-info p {
-        font-size: 13px;
-    }
-
-
-    .profil-client-photo-button {
-        width: 100%;
-
-        box-sizing: border-box;
-
-        padding: 0 14px;
-
-        font-size: 13px;
-    }
-
-
-    /* ===============================
-       COMPARAISON
-       =============================== */
-
     .photo-comparison {
         margin: 0 15px 20px;
 
-        padding: 16px;
+        padding: 15px;
     }
-
-
-    .photo-comparison-grid {
-        grid-template-columns: 1fr;
-    }
-
-
-    .photo-version-image {
-        height: 210px;
-    }
-
 
     .photo-comparison-actions {
-        flex-direction: column-reverse;
+        flex-direction: column;
     }
-
 
     .photo-cancel-button,
     .photo-save-button {
         width: 100%;
+
+        justify-content: center;
     }
 
-
-    /* ===============================
-       GALERIES
-       =============================== */
-
-    .profil-client-gallery-card {
-        padding: 21px 17px;
+    .profil-client-section-title {
+        padding: 20px 18px 12px;
     }
-
 
     .profil-client-section-title h2 {
         font-size: 19px;
     }
 
-
     .profil-client-section-title p {
         font-size: 12px;
     }
 
+    .profil-gallery-preview-grid {
+        margin:
+            5px
+            18px
+            15px;
+
+        height: 145px;
+    }
 
     .profil-gallery-summary {
-        min-height: 105px;
-
-        padding: 15px;
+        margin:
+            0
+            18px
+            20px;
     }
 
-
-    .profil-gallery-summary-content {
-        gap: 11px;
+    .profil-gallery-summary-content span {
+        display: none;
     }
 
-
-    .profil-gallery-summary-icon {
-        width: 48px;
-        height: 48px;
-
-        border-radius: 11px;
-
-        font-size: 20px;
+    .profil-client-form-card form {
+        padding: 0 18px;
     }
-
-
-    .profil-gallery-summary-text h3 {
-        font-size: 14px;
-    }
-
-
-    .profil-gallery-summary-text p {
-        font-size: 11px;
-    }
-
-
-    .profil-gallery-summary-arrow {
-        width: 34px;
-        height: 34px;
-    }
-
-
-    /* ===============================
-       GALERIE DIRECTE SI UTILISÉE
-       =============================== */
-
-    .profil-gallery-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
-        gap: 9px;
-    }
-
-
-    .profil-gallery-item {
-        height: 125px;
-    }
-
-
-    /* ===============================
-       FORMULAIRE
-       =============================== */
-
-    .profil-client-form-card {
-        padding: 22px 17px;
-    }
-
-
-    .profil-client-grid {
-        grid-template-columns: 1fr;
-
-        gap: 17px;
-
-        margin-top: 20px;
-    }
-
 
     .profil-client-actions {
         flex-direction: column-reverse;
-
-        align-items: stretch;
     }
-
 
     .profil-client-cancel,
     .profil-client-save {
         width: 100%;
+
+        justify-content: center;
     }
 
-
-    /* ===============================
-       MODAL PHOTO
-       =============================== */
-
-    .photo-viewer-overlay {
-        padding: 10px;
+    .profil-gallery-modal-overlay {
+        padding: 0;
     }
 
+    .profil-gallery-modal {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
 
-    .photo-viewer {
-        max-height: 94vh;
-
-        border-radius: 12px;
+        border-radius: 0;
     }
 
-
-    .photo-viewer-header {
-        min-height: 54px;
-
-        padding: 0 13px;
+    .profil-gallery-main {
+        height: 48vh;
     }
 
-
-    .photo-viewer-header h3 {
-        font-size: 14px;
+    .profil-gallery-nav {
+        width: 40px;
+        height: 40px;
     }
 
-
-    .photo-viewer-content {
-        min-height: 300px;
-
-        padding: 10px;
+    .profil-gallery-nav-left {
+        left: 10px;
     }
 
-
-    .photo-viewer-content img {
-        max-height: 78vh;
+    .profil-gallery-nav-right {
+        right: 10px;
     }
 
+    .profil-gallery-thumbnail {
+        flex-basis: 65px;
 
-    /* ===============================
-       MODAL GALERIE
-       =============================== */
-
-    .photo-gallery-modal {
-        max-height: 94vh;
-
-        border-radius: 12px;
+        width: 65px;
+        height: 60px;
     }
 
-
-    .photo-gallery-header {
-        min-height: 55px;
-
-        padding: 0 14px;
+    .profil-gallery-modal-footer {
+        padding: 9px 12px;
     }
 
-
-    .photo-gallery-header h3 {
-        font-size: 14px;
-    }
-
-
-    .photo-gallery-content {
-        min-height: 390px;
-
-        padding: 20px 10px;
-    }
-
-
-    .photo-gallery-image {
-        max-width: calc(100% - 70px);
-        max-height: 65vh;
-    }
-
-
-    .photo-gallery-prev,
-    .photo-gallery-next {
-        width: 38px;
-        height: 38px;
-    }
-
-
-    .photo-gallery-prev {
-        left: 8px;
-    }
-
-
-    .photo-gallery-next {
-        right: 8px;
-    }
-
-
-    .photo-gallery-thumbnails {
-        padding: 9px;
-    }
-
-
-    .photo-gallery-thumbnail {
-        width: 55px;
-        height: 45px;
-    }
-
-}
-
-
-/* =========================================================
-   PETIT MOBILE
-   ========================================================= */
-
-@media (max-width: 430px) {
-
-    .profil-client-page {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-
-    .profil-client-header h1 {
-        font-size: 27px;
-    }
-
-
-    .profil-client-back span {
+    .profil-gallery-modal-footer > span {
         display: none;
     }
 
-
-    .profil-facebook-cover {
-        height: 130px;
+    .profil-gallery-modal-actions {
+        margin-left: auto;
     }
 
-
-    .profil-facebook-avatar {
-        width: 105px;
-        height: 105px;
-
-        margin-bottom: -40px;
-    }
-
-
-    .profil-client-photo-info {
-        padding-top: 55px;
-    }
-
-
-    .profil-client-photo-info h2 {
-        font-size: 19px;
-    }
-
-
-    .photo-version-image {
-        height: 180px;
-    }
-
-
-    .profil-gallery-summary {
-        padding: 12px;
-    }
-
-
-    .profil-gallery-summary-icon {
-        width: 43px;
-        height: 43px;
-
-        font-size: 18px;
-    }
-
-
-    .profil-gallery-summary-text h3 {
-        font-size: 13px;
-    }
-
-
-    .profil-gallery-summary-text p {
-        font-size: 10px;
-    }
-
-
-    .profil-gallery-summary-arrow {
-        width: 30px;
-        height: 30px;
-    }
-
-
-    .photo-gallery-content {
-        min-height: 330px;
-    }
-
-
-    .photo-gallery-image {
-        max-width: calc(100% - 55px);
-    }
-
-
-    .photo-gallery-prev,
-    .photo-gallery-next {
-        width: 34px;
-        height: 34px;
-    }
-
-}
-
-
-/* =========================================================
-   ACCESSIBILITÉ
-   ========================================================= */
-
-.profil-client-page button:focus-visible,
-.profil-client-page input:focus-visible,
-.profil-client-page label:focus-visible {
-    outline: 3px solid rgba(37, 99, 235, 0.25);
-    outline-offset: 2px;
-}
-
-
-/* =========================================================
-   RÉDUCTION DES ANIMATIONS
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    .profil-client-page *,
-    .profil-client-page *::before,
-    .profil-client-page *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
+    .profil-gallery-modal-actions button {
+        padding: 8px 10px;
     }
 
 }
