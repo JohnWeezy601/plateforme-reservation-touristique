@@ -1,5 +1,7 @@
 import { Outlet } from "react-router-dom";
 
+import ClientSidebar from "./ClientSidebar";
+
 import "./EspaceClientLayout.css";
 
 
@@ -9,25 +11,7 @@ function EspaceClientLayout() {
 
         <div className="client-layout">
 
-            {/* =========================================
-                MENU CLIENT
-                Le design sera repris depuis EspaceClient
-            ========================================= */}
-
-            <aside className="client-sidebar">
-
-                {/* 
-                    Ici nous allons mettre exactement
-                    le menu actuellement présent dans
-                    EspaceClient.jsx
-                */}
-
-            </aside>
-
-
-            {/* =========================================
-                CONTENU
-            ========================================= */}
+            <ClientSidebar />
 
             <main className="client-content">
 

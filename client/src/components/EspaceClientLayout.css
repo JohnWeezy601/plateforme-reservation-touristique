@@ -1,150 +1,31 @@
-/* =====================================================
-   ESPACE CLIENT - LAYOUT GLOBAL
-===================================================== */
-
 .client-layout {
-    display: flex;
     min-height: 100vh;
-    width: 100%;
-    background: #f5f7fb;
 }
-
-
-/* =====================================================
-   SIDEBAR - ORDINATEUR
-===================================================== */
-
-.client-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-
-    width: 270px;
-    height: 100vh;
-
-    overflow-y: auto;
-
-    z-index: 1000;
-
-    flex-shrink: 0;
-}
-
-
-/* =====================================================
-   CONTENU PRINCIPAL
-===================================================== */
 
 .client-content {
-    width: calc(100% - 270px);
-
-    min-height: 100vh;
-
     margin-left: 270px;
-
-    box-sizing: border-box;
-
-    overflow-x: hidden;
+    min-height: 100vh;
 }
 
 
 /* =====================================================
-   TABLETTES
-===================================================== */
-
-@media (max-width: 992px) {
-
-    .client-sidebar {
-        width: 230px;
-    }
-
-    .client-content {
-        width: calc(100% - 230px);
-        margin-left: 230px;
-    }
-
-}
-
-
-/* =====================================================
-   PETITS ÉCRANS / TÉLÉPHONES
+   MOBILE
 ===================================================== */
 
 @media (max-width: 768px) {
 
-    .client-layout {
-        display: flex;
-
-        flex-direction: column;
-
-        min-height: 100vh;
-    }
-
-
-    /* =============================================
-       MENU DEVIENT NAVBAR EN HAUT
-    ============================================= */
-
-    .client-sidebar {
-
-        position: fixed;
-
-        top: 0;
-        left: 0;
-
-        width: 100%;
-        height: auto;
-
-        min-height: 60px;
-
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        z-index: 1000;
-
-        white-space: nowrap;
-
-        display: flex;
-        align-items: center;
-    }
-
-
-    /* =============================================
-       CONTENU SOUS LA NAVBAR
-    ============================================= */
-
     .client-content {
-
-        width: 100%;
-
         margin-left: 0;
-
-        padding-top: 70px;
-
-        min-height: 100vh;
-
-        box-sizing: border-box;
+        padding-top: 68px;
     }
 
 }
 
 
-/* =====================================================
-   TRÈS PETITS TÉLÉPHONES
-===================================================== */
-
 @media (max-width: 480px) {
 
-    .client-sidebar {
-
-        min-height: 56px;
-
-    }
-
-
     .client-content {
-
-        padding-top: 66px;
-
+        padding-top: 62px;
     }
 
 }
