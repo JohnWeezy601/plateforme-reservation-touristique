@@ -887,52 +887,35 @@ const connexionFacebook = () => {
                         FACEBOOK
                     ===================================================== */}
 
-                    <div className="facebook-login-container">
+                   {/* =====================================================
+    FACEBOOK
+===================================================== */}
 
+<div className="facebook-login-container">
 
-                        <button
+    <button
+        type="button"
+        className="facebook-login-button"
+        onClick={connexionFacebook}
+        disabled={
+            loading ||
+            !facebookReady
+        }
+    >
 
-                            type="button"
+        <FaFacebookF />
 
-                            className="facebook-login-button"
+        <span>
+            {
+                !facebookReady
+                    ? "Chargement de Facebook..."
+                    : "Continuer avec Facebook"
+            }
+        </span>
 
-                            onClick={
-                                connexionFacebook
-                            }
+    </button>
 
-                            disabled={
-                                loading ||
-                                !facebookReady
-                            }
-
-                        >
-
-                            <FaFacebookF/>
-
-
-                            <span>
-
-                                {
-
-                                    !facebookReady
-
-                                    ?
-
-                                    "Chargement de Facebook..."
-
-                                    :
-
-                                    "Continuer avec Facebook"
-
-                                }
-
-                            </span>
-
-
-                        </button>
-
-
-                    </div>
+</div>
 
 
                     {/* =====================================================
