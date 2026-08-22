@@ -1,5 +1,12 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+    useEffect,
+    useMemo,
+    useState
+} from "react";
+
+import {
+    useNavigate
+} from "react-router-dom";
 
 import {
     FaUser,
@@ -8,8 +15,12 @@ import {
     FaStar,
     FaBell,
     FaArrowRight,
-    FaChartLine
+    FaChartLine,
+    FaPhone,
+    FaEnvelope
 } from "react-icons/fa";
+
+import api from "../api/api";
 
 import "./EspaceClient.css";
 
@@ -23,7 +34,7 @@ function EspaceClient() {
     // UTILISATEUR CONNECTÉ
     // =====================================================
 
-    const [utilisateur] = useState(() => {
+    const [utilisateur, setUtilisateur] = useState(() => {
 
         const data =
             localStorage.getItem("utilisateur");
@@ -87,6 +98,109 @@ function EspaceClient() {
 
 
     // =====================================================
+    // RÉCUPÉRATION DES INFORMATIONS CLIENT
+    // =====================================================
+
+    useEffect(() => {
+
+        const recupererUtilisateur = async () => {
+
+            if (!utilisateur) {
+                return;
+            }
+
+            const idUtilisateur =
+                utilisateur.id_utilisateur ||
+                utilisateur.id ||
+                utilisateur.idUtilisateur;
+
+            if (!idUtilisateur) {
+                console.warn(
+                    "ID utilisateur introuvable."
+                );
+                return;
+            }
+
+            try {
+
+                /*
+                 * Récupération des données complètes
+                 * depuis la base de données.
+                 *
+                 * L'endpoint utilisé est :
+                 * GET /utilisateurs/:id
+                 */
+
+                const response =
+                    await api.get(
+                        `/utilisateurs/${idUtilisateur}`
+                    );
+
+
+                /*
+                 * Selon la structure de ton backend,
+                 * on accepte plusieurs formats.
+                 */
+
+                const utilisateurAPI =
+                    response?.data?.utilisateur ||
+                    response?.data?.user ||
+                    response?.data;
+
+
+                if (
+                    utilisateurAPI &&
+                    typeof utilisateurAPI === "object"
+                ) {
+
+                    const utilisateurMisAJour = {
+
+                        ...utilisateur,
+
+                        ...utilisateurAPI
+
+                    };
+
+
+                    setUtilisateur(
+                        utilisateurMisAJour
+                    );
+
+
+                    /*
+                     * Mise à jour du localStorage
+                     * afin que le téléphone reste disponible
+                     * dans les autres pages.
+                     */
+
+                    localStorage.setItem(
+                        "utilisateur",
+                        JSON.stringify(
+                            utilisateurMisAJour
+                        )
+                    );
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Erreur récupération utilisateur :",
+                    error
+                );
+
+            }
+
+        };
+
+
+        recupererUtilisateur();
+
+    }, [utilisateur?.id_utilisateur]);
+
+
+    // =====================================================
     // UTILISATEUR NON CONNECTÉ
     // =====================================================
 
@@ -100,7 +214,33 @@ function EspaceClient() {
 
 
     // =====================================================
-    // RÉCUPÉRATION DES DONNÉES LOCALES
+    // TÉLÉPHONE
+    // =====================================================
+
+    const telephone =
+        utilisateur.telephone ||
+        utilisateur.tel ||
+        utilisateur.phone ||
+        utilisateur.numero_telephone ||
+        utilisateur.numeroTelephone ||
+        utilisateur.phoneNumber ||
+        utilisateur.mobile ||
+        "-";
+
+
+    // =====================================================
+    // PHOTO
+    // =====================================================
+
+    const photoUtilisateur =
+        utilisateur.photo ||
+        utilisateur.image ||
+        utilisateur.photo_profil ||
+        null;
+
+
+    // =====================================================
+    // DONNÉES LOCALES
     // =====================================================
 
     const getLocalData = (keys) => {
@@ -120,7 +260,9 @@ function EspaceClient() {
                     JSON.parse(data);
 
                 if (Array.isArray(parsed)) {
+
                     return parsed;
+
                 }
 
             }
@@ -193,8 +335,10 @@ function EspaceClient() {
 
 
         return {
+
             totalActions,
             taux
+
         };
 
     }, [
@@ -215,6 +359,119 @@ function EspaceClient() {
 
 
             {/* =================================================
+                INFORMATIONS RAPIDES DU CLIENT
+                Placées directement à côté du sidebar
+            ================================================= */}
+
+            <section className="client-identity-bar">
+
+
+                {/* PHOTO */}
+
+                <div className="client-identity-photo">
+
+                    {photoUtilisateur ? (
+
+                        <img
+                            src={photoUtilisateur}
+                            alt="Photo de profil"
+                        />
+
+                    ) : (
+
+                        <FaUser />
+
+                    )}
+
+                </div>
+
+
+                {/* IDENTITÉ */}
+
+                <div className="client-identity-main">
+
+                    <span className="client-identity-label">
+                        MON ESPACE
+                    </span>
+
+                    <h2>
+
+                        {utilisateur.prenom ||
+                            utilisateur.nom ||
+                            "Client"}
+
+                        {" "}
+
+                        {utilisateur.nom
+                            ? utilisateur.nom
+                            : ""}
+
+                    </h2>
+
+                </div>
+
+
+                {/* EMAIL */}
+
+                <div className="client-identity-item">
+
+                    <FaEnvelope />
+
+                    <div>
+
+                        <span>
+                            Email
+                        </span>
+
+                        <strong>
+                            {utilisateur.email || "-"}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                {/* TÉLÉPHONE */}
+
+                <div className="client-identity-item">
+
+                    <FaPhone />
+
+                    <div>
+
+                        <span>
+                            Téléphone
+                        </span>
+
+                        <strong>
+                            {telephone}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                {/* BOUTON PROFIL */}
+
+                <button
+                    type="button"
+                    className="identity-profile-button"
+                    onClick={() =>
+                        navigate(routes.profil)
+                    }
+                >
+
+                    Voir mon profil
+
+                </button>
+
+
+            </section>
+
+
+            {/* =================================================
                 HEADER
             ================================================= */}
 
@@ -224,7 +481,9 @@ function EspaceClient() {
                 <div>
 
                     <span className="welcome-label">
+
                         ESPACE PERSONNEL
+
                     </span>
 
 
@@ -234,7 +493,9 @@ function EspaceClient() {
 
                         {utilisateur.prenom ||
                             utilisateur.nom ||
-                            "Client"} !
+                            "Client"}
+
+                        !
 
                     </h1>
 
@@ -249,9 +510,7 @@ function EspaceClient() {
                 </div>
 
 
-                {/* =================================================
-                    BOUTON PROFIL
-                ================================================= */}
+                {/* BOUTON PHOTO */}
 
                 <button
                     type="button"
@@ -262,10 +521,10 @@ function EspaceClient() {
                     aria-label="Ouvrir mon profil"
                 >
 
-                    {utilisateur.photo ? (
+                    {photoUtilisateur ? (
 
                         <img
-                            src={utilisateur.photo}
+                            src={photoUtilisateur}
                             alt="Photo profil"
                         />
 
@@ -370,9 +629,7 @@ function EspaceClient() {
             <section className="client-dashboard-cards">
 
 
-                {/* =================================================
-                    PROFIL
-                ================================================= */}
+                {/* PROFIL */}
 
                 <div
                     className="client-card"
@@ -418,9 +675,7 @@ function EspaceClient() {
                 </div>
 
 
-                {/* =================================================
-                    RÉSERVATIONS
-                ================================================= */}
+                {/* RÉSERVATIONS */}
 
                 <div
                     className="client-card"
@@ -468,9 +723,7 @@ function EspaceClient() {
                 </div>
 
 
-                {/* =================================================
-                    TRANSACTIONS
-                ================================================= */}
+                {/* TRANSACTIONS */}
 
                 <div
                     className="client-card"
@@ -518,9 +771,7 @@ function EspaceClient() {
                 </div>
 
 
-                {/* =================================================
-                    AVIS
-                ================================================= */}
+                {/* AVIS */}
 
                 <div
                     className="client-card"
@@ -566,9 +817,7 @@ function EspaceClient() {
                 </div>
 
 
-                {/* =================================================
-                    NOTIFICATIONS
-                ================================================= */}
+                {/* NOTIFICATIONS */}
 
                 <div
                     className="client-card"
@@ -660,9 +909,7 @@ function EspaceClient() {
                 <div className="profile-info">
 
 
-                    {/* =================================================
-                        NOM
-                    ================================================= */}
+                    {/* NOM */}
 
                     <div>
 
@@ -677,9 +924,7 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* =================================================
-                        PRÉNOM
-                    ================================================= */}
+                    {/* PRÉNOM */}
 
                     <div>
 
@@ -694,9 +939,7 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* =================================================
-                        EMAIL
-                    ================================================= */}
+                    {/* EMAIL */}
 
                     <div>
 
@@ -711,9 +954,7 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* =================================================
-                        TÉLÉPHONE
-                    ================================================= */}
+                    {/* TÉLÉPHONE */}
 
                     <div>
 
@@ -722,7 +963,7 @@ function EspaceClient() {
                         </strong>
 
                         <span>
-                            {utilisateur.telephone || "-"}
+                            {telephone}
                         </span>
 
                     </div>

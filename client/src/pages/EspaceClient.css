@@ -1,6 +1,5 @@
 /* =========================================================
    ESPACE CLIENT
-   CONTENU PRINCIPAL
 ========================================================= */
 
 .espace-client {
@@ -13,20 +12,230 @@
 
 /* =========================================================
    CONTENU PRINCIPAL
+
    IMPORTANT :
-   ClientSidebar = 270px
-   On commence donc directement après le sidebar.
+   Le sidebar est déjà géré par EspaceClientLayout.
+   On NE met donc PAS de margin-left ici.
 ========================================================= */
 
 .espace-client-content {
-    margin-left: 270px;
 
-    width: calc(100% - 270px);
+    width: 100%;
     min-height: 100vh;
 
     box-sizing: border-box;
 
-    padding: 25px 25px 35px 12px;
+    padding: 20px 25px 35px 20px;
+}
+
+
+/* =========================================================
+   INFORMATIONS RAPIDES DU CLIENT
+========================================================= */
+
+.client-identity-bar {
+
+    width: 100%;
+
+    min-height: 74px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 12px 16px;
+
+    margin-bottom: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #edf1f3;
+
+    border-radius: 13px;
+
+    box-shadow:
+        0 4px 15px rgba(23, 59, 87, 0.045);
+}
+
+
+/* =========================================================
+   PHOTO CLIENT
+========================================================= */
+
+.client-identity-photo {
+
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    background: #e8f4f8;
+
+    color: #168aad;
+
+    font-size: 21px;
+}
+
+.client-identity-photo img {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   IDENTITÉ
+========================================================= */
+
+.client-identity-main {
+
+    min-width: 170px;
+
+    padding-right: 12px;
+
+    border-right: 1px solid #edf1f3;
+}
+
+.client-identity-label {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    color: #168aad;
+}
+
+.client-identity-main h2 {
+
+    margin: 0;
+
+    font-size: 16px;
+
+    line-height: 1.3;
+
+    color: #173b57;
+}
+
+
+/* =========================================================
+   EMAIL / TÉLÉPHONE
+========================================================= */
+
+.client-identity-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+.client-identity-item > svg {
+
+    flex-shrink: 0;
+
+    font-size: 15px;
+
+    color: #168aad;
+}
+
+.client-identity-item div {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+.client-identity-item span {
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    color: #8a969d;
+}
+
+.client-identity-item strong {
+
+    display: block;
+
+    max-width: 220px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 12px;
+
+    color: #173b57;
+}
+
+
+/* =========================================================
+   BOUTON PROFIL
+========================================================= */
+
+.identity-profile-button {
+
+    flex-shrink: 0;
+
+    padding: 8px 13px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #e8f4f8;
+
+    color: #168aad;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.identity-profile-button:hover {
+
+    background: #d8edf3;
+
+    transform: translateY(-1px);
 }
 
 
@@ -35,10 +244,13 @@
 ========================================================= */
 
 .espace-client-header {
+
     width: 100%;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     gap: 20px;
@@ -47,15 +259,18 @@
 }
 
 .espace-client-header > div {
+
     min-width: 0;
 }
 
 .welcome-label {
+
     display: block;
 
     margin-bottom: 6px;
 
     font-size: 11px;
+
     font-weight: 800;
 
     letter-spacing: 1.5px;
@@ -64,20 +279,24 @@
 }
 
 .espace-client-header h1 {
+
     margin: 0 0 7px;
 
     font-size: 30px;
+
     line-height: 1.2;
 
     color: #173b57;
 }
 
 .espace-client-header p {
+
     margin: 0;
 
     max-width: 700px;
 
     font-size: 14px;
+
     line-height: 1.55;
 
     color: #71808a;
@@ -85,21 +304,24 @@
 
 
 /* =========================================================
-   BOUTON PROFIL
+   BOUTON PROFIL HEADER
 ========================================================= */
 
 .header-profile-button {
+
     width: 55px;
     height: 55px;
 
     flex-shrink: 0;
 
     border: none;
+
     border-radius: 50%;
 
     background: #e8f4f8;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -118,6 +340,7 @@
 }
 
 .header-profile-button:hover {
+
     transform: scale(1.05);
 
     box-shadow:
@@ -125,6 +348,7 @@
 }
 
 .header-profile-button img {
+
     width: 100%;
     height: 100%;
 
@@ -132,6 +356,7 @@
 }
 
 .header-profile-button svg {
+
     font-size: 22px;
 }
 
@@ -141,6 +366,7 @@
 ========================================================= */
 
 .client-statistics {
+
     width: 100%;
 
     box-sizing: border-box;
@@ -160,6 +386,7 @@
 }
 
 .statistics-header {
+
     display: flex;
 
     align-items: center;
@@ -169,11 +396,13 @@
 }
 
 .statistics-header span {
+
     display: block;
 
     margin-bottom: 5px;
 
     font-size: 10px;
+
     font-weight: 800;
 
     letter-spacing: 1.2px;
@@ -182,6 +411,7 @@
 }
 
 .statistics-header h2 {
+
     margin: 0;
 
     font-size: 20px;
@@ -190,6 +420,7 @@
 }
 
 .statistics-header > svg {
+
     font-size: 22px;
 
     color: #168aad;
@@ -201,6 +432,7 @@
 ========================================================= */
 
 .activity-progress-info {
+
     display: flex;
 
     align-items: baseline;
@@ -211,19 +443,23 @@
 }
 
 .activity-progress-info strong {
+
     font-size: 26px;
 
     color: #173b57;
 }
 
 .activity-progress-info span {
+
     font-size: 12px;
 
     color: #78858e;
 }
 
 .progress-bar {
+
     width: 100%;
+
     height: 8px;
 
     background: #edf2f4;
@@ -234,6 +470,7 @@
 }
 
 .progress-value {
+
     height: 100%;
 
     background: #168aad;
@@ -245,6 +482,7 @@
 }
 
 .activity-progress p {
+
     margin: 8px 0 0;
 
     font-size: 12px;
@@ -258,6 +496,7 @@
 ========================================================= */
 
 .client-dashboard-cards {
+
     width: 100%;
 
     display: grid;
@@ -271,9 +510,11 @@
 }
 
 .client-card {
+
     position: relative;
 
     min-width: 0;
+
     min-height: 105px;
 
     display: flex;
@@ -304,6 +545,7 @@
 }
 
 .client-card:hover {
+
     transform: translateY(-2px);
 
     border-color: #cde5ed;
@@ -318,6 +560,7 @@
 ========================================================= */
 
 .client-card-icon {
+
     width: 47px;
     height: 47px;
 
@@ -343,10 +586,12 @@
 ========================================================= */
 
 .client-card > div:not(.client-card-icon) {
+
     min-width: 0;
 }
 
 .client-card h3 {
+
     margin: 0 0 5px;
 
     font-size: 15px;
@@ -355,6 +600,7 @@
 }
 
 .client-card p {
+
     margin: 0;
 
     font-size: 12px;
@@ -370,6 +616,7 @@
 ========================================================= */
 
 .card-arrow {
+
     margin-left: auto;
 
     flex-shrink: 0;
@@ -385,6 +632,7 @@
 ========================================================= */
 
 .client-profile-summary {
+
     width: 100%;
 
     box-sizing: border-box;
@@ -403,10 +651,11 @@
 
 
 /* =========================================================
-   TITRE INFORMATIONS
+   TITRE
 ========================================================= */
 
 .section-title {
+
     display: flex;
 
     align-items: center;
@@ -418,15 +667,18 @@
 }
 
 .section-title > div {
+
     min-width: 0;
 }
 
 .section-title span {
+
     display: block;
 
     margin-bottom: 5px;
 
     font-size: 10px;
+
     font-weight: 800;
 
     letter-spacing: 1.2px;
@@ -435,6 +687,7 @@
 }
 
 .section-title h2 {
+
     margin: 0;
 
     font-size: 20px;
@@ -443,11 +696,13 @@
 }
 
 .section-title button {
+
     flex-shrink: 0;
 
     padding: 8px 15px;
 
     border: none;
+
     border-radius: 8px;
 
     background: #e8f4f8;
@@ -455,6 +710,7 @@
     color: #168aad;
 
     font-size: 12px;
+
     font-weight: 700;
 
     cursor: pointer;
@@ -464,6 +720,7 @@
 }
 
 .section-title button:hover {
+
     background: #d8edf3;
 }
 
@@ -473,6 +730,7 @@
 ========================================================= */
 
 .profile-info {
+
     width: 100%;
 
     display: grid;
@@ -484,6 +742,7 @@
 }
 
 .profile-info > div {
+
     min-width: 0;
 
     display: flex;
@@ -500,6 +759,7 @@
 }
 
 .profile-info strong {
+
     font-size: 11px;
 
     color: #7b8992;
@@ -508,6 +768,7 @@
 }
 
 .profile-info span {
+
     font-size: 13px;
 
     font-weight: 600;
@@ -525,87 +786,123 @@
 @media (min-width: 1400px) {
 
     .espace-client-content {
-        padding-left: 14px;
+
+        padding-left: 20px;
         padding-right: 30px;
     }
 
     .espace-client-header h1 {
+
         font-size: 32px;
     }
 
     .client-dashboard-cards {
+
         gap: 16px;
     }
 
     .client-card {
+
         min-height: 110px;
     }
 }
 
 
 /* =========================================================
-   TABLETTE / PETIT DESKTOP
+   PETIT DESKTOP
 ========================================================= */
 
 @media (max-width: 1100px) {
 
     .espace-client-content {
-        margin-left: 230px;
-
-        width: calc(100% - 230px);
 
         padding:
-            22px
+            18px
             18px
             30px
-            10px;
+            15px;
+    }
+
+    .client-identity-bar {
+
+        gap: 12px;
+
+        padding: 11px;
+    }
+
+    .client-identity-main {
+
+        min-width: 140px;
     }
 
     .profile-info {
+
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
     }
+
 }
 
 
 /* =========================================================
-   TABLETTE PETITE
+   TABLETTE
 ========================================================= */
 
 @media (max-width: 900px) {
 
     .espace-client-content {
-        margin-left: 230px;
-
-        width: calc(100% - 230px);
 
         padding:
-            20px
+            16px
             15px
             25px
-            8px;
+            12px;
+    }
+
+    .client-identity-bar {
+
+        flex-wrap: wrap;
+
+        min-height: auto;
+    }
+
+    .client-identity-main {
+
+        border-right: none;
+
+        flex: 1;
+    }
+
+    .client-identity-item {
+
+        flex: 1 1 40%;
+    }
+
+    .identity-profile-button {
+
+        margin-left: auto;
     }
 
     .espace-client-header h1 {
+
         font-size: 27px;
     }
 
     .client-dashboard-cards {
+
         grid-template-columns: 1fr;
     }
+
 }
 
 
 /* =========================================================
    MOBILE
-   ClientSidebar devient navbar horizontale
 ========================================================= */
 
 @media (max-width: 768px) {
 
     .espace-client-content {
-
-        margin-left: 0;
 
         width: 100%;
 
@@ -614,18 +911,100 @@
         box-sizing: border-box;
 
         /*
-         * Navbar = 64px
-         * Seulement 8px d'espace sous la navbar.
+         * Le navbar mobile est déjà géré
+         * par EspaceClientLayout.
          */
         padding:
-            72px
+            70px
             10px
             20px;
     }
 
 
     /* =====================================================
-       HEADER MOBILE
+       INFORMATIONS CLIENT MOBILE
+    ===================================================== */
+
+    .client-identity-bar {
+
+        display: grid;
+
+        grid-template-columns:
+            auto 1fr;
+
+        gap: 10px;
+
+        padding: 12px;
+
+        margin-bottom: 15px;
+
+        border-radius: 11px;
+    }
+
+    .client-identity-photo {
+
+        width: 45px;
+        height: 45px;
+
+        grid-row: span 2;
+    }
+
+    .client-identity-main {
+
+        min-width: 0;
+
+        padding: 0;
+
+    }
+
+    .client-identity-label {
+
+        font-size: 8px;
+    }
+
+    .client-identity-main h2 {
+
+        font-size: 14px;
+    }
+
+    .client-identity-item {
+
+        min-width: 0;
+
+        gap: 7px;
+    }
+
+    .client-identity-item > svg {
+
+        font-size: 12px;
+    }
+
+    .client-identity-item span {
+
+        font-size: 8px;
+    }
+
+    .client-identity-item strong {
+
+        max-width: 180px;
+
+        font-size: 10px;
+    }
+
+    .identity-profile-button {
+
+        grid-column: 1 / -1;
+
+        width: 100%;
+
+        padding: 7px;
+
+        font-size: 10px;
+    }
+
+
+    /* =====================================================
+       HEADER
     ===================================================== */
 
     .espace-client-header {
@@ -640,6 +1019,7 @@
     }
 
     .welcome-label {
+
         font-size: 9px;
 
         letter-spacing: 1px;
@@ -668,12 +1048,13 @@
     }
 
     .header-profile-button svg {
+
         font-size: 18px;
     }
 
 
     /* =====================================================
-       STATISTIQUES MOBILE
+       STATISTIQUES
     ===================================================== */
 
     .client-statistics {
@@ -691,34 +1072,42 @@
     }
 
     .statistics-header span {
+
         font-size: 9px;
     }
 
     .statistics-header h2 {
+
         font-size: 17px;
     }
 
     .statistics-header > svg {
+
         font-size: 19px;
     }
 
     .activity-progress-info {
+
         margin-bottom: 7px;
     }
 
     .activity-progress-info strong {
+
         font-size: 23px;
     }
 
     .activity-progress-info span {
+
         font-size: 11px;
     }
 
     .progress-bar {
+
         height: 7px;
     }
 
     .activity-progress p {
+
         font-size: 11px;
 
         margin-top: 7px;
@@ -726,7 +1115,7 @@
 
 
     /* =====================================================
-       CARTES MOBILE
+       CARTES
     ===================================================== */
 
     .client-dashboard-cards {
@@ -774,12 +1163,13 @@
     }
 
     .card-arrow {
+
         font-size: 11px;
     }
 
 
     /* =====================================================
-       INFORMATIONS MOBILE
+       PROFIL
     ===================================================== */
 
     .client-profile-summary {
@@ -799,6 +1189,7 @@
     }
 
     .section-title span {
+
         font-size: 9px;
     }
 
@@ -830,12 +1221,15 @@
     }
 
     .profile-info strong {
+
         font-size: 10px;
     }
 
     .profile-info span {
+
         font-size: 12px;
     }
+
 }
 
 
@@ -847,16 +1241,38 @@
 
     .espace-client-content {
 
-        /*
-         * ClientSidebar mobile = 60px
-         * seulement 7px d'espace avant le contenu.
-         */
         padding:
             67px
             8px
             16px;
     }
 
+    .client-identity-bar {
+
+        padding: 10px;
+
+        gap: 8px;
+
+        margin-bottom: 13px;
+    }
+
+    .client-identity-photo {
+
+        width: 40px;
+        height: 40px;
+    }
+
+    .client-identity-main h2 {
+
+        font-size: 13px;
+    }
+
+    .client-identity-item strong {
+
+        font-size: 9px;
+
+        max-width: 150px;
+    }
 
     .espace-client-header {
 
@@ -864,6 +1280,7 @@
     }
 
     .welcome-label {
+
         font-size: 8px;
     }
 
@@ -888,9 +1305,7 @@
     }
 
 
-    /* =====================================================
-       STATISTIQUES
-    ===================================================== */
+    /* STATISTIQUES */
 
     .client-statistics {
 
@@ -900,33 +1315,37 @@
     }
 
     .statistics-header {
+
         margin-bottom: 12px;
     }
 
     .statistics-header h2 {
+
         font-size: 16px;
     }
 
     .statistics-header > svg {
+
         font-size: 17px;
     }
 
     .activity-progress-info strong {
+
         font-size: 21px;
     }
 
     .activity-progress-info span {
+
         font-size: 10px;
     }
 
     .activity-progress p {
+
         font-size: 10px;
     }
 
 
-    /* =====================================================
-       CARTES
-    ===================================================== */
+    /* CARTES */
 
     .client-dashboard-cards {
 
@@ -953,21 +1372,22 @@
     }
 
     .client-card h3 {
+
         font-size: 12px;
     }
 
     .client-card p {
+
         font-size: 10px;
     }
 
     .card-arrow {
+
         font-size: 10px;
     }
 
 
-    /* =====================================================
-       PROFIL
-    ===================================================== */
+    /* PROFIL */
 
     .client-profile-summary {
 
@@ -980,6 +1400,7 @@
     }
 
     .section-title h2 {
+
         font-size: 16px;
     }
 
@@ -990,11 +1411,6 @@
         font-size: 10px;
     }
 
-    /*
-     * Sur petit téléphone :
-     * Nom / Prénom
-     * Email / Téléphone
-     */
     .profile-info {
 
         grid-template-columns:
@@ -1004,16 +1420,20 @@
     }
 
     .profile-info > div {
+
         padding: 10px;
     }
 
     .profile-info strong {
+
         font-size: 9px;
     }
 
     .profile-info span {
+
         font-size: 11px;
     }
+
 }
 
 
@@ -1031,20 +1451,31 @@
             14px;
     }
 
+    .client-identity-item strong {
+
+        max-width: 120px;
+
+        font-size: 8px;
+    }
+
     .espace-client-header h1 {
+
         font-size: 18px;
     }
 
     .espace-client-header p {
+
         font-size: 10px;
     }
 
     .header-profile-button {
+
         width: 36px;
         height: 36px;
     }
 
     .client-card {
+
         min-height: 72px;
 
         padding: 10px;
@@ -1059,6 +1490,8 @@
     }
 
     .client-profile-summary {
+
         padding: 12px;
     }
+
 }
