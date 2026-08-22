@@ -523,176 +523,162 @@ function LoginClient(){
 
 
     // =====================================================
-    // CONNEXION FACEBOOK
-    // =====================================================
+// CONNEXION FACEBOOK
+// =====================================================
 
-    const connexionFacebook = () => {
+const connexionFacebook = () => {
 
+    if (!window.FB) {
 
-        if(!window.FB){
+        alert(
+            "Facebook n'est pas encore chargé. Veuillez patienter quelques secondes."
+        );
 
-            alert(
-                "Facebook n'est pas encore chargé. Veuillez patienter quelques secondes."
-            );
+        return;
+    }
 
-            return;
+    if (loading) {
+        return;
+    }
 
-        }
+    setLoading(true);
 
-
-        try{
-
-            setLoading(true);
-
-
-            console.log(
-                "Connexion Facebook..."
-            );
+    console.log(
+        "Connexion Facebook..."
+    );
 
 
-            window.FB.login(
+    try {
 
-                async (response) => {
+        window.FB.login(
 
-                    try{
+            (response) => {
 
-                        console.log(
-                            "Réponse Facebook :",
-                            response
-                        );
-
-
-                        // =====================================================
-                        // UTILISATEUR A ANNULÉ
-                        // =====================================================
-
-                        if(
-                            !response ||
-                            !response.authResponse
-                        ){
-
-                            console.log(
-                                "Connexion Facebook annulée"
-                            );
+                console.log(
+                    "Réponse Facebook :",
+                    response
+                );
 
 
-                            setLoading(false);
+                // =====================================================
+                // UTILISATEUR A ANNULÉ
+                // =====================================================
 
+                if (
+                    !response ||
+                    !response.authResponse
+                ) {
 
-                            return;
+                    console.log(
+                        "Connexion Facebook annulée"
+                    );
 
-                        }
+                    setLoading(false);
 
-
-                        // =====================================================
-                        // TOKEN FACEBOOK
-                        // =====================================================
-
-                        const accessToken =
-                            response.authResponse.accessToken;
-
-
-                        if(!accessToken){
-
-                            throw new Error(
-                                "Token Facebook manquant"
-                            );
-
-                        }
-
-
-                        // =====================================================
-                        // ENVOYER LE TOKEN AU BACKEND
-                        // =====================================================
-
-                        const res = await api.post(
-
-                            "/utilisateurs/facebook",
-
-                            {
-
-                                accessToken:
-                                    accessToken
-
-                            }
-
-                        );
-
-
-                        console.log(
-                            "Connexion Facebook réussie :",
-                            res.data
-                        );
-
-
-                        // =====================================================
-                        // FINALISER LA CONNEXION
-                        // =====================================================
-
-                        finaliserConnexion(
-                            res
-                        );
-
-                    }
-
-                    catch(error){
-
-                        console.log(
-                            "Erreur connexion Facebook :",
-                            error
-                        );
-
-
-                        alert(
-
-                            error.response?.data?.message ||
-
-                            error.message ||
-
-                            "Impossible de se connecter avec Facebook"
-
-                        );
-
-                    }
-
-                    finally{
-
-                        setLoading(false);
-
-                    }
-
-                },
-
-                {
-
-                    scope:
-                        "public_profile,email"
-
+                    return;
                 }
 
-            );
 
-        }
-
-        catch(error){
-
-            console.log(
-                "Erreur Facebook :",
-                error
-            );
+                const accessToken =
+                    response.authResponse.accessToken;
 
 
-            setLoading(false);
+                if (!accessToken) {
+
+                    console.log(
+                        "Token Facebook manquant"
+                    );
+
+                    setLoading(false);
+
+                    alert(
+                        "Impossible de récupérer le token Facebook"
+                    );
+
+                    return;
+                }
 
 
-            alert(
-                "Impossible d'ouvrir la connexion Facebook"
-            );
+                // =====================================================
+                // APPEL BACKEND
+                // =====================================================
 
-        }
+                api.post(
 
-    };
+                    "/utilisateurs/facebook",
 
+                    {
+                        accessToken:
+                            accessToken
+                    }
+
+                )
+
+                .then((res) => {
+
+                    console.log(
+                        "Connexion Facebook réussie :",
+                        res.data
+                    );
+
+
+                    finaliserConnexion(
+                        res
+                    );
+
+                })
+
+                .catch((error) => {
+
+                    console.log(
+                        "Erreur backend Facebook :",
+                        error
+                    );
+
+
+                    alert(
+
+                        error.response?.data?.message ||
+
+                        "Impossible de se connecter avec Facebook"
+
+                    );
+
+                })
+
+                .finally(() => {
+
+                    setLoading(false);
+
+                });
+
+            },
+
+            {
+                scope:
+                    "public_profile,email"
+            }
+
+        );
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Erreur Facebook :",
+            error
+        );
+
+        setLoading(false);
+
+        alert(
+            "Impossible d'ouvrir la connexion Facebook"
+        );
+
+    }
+
+};
 
     // =====================================================
     // AFFICHAGE
