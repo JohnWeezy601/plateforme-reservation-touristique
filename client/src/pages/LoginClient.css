@@ -304,3 +304,110 @@ color:#333;
     }
 
 }
+
+
+/* =========================================================
+   ESPACE CLIENT - PAGE D'ACCUEIL UNIQUEMENT
+========================================================= */
+
+.espace-client {
+    width: 100%;
+    max-width: 100%;
+
+    /*
+       On ne crée PAS de margin-left ici.
+       Le positionnement par rapport à la sidebar
+       est déjà géré par EspaceClientLayout.
+    */
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CONTENU DE L'ACCUEIL ESPACE CLIENT
+========================================================= */
+
+.espace-client-content {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 0 10px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.espace-client-header {
+    width: 100%;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   STATISTIQUES
+========================================================= */
+
+.client-statistics {
+    width: 100%;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   CARTES
+========================================================= */
+
+.client-dashboard-cards {
+    width: 100%;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   PROFIL
+========================================================= */
+
+.client-profile-summary {
+    width: 100%;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .espace-client-content {
+        width: 100%;
+
+        max-width: none;
+
+        margin: 0;
+
+        padding: 0 6px;
+    }
+}
+
+
+/* =========================================================
+   PETIT TÉLÉPHONE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .espace-client-content {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+}
