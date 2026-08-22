@@ -4,11 +4,11 @@ const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
 
-const { OAuth2Client } =
-    require("google-auth-library");
+const { OAuth2Client } = require("google-auth-library");
 
-const cloudinary =
-    require("cloudinary").v2;
+const cloudinary = require("cloudinary").v2;
+
+const fs = require("fs");
 
 
 // =====================================================
@@ -17,14 +17,11 @@ const cloudinary =
 
 cloudinary.config({
 
-    cloud_name:
-        process.env.CLOUDINARY_CLOUD_NAME,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
 
-    api_key:
-        process.env.CLOUDINARY_API_KEY,
+    api_key: process.env.CLOUDINARY_API_KEY,
 
-    api_secret:
-        process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET
 
 });
 
@@ -33,10 +30,11 @@ cloudinary.config({
 // CONFIGURATION GOOGLE
 // =====================================================
 
-const googleClient =
-    new OAuth2Client(
-        process.env.GOOGLE_CLIENT_ID
-    );
+const googleClient = new OAuth2Client(
+
+    process.env.GOOGLE_CLIENT_ID
+
+);
 
 
 // =====================================================
@@ -48,11 +46,17 @@ exports.register = async (req, res) => {
     const {
 
         nom,
+
         prenom,
+
         email,
+
         mot_de_passe,
+
         password,
+
         telephone,
+
         role
 
     } = req.body;
@@ -87,7 +91,9 @@ exports.register = async (req, res) => {
         const rolesAutorises = [
 
             "Administrateur",
+
             "Touriste",
+
             "Prestataire"
 
         ];
@@ -97,8 +103,7 @@ exports.register = async (req, res) => {
 
             return res.status(400).json({
 
-                message:
-                    "Rôle invalide"
+                message: "Rôle invalide"
 
             });
 
@@ -106,23 +111,26 @@ exports.register = async (req, res) => {
 
 
         // =====================================================
-        // VÉRIFIER EMAIL
+        // VÉRIFIER EMAIL EXISTANT
         // =====================================================
 
-        const [emailExiste] =
-            await db.query(
+        const [emailExiste] = await db.query(
 
-                `
-                SELECT id_utilisateur
+            `
+            SELECT id_utilisateur
 
-                FROM utilisateur
+            FROM utilisateur
 
-                WHERE email=?
-                `,
+            WHERE email=?
+            `,
 
-                [email]
+            [
 
-            );
+                email
+
+            ]
+
+        );
 
 
         if (emailExiste.length > 0) {
@@ -138,13 +146,16 @@ exports.register = async (req, res) => {
 
 
         // =====================================================
-        // HASH PASSWORD
+        // HASH MOT DE PASSE
         // =====================================================
 
         const hashPassword =
             await bcrypt.hash(
+
                 passwordFinal,
+
                 10
+
             );
 
 
@@ -152,37 +163,42 @@ exports.register = async (req, res) => {
         // INSERTION
         // =====================================================
 
-        const [result] =
-            await db.query(
+        const [result] = await db.query(
 
-                `
-                INSERT INTO utilisateur
-                (
-                    nom,
-                    prenom,
-                    email,
-                    mot_de_passe,
-                    telephone,
-                    role,
-                    provider
-                )
+            `
+            INSERT INTO utilisateur
+            (
+                nom,
+                prenom,
+                email,
+                mot_de_passe,
+                telephone,
+                role,
+                provider
+            )
 
-                VALUES (?,?,?,?,?,?,?)
-                `,
+            VALUES (?,?,?,?,?,?,?)
+            `,
 
-                [
+            [
 
-                    nom,
-                    prenom,
-                    email,
-                    hashPassword,
-                    telephone,
-                    role,
-                    "local"
+                nom,
 
-                ]
+                prenom,
 
-            );
+                email,
+
+                hashPassword,
+
+                telephone,
+
+                role,
+
+                "local"
+
+            ]
+
+        );
 
 
         res.json({
@@ -200,6 +216,7 @@ exports.register = async (req, res) => {
     catch (error) {
 
         console.log(error);
+
 
         res.status(500).json({
 
@@ -225,6 +242,7 @@ exports.login = async (req, res) => {
     const {
 
         email,
+
         mot_de_passe
 
     } = req.body;
@@ -232,20 +250,23 @@ exports.login = async (req, res) => {
 
     try {
 
-        const [result] =
-            await db.query(
+        const [result] = await db.query(
 
-                `
-                SELECT *
+            `
+            SELECT *
 
-                FROM utilisateur
+            FROM utilisateur
 
-                WHERE email=?
-                `,
+            WHERE email=?
+            `,
 
-                [email]
+            [
 
-            );
+                email
+
+            ]
+
+        );
 
 
         if (result.length === 0) {
@@ -265,7 +286,7 @@ exports.login = async (req, res) => {
 
 
         // =====================================================
-        // PASSWORD
+        // VÉRIFIER MOT DE PASSE
         // =====================================================
 
         if (!utilisateur.mot_de_passe) {
@@ -303,7 +324,7 @@ exports.login = async (req, res) => {
 
 
         // =====================================================
-        // JWT
+        // TOKEN JWT
         // =====================================================
 
         const token =
@@ -323,8 +344,7 @@ exports.login = async (req, res) => {
 
                 {
 
-                    expiresIn:
-                        "1h"
+                    expiresIn: "1h"
 
                 }
 
@@ -347,9 +367,6 @@ exports.login = async (req, res) => {
                 id:
                     utilisateur.id_utilisateur,
 
-                id_utilisateur:
-                    utilisateur.id_utilisateur,
-
                 nom:
                     utilisateur.nom,
 
@@ -358,9 +375,6 @@ exports.login = async (req, res) => {
 
                 email:
                     utilisateur.email,
-
-                telephone:
-                    utilisateur.telephone,
 
                 role:
                     utilisateur.role,
@@ -378,6 +392,7 @@ exports.login = async (req, res) => {
 
         console.log(error);
 
+
         res.status(500).json({
 
             message:
@@ -391,16 +406,19 @@ exports.login = async (req, res) => {
 
 
 // =====================================================
-// GOOGLE LOGIN
+// CONNEXION AVEC GOOGLE
 // =====================================================
 
 exports.googleLogin = async (req, res) => {
 
-    const { credential } =
-        req.body;
+    const { credential } = req.body;
 
 
     try {
+
+        // =====================================================
+        // VÉRIFIER LE CREDENTIAL GOOGLE
+        // =====================================================
 
         if (!credential) {
 
@@ -430,6 +448,10 @@ exports.googleLogin = async (req, res) => {
             ticket.getPayload();
 
 
+        // =====================================================
+        // INFORMATIONS GOOGLE
+        // =====================================================
+
         const googleId =
             payload.sub;
 
@@ -449,6 +471,10 @@ exports.googleLogin = async (req, res) => {
             payload.picture || null;
 
 
+        // =====================================================
+        // EMAIL GOOGLE VÉRIFIÉ
+        // =====================================================
+
         if (!emailVerified) {
 
             return res.status(401).json({
@@ -462,7 +488,7 @@ exports.googleLogin = async (req, res) => {
 
 
         // =====================================================
-        // CHERCHER GOOGLE
+        // CHERCHER UN COMPTE GOOGLE EXISTANT
         // =====================================================
 
         const [utilisateursGoogle] =
@@ -481,6 +507,7 @@ exports.googleLogin = async (req, res) => {
                 [
 
                     "google",
+
                     googleId
 
                 ]
@@ -491,6 +518,10 @@ exports.googleLogin = async (req, res) => {
         let utilisateur;
 
 
+        // =====================================================
+        // COMPTE GOOGLE EXISTANT
+        // =====================================================
+
         if (utilisateursGoogle.length > 0) {
 
             utilisateur =
@@ -499,6 +530,10 @@ exports.googleLogin = async (req, res) => {
         }
 
         else {
+
+            // =====================================================
+            // CHERCHER PAR EMAIL
+            // =====================================================
 
             const [utilisateursEmail] =
                 await db.query(
@@ -511,16 +546,28 @@ exports.googleLogin = async (req, res) => {
                     WHERE email=?
                     `,
 
-                    [email]
+                    [
+
+                        email
+
+                    ]
 
                 );
 
+
+            // =====================================================
+            // EMAIL DÉJÀ EXISTANT
+            // =====================================================
 
             if (utilisateursEmail.length > 0) {
 
                 utilisateur =
                     utilisateursEmail[0];
 
+
+                // =====================================================
+                // ASSOCIER LE COMPTE EXISTANT À GOOGLE
+                // =====================================================
 
                 await db.query(
 
@@ -539,7 +586,9 @@ exports.googleLogin = async (req, res) => {
                     [
 
                         "google",
+
                         googleId,
+
                         utilisateur.id_utilisateur
 
                     ]
@@ -556,6 +605,10 @@ exports.googleLogin = async (req, res) => {
             }
 
             else {
+
+                // =====================================================
+                // CRÉER NOUVEL UTILISATEUR GOOGLE
+                // =====================================================
 
                 const [result] =
                     await db.query(
@@ -580,13 +633,21 @@ exports.googleLogin = async (req, res) => {
                         [
 
                             nom,
+
                             prenom,
+
                             email,
+
                             null,
+
                             "google",
+
                             googleId,
+
                             null,
+
                             "Touriste",
+
                             photo
 
                         ]
@@ -605,7 +666,11 @@ exports.googleLogin = async (req, res) => {
                         WHERE id_utilisateur=?
                         `,
 
-                        [result.insertId]
+                        [
+
+                            result.insertId
+
+                        ]
 
                     );
 
@@ -619,7 +684,7 @@ exports.googleLogin = async (req, res) => {
 
 
         // =====================================================
-        // JWT
+        // CRÉER JWT
         // =====================================================
 
         const token =
@@ -639,13 +704,16 @@ exports.googleLogin = async (req, res) => {
 
                 {
 
-                    expiresIn:
-                        "1h"
+                    expiresIn: "1h"
 
                 }
 
             );
 
+
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.json({
 
@@ -659,9 +727,6 @@ exports.googleLogin = async (req, res) => {
                 id:
                     utilisateur.id_utilisateur,
 
-                id_utilisateur:
-                    utilisateur.id_utilisateur,
-
                 nom:
                     utilisateur.nom,
 
@@ -670,9 +735,6 @@ exports.googleLogin = async (req, res) => {
 
                 email:
                     utilisateur.email,
-
-                telephone:
-                    utilisateur.telephone,
 
                 role:
                     utilisateur.role,
@@ -689,8 +751,11 @@ exports.googleLogin = async (req, res) => {
     catch (error) {
 
         console.log(
+
             "❌ Erreur connexion Google :",
+
             error
+
         );
 
 
@@ -710,16 +775,19 @@ exports.googleLogin = async (req, res) => {
 
 
 // =====================================================
-// FACEBOOK LOGIN
+// CONNEXION AVEC FACEBOOK
 // =====================================================
 
 exports.facebookLogin = async (req, res) => {
 
-    const { accessToken } =
-        req.body;
+    const { accessToken } = req.body;
 
 
     try {
+
+        // =====================================================
+        // VÉRIFIER LE TOKEN FACEBOOK
+        // =====================================================
 
         if (!accessToken) {
 
@@ -733,6 +801,10 @@ exports.facebookLogin = async (req, res) => {
         }
 
 
+        // =====================================================
+        // RÉCUPÉRER LES INFORMATIONS FACEBOOK
+        // =====================================================
+
         const url =
             `https://graph.facebook.com/me?fields=id,email,first_name,last_name,picture.type(large)&access_token=${encodeURIComponent(accessToken)}`;
 
@@ -745,11 +817,18 @@ exports.facebookLogin = async (req, res) => {
             await response.json();
 
 
+        // =====================================================
+        // VÉRIFIER ERREUR FACEBOOK
+        // =====================================================
+
         if (!response.ok || data.error) {
 
             console.log(
+
                 "❌ Erreur API Facebook :",
+
                 data
+
             );
 
 
@@ -762,6 +841,10 @@ exports.facebookLogin = async (req, res) => {
 
         }
 
+
+        // =====================================================
+        // INFORMATIONS FACEBOOK
+        // =====================================================
 
         const facebookId =
             data.id;
@@ -782,6 +865,10 @@ exports.facebookLogin = async (req, res) => {
                 : null;
 
 
+        // =====================================================
+        // EMAIL OBLIGATOIRE
+        // =====================================================
+
         if (!email) {
 
             return res.status(400).json({
@@ -793,6 +880,10 @@ exports.facebookLogin = async (req, res) => {
 
         }
 
+
+        // =====================================================
+        // CHERCHER COMPTE FACEBOOK EXISTANT
+        // =====================================================
 
         const [utilisateursFacebook] =
             await db.query(
@@ -810,6 +901,7 @@ exports.facebookLogin = async (req, res) => {
                 [
 
                     "facebook",
+
                     facebookId
 
                 ]
@@ -820,6 +912,10 @@ exports.facebookLogin = async (req, res) => {
         let utilisateur;
 
 
+        // =====================================================
+        // COMPTE FACEBOOK EXISTANT
+        // =====================================================
+
         if (utilisateursFacebook.length > 0) {
 
             utilisateur =
@@ -828,6 +924,10 @@ exports.facebookLogin = async (req, res) => {
         }
 
         else {
+
+            // =====================================================
+            // CHERCHER PAR EMAIL
+            // =====================================================
 
             const [utilisateursEmail] =
                 await db.query(
@@ -840,16 +940,28 @@ exports.facebookLogin = async (req, res) => {
                     WHERE email=?
                     `,
 
-                    [email]
+                    [
+
+                        email
+
+                    ]
 
                 );
 
+
+            // =====================================================
+            // EMAIL DÉJÀ EXISTANT
+            // =====================================================
 
             if (utilisateursEmail.length > 0) {
 
                 utilisateur =
                     utilisateursEmail[0];
 
+
+                // =====================================================
+                // ASSOCIER LE COMPTE EXISTANT À FACEBOOK
+                // =====================================================
 
                 await db.query(
 
@@ -870,8 +982,11 @@ exports.facebookLogin = async (req, res) => {
                     [
 
                         "facebook",
+
                         facebookId,
+
                         photo,
+
                         utilisateur.id_utilisateur
 
                     ]
@@ -885,7 +1000,6 @@ exports.facebookLogin = async (req, res) => {
                 utilisateur.provider_id =
                     facebookId;
 
-
                 if (!utilisateur.photo) {
 
                     utilisateur.photo =
@@ -896,6 +1010,10 @@ exports.facebookLogin = async (req, res) => {
             }
 
             else {
+
+                // =====================================================
+                // CRÉER NOUVEL UTILISATEUR FACEBOOK
+                // =====================================================
 
                 const [result] =
                     await db.query(
@@ -920,13 +1038,21 @@ exports.facebookLogin = async (req, res) => {
                         [
 
                             nom,
+
                             prenom,
+
                             email,
+
                             null,
+
                             "facebook",
+
                             facebookId,
+
                             null,
+
                             "Touriste",
+
                             photo
 
                         ]
@@ -945,7 +1071,11 @@ exports.facebookLogin = async (req, res) => {
                         WHERE id_utilisateur=?
                         `,
 
-                        [result.insertId]
+                        [
+
+                            result.insertId
+
+                        ]
 
                     );
 
@@ -957,6 +1087,10 @@ exports.facebookLogin = async (req, res) => {
 
         }
 
+
+        // =====================================================
+        // CRÉER JWT
+        // =====================================================
 
         const token =
             jwt.sign(
@@ -975,13 +1109,16 @@ exports.facebookLogin = async (req, res) => {
 
                 {
 
-                    expiresIn:
-                        "1h"
+                    expiresIn: "1h"
 
                 }
 
             );
 
+
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.json({
 
@@ -995,9 +1132,6 @@ exports.facebookLogin = async (req, res) => {
                 id:
                     utilisateur.id_utilisateur,
 
-                id_utilisateur:
-                    utilisateur.id_utilisateur,
-
                 nom:
                     utilisateur.nom,
 
@@ -1006,9 +1140,6 @@ exports.facebookLogin = async (req, res) => {
 
                 email:
                     utilisateur.email,
-
-                telephone:
-                    utilisateur.telephone,
 
                 role:
                     utilisateur.role,
@@ -1025,8 +1156,11 @@ exports.facebookLogin = async (req, res) => {
     catch (error) {
 
         console.log(
+
             "❌ Erreur connexion Facebook :",
+
             error
+
         );
 
 
@@ -1058,9 +1192,13 @@ exports.updateUtilisateur = async (req, res) => {
     const {
 
         nom,
+
         prenom,
+
         email,
+
         telephone,
+
         role
 
     } = req.body;
@@ -1071,7 +1209,9 @@ exports.updateUtilisateur = async (req, res) => {
         const rolesAutorises = [
 
             "Administrateur",
+
             "Touriste",
+
             "Prestataire"
 
         ];
@@ -1097,9 +1237,13 @@ exports.updateUtilisateur = async (req, res) => {
             SET
 
                 nom=?,
+
                 prenom=?,
+
                 email=?,
+
                 telephone=?,
+
                 role=?
 
             WHERE id_utilisateur=?
@@ -1108,10 +1252,15 @@ exports.updateUtilisateur = async (req, res) => {
             [
 
                 nom,
+
                 prenom,
+
                 email,
+
                 telephone,
+
                 role,
+
                 id
 
             ]
@@ -1119,42 +1268,10 @@ exports.updateUtilisateur = async (req, res) => {
         );
 
 
-        // =====================================================
-        // RÉCUPÉRER UTILISATEUR MIS À JOUR
-        // =====================================================
-
-        const [utilisateurs] =
-            await db.query(
-
-                `
-                SELECT
-
-                    id_utilisateur,
-                    nom,
-                    prenom,
-                    email,
-                    telephone,
-                    role,
-                    photo,
-                    date_inscription
-
-                FROM utilisateur
-
-                WHERE id_utilisateur=?
-                `,
-
-                [id]
-
-            );
-
-
         res.json({
 
             message:
-                "Utilisateur modifié avec succès",
-
-            utilisateur:
-                utilisateurs[0]
+                "Utilisateur modifié avec succès"
 
         });
 
@@ -1168,10 +1285,7 @@ exports.updateUtilisateur = async (req, res) => {
         res.status(500).json({
 
             message:
-                "Erreur modification utilisateur",
-
-            error:
-                error.message
+                "Erreur modification utilisateur"
 
         });
 
@@ -1200,7 +1314,11 @@ exports.deleteUtilisateur = async (req, res) => {
             WHERE id_utilisateur=?
             `,
 
-            [id]
+            [
+
+                id
+
+            ]
 
         );
 
@@ -1213,7 +1331,11 @@ exports.deleteUtilisateur = async (req, res) => {
             WHERE id_utilisateur=?
             `,
 
-            [id]
+            [
+
+                id
+
+            ]
 
         );
 
@@ -1226,7 +1348,11 @@ exports.deleteUtilisateur = async (req, res) => {
             WHERE id_utilisateur=?
             `,
 
-            [id]
+            [
+
+                id
+
+            ]
 
         );
 
@@ -1239,24 +1365,11 @@ exports.deleteUtilisateur = async (req, res) => {
             WHERE id_utilisateur=?
             `,
 
-            [id]
+            [
 
-        );
+                id
 
-
-        // =====================================================
-        // HISTORIQUE PHOTOS PROFIL
-        // =====================================================
-
-        await db.query(
-
-            `
-            DELETE FROM photo_profil_historique
-
-            WHERE id_utilisateur=?
-            `,
-
-            [id]
+            ]
 
         );
 
@@ -1269,7 +1382,11 @@ exports.deleteUtilisateur = async (req, res) => {
             WHERE id_utilisateur=?
             `,
 
-            [id]
+            [
+
+                id
+
+            ]
 
         );
 
@@ -1318,12 +1435,19 @@ exports.getUtilisateurs = async (req, res) => {
                 SELECT
 
                     id_utilisateur,
+
                     nom,
+
                     prenom,
+
                     email,
+
                     telephone,
+
                     role,
+
                     photo,
+
                     date_inscription
 
                 FROM utilisateur
@@ -1335,7 +1459,9 @@ exports.getUtilisateurs = async (req, res) => {
 
 
         res.json(
+
             utilisateurs
+
         );
 
     }
@@ -1358,7 +1484,7 @@ exports.getUtilisateurs = async (req, res) => {
 
 
 // =====================================================
-// AFFICHER UN UTILISATEUR
+// AFFICHER UN UTILISATEUR PAR ID
 // =====================================================
 
 exports.getUtilisateurById = async (req, res) => {
@@ -1376,12 +1502,19 @@ exports.getUtilisateurById = async (req, res) => {
                 SELECT
 
                     id_utilisateur,
+
                     nom,
+
                     prenom,
+
                     email,
+
                     telephone,
+
                     role,
+
                     photo,
+
                     date_inscription
 
                 FROM utilisateur
@@ -1389,7 +1522,11 @@ exports.getUtilisateurById = async (req, res) => {
                 WHERE id_utilisateur=?
                 `,
 
-                [id]
+                [
+
+                    id
+
+                ]
 
             );
 
@@ -1407,7 +1544,9 @@ exports.getUtilisateurById = async (req, res) => {
 
 
         res.json(
+
             utilisateur[0]
+
         );
 
     }
@@ -1429,20 +1568,15 @@ exports.getUtilisateurById = async (req, res) => {
 };
 
 
+
+
 // =====================================================
 // MODIFIER PHOTO UTILISATEUR
-// =====================================================
-// IMPORTANT :
-// L'ANCIENNE PHOTO N'EST PLUS SUPPRIMÉE.
-// ELLE EST CONSERVÉE DANS
-// photo_profil_historique.
 // =====================================================
 
 exports.updatePhoto = async (req, res) => {
 
-    const id =
-        req.params.id;
-
+    const id = req.params.id;
 
     // =====================================================
     // VÉRIFIER FICHIER
@@ -1452,45 +1586,38 @@ exports.updatePhoto = async (req, res) => {
 
         return res.status(400).json({
 
-            message:
-                "Aucune photo envoyée"
+            message: "Aucune photo envoyée"
 
         });
 
     }
 
-
     try {
 
         // =====================================================
-        // RÉCUPÉRER UTILISATEUR
+        // RÉCUPÉRER ANCIENNE PHOTO
         // =====================================================
 
-        const [utilisateurs] =
-            await db.query(
+        const [utilisateurs] = await db.query(
 
-                `
-                SELECT
+            `
+            SELECT
+                id_utilisateur,
+                photo
+            FROM utilisateur
+            WHERE id_utilisateur=?
+            `,
 
-                    id_utilisateur,
-                    photo
+            [id]
 
-                FROM utilisateur
-
-                WHERE id_utilisateur=?
-                `,
-
-                [id]
-
-            );
+        );
 
 
         if (utilisateurs.length === 0) {
 
             return res.status(404).json({
 
-                message:
-                    "Utilisateur introuvable"
+                message: "Utilisateur introuvable"
 
             });
 
@@ -1507,53 +1634,46 @@ exports.updatePhoto = async (req, res) => {
 
 
         // =====================================================
-        // UPLOAD CLOUDINARY
+        // UPLOAD BUFFER VERS CLOUDINARY
         // =====================================================
 
         const resultat =
-            await new Promise(
+            await new Promise((resolve, reject) => {
 
-                (resolve, reject) => {
+                const stream =
+                    cloudinary.uploader.upload_stream(
 
-                    const stream =
-                        cloudinary.uploader.upload_stream(
+                        {
+                            folder:
+                                "plateforme-touristique/utilisateurs",
 
-                            {
+                            resource_type:
+                                "image"
+                        },
 
-                                folder:
-                                    "plateforme-touristique/utilisateurs",
+                        (error, result) => {
 
-                                resource_type:
-                                    "image"
+                            if (error) {
 
-                            },
+                                reject(error);
 
-                            (error, result) => {
+                            }
+                            else {
 
-                                if (error) {
-
-                                    reject(error);
-
-                                }
-
-                                else {
-
-                                    resolve(result);
-
-                                }
+                                resolve(result);
 
                             }
 
-                        );
+                        }
 
-
-                    stream.end(
-                        req.file.buffer
                     );
 
-                }
 
-            );
+                stream.end(
+                    req.file.buffer
+                );
+
+            });
 
 
         console.log(
@@ -1573,82 +1693,115 @@ exports.updatePhoto = async (req, res) => {
         );
 
 
+        // =====================================================
+        // NOUVELLE PHOTO
+        // =====================================================
+
         const nouvellePhoto =
             resultat.secure_url;
 
 
         // =====================================================
-        // SAUVEGARDER L'ANCIENNE PHOTO
-        // =====================================================
-        //
-        // ON NE LA SUPPRIME PLUS DE CLOUDINARY.
-        //
-        // =====================================================
-
-        if (anciennePhoto) {
-
-            console.log(
-                "📸 Conservation de l'ancienne photo"
-            );
-
-
-            await db.query(
-
-                `
-                INSERT INTO photo_profil_historique
-                (
-                    id_utilisateur,
-                    photo,
-                    public_id
-                )
-
-                VALUES (?, ?, ?)
-                `,
-
-                [
-
-                    id,
-
-                    anciennePhoto,
-
-                    extrairePublicIdCloudinary(
-                        anciennePhoto
-                    )
-
-                ]
-
-            );
-
-        }
-
-
-        // =====================================================
-        // METTRE À JOUR PHOTO ACTUELLE
+        // METTRE À JOUR LA BASE
         // =====================================================
 
         await db.query(
 
             `
             UPDATE utilisateur
-
             SET photo=?
-
             WHERE id_utilisateur=?
             `,
 
             [
-
                 nouvellePhoto,
                 id
-
             ]
 
         );
 
 
         console.log(
-            "✅ Photo actuelle mise à jour"
+            "✅ Base de données mise à jour"
         );
+
+
+        // =====================================================
+        // SUPPRIMER ANCIENNE PHOTO CLOUDINARY
+        // =====================================================
+
+        if (
+
+            anciennePhoto &&
+
+            anciennePhoto.includes(
+                "res.cloudinary.com"
+            )
+
+        ) {
+
+            try {
+
+                const partie =
+                    anciennePhoto.split(
+                        "/upload/"
+                    )[1];
+
+
+                if (partie) {
+
+                    const sansVersion =
+                        partie.replace(
+                            /^v\d+\//,
+                            ""
+                        );
+
+
+                    const publicIdAncien =
+                        sansVersion.replace(
+                            /\.[^/.]+$/,
+                            ""
+                        );
+
+
+                    console.log(
+                        "🗑️ Suppression ancienne photo :",
+                        publicIdAncien
+                    );
+
+
+                    await cloudinary.uploader.destroy(
+
+                        publicIdAncien,
+
+                        {
+                            resource_type:
+                                "image"
+                        }
+
+                    );
+
+
+                    console.log(
+                        "✅ Ancienne photo supprimée de Cloudinary"
+                    );
+
+                }
+
+            }
+            catch (cloudinaryError) {
+
+                console.log(
+
+                    "⚠️ Impossible de supprimer l'ancienne photo :",
+
+                    cloudinaryError.message
+
+                );
+
+            }
+
+        }
 
 
         // =====================================================
@@ -1660,7 +1813,6 @@ exports.updatePhoto = async (req, res) => {
 
                 `
                 SELECT
-
                     id_utilisateur,
                     nom,
                     prenom,
@@ -1669,9 +1821,7 @@ exports.updatePhoto = async (req, res) => {
                     role,
                     photo,
                     date_inscription
-
                 FROM utilisateur
-
                 WHERE id_utilisateur=?
                 `,
 
@@ -1701,7 +1851,6 @@ exports.updatePhoto = async (req, res) => {
         });
 
     }
-
     catch (error) {
 
         console.error(
@@ -1724,115 +1873,54 @@ exports.updatePhoto = async (req, res) => {
 
 };
 
-
 // =====================================================
-// EXTRAIRE PUBLIC ID CLOUDINARY
+// AJOUTER UNE PHOTO DANS L'HISTORIQUE DU PROFIL CLIENT
 // =====================================================
 
-function extrairePublicIdCloudinary(photoUrl) {
+exports.ajouterPhotoProfilClient = async (req, res) => {
 
-    if (!photoUrl) {
+    const id = req.params.id;
 
-        return null;
-
-    }
-
-
-    // =====================================================
-    // SI CE N'EST PAS UNE URL CLOUDINARY
-    // =====================================================
-
-    if (
-        !photoUrl.includes(
-            "res.cloudinary.com"
-        )
-    ) {
-
-        return null;
-
-    }
-
+    const {
+        photo,
+        public_id
+    } = req.body;
 
     try {
 
-        const partie =
-            photoUrl.split(
-                "/upload/"
-            )[1];
+        // =====================================================
+        // VÉRIFIER LA PHOTO
+        // =====================================================
 
+        if (!photo) {
 
-        if (!partie) {
+            return res.status(400).json({
 
-            return null;
+                message:
+                    "La photo est obligatoire"
+
+            });
 
         }
 
 
-        const sansVersion =
-            partie.replace(
-                /^v\d+\//,
-                ""
-            );
-
-
-        return sansVersion.replace(
-            /\.[^/.]+$/,
-            ""
-        );
-
-    }
-
-    catch (error) {
-
-        console.log(
-            "⚠️ Impossible d'extraire le public_id :",
-            error.message
-        );
-
-
-        return null;
-
-    }
-
-}
-
-
-// =====================================================
-// MES PHOTOS
-// =====================================================
-// Retourne toutes les anciennes photos de profil.
-// La photo actuelle est ajoutée en premier.
-// =====================================================
-
-exports.getPhotosProfil = async (req, res) => {
-
-    const id =
-        req.params.id;
-
-
-    try {
-
         // =====================================================
-        // VÉRIFIER UTILISATEUR
+        // VÉRIFIER L'UTILISATEUR
         // =====================================================
 
-        const [utilisateurs] =
-            await db.query(
+        const [utilisateurs] = await db.query(
 
-                `
-                SELECT
+            `
+            SELECT id_utilisateur
 
-                    id_utilisateur,
-                    photo
+            FROM utilisateur
 
-                FROM utilisateur
+            WHERE id_utilisateur=?
+            `,
 
-                WHERE id_utilisateur=?
-                `,
+            [id]
 
-                [id]
-
-            );
+        );
 
 
         if (utilisateurs.length === 0) {
@@ -1847,102 +1935,43 @@ exports.getPhotosProfil = async (req, res) => {
         }
 
 
-        const utilisateur =
-            utilisateurs[0];
-
-
         // =====================================================
-        // ANCIENNES PHOTOS
+        // ENREGISTRER LA PHOTO
         // =====================================================
 
-        const [anciennesPhotos] =
-            await db.query(
+        const [result] = await db.query(
 
-                `
-                SELECT
+            `
+            INSERT INTO photo_profil_client
+            (
+                id_utilisateur,
+                photo,
+                public_id
+            )
 
-                    id_photo_profil,
-                    id_utilisateur,
-                    photo,
-                    public_id,
-                    date_ajout
+            VALUES (?, ?, ?)
+            `,
 
-                FROM photo_profil_historique
+            [
+                id,
+                photo,
+                public_id || null
+            ]
 
-                WHERE id_utilisateur=?
-
-                ORDER BY date_ajout DESC
-                `,
-
-                [id]
-
-            );
-
-
-        // =====================================================
-        // CONSTRUIRE RÉPONSE
-        // =====================================================
-
-        const photos = [];
-
-
-        // =====================================================
-        // PHOTO ACTUELLE
-        // =====================================================
-
-        if (utilisateur.photo) {
-
-            photos.push({
-
-                id_photo_profil:
-                    "current",
-
-                id_utilisateur:
-                    id,
-
-                photo:
-                    utilisateur.photo,
-
-                public_id:
-                    null,
-
-                date_ajout:
-                    null,
-
-                actuelle:
-                    true
-
-            });
-
-        }
-
-
-        // =====================================================
-        // ANCIENNES PHOTOS
-        // =====================================================
-
-        anciennesPhotos.forEach(
-            (photo) => {
-
-                photos.push({
-
-                    ...photo,
-
-                    actuelle:
-                        false
-
-                });
-
-            }
         );
 
 
-        res.json({
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
+
+        res.status(201).json({
 
             message:
-                "Photos de profil récupérées",
+                "Photo de profil enregistrée dans l'historique",
 
-            photos
+            id_photo:
+                result.insertId
 
         });
 
@@ -1951,15 +1980,18 @@ exports.getPhotosProfil = async (req, res) => {
     catch (error) {
 
         console.error(
-            "❌ Erreur récupération photos profil :",
+
+            "❌ Erreur ajout photo profil client :",
+
             error
+
         );
 
 
         res.status(500).json({
 
             message:
-                "Erreur récupération photos de profil",
+                "Erreur lors de l'enregistrement de la photo",
 
             error:
                 error.message
@@ -1971,42 +2003,34 @@ exports.getPhotosProfil = async (req, res) => {
 };
 
 
+
 // =====================================================
-// MES POSTS
-// =====================================================
-// Les photos publiées par le client viennent de
-// avis_photo.
-// On ne modifie PAS avisPhotoController.
+// RÉCUPÉRER LES PHOTOS DE PROFIL DU CLIENT
 // =====================================================
 
-exports.getPostsUtilisateur = async (req, res) => {
+exports.getPhotosProfilClient = async (req, res) => {
 
-    const id =
-        req.params.id;
-
+    const id = req.params.id;
 
     try {
 
         // =====================================================
-        // VÉRIFIER UTILISATEUR
+        // VÉRIFIER L'UTILISATEUR
         // =====================================================
 
-        const [utilisateurs] =
-            await db.query(
+        const [utilisateurs] = await db.query(
 
-                `
-                SELECT
+            `
+            SELECT id_utilisateur
 
-                    id_utilisateur
+            FROM utilisateur
 
-                FROM utilisateur
+            WHERE id_utilisateur=?
+            `,
 
-                WHERE id_utilisateur=?
-                `,
+            [id]
 
-                [id]
-
-            );
+        );
 
 
         if (utilisateurs.length === 0) {
@@ -2022,124 +2046,35 @@ exports.getPostsUtilisateur = async (req, res) => {
 
 
         // =====================================================
-        // RÉCUPÉRER LES POSTS AVEC PHOTOS
+        // RÉCUPÉRER LES PHOTOS
         // =====================================================
 
-        const [posts] =
-            await db.query(
+        const [photos] = await db.query(
 
-                `
-                SELECT
+            `
+            SELECT
 
-                    a.id_avis,
+                id_photo,
 
-                    a.id_utilisateur,
+                id_utilisateur,
 
-                    a.commentaire,
+                photo,
 
-                    a.note,
+                public_id,
 
-                    a.date_avis,
+                date_ajout
 
-                    ap.id_photo,
+            FROM photo_profil_client
 
-                    ap.photo,
+            WHERE id_utilisateur=?
 
-                    ap.public_id,
+            ORDER BY date_ajout DESC
 
-                    ap.date_ajout
+            `,
 
-                FROM avis a
+            [id]
 
-                INNER JOIN avis_photo ap
-                    ON ap.id_avis = a.id_avis
-
-                WHERE a.id_utilisateur=?
-
-                ORDER BY
-                    a.date_avis DESC,
-                    ap.date_ajout ASC
-                `,
-
-                [id]
-
-            );
-
-
-        // =====================================================
-        // REGROUPER LES PHOTOS PAR POST
-        // =====================================================
-
-        const postsMap =
-            new Map();
-
-
-        posts.forEach(
-            (item) => {
-
-                if (
-                    !postsMap.has(
-                        item.id_avis
-                    )
-                ) {
-
-                    postsMap.set(
-
-                        item.id_avis,
-
-                        {
-
-                            id_avis:
-                                item.id_avis,
-
-                            id_utilisateur:
-                                item.id_utilisateur,
-
-                            commentaire:
-                                item.commentaire,
-
-                            note:
-                                item.note,
-
-                            date_avis:
-                                item.date_avis,
-
-                            photos: []
-
-                        }
-
-                    );
-
-                }
-
-
-                postsMap
-                    .get(item.id_avis)
-                    .photos
-                    .push({
-
-                        id_photo:
-                            item.id_photo,
-
-                        photo:
-                            item.photo,
-
-                        public_id:
-                            item.public_id,
-
-                        date_ajout:
-                            item.date_ajout
-
-                    });
-
-            }
         );
-
-
-        const postsFinal =
-            Array.from(
-                postsMap.values()
-            );
 
 
         // =====================================================
@@ -2148,11 +2083,7 @@ exports.getPostsUtilisateur = async (req, res) => {
 
         res.json({
 
-            message:
-                "Posts utilisateur récupérés",
-
-            posts:
-                postsFinal
+            photos
 
         });
 
@@ -2161,15 +2092,18 @@ exports.getPostsUtilisateur = async (req, res) => {
     catch (error) {
 
         console.error(
-            "❌ Erreur récupération posts utilisateur :",
+
+            "❌ Erreur récupération photos profil client :",
+
             error
+
         );
 
 
         res.status(500).json({
 
             message:
-                "Erreur récupération posts utilisateur",
+                "Erreur récupération des photos de profil",
 
             error:
                 error.message

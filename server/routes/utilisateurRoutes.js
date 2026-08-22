@@ -14,8 +14,11 @@ const upload =
 // =====================================================
 
 router.get(
+
     "/",
+
     utilisateurController.getUtilisateurs
+
 );
 
 
@@ -24,8 +27,11 @@ router.get(
 // =====================================================
 
 router.post(
+
     "/",
+
     utilisateurController.register
+
 );
 
 
@@ -34,8 +40,11 @@ router.post(
 // =====================================================
 
 router.post(
+
     "/register",
+
     utilisateurController.register
+
 );
 
 
@@ -44,64 +53,72 @@ router.post(
 // =====================================================
 
 router.post(
+
     "/login",
+
     utilisateurController.login
+
 );
 
 
 // =====================================================
-// CONNEXION GOOGLE
+// CONNEXION AVEC GOOGLE
 // =====================================================
 
 router.post(
+
     "/google",
+
     utilisateurController.googleLogin
+
 );
 
 
 // =====================================================
-// CONNEXION FACEBOOK
+// CONNEXION AVEC FACEBOOK
 // =====================================================
 
 router.post(
+
     "/facebook",
+
     utilisateurController.facebookLogin
+
 );
 
 
 // =====================================================
 // =====================================================
-// HISTORIQUE DES PHOTOS DE PROFIL
-// IMPORTANT : AVANT /:id
+// PHOTOS DE PROFIL CLIENT
 // =====================================================
+// IMPORTANT : ces routes doivent être placées
+// AVANT router.get("/:id")
+// =====================================================
+
+
+// =====================================================
+// RÉCUPÉRER LES ANCIENNES PHOTOS DE PROFIL
 // =====================================================
 
 router.get(
-    "/photo-history/:id",
-    utilisateurController.getPhotosProfil
+
+    "/:id/photos-profil",
+
+    utilisateurController.getPhotosProfilClient
+
 );
 
 
 // =====================================================
-// MES POSTS
-// Photos publiées par le client
-// Les photos viennent de avis_photo
+// AJOUTER UNE PHOTO DANS L'HISTORIQUE
 // =====================================================
 
-router.get(
-    "/posts/:id",
-    utilisateurController.getPostsUtilisateur
-);
+router.post(
 
+    "/:id/photos-profil",
 
-// =====================================================
-// PHOTO UTILISATEUR
-// =====================================================
+    utilisateurController.ajouterPhotoProfilClient
 
-router.put(
-    "/photo/:id",
-    upload.single("photo"),
-    utilisateurController.updatePhoto
 );
 
 
@@ -110,8 +127,11 @@ router.put(
 // =====================================================
 
 router.put(
+
     "/:id",
+
     utilisateurController.updateUtilisateur
+
 );
 
 
@@ -120,19 +140,41 @@ router.put(
 // =====================================================
 
 router.delete(
+
     "/:id",
+
     utilisateurController.deleteUtilisateur
+
+);
+
+
+// =====================================================
+// PHOTO UTILISATEUR
+// =====================================================
+// ⚠️ NE PAS MODIFIER CETTE ROUTE
+// =====================================================
+
+router.put(
+
+    "/photo/:id",
+
+    upload.single("photo"),
+
+    utilisateurController.updatePhoto
+
 );
 
 
 // =====================================================
 // AFFICHER UN UTILISATEUR PAR ID
-// IMPORTANT : CETTE ROUTE DOIT RESTER À LA FIN
 // =====================================================
 
 router.get(
+
     "/:id",
+
     utilisateurController.getUtilisateurById
+
 );
 
 

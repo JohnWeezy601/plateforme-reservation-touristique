@@ -13,7 +13,9 @@ import {
     FaCheck,
     FaImage,
     FaImages,
-    FaNewspaper
+    FaNewspaper,
+    FaChevronLeft,
+    FaChevronRight
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -27,10 +29,15 @@ function ProfilClient() {
 
 
     // =====================================================
-    // ÉTATS
+    // UTILISATEUR
     // =====================================================
 
     const [utilisateur, setUtilisateur] = useState(null);
+
+
+    // =====================================================
+    // FORMULAIRE
+    // =====================================================
 
     const [formData, setFormData] = useState({
         nom: "",
@@ -38,6 +45,11 @@ function ProfilClient() {
         email: "",
         telephone: ""
     });
+
+
+    // =====================================================
+    // PHOTO DE PROFIL
+    // =====================================================
 
     const [photo, setPhoto] = useState(null);
 
@@ -47,31 +59,50 @@ function ProfilClient() {
 
 
     // =====================================================
-    // NOUVEAUX ÉTATS
+    // MES PHOTOS DE PROFIL
     // =====================================================
 
-    // Anciennes photos de profil
     const [mesPhotos, setMesPhotos] = useState([]);
 
-    // Photos publiées dans les avis
-    const [mesPostes, setMesPostes] = useState([]);
-
     const [loadingPhotos, setLoadingPhotos] = useState(false);
+
+
+    // =====================================================
+    // MES POSTES / PHOTOS DES AVIS
+    // =====================================================
+
+    const [mesPostes, setMesPostes] = useState([]);
 
     const [loadingPostes, setLoadingPostes] = useState(false);
 
 
     // =====================================================
-    // MODAL PHOTO
+    // MODAL PHOTO SIMPLE
     // =====================================================
 
     const [photoModal, setPhotoModal] = useState(false);
 
     const [photoModalTitle, setPhotoModalTitle] =
-        useState("Photo de profil");
+        useState("Photo");
 
     const [photoModalUrl, setPhotoModalUrl] =
         useState(null);
+
+
+    // =====================================================
+    // MODAL GALERIE
+    // =====================================================
+
+    const [galleryModal, setGalleryModal] = useState(false);
+
+    const [galleryTitle, setGalleryTitle] =
+        useState("");
+
+    const [galleryPhotos, setGalleryPhotos] =
+        useState([]);
+
+    const [galleryIndex, setGalleryIndex] =
+        useState(0);
 
 
     // =====================================================
@@ -83,6 +114,11 @@ function ProfilClient() {
     const [saving, setSaving] = useState(false);
 
     const [savingPhoto, setSavingPhoto] = useState(false);
+
+
+    // =====================================================
+    // MESSAGES
+    // =====================================================
 
     const [message, setMessage] = useState("");
 
@@ -100,9 +136,9 @@ function ProfilClient() {
         }
 
 
-        // =====================================================
+        // =================================================
         // CLOUDINARY / URL EXTERNE / BLOB
-        // =====================================================
+        // =================================================
 
         if (
             photoValue.startsWith("http://") ||
@@ -113,14 +149,18 @@ function ProfilClient() {
         }
 
 
-        // =====================================================
-        // ANCIENNES PHOTOS LOCALES
-        // =====================================================
+        // =================================================
+        // API
+        // =================================================
 
         const apiUrl =
             import.meta.env.VITE_API_URL ||
             "http://localhost:8081";
 
+
+        // =================================================
+        // /uploads/...
+        // =================================================
 
         if (photoValue.startsWith("/uploads/")) {
 
@@ -129,12 +169,20 @@ function ProfilClient() {
         }
 
 
+        // =================================================
+        // /...
+        // =================================================
+
         if (photoValue.startsWith("/")) {
 
             return `${apiUrl}${photoValue}`;
 
         }
 
+
+        // =================================================
+        // ancien nom de fichier
+        // =================================================
 
         return `${apiUrl}/uploads/${photoValue}`;
 
@@ -232,7 +280,7 @@ function ProfilClient() {
 
 
             // =================================================
-            // RÉCUPÉRER MES PHOTOS
+            // CHARGER MES PHOTOS
             // =================================================
 
             chargerMesPhotos(
@@ -241,7 +289,7 @@ function ProfilClient() {
 
 
             // =================================================
-            // RÉCUPÉRER MES POSTES
+            // CHARGER MES POSTES
             // =================================================
 
             chargerMesPostes(
@@ -275,7 +323,7 @@ function ProfilClient() {
 
 
     // =====================================================
-    // RÉCUPÉRER MES ANCIENNES PHOTOS
+    // RÉCUPÉRER MES PHOTOS DE PROFIL
     // =====================================================
 
     const chargerMesPhotos = async (idUtilisateur) => {
@@ -311,6 +359,7 @@ function ProfilClient() {
                 "Erreur récupération Mes photos :",
                 err
             );
+
 
             setMesPhotos([]);
 
@@ -361,6 +410,7 @@ function ProfilClient() {
                 "Erreur récupération Mes postes :",
                 err
             );
+
 
             setMesPostes([]);
 
@@ -511,7 +561,12 @@ function ProfilClient() {
 
 
     // =====================================================
-    // ENREGISTRER PHOTO
+    // ENREGISTRER PHOTO DE PROFIL
+    // =====================================================
+
+    // IMPORTANT :
+    // On conserve exactement le système de mise à jour
+    // de la photo de profil.
     // =====================================================
 
     const enregistrerPhoto = async () => {
@@ -874,7 +929,7 @@ function ProfilClient() {
 
 
     // =====================================================
-    // VOIR PHOTO
+    // VOIR PHOTO SIMPLE
     // =====================================================
 
     const voirPhoto = (
@@ -909,7 +964,7 @@ function ProfilClient() {
 
 
     // =====================================================
-    // FERMER MODAL
+    // FERMER MODAL PHOTO SIMPLE
     // =====================================================
 
     const fermerPhotoModal = () => {
@@ -923,6 +978,194 @@ function ProfilClient() {
         );
 
     };
+
+
+    // =====================================================
+    // OUVRIR GALERIE
+    // =====================================================
+
+    const ouvrirGalerie = (
+        photos,
+        titre
+    ) => {
+
+        if (!photos || photos.length === 0) {
+
+            setError(
+                "Aucune photo disponible dans cette galerie."
+            );
+
+            return;
+
+        }
+
+
+        const photosAvecUrl =
+            photos
+                .map((item) => ({
+                    ...item,
+                    url: getPhotoUrl(item.photo)
+                }))
+                .filter((item) => item.url);
+
+
+        if (photosAvecUrl.length === 0) {
+
+            setError(
+                "Aucune photo disponible."
+            );
+
+            return;
+
+        }
+
+
+        setGalleryPhotos(
+            photosAvecUrl
+        );
+
+        setGalleryTitle(
+            titre
+        );
+
+        setGalleryIndex(
+            0
+        );
+
+        setGalleryModal(
+            true
+        );
+
+    };
+
+
+    // =====================================================
+    // FERMER GALERIE
+    // =====================================================
+
+    const fermerGalerie = () => {
+
+        setGalleryModal(
+            false
+        );
+
+        setGalleryPhotos([]);
+
+        setGalleryIndex(0);
+
+    };
+
+
+    // =====================================================
+    // PHOTO SUIVANTE
+    // =====================================================
+
+    const photoSuivante = () => {
+
+        if (!galleryPhotos.length) {
+            return;
+        }
+
+
+        setGalleryIndex((prev) => {
+
+            if (
+                prev >=
+                galleryPhotos.length - 1
+            ) {
+
+                return 0;
+
+            }
+
+            return prev + 1;
+
+        });
+
+    };
+
+
+    // =====================================================
+    // PHOTO PRÉCÉDENTE
+    // =====================================================
+
+    const photoPrecedente = () => {
+
+        if (!galleryPhotos.length) {
+            return;
+        }
+
+
+        setGalleryIndex((prev) => {
+
+            if (prev <= 0) {
+
+                return galleryPhotos.length - 1;
+
+            }
+
+            return prev - 1;
+
+        });
+
+    };
+
+
+    // =====================================================
+    // CLAVIER GALERIE
+    // =====================================================
+
+    useEffect(() => {
+
+        const handleKeyboard = (e) => {
+
+            if (!galleryModal) {
+                return;
+            }
+
+
+            if (e.key === "ArrowRight") {
+
+                photoSuivante();
+
+            }
+
+
+            if (e.key === "ArrowLeft") {
+
+                photoPrecedente();
+
+            }
+
+
+            if (e.key === "Escape") {
+
+                fermerGalerie();
+
+            }
+
+        };
+
+
+        window.addEventListener(
+            "keydown",
+            handleKeyboard
+        );
+
+
+        return () => {
+
+            window.removeEventListener(
+                "keydown",
+                handleKeyboard
+            );
+
+        };
+
+    }, [
+        galleryModal,
+        galleryPhotos.length
+    ]);
 
 
     // =====================================================
@@ -969,6 +1212,14 @@ function ProfilClient() {
     if (!utilisateur) {
         return null;
     }
+
+
+    // =====================================================
+    // PHOTO COURANTE GALERIE
+    // =====================================================
+
+    const photoGalerieActuelle =
+        galleryPhotos[galleryIndex];
 
 
     // =====================================================
@@ -1175,7 +1426,7 @@ function ProfilClient() {
 
 
                     {/* =================================================
-                        COMPARAISON
+                        COMPARAISON NOUVELLE PHOTO
                     ================================================= */}
 
                     {photoPreview && (
@@ -1351,9 +1602,18 @@ function ProfilClient() {
 
                 {/* =================================================
                     MES PHOTOS
+                    PAS DE PHOTOS DIRECTEMENT AFFICHÉES
                 ================================================= */}
 
-                <section className="profil-client-gallery-card">
+                <section
+                    className="profil-client-gallery-card profil-gallery-clickable"
+                    onClick={() =>
+                        ouvrirGalerie(
+                            mesPhotos,
+                            "Mes photos"
+                        )
+                    }
+                >
 
                     <div className="profil-client-section-title">
 
@@ -1362,12 +1622,16 @@ function ProfilClient() {
                         </span>
 
                         <h2>
+
                             <FaImages />
+
                             Mes photos
+
                         </h2>
 
                         <p>
-                            Retrouvez ici vos anciennes photos de profil.
+                            Retrouvez ici vos anciennes photos
+                            de profil.
                         </p>
 
                     </div>
@@ -1376,7 +1640,9 @@ function ProfilClient() {
                     {loadingPhotos ? (
 
                         <div className="profil-gallery-loading">
+
                             Chargement de vos photos...
+
                         </div>
 
                     ) : mesPhotos.length === 0 ? (
@@ -1386,56 +1652,45 @@ function ProfilClient() {
                             <FaImages />
 
                             <span>
-                                Vous n'avez pas encore d'ancienne photo de profil.
+                                Vous n'avez pas encore
+                                d'ancienne photo de profil.
                             </span>
 
                         </div>
 
                     ) : (
 
-                        <div className="profil-gallery-grid">
+                        <div className="profil-gallery-summary">
 
-                            {mesPhotos.map((item) => {
+                            <div className="profil-gallery-summary-icon">
 
-                                const url =
-                                    getPhotoUrl(
-                                        item.photo
-                                    );
+                                <FaImages />
+
+                            </div>
 
 
-                                return (
+                            <div className="profil-gallery-summary-content">
 
-                                    <div
-                                        className="profil-gallery-item"
-                                        key={
-                                            item.id_photo
-                                        }
-                                        onClick={() =>
-                                            voirPhoto(
-                                                url,
-                                                "Mes photos"
-                                            )
-                                        }
-                                    >
+                                <strong>
+                                    {mesPhotos.length}{" "}
+                                    {mesPhotos.length > 1
+                                        ? "photos"
+                                        : "photo"
+                                    }
+                                </strong>
 
-                                        <img
-                                            src={
-                                                url
-                                            }
-                                            alt="Ancienne photo de profil"
-                                        />
+                                <span>
+                                    Cliquez pour ouvrir votre galerie
+                                </span>
 
-                                        <div className="profil-gallery-overlay">
+                            </div>
 
-                                            <FaEye />
 
-                                        </div>
+                            <div className="profil-gallery-summary-arrow">
 
-                                    </div>
+                                <FaEye />
 
-                                );
-
-                            })}
+                            </div>
 
                         </div>
 
@@ -1446,9 +1701,18 @@ function ProfilClient() {
 
                 {/* =================================================
                     MES POSTES
+                    PAS DE PHOTOS DIRECTEMENT AFFICHÉES
                 ================================================= */}
 
-                <section className="profil-client-gallery-card">
+                <section
+                    className="profil-client-gallery-card profil-gallery-clickable"
+                    onClick={() =>
+                        ouvrirGalerie(
+                            mesPostes,
+                            "Mes postes"
+                        )
+                    }
+                >
 
                     <div className="profil-client-section-title">
 
@@ -1457,13 +1721,16 @@ function ProfilClient() {
                         </span>
 
                         <h2>
+
                             <FaNewspaper />
+
                             Mes postes
+
                         </h2>
 
                         <p>
-                            Retrouvez ici les photos que vous avez publiées
-                            dans vos avis.
+                            Retrouvez ici les photos que vous avez
+                            publiées dans vos avis.
                         </p>
 
                     </div>
@@ -1472,7 +1739,9 @@ function ProfilClient() {
                     {loadingPostes ? (
 
                         <div className="profil-gallery-loading">
+
                             Chargement de vos publications...
+
                         </div>
 
                     ) : mesPostes.length === 0 ? (
@@ -1482,56 +1751,45 @@ function ProfilClient() {
                             <FaNewspaper />
 
                             <span>
-                                Vous n'avez pas encore publié de photo.
+                                Vous n'avez pas encore
+                                publié de photo.
                             </span>
 
                         </div>
 
                     ) : (
 
-                        <div className="profil-gallery-grid">
+                        <div className="profil-gallery-summary">
 
-                            {mesPostes.map((item) => {
+                            <div className="profil-gallery-summary-icon">
 
-                                const url =
-                                    getPhotoUrl(
-                                        item.photo
-                                    );
+                                <FaNewspaper />
+
+                            </div>
 
 
-                                return (
+                            <div className="profil-gallery-summary-content">
 
-                                    <div
-                                        className="profil-gallery-item"
-                                        key={
-                                            item.id_photo
-                                        }
-                                        onClick={() =>
-                                            voirPhoto(
-                                                url,
-                                                "Mes postes"
-                                            )
-                                        }
-                                    >
+                                <strong>
+                                    {mesPostes.length}{" "}
+                                    {mesPostes.length > 1
+                                        ? "photos publiées"
+                                        : "photo publiée"
+                                    }
+                                </strong>
 
-                                        <img
-                                            src={
-                                                url
-                                            }
-                                            alt="Photo publiée dans un avis"
-                                        />
+                                <span>
+                                    Cliquez pour ouvrir vos publications
+                                </span>
 
-                                        <div className="profil-gallery-overlay">
+                            </div>
 
-                                            <FaEye />
 
-                                        </div>
+                            <div className="profil-gallery-summary-arrow">
 
-                                    </div>
+                                <FaEye />
 
-                                );
-
-                            })}
+                            </div>
 
                         </div>
 
@@ -1744,9 +2002,9 @@ function ProfilClient() {
             </div>
 
 
-            {/* =================================================
-                MODAL PHOTO GRAND FORMAT
-            ================================================= */}
+            {/* =====================================================
+                MODAL PHOTO SIMPLE
+            ===================================================== */}
 
             {photoModal && (
 
@@ -1821,6 +2079,222 @@ function ProfilClient() {
 
                     </div>
 
+
+                </div>
+
+            )}
+
+
+            {/* =====================================================
+                MODAL GALERIE
+            ===================================================== */}
+
+            {galleryModal && (
+
+                <div
+                    className="profil-gallery-modal-overlay"
+                    onClick={
+                        fermerGalerie
+                    }
+                >
+
+                    <div
+                        className="profil-gallery-modal"
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
+                    >
+
+
+                        {/* =================================================
+                            HEADER
+                        ================================================= */}
+
+                        <div className="profil-gallery-modal-header">
+
+                            <div>
+
+                                <span>
+                                    GALERIE
+                                </span>
+
+                                <h2>
+                                    {galleryTitle}
+                                </h2>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                className="profil-gallery-modal-close"
+                                onClick={
+                                    fermerGalerie
+                                }
+                            >
+
+                                <FaTimes />
+
+                            </button>
+
+                        </div>
+
+
+                        {/* =================================================
+                            PHOTO
+                        ================================================= */}
+
+                        <div className="profil-gallery-modal-content">
+
+
+                            {photoGalerieActuelle?.url ? (
+
+                                <img
+                                    src={
+                                        photoGalerieActuelle.url
+                                    }
+                                    alt={
+                                        galleryTitle
+                                    }
+                                />
+
+                            ) : (
+
+                                <div className="photo-viewer-empty">
+
+                                    <FaImage />
+
+                                    <span>
+                                        Aucune photo disponible
+                                    </span>
+
+                                </div>
+
+                            )}
+
+
+                            {/* =================================================
+                                BOUTON PRECEDENT
+                            ================================================= */}
+
+                            {galleryPhotos.length > 1 && (
+
+                                <button
+                                    type="button"
+                                    className="profil-gallery-nav profil-gallery-nav-left"
+                                    onClick={
+                                        photoPrecedente
+                                    }
+                                    aria-label="Photo précédente"
+                                >
+
+                                    <FaChevronLeft />
+
+                                </button>
+
+                            )}
+
+
+                            {/* =================================================
+                                BOUTON SUIVANT
+                            ================================================= */}
+
+                            {galleryPhotos.length > 1 && (
+
+                                <button
+                                    type="button"
+                                    className="profil-gallery-nav profil-gallery-nav-right"
+                                    onClick={
+                                        photoSuivante
+                                    }
+                                    aria-label="Photo suivante"
+                                >
+
+                                    <FaChevronRight />
+
+                                </button>
+
+                            )}
+
+
+                        </div>
+
+
+                        {/* =================================================
+                            FOOTER
+                        ================================================= */}
+
+                        <div className="profil-gallery-modal-footer">
+
+
+                            <div className="profil-gallery-counter">
+
+                                {galleryPhotos.length > 0
+                                    ? galleryIndex + 1
+                                    : 0
+                                }
+
+                                {" / "}
+
+                                {galleryPhotos.length}
+
+                            </div>
+
+
+                            <div className="profil-gallery-modal-info">
+
+                                <span>
+                                    Utilisez les flèches pour parcourir
+                                    les photos
+                                </span>
+
+                            </div>
+
+
+                            <div className="profil-gallery-modal-actions">
+
+                                {galleryPhotos.length > 1 && (
+
+                                    <>
+
+                                        <button
+                                            type="button"
+                                            onClick={
+                                                photoPrecedente
+                                            }
+                                        >
+
+                                            <FaChevronLeft />
+
+                                            Précédente
+
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            onClick={
+                                                photoSuivante
+                                            }
+                                        >
+
+                                            Suivante
+
+                                            <FaChevronRight />
+
+                                        </button>
+
+                                    </>
+
+                                )}
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
 
                 </div>
 
