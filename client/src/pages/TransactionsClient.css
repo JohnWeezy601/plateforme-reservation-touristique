@@ -1,0 +1,326 @@
+/* =========================================================
+   TRANSACTIONS CLIENT
+========================================================= */
+
+.transactions-client-page {
+    min-height: 100vh;
+    background: #f5f7fb;
+    color: #1e293b;
+    padding: 35px 45px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CONTENEUR
+========================================================= */
+
+.transactions-client-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.transactions-client-header {
+    margin-bottom: 25px;
+}
+
+.transactions-client-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 1px;
+}
+
+.transactions-client-header h1 {
+    margin: 6px 0 5px;
+    font-size: 30px;
+    color: #0f172a;
+}
+
+.transactions-client-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   STATISTIQUES
+========================================================= */
+
+.transactions-client-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.transaction-stat-card {
+    background: white;
+    border: 1px solid #e8edf4;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, .04);
+}
+
+.transaction-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.transaction-stat-card strong {
+    display: block;
+    font-size: 23px;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.transaction-stat-card span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+
+/* =========================================================
+   CARTE PRINCIPALE
+========================================================= */
+
+.transactions-client-card {
+    background: white;
+    border: 1px solid #e8edf4;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, .04);
+}
+
+
+/* =========================================================
+   TITRE
+========================================================= */
+
+.transactions-client-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.transactions-client-title h2 {
+    margin: 0;
+    font-size: 19px;
+    color: #0f172a;
+}
+
+.transactions-client-title span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.transactions-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.transactions-client-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.transactions-client-table th {
+    padding: 13px 12px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.transactions-client-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #edf0f4;
+    font-size: 13px;
+    color: #334155;
+}
+
+.transactions-client-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.transactions-client-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   ID TRANSACTION
+========================================================= */
+
+.transaction-id {
+    font-weight: 700;
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   MONTANT
+========================================================= */
+
+.transaction-amount {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+
+/* =========================================================
+   STATUT
+========================================================= */
+
+.transaction-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.transaction-status.success,
+.transaction-status.paye,
+.transaction-status.paid,
+.transaction-status.effectue {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.transaction-status.pending,
+.transaction-status.en-attente {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.transaction-status.failed,
+.transaction-status.echec,
+.transaction-status.annule {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   ACTION
+========================================================= */
+
+.transaction-action {
+    border: none;
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 7px 11px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+.transaction-action:hover {
+    background: #dbeafe;
+}
+
+
+/* =========================================================
+   AUCUNE TRANSACTION
+========================================================= */
+
+.transactions-empty {
+    text-align: center;
+    padding: 55px 20px;
+    color: #64748b;
+}
+
+.transactions-empty svg {
+    font-size: 38px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+}
+
+.transactions-empty h3 {
+    margin: 0 0 6px;
+    color: #334155;
+    font-size: 16px;
+}
+
+.transactions-empty p {
+    margin: 0;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .transactions-client-page {
+        padding: 30px 25px;
+    }
+
+    .transactions-client-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .transactions-client-page {
+        padding: 25px 15px;
+    }
+
+    .transactions-client-header h1 {
+        font-size: 24px;
+    }
+
+    .transactions-client-card {
+        padding: 18px;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .transactions-client-page {
+        padding: 20px 12px;
+    }
+
+    .transaction-stat-card {
+        padding: 16px;
+    }
+
+    .transactions-client-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+}

@@ -17,11 +17,11 @@ import {
     FaUser,
     FaSignOutAlt,
     FaBell,
-    FaCamera,
-    FaEye,
     FaRobot,
-    FaHistory,
-    FaBars
+    FaBars,
+    FaCog,
+    FaCreditCard,
+    FaCalendarAlt
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -50,23 +50,17 @@ function NavbarPublic() {
     const [utilisateur, setUtilisateur] =
         useState(null);
 
-    const [modalPhoto, setModalPhoto] =
-        useState(false);
-
-    const [fichier, setFichier] =
-        useState(null);
-
     const [profil, setProfil] =
         useState(null);
 
 
     // =====================================================
-    // CHARGER PROFIL
+    // CHARGER LE PROFIL
     // =====================================================
 
     useEffect(() => {
 
-        if (!utilisateur) {
+        if (!utilisateur?.id_utilisateur) {
 
             setProfil(null);
 
@@ -101,11 +95,10 @@ function NavbarPublic() {
         chargerProfil();
 
 
-        const interval =
-            setInterval(
-                chargerProfil,
-                5000
-            );
+        const interval = setInterval(
+            chargerProfil,
+            5000
+        );
 
 
         return () => {
@@ -118,7 +111,7 @@ function NavbarPublic() {
 
 
     // =====================================================
-    // RÉCUPÉRER UTILISATEUR
+    // RÉCUPÉRER L'UTILISATEUR
     // =====================================================
 
     useEffect(() => {
@@ -128,9 +121,7 @@ function NavbarPublic() {
             try {
 
                 const stockage =
-                    localStorage.getItem(
-                        "utilisateur"
-                    );
+                    localStorage.getItem("utilisateur");
 
 
                 if (!stockage) {
@@ -204,150 +195,6 @@ function NavbarPublic() {
     }, []);
 
 
-   // =====================================================
-// VOIR PHOTO PROFIL
-// =====================================================
-
-const voirPhotoProfil = () => {
-
-    const photo =
-        profil?.photo ||
-        utilisateur?.photo;
-
-    if (!photo) {
-
-        alert(
-            "Aucune photo de profil disponible."
-        );
-
-        return;
-    }
-
-    const urlPhoto =
-        photo.startsWith("http")
-            ? photo
-            : `http://localhost:8081/uploads/${photo}`;
-
-    window.open(
-        urlPhoto,
-        "_blank"
-    );
-};
-
-    // =====================================================
-    // CHANGER PHOTO
-    // =====================================================
-
-    const changerPhoto = async () => {
-
-        if (!fichier) {
-
-            alert(
-                "Choisissez une image."
-            );
-
-            return;
-
-        }
-
-
-        if (!utilisateur?.id_utilisateur) {
-
-            alert(
-                "Utilisateur non identifié."
-            );
-
-            return;
-
-        }
-
-
-        const formData =
-            new FormData();
-
-
-        formData.append(
-            "photo",
-            fichier
-        );
-
-
-        try {
-
-            const res =
-                await api.put(
-
-                    `/utilisateurs/photo/${utilisateur.id_utilisateur}`,
-
-                    formData,
-
-                    {
-                        headers: {
-                            "Content-Type":
-                                "multipart/form-data"
-                        }
-                    }
-
-                );
-
-
-            const nouveauUtilisateur = {
-
-                ...utilisateur,
-
-                photo: res.data.photo
-
-            };
-
-
-            localStorage.setItem(
-                "utilisateur",
-                JSON.stringify(
-                    nouveauUtilisateur
-                )
-            );
-
-
-            setUtilisateur(
-                nouveauUtilisateur
-            );
-
-
-            setProfil(
-                prev => ({
-                    ...prev,
-                    photo: res.data.photo
-                })
-            );
-
-
-            setModalPhoto(false);
-
-            setFichier(null);
-
-
-            alert(
-                "Photo modifiée avec succès."
-            );
-
-        }
-        catch (error) {
-
-            console.log(
-                "Erreur changement photo :",
-                error
-            );
-
-
-            alert(
-                "Erreur lors du changement de photo."
-            );
-
-        }
-
-    };
-
-
     // =====================================================
     // NOTIFICATIONS
     // =====================================================
@@ -366,47 +213,44 @@ const voirPhotoProfil = () => {
         }
 
 
-        const chargerNotifications =
-            async () => {
+        const chargerNotifications = async () => {
 
-                try {
+            try {
 
-                    const res =
-                        await api.get(
-                            `/notifications/utilisateur/${utilisateur.id_utilisateur}`
-                        );
-
-
-                    const notifications =
-                        Array.isArray(res.data)
-                            ? res.data
-                            : [];
-
-
-                    const total =
-                        notifications.filter(
-                            notification =>
-                                Number(
-                                    notification.lu
-                                ) === 0
-                        ).length;
-
-
-                    setNombreNotifications(
-                        total
+                const res =
+                    await api.get(
+                        `/notifications/utilisateur/${utilisateur.id_utilisateur}`
                     );
 
-                }
-                catch (error) {
 
-                    console.log(
-                        "Erreur notifications :",
-                        error
-                    );
+                const notifications =
+                    Array.isArray(res.data)
+                        ? res.data
+                        : [];
 
-                }
 
-            };
+                const total =
+                    notifications.filter(
+                        notification =>
+                            Number(notification.lu) === 0
+                    ).length;
+
+
+                setNombreNotifications(
+                    total
+                );
+
+            }
+            catch (error) {
+
+                console.log(
+                    "Erreur notifications :",
+                    error
+                );
+
+            }
+
+        };
 
 
         chargerNotifications();
@@ -478,22 +322,24 @@ const voirPhotoProfil = () => {
 
 
     // =====================================================
-// PHOTO PROFIL
-// =====================================================
+    // PHOTO PROFIL
+    // =====================================================
 
-const photoUtilisateur =
-    profil?.photo ||
-    utilisateur?.photo ||
-    null;
+    const photoUtilisateur =
+        profil?.photo ||
+        utilisateur?.photo ||
+        null;
 
-const photoProfil =
-    photoUtilisateur
-        ? (
-            photoUtilisateur.startsWith("http")
-                ? photoUtilisateur
-                : `http://localhost:8081/uploads/${photoUtilisateur}`
-        )
-        : null;
+
+    const photoProfil =
+        photoUtilisateur
+            ? (
+                photoUtilisateur.startsWith("http")
+                    ? photoUtilisateur
+                    : `http://localhost:8081/uploads/${photoUtilisateur}`
+            )
+            : null;
+
 
     // =====================================================
     // CLIENT CONNECTÉ ?
@@ -531,7 +377,7 @@ const photoProfil =
 
 
             {/* =================================================
-                NAVIGATION CLIENT NON CONNECTÉ
+                NAVIGATION VISITEUR
             ================================================= */}
 
             {!clientConnecte && (
@@ -541,8 +387,13 @@ const photoProfil =
                     <li>
 
                         <NavLink to="/">
+
                             <FaHome />
-                            <span>Accueil</span>
+
+                            <span>
+                                Accueil
+                            </span>
+
                         </NavLink>
 
                     </li>
@@ -551,8 +402,13 @@ const photoProfil =
                     <li>
 
                         <NavLink to="/destinations-public">
+
                             <FaGlobe />
-                            <span>Destinations</span>
+
+                            <span>
+                                Destinations
+                            </span>
+
                         </NavLink>
 
                     </li>
@@ -561,8 +417,13 @@ const photoProfil =
                     <li>
 
                         <NavLink to="/offres-public">
+
                             <FaSuitcase />
-                            <span>Offres</span>
+
+                            <span>
+                                Offres
+                            </span>
+
                         </NavLink>
 
                     </li>
@@ -571,8 +432,13 @@ const photoProfil =
                     <li>
 
                         <NavLink to="/avis-public">
+
                             <FaStar />
-                            <span>Avis</span>
+
+                            <span>
+                                Avis
+                            </span>
+
                         </NavLink>
 
                     </li>
@@ -581,8 +447,13 @@ const photoProfil =
                     <li>
 
                         <NavLink to="/contact">
+
                             <FaEnvelope />
-                            <span>Contact</span>
+
+                            <span>
+                                Contact
+                            </span>
+
                         </NavLink>
 
                     </li>
@@ -602,7 +473,7 @@ const photoProfil =
 
 
                     {/* =================================================
-                        MENU
+                        MENU PRINCIPAL
                     ================================================= */}
 
                     <div className="menu-principal-container">
@@ -610,17 +481,19 @@ const photoProfil =
                         <button
                             type="button"
                             className="menu-principal-button"
-                            onClick={() =>
+                            onClick={() => {
+
                                 setMenuPrincipal(
-                                    !menuPrincipal
-                                )
-                            }
+                                    prev => !prev
+                                );
+
+                                setMenuProfil(false);
+
+                            }}
                             aria-label="Menu"
                         >
 
                             <FaBars />
-
-                            
 
                         </button>
 
@@ -672,18 +545,18 @@ const photoProfil =
                                 </NavLink>
 
 
-                               <NavLink 
-                              to="/contact"
-                               onClick={fermerMenus}
-                               >
+                                <NavLink
+                                    to="/contact"
+                                    onClick={fermerMenus}
+                                >
 
-                              <FaEnvelope />
+                                    <FaEnvelope />
 
-                            <span>
-                                Contact
-                           </span>
+                                    <span>
+                                        Contact
+                                    </span>
 
-                              </NavLink>
+                                </NavLink>
 
 
                                 <NavLink
@@ -707,39 +580,48 @@ const photoProfil =
 
 
                     {/* =================================================
-                                      AVIS
-                      ================================================= */}
+                        AVIS PUBLIC
+                    ================================================= */}
 
-                            <button
-                              type="button"
-                             className="navbar-icon-button avis-button"
-                               onClick={() =>
-                              navigate("/avis-public")
-                              }
-                             aria-label="Avis"
-                            >
+                    <button
+                        type="button"
+                        className="navbar-icon-button avis-button"
+                        onClick={() => {
 
-                           <FaStar />
+                            fermerMenus();
 
-                             </button>
+                            navigate("/avis-public");
+
+                        }}
+                        aria-label="Avis"
+                    >
+
+                        <FaStar />
+
+                    </button>
 
 
                     {/* =================================================
-                        NOTIFICATION
+                        NOTIFICATIONS
                     ================================================= */}
 
                     <button
                         type="button"
                         className="navbar-icon-button notification-button"
-                        onClick={() =>
+                        onClick={() => {
+
+                            fermerMenus();
+
                             navigate(
                                 "/mes-notifications"
-                            )
-                        }
+                            );
+
+                        }}
                         aria-label="Notifications"
                     >
 
                         <FaBell />
+
 
                         {nombreNotifications > 0 && (
 
@@ -755,26 +637,6 @@ const photoProfil =
 
 
                     {/* =================================================
-                        HISTORIQUE
-                    ================================================= */}
-
-                    <button
-                        type="button"
-                        className="navbar-icon-button history-button"
-                        onClick={() =>
-                            navigate(
-                                "/mes-reservations"
-                            )
-                        }
-                        aria-label="Historique"
-                    >
-
-                        <FaHistory />
-
-                    </button>
-
-
-                    {/* =================================================
                         PROFIL
                     ================================================= */}
 
@@ -784,12 +646,17 @@ const photoProfil =
                         <button
                             type="button"
                             className="profil-button"
-                            onClick={() =>
+                            onClick={() => {
+
                                 setMenuProfil(
-                                    !menuProfil
-                                )
-                            }
+                                    prev => !prev
+                                );
+
+                                setMenuPrincipal(false);
+
+                            }}
                             aria-label="Profil"
+                            aria-expanded={menuProfil}
                         >
 
                             {photoProfil ? (
@@ -809,56 +676,237 @@ const photoProfil =
                         </button>
 
 
+                        {/* =================================================
+                            MENU DÉROULANT PROFIL
+                        ================================================= */}
+
                         {menuProfil && (
 
                             <div className="profil-menu">
 
 
-                                {/* CHANGER PHOTO */}
+                                {/* =================================================
+                                    INFORMATIONS UTILISATEUR
+                                ================================================= */}
+
+                                <div className="profil-menu-header">
+
+                                    <div className="profil-menu-photo">
+
+                                        {photoProfil ? (
+
+                                            <img
+                                                src={photoProfil}
+                                                alt="Profil"
+                                            />
+
+                                        ) : (
+
+                                            <FaUser />
+
+                                        )}
+
+                                    </div>
+
+
+                                    <div className="profil-menu-user">
+
+                                        <strong>
+
+                                            {utilisateur?.prenom || ""}
+                                            {" "}
+                                            {utilisateur?.nom || ""}
+
+                                        </strong>
+
+
+                                        <span>
+
+                                            {utilisateur?.email || ""}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div className="profil-menu-separator" />
+
+
+                                {/* =================================================
+                                    MON COMPTE
+                                ================================================= */}
 
                                 <button
                                     type="button"
                                     onClick={() => {
 
-                                        setMenuProfil(false);
+                                        fermerMenus();
 
-                                        setModalPhoto(true);
+                                        navigate(
+                                            "/espace-client"
+                                        );
 
                                     }}
                                 >
 
-                                    <FaCamera />
+                                    <FaUser />
 
                                     <span>
-                                        Changer photo
+                                        Mon compte
                                     </span>
 
                                 </button>
 
 
-                                {/* VOIR PHOTO */}
+                                {/* =================================================
+                                    MES RÉSERVATIONS
+                                ================================================= */}
 
                                 <button
                                     type="button"
                                     onClick={() => {
 
-                                        setMenuProfil(false);
+                                        fermerMenus();
 
-                                        voirPhotoProfil();
+                                        navigate(
+                                            "/mes-reservations"
+                                        );
 
                                     }}
                                 >
 
-                                    <FaEye />
+                                    <FaCalendarAlt />
 
                                     <span>
-                                        Voir ma photo
+                                        Mes réservations
                                     </span>
 
                                 </button>
 
 
-                                {/* DÉCONNEXION */}
+                                {/* =================================================
+                                    MES TRANSACTIONS
+                                ================================================= */}
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+
+                                        fermerMenus();
+
+                                        navigate(
+                                            "/transactions"
+                                        );
+
+                                    }}
+                                >
+
+                                    <FaCreditCard />
+
+                                    <span>
+                                        Mes transactions
+                                    </span>
+
+                                </button>
+
+
+                                {/* =================================================
+                                    MES AVIS
+                                ================================================= */}
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+
+                                        fermerMenus();
+
+                                        navigate(
+                                            "/mes-avis"
+                                        );
+
+                                    }}
+                                >
+
+                                    <FaStar />
+
+                                    <span>
+                                        Mes avis
+                                    </span>
+
+                                </button>
+
+
+                                {/* =================================================
+                                    NOTIFICATIONS
+                                ================================================= */}
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+
+                                        fermerMenus();
+
+                                        navigate(
+                                            "/mes-notifications"
+                                        );
+
+                                    }}
+                                >
+
+                                    <FaBell />
+
+                                    <span>
+                                        Notifications
+                                    </span>
+
+
+                                    {nombreNotifications > 0 && (
+
+                                        <span className="profil-notification-badge">
+
+                                            {nombreNotifications}
+
+                                        </span>
+
+                                    )}
+
+                                </button>
+
+
+                                <div className="profil-menu-separator" />
+
+
+                                {/* =================================================
+                                    PARAMÈTRES DU COMPTE
+                                ================================================= */}
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+
+                                        fermerMenus();
+
+                                        navigate(
+                                            "/profil"
+                                        );
+
+                                    }}
+                                >
+
+                                    <FaCog />
+
+                                    <span>
+                                        Paramètres du compte
+                                    </span>
+
+                                </button>
+
+
+                                {/* =================================================
+                                    DÉCONNEXION
+                                ================================================= */}
 
                                 <button
                                     type="button"
@@ -886,7 +934,7 @@ const photoProfil =
 
 
             {/* =================================================
-                CONNEXION
+                BOUTON CONNEXION
             ================================================= */}
 
             {!clientConnecte && (
@@ -899,76 +947,6 @@ const photoProfil =
                     Connexion
 
                 </NavLink>
-
-            )}
-
-
-            {/* =================================================
-                MODALE PHOTO
-            ================================================= */}
-
-            {modalPhoto && (
-
-                <div
-                    className="modal-photo"
-                    onClick={() =>
-                        setModalPhoto(false)
-                    }
-                >
-
-                    <div
-                        className="modal-photo-content"
-                        onClick={e =>
-                            e.stopPropagation()
-                        }
-                    >
-
-                        <h3>
-                            Changer photo de profil
-                        </h3>
-
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={e =>
-                                setFichier(
-                                    e.target.files[0]
-                                )
-                            }
-                        />
-
-
-                        <div className="modal-actions">
-
-                            <button
-                                type="button"
-                                className="btn-save-photo"
-                                onClick={changerPhoto}
-                            >
-                                Enregistrer
-                            </button>
-
-
-                            <button
-                                type="button"
-                                className="btn-cancel-photo"
-                                onClick={() => {
-
-                                    setModalPhoto(false);
-
-                                    setFichier(null);
-
-                                }}
-                            >
-                                Annuler
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
 
             )}
 

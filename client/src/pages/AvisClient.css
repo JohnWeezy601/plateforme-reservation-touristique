@@ -1,0 +1,486 @@
+/* =========================================================
+   AVIS CLIENT
+========================================================= */
+
+.avis-client-page {
+    min-height: 100vh;
+    background: #f5f7fb;
+    color: #1e293b;
+    padding: 35px 45px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CONTENEUR
+========================================================= */
+
+.avis-client-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.avis-client-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    gap: 20px;
+}
+
+.avis-client-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 1px;
+}
+
+.avis-client-header h1 {
+    margin: 6px 0 5px;
+    font-size: 30px;
+    color: #0f172a;
+}
+
+.avis-client-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   BOUTON NOUVEL AVIS
+========================================================= */
+
+.avis-client-add-button {
+    flex-shrink: 0;
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.avis-client-add-button:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================================================
+   STATISTIQUES
+========================================================= */
+
+.avis-client-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.avis-stat-card {
+    background: white;
+    border: 1px solid #e8edf4;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, .04);
+}
+
+.avis-stat-card svg {
+    color: #2563eb;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.avis-stat-card strong {
+    display: block;
+    font-size: 23px;
+    color: #0f172a;
+}
+
+.avis-stat-card span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+
+/* =========================================================
+   LISTE
+========================================================= */
+
+.avis-client-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+/* =========================================================
+   CARTE AVIS
+========================================================= */
+
+.avis-client-card {
+    background: white;
+    border: 1px solid #e8edf4;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, .04);
+    transition: .2s ease;
+}
+
+.avis-client-card:hover {
+    border-color: #cbdafc;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, .06);
+}
+
+
+/* =========================================================
+   HEADER AVIS
+========================================================= */
+
+.avis-client-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.avis-client-destination {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.avis-client-destination strong {
+    font-size: 15px;
+    color: #0f172a;
+}
+
+.avis-client-destination span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+
+/* =========================================================
+   ÉTOILES
+========================================================= */
+
+.avis-client-stars {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: #f59e0b;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   TEXTE
+========================================================= */
+
+.avis-client-content {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   PHOTO AVIS
+========================================================= */
+
+.avis-client-photos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.avis-client-photo {
+    width: 100%;
+    height: 120px;
+    border-radius: 9px;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.avis-client-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: .2s ease;
+}
+
+.avis-client-photo:hover img {
+    transform: scale(1.03);
+}
+
+
+/* =========================================================
+   FOOTER AVIS
+========================================================= */
+
+.avis-client-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 13px;
+    border-top: 1px solid #edf0f4;
+}
+
+.avis-client-date {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.avis-client-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.avis-client-action {
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 7px 10px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.avis-client-action:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.avis-client-action.edit {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.avis-client-action.edit:hover {
+    background: #dbeafe;
+}
+
+.avis-client-action.delete {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.avis-client-action.delete:hover {
+    background: #fee2e2;
+}
+
+
+/* =========================================================
+   AUCUN AVIS
+========================================================= */
+
+.avis-client-empty {
+    background: white;
+    border: 1px solid #e8edf4;
+    border-radius: 15px;
+    padding: 60px 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, .04);
+}
+
+.avis-client-empty svg {
+    font-size: 40px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+}
+
+.avis-client-empty h3 {
+    margin: 0 0 7px;
+    font-size: 17px;
+    color: #334155;
+}
+
+.avis-client-empty p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   FORMULAIRE AVIS
+========================================================= */
+
+.avis-client-form {
+    background: white;
+    border: 1px solid #e8edf4;
+    border-radius: 15px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.avis-client-form h2 {
+    margin: 0 0 18px;
+    font-size: 18px;
+    color: #0f172a;
+}
+
+.avis-client-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 15px;
+}
+
+.avis-client-form-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.avis-client-form-group input,
+.avis-client-form-group select,
+.avis-client-form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
+    background: white;
+    color: #1e293b;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+}
+
+.avis-client-form-group input:focus,
+.avis-client-form-group select:focus,
+.avis-client-form-group textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+}
+
+.avis-client-form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+
+/* =========================================================
+   RESPONSIVE TABLETTE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .avis-client-page {
+        padding: 30px 25px;
+    }
+
+    .avis-client-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .avis-client-photos {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .avis-client-page {
+        padding: 25px 15px;
+    }
+
+    .avis-client-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .avis-client-header h1 {
+        font-size: 24px;
+    }
+
+    .avis-client-add-button {
+        width: 100%;
+    }
+
+    .avis-client-card {
+        padding: 16px;
+    }
+
+    .avis-client-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .avis-client-photos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .avis-client-photo {
+        height: 110px;
+    }
+}
+
+
+/* =========================================================
+   PETIT MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .avis-client-page {
+        padding: 20px 12px;
+    }
+
+    .avis-client-card {
+        border-radius: 12px;
+        padding: 14px;
+    }
+
+    .avis-client-form {
+        padding: 16px;
+    }
+
+    .avis-client-card-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .avis-client-actions {
+        width: 100%;
+    }
+
+    .avis-client-action {
+        flex: 1;
+    }
+
+    .avis-client-photo {
+        height: 100px;
+    }
+}

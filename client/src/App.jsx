@@ -39,6 +39,12 @@ import NotificationsClient from "./pages/NotificationsClient";
 import Recu from "./pages/Recu.jsx";
 import RecommandationsClient from "./pages/RecommandationsClient";
 
+
+import EspaceClient from "./pages/EspaceClient";
+import ProfilClient from "./pages/ProfilClient";
+import TransactionsClient from "./pages/TransactionsClient";
+import AvisClient from "./pages/AvisClient";
+
 function App() {
 
 
@@ -588,6 +594,58 @@ path="/mes-reservations"
     }
 />
 
+
+
+
+<Route
+    path="/espace-client"
+    element={<EspaceClient />}
+/>
+
+<Route
+    path="/espace-client/profil"
+    element={
+        <PublicLayout>
+            <ProfilClient />
+        </PublicLayout>
+    }
+/>
+
+<Route
+    path="/espace-client/reservations"
+    element={
+        <PublicLayout>
+            <MesReservations />
+        </PublicLayout>
+    }
+/>
+
+<Route
+    path="/espace-client/transactions"
+    element={
+        <PublicLayout>
+            <TransactionsClient />
+        </PublicLayout>
+    }
+/>
+
+<Route
+    path="/espace-client/avis"
+    element={
+        <PublicLayout>
+            <AvisClient />
+        </PublicLayout>
+    }
+/>
+
+<Route
+    path="/espace-client/notifications"
+    element={
+        <PublicLayout>
+            <NotificationsClient />
+        </PublicLayout>
+    }
+/>
 
 
 <Route

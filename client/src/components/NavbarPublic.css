@@ -17,8 +17,7 @@
 
     box-sizing: border-box;
 
-    box-shadow:
-        0 5px 20px rgba(0, 0, 0, .15);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .15);
 
     position: relative;
     z-index: 1000;
@@ -117,8 +116,7 @@
 
     border-radius: 12px;
 
-    border: 1px solid
-        rgba(255,255,255,.25);
+    border: 1px solid rgba(255,255,255,.25);
 
     text-decoration: none;
 
@@ -165,8 +163,6 @@
     align-items: center;
     justify-content: center;
 
-    gap: 8px;
-
     background: transparent;
 
     border: none;
@@ -181,8 +177,6 @@
 
     padding: 8px 4px;
 
-    white-space: nowrap;
-
     transition: .2s ease;
 }
 
@@ -196,7 +190,7 @@
 
 
 /* =========================================================
-   MENU DÉROULANT PRINCIPAL
+   MENU PRINCIPAL DÉROULANT
 ========================================================= */
 
 .menu-principal {
@@ -216,8 +210,7 @@
 
     z-index: 3000;
 
-    animation:
-        menuPrincipalDown .2s ease;
+    animation: menuPrincipalDown .2s ease;
 }
 
 .menu-principal a {
@@ -248,8 +241,7 @@
 
     font-weight: 600;
 
-    box-shadow:
-        0 4px 12px rgba(0,0,0,.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
 
     transition: .2s ease;
 }
@@ -286,11 +278,10 @@
 
 
 /* =========================================================
-   ANIMATION MENU
+   ANIMATION MENU PRINCIPAL
 ========================================================= */
 
 @keyframes menuPrincipalDown {
-
     from {
         opacity: 0;
 
@@ -306,7 +297,6 @@
             translateX(-50%)
             translateY(0);
     }
-
 }
 
 
@@ -315,7 +305,6 @@
 ========================================================= */
 
 .navbar-icon-button {
-
     position: relative;
 
     width: 38px;
@@ -342,19 +331,10 @@
     flex-shrink: 0;
 }
 
-.notification-button {
-    margin-left: 8px;
-}
-
 .navbar-icon-button:hover {
     color: #D6E4F0;
 
-    background:
-        rgba(255,255,255,.08);
-}
-
-.history-button {
-    margin-left: 0;
+    background: rgba(255,255,255,.08);
 }
 
 
@@ -363,7 +343,6 @@
 ========================================================= */
 
 .notification-badge {
-
     position: absolute;
 
     top: -2px;
@@ -399,7 +378,6 @@
 ========================================================= */
 
 .profil-container {
-
     position: relative;
 
     display: flex;
@@ -407,7 +385,6 @@
 }
 
 .profil-button {
-
     width: 40px;
     height: 40px;
 
@@ -431,13 +408,10 @@
 }
 
 .profil-button:hover {
-
-    background:
-        rgba(255,255,255,.08);
+    background: rgba(255,255,255,.08);
 }
 
 .profil-photo {
-
     width: 40px;
     height: 40px;
 
@@ -454,74 +428,207 @@
 ========================================================= */
 
 .profil-menu {
-
     position: absolute;
 
-    top: 52px;
+    top: calc(100% + 10px);
 
     right: 0;
 
-    width: 210px;
+    width: 280px;
 
-    padding: 5px;
+    background: #fff;
 
-    background: transparent;
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+
+    padding: 8px;
 
     z-index: 3000;
+
+    animation: profilMenuDown .2s ease;
 }
 
-.profil-menu button {
 
+/* =========================================================
+   ANIMATION MENU PROFIL
+========================================================= */
+
+@keyframes profilMenuDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   INFORMATIONS UTILISATEUR
+========================================================= */
+
+.profil-menu-header {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px;
+}
+
+.profil-menu-photo {
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    color: #64748b;
+
+    flex-shrink: 0;
+}
+
+.profil-menu-photo img {
     width: 100%;
+    height: 100%;
 
-    box-sizing: border-box;
+    object-fit: cover;
+}
+
+.profil-menu-user {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.profil-menu-user strong {
+    color: #1e293b;
+
+    font-size: 14px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.profil-menu-user span {
+    color: #64748b;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   SÉPARATEUR
+========================================================= */
+
+.profil-menu-separator {
+    height: 1px;
+
+    background: #e5e7eb;
+
+    margin: 6px 0;
+}
+
+
+/* =========================================================
+   BOUTONS MENU PROFIL
+========================================================= */
+
+.profil-menu > button {
+    width: 100%;
 
     display: flex;
     align-items: center;
 
-    gap: 11px;
+    gap: 12px;
 
-    padding: 12px 14px;
+    position: relative;
 
-    margin-bottom: 5px;
+    padding: 11px 12px;
 
-    background: white;
+    border: none;
 
-    color: #355C7D;
+    border-radius: 8px;
 
-    border: 1px solid #dbe4ec;
+    background: transparent;
 
-    border-radius: 9px;
-
-    cursor: pointer;
-
-    text-align: left;
+    color: #334155;
 
     font-size: 14px;
 
     font-family: inherit;
 
-    font-weight: 600;
+    cursor: pointer;
 
-    box-shadow:
-        0 4px 12px rgba(0,0,0,.12);
+    text-align: left;
 
-    transition: .2s ease;
+    transition: background .2s ease;
 }
 
-.profil-menu button:last-child {
-    margin-bottom: 0;
+.profil-menu > button:hover {
+    background: #f1f5f9;
 }
 
-.profil-menu button svg {
+.profil-menu > button svg {
+    width: 16px;
 
-    color: #355C7D;
+    color: #64748b;
 
     flex-shrink: 0;
 }
 
-.profil-menu button:hover {
-    background: #eef5fa;
+
+/* =========================================================
+   BADGE NOTIFICATION DU MENU
+========================================================= */
+
+.profil-notification-badge {
+    margin-left: auto;
+
+    min-width: 20px;
+    height: 20px;
+
+    padding: 0 5px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #ef4444;
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: bold;
 }
 
 
@@ -529,17 +636,18 @@
    DÉCONNEXION
 ========================================================= */
 
-.profil-menu button.logout {
+.profil-menu > button.logout {
+    color: #dc2626;
+
+    margin-top: 2px;
+}
+
+.profil-menu > button.logout svg {
     color: #dc2626;
 }
 
-.profil-menu button.logout svg {
-    color: #dc2626;
-}
-
-.profil-menu button.logout:hover {
-    background:
-        rgba(220,38,38,.08);
+.profil-menu > button.logout:hover {
+    background: #fef2f2;
 }
 
 
@@ -548,7 +656,6 @@
 ========================================================= */
 
 .modal-photo {
-
     position: fixed;
 
     inset: 0;
@@ -556,8 +663,7 @@
     width: 100%;
     height: 100%;
 
-    background:
-        rgba(0,0,0,.55);
+    background: rgba(0,0,0,.55);
 
     display: flex;
 
@@ -572,7 +678,6 @@
 }
 
 .modal-photo-content {
-
     width: 350px;
 
     max-width: 100%;
@@ -589,14 +694,12 @@
 }
 
 .modal-photo-content h3 {
-
     margin-top: 0;
 
     color: #334155;
 }
 
 .modal-photo-content input {
-
     width: 100%;
 
     margin: 20px 0;
@@ -605,7 +708,6 @@
 }
 
 .modal-actions {
-
     display: flex;
 
     justify-content: center;
@@ -614,7 +716,6 @@
 }
 
 .btn-save-photo {
-
     background: #355C7D;
 
     color: white;
@@ -633,7 +734,6 @@
 }
 
 .btn-cancel-photo {
-
     background: #dc2626;
 
     color: white;
@@ -657,7 +757,6 @@
 ========================================================= */
 
 .navbar-public.navbar-home {
-
     position: absolute;
 
     top: 0;
@@ -706,23 +805,18 @@
 }
 
 .navbar-public.navbar-home .btn-login-client {
-
-    background:
-        rgba(37,99,235,.90);
+    background: rgba(37,99,235,.90);
 
     color: white !important;
 
-    border:
-        1px solid rgba(255,255,255,.35);
+    border: 1px solid rgba(255,255,255,.35);
 
-    backdrop-filter:
-        blur(8px);
+    backdrop-filter: blur(8px);
 }
 
 
 /* =========================================================
    TABLETTE
-   DESKTOP NON MODIFIÉ
 ========================================================= */
 
 @media (max-width: 1100px) {
@@ -807,23 +901,11 @@
 
 /* =========================================================
    MOBILE
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 768px) {
 
-    /*
-       IMPORTANT :
-       On passe à une vraie structure mobile.
-
-       Ligne 1 :
-       LOGO                    PROFIL / ACTIONS
-
-       Ligne 2 :
-       NAVIGATION
-    */
-
     .navbar-public {
-
         width: 100%;
 
         min-height: 0;
@@ -844,13 +926,7 @@
         overflow: visible;
     }
 
-
-    /* =====================================================
-       LOGO MOBILE
-    ===================================================== */
-
     .logo-public {
-
         flex: 1 1 auto;
 
         min-width: 0;
@@ -869,9 +945,6 @@
     }
 
     .logo-text {
-
-        max-width: none;
-
         min-width: 0;
 
         overflow: hidden;
@@ -881,14 +954,7 @@
         white-space: nowrap;
     }
 
-
-    /* =====================================================
-       ACTIONS CONNECTÉES
-       RESTENT SUR LA PREMIÈRE LIGNE
-    ===================================================== */
-
     .client-actions {
-
         flex: 0 0 auto;
 
         display: flex;
@@ -900,14 +966,7 @@
         margin-left: 8px;
     }
 
-
-    /* =====================================================
-       BOUTON CONNEXION
-       RESTE SUR LA PREMIÈRE LIGNE
-    ===================================================== */
-
     .btn-login-client {
-
         flex: 0 0 auto;
 
         padding: 8px 10px;
@@ -919,14 +978,7 @@
         margin-left: 8px;
     }
 
-
-    /* =====================================================
-       NAVIGATION
-       DEUXIÈME LIGNE
-    ===================================================== */
-
     .navbar-navigation {
-
         order: 10;
 
         flex: 0 0 100%;
@@ -935,7 +987,7 @@
 
         min-width: 0;
 
-        margin: 9px 0 0 0;
+        margin: 9px 0 0;
 
         padding: 7px 0 2px;
 
@@ -951,25 +1003,17 @@
 
         box-sizing: border-box;
 
-        border-top:
-            1px solid rgba(255,255,255,.15);
+        border-top: 1px solid rgba(255,255,255,.15);
     }
-
 
     .navbar-navigation li {
-
         flex: 0 0 auto;
-
-        min-width: 0;
     }
 
-
     .navbar-navigation a {
-
         display: flex;
 
         align-items: center;
-
         justify-content: center;
 
         gap: 4px;
@@ -981,21 +1025,13 @@
         padding: 3px 0;
     }
 
-
     .navbar-navigation a svg {
-
         font-size: 13px;
 
         flex-shrink: 0;
     }
 
-
-    /* =====================================================
-       MENU PRINCIPAL
-    ===================================================== */
-
     .menu-principal-button {
-
         font-size: 0;
 
         padding: 7px;
@@ -1005,47 +1041,24 @@
         font-size: 21px;
     }
 
-
-    /* =====================================================
-       ICÔNES
-    ===================================================== */
-
     .navbar-icon-button {
-
         width: 34px;
         height: 34px;
 
         font-size: 17px;
     }
 
-    .notification-button {
-        margin-left: 4px;
-    }
-
-
-    /* =====================================================
-       PROFIL
-    ===================================================== */
-
     .profil-button {
-
         width: 34px;
         height: 34px;
     }
 
     .profil-photo {
-
         width: 34px;
         height: 34px;
     }
 
-
-    /* =====================================================
-       MENU PRINCIPAL MOBILE
-    ===================================================== */
-
     .menu-principal {
-
         position: fixed;
 
         top: 64px;
@@ -1055,8 +1068,6 @@
 
         width: auto;
 
-        max-width: none;
-
         transform: none;
 
         padding: 5px;
@@ -1064,37 +1075,25 @@
         box-sizing: border-box;
     }
 
-
-    /* =====================================================
-       MENU PROFIL MOBILE
-    ===================================================== */
-
     .profil-menu {
-
         position: fixed;
 
         top: 64px;
 
         right: 10px;
 
-        width: 210px;
+        width: 280px;
 
         max-width: calc(100vw - 20px);
 
         box-sizing: border-box;
     }
 
-
-    /* =====================================================
-       MODALE
-    ===================================================== */
-
     .modal-photo {
         padding: 15px;
     }
 
     .modal-photo-content {
-
         width: 100%;
 
         max-width: 350px;
@@ -1105,17 +1104,14 @@
 
 
 /* =========================================================
-   MOBILE ÉTROIT
-   600px
+   MOBILE 600px
 ========================================================= */
 
 @media (max-width: 600px) {
 
     .navbar-public {
-
         padding: 8px 10px;
     }
-
 
     .logo-public {
         font-size: 15px;
@@ -1125,9 +1121,7 @@
         font-size: 19px;
     }
 
-
     .navbar-navigation {
-
         gap: 5px 9px;
 
         margin-top: 8px;
@@ -1135,22 +1129,17 @@
         padding-top: 6px;
     }
 
-
     .navbar-navigation a {
-
         font-size: 10px;
 
         gap: 3px;
     }
 
-
     .navbar-navigation a svg {
         font-size: 11px;
     }
 
-
     .btn-login-client {
-
         padding: 7px 8px;
 
         font-size: 10px;
@@ -1158,45 +1147,31 @@
         margin-left: 5px;
     }
 
-
     .client-actions {
         gap: 2px;
     }
 
-
     .navbar-icon-button {
-
         width: 32px;
         height: 32px;
 
         font-size: 16px;
     }
 
-
     .menu-principal-button {
         padding: 6px;
     }
-
 
     .menu-principal-button svg {
         font-size: 20px;
     }
 
-
-    .notification-button {
-        margin-left: 3px;
-    }
-
-
     .profil-button {
-
         width: 32px;
         height: 32px;
     }
 
-
     .profil-photo {
-
         width: 32px;
         height: 32px;
     }
@@ -1204,24 +1179,16 @@
 
 
 /* =========================================================
-   PETIT TÉLÉPHONE
-   480px
+   PETIT TÉLÉPHONE 480px
 ========================================================= */
 
 @media (max-width: 480px) {
 
     .navbar-public {
-
         padding: 7px 8px;
     }
 
-
-    /* =====================================================
-       PREMIÈRE LIGNE
-    ===================================================== */
-
     .logo-public {
-
         font-size: 13px;
 
         gap: 4px;
@@ -1229,25 +1196,15 @@
         min-width: 0;
     }
 
-
     .logo-icon {
         font-size: 17px;
     }
-
 
     .logo-text {
         max-width: 150px;
     }
 
-
-    /* =====================================================
-       NAVIGATION
-       Elle peut maintenant revenir à la ligne
-       naturellement.
-    ===================================================== */
-
     .navbar-navigation {
-
         gap: 4px 8px;
 
         margin-top: 7px;
@@ -1255,9 +1212,7 @@
         padding-top: 6px;
     }
 
-
     .navbar-navigation a {
-
         font-size: 9px;
 
         gap: 2px;
@@ -1265,18 +1220,11 @@
         padding: 2px 0;
     }
 
-
     .navbar-navigation a svg {
         font-size: 10px;
     }
 
-
-    /* =====================================================
-       CONNEXION
-    ===================================================== */
-
     .btn-login-client {
-
         padding: 6px 7px;
 
         font-size: 9px;
@@ -1286,57 +1234,36 @@
         margin-left: 4px;
     }
 
-
-    /* =====================================================
-       CONNECTÉ
-    ===================================================== */
-
     .client-actions {
-
         gap: 1px;
     }
 
-
     .navbar-icon-button {
-
         width: 30px;
         height: 30px;
 
         font-size: 15px;
     }
 
-
     .menu-principal-button {
         padding: 5px;
     }
-
 
     .menu-principal-button svg {
         font-size: 19px;
     }
 
-
-    .notification-button {
-        margin-left: 3px;
-    }
-
-
     .profil-button {
-
         width: 30px;
         height: 30px;
     }
-
 
     .profil-photo {
-
         width: 30px;
         height: 30px;
     }
 
-
     .notification-badge {
-
         min-width: 14px;
 
         height: 14px;
@@ -1346,13 +1273,7 @@
         border-width: 1px;
     }
 
-
-    /* =====================================================
-       MENUS
-    ===================================================== */
-
     .menu-principal {
-
         top: 60px;
 
         left: 8px;
@@ -1360,14 +1281,12 @@
         right: 8px;
     }
 
-
     .profil-menu {
-
         top: 60px;
 
         right: 7px;
 
-        width: 200px;
+        width: 280px;
 
         max-width: calc(100vw - 14px);
     }
@@ -1375,46 +1294,30 @@
 
 
 /* =========================================================
-   TRÈS PETIT TÉLÉPHONE
-   400px
+   TRÈS PETIT TÉLÉPHONE 400px
 ========================================================= */
 
 @media (max-width: 400px) {
 
     .navbar-public {
-
-        padding: 6px 6px;
+        padding: 6px;
     }
 
-
-    /* =====================================================
-       LOGO
-    ===================================================== */
-
     .logo-public {
-
         font-size: 12px;
 
         gap: 3px;
     }
 
-
     .logo-icon {
         font-size: 16px;
     }
-
 
     .logo-text {
         max-width: 125px;
     }
 
-
-    /* =====================================================
-       NAVIGATION
-    ===================================================== */
-
     .navbar-navigation {
-
         gap: 3px 6px;
 
         margin-top: 6px;
@@ -1422,26 +1325,17 @@
         padding-top: 5px;
     }
 
-
     .navbar-navigation a {
-
         font-size: 8px;
 
         gap: 1px;
     }
 
-
     .navbar-navigation a svg {
         font-size: 9px;
     }
 
-
-    /* =====================================================
-       CONNEXION
-    ===================================================== */
-
     .btn-login-client {
-
         padding: 5px 6px;
 
         font-size: 8px;
@@ -1451,49 +1345,31 @@
         margin-left: 3px;
     }
 
-
-    /* =====================================================
-       CONNECTÉ
-    ===================================================== */
-
     .client-actions {
         gap: 0;
     }
 
-
     .navbar-icon-button {
-
         width: 28px;
         height: 28px;
 
         font-size: 14px;
     }
 
-
     .menu-principal-button {
         padding: 4px;
     }
-
 
     .menu-principal-button svg {
         font-size: 18px;
     }
 
-
-    .notification-button {
-        margin-left: 2px;
-    }
-
-
     .profil-button {
-
         width: 28px;
         height: 28px;
     }
 
-
     .profil-photo {
-
         width: 28px;
         height: 28px;
     }
@@ -1501,46 +1377,30 @@
 
 
 /* =========================================================
-   ÉCRAN EXTRÊMEMENT PETIT
-   360px
+   ÉCRAN 360px
 ========================================================= */
 
 @media (max-width: 360px) {
 
     .navbar-public {
-
         padding: 6px 5px;
     }
 
-
-    /* =====================================================
-       LOGO
-    ===================================================== */
-
     .logo-public {
-
         font-size: 11px;
 
         gap: 3px;
     }
 
-
     .logo-icon {
         font-size: 15px;
     }
-
 
     .logo-text {
         max-width: 105px;
     }
 
-
-    /* =====================================================
-       NAVIGATION
-    ===================================================== */
-
     .navbar-navigation {
-
         gap: 2px 5px;
 
         margin-top: 5px;
@@ -1548,26 +1408,17 @@
         padding-top: 4px;
     }
 
-
     .navbar-navigation a {
-
         font-size: 7px;
 
         gap: 1px;
     }
 
-
     .navbar-navigation a svg {
         font-size: 8px;
     }
 
-
-    /* =====================================================
-       CONNEXION
-    ===================================================== */
-
     .btn-login-client {
-
         padding: 4px 5px;
 
         font-size: 7px;
@@ -1577,51 +1428,32 @@
         border-radius: 5px;
     }
 
-
-    /* =====================================================
-       CONNECTÉ
-    ===================================================== */
-
     .navbar-icon-button {
-
         width: 26px;
         height: 26px;
 
         font-size: 13px;
     }
 
-
     .menu-principal-button {
         padding: 3px;
     }
-
 
     .menu-principal-button svg {
         font-size: 17px;
     }
 
-
-    .notification-button {
-        margin-left: 1px;
-    }
-
-
     .profil-button {
-
         width: 26px;
         height: 26px;
     }
-
 
     .profil-photo {
-
         width: 26px;
         height: 26px;
     }
 
-
     .notification-badge {
-
         min-width: 12px;
 
         height: 12px;
@@ -1631,9 +1463,7 @@
         padding: 0 2px;
     }
 
-
     .menu-principal {
-
         top: 55px;
 
         left: 5px;
@@ -1641,14 +1471,12 @@
         right: 5px;
     }
 
-
     .profil-menu {
-
         top: 55px;
 
         right: 5px;
 
-        width: 190px;
+        width: 280px;
 
         max-width: calc(100vw - 10px);
     }
@@ -1656,12 +1484,11 @@
 
 
 /* =========================================================
-   PROTECTION GLOBALE CONTRE LE DÉBORDEMENT HORIZONTAL
+   PROTECTION DÉBORDEMENT HORIZONTAL
 ========================================================= */
 
 html,
 body {
-
     width: 100%;
 
     max-width: 100%;
@@ -1669,15 +1496,8 @@ body {
     overflow-x: hidden;
 }
 
-
-/*
-   Empêche également les éléments enfants
-   de créer une largeur supérieure à l'écran.
-*/
-
 .navbar-public *,
 .navbar-public *::before,
 .navbar-public *::after {
-
     box-sizing: border-box;
 }

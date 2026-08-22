@@ -1,0 +1,1221 @@
+
+/* =========================================================
+   PROFIL CLIENT
+========================================================= */
+
+.profil-client-page {
+    min-height: 100vh;
+    background: #f0f2f5;
+    color: #1c1e21;
+    padding: 30px 45px 50px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CHARGEMENT
+========================================================= */
+
+.profil-client-loading {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f2f5;
+    color: #64748b;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.profil-client-header {
+    max-width: 1100px;
+    margin: 0 auto 25px;
+}
+
+.profil-client-back {
+    border: none;
+    background: transparent;
+    color: #2563eb;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    margin-bottom: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.profil-client-back:hover {
+    color: #1d4ed8;
+}
+
+.profil-client-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #2563eb;
+    margin-bottom: 5px;
+}
+
+.profil-client-header h1 {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.profil-client-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.profil-client-success,
+.profil-client-error {
+    max-width: 1100px;
+    margin: 0 auto 18px;
+    border-radius: 10px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.profil-client-success {
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+}
+
+.profil-client-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    justify-content: space-between;
+}
+
+.profil-client-error > span {
+    flex: 1;
+}
+
+.profil-client-error button {
+    border: none;
+    background: transparent;
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   CONTENEUR
+========================================================= */
+
+.profil-client-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+
+/* =========================================================
+   CARTE PHOTO PROFIL
+========================================================= */
+
+.profil-client-photo-card {
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #dddfe2;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   COUVERTURE STYLE FACEBOOK
+========================================================= */
+
+.profil-facebook-cover {
+    height: 230px;
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #dbeafe 0%,
+            #eff6ff 45%,
+            #e0f2fe 100%
+        );
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    border-bottom: 1px solid #d8dbe0;
+}
+
+
+/* décoration couverture */
+
+.profil-facebook-cover::before {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.08);
+    top: -260px;
+    left: -100px;
+}
+
+.profil-facebook-cover::after {
+    content: "";
+    position: absolute;
+    width: 330px;
+    height: 330px;
+    border-radius: 50%;
+    background: rgba(14, 165, 233, 0.08);
+    right: -80px;
+    bottom: -230px;
+}
+
+
+/* =========================================================
+   PHOTO PRINCIPALE
+========================================================= */
+
+.profil-facebook-avatar {
+    position: relative;
+    z-index: 2;
+
+    width: 170px;
+    height: 170px;
+
+    margin-bottom: -55px;
+
+    border-radius: 50%;
+
+    background: #e4e6eb;
+
+    border: 6px solid #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    color: #64748b;
+    font-size: 65px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.profil-facebook-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   BOUTON VOIR PHOTO
+========================================================= */
+
+.profil-view-photo {
+    position: absolute;
+    z-index: 4;
+
+    bottom: 18px;
+    right: 24px;
+
+    width: 42px;
+    height: 42px;
+
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+
+    background: #e4e6eb;
+    color: #1c1e21;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.profil-view-photo:hover {
+    background: #d8dadf;
+    transform: scale(1.05);
+}
+
+.profil-view-photo:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   INFORMATIONS PHOTO
+========================================================= */
+
+.profil-client-photo-info {
+    padding: 72px 30px 25px;
+    text-align: center;
+}
+
+.profil-client-photo-info h2 {
+    margin: 0 0 5px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.profil-client-photo-info p {
+    margin: 0;
+    color: #65676b;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   BOUTON CHOISIR PHOTO
+========================================================= */
+
+.profil-photo-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.profil-client-photo-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    background: #e7f3ff;
+    color: #1877f2;
+
+    border-radius: 7px;
+
+    padding: 10px 16px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.profil-client-photo-button:hover {
+    background: #dbeafe;
+}
+
+.profil-client-photo-button input {
+    display: none;
+}
+
+
+/* =========================================================
+   COMPARAISON PHOTO
+========================================================= */
+
+.photo-comparison {
+    margin: 0 25px 25px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    padding: 20px;
+}
+
+
+/* =========================================================
+   HEADER COMPARAISON
+========================================================= */
+
+.photo-comparison-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.photo-comparison-header span {
+    display: block;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+
+    color: #64748b;
+
+    margin-bottom: 4px;
+}
+
+.photo-comparison-header h3 {
+    margin: 0;
+
+    font-size: 17px;
+    color: #111827;
+}
+
+.photo-comparison-header > svg {
+    font-size: 23px;
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   GRILLE ANCIENNE / NOUVELLE
+========================================================= */
+
+.photo-comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.photo-version {
+    min-width: 0;
+}
+
+.photo-version > span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #64748b;
+}
+
+
+/* =========================================================
+   IMAGE COMPARAISON
+========================================================= */
+
+.photo-version-image {
+    position: relative;
+
+    width: 100%;
+    height: 230px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #e5e7eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #64748b;
+    font-size: 45px;
+
+    cursor: pointer;
+}
+
+.photo-version-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   OVERLAY IMAGE
+========================================================= */
+
+.photo-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.38);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ffffff;
+
+    font-size: 25px;
+
+    opacity: 0;
+
+    transition: opacity 0.2s ease;
+}
+
+.photo-version-image:hover .photo-overlay {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   NOUVELLE PHOTO
+========================================================= */
+
+.photo-new {
+    border: 3px solid #2563eb;
+}
+
+.photo-new::after {
+    content: "NOUVELLE";
+
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    padding: 5px 8px;
+
+    border-radius: 5px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   ACTIONS COMPARAISON
+========================================================= */
+
+.photo-comparison-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+.photo-cancel-button,
+.photo-save-button {
+    border: none;
+
+    border-radius: 7px;
+
+    padding: 10px 15px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.photo-cancel-button {
+    background: #e4e6eb;
+    color: #1c1e21;
+}
+
+.photo-cancel-button:hover {
+    background: #d8dadf;
+}
+
+.photo-save-button {
+    background: #1877f2;
+    color: #ffffff;
+}
+
+.photo-save-button:hover {
+    background: #166fe5;
+}
+
+.photo-cancel-button:disabled,
+.photo-save-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   FORMULAIRE INFORMATIONS
+========================================================= */
+
+.profil-client-form-card {
+    background: #ffffff;
+
+    border: 1px solid #dddfe2;
+
+    border-radius: 10px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   TITRE SECTION
+========================================================= */
+
+.profil-client-section-title {
+    margin-bottom: 25px;
+}
+
+.profil-client-section-title > span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+
+    margin-bottom: 5px;
+}
+
+.profil-client-section-title h2 {
+    margin: 0 0 5px;
+
+    color: #111827;
+
+    font-size: 20px;
+}
+
+.profil-client-section-title p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   GRID FORMULAIRE
+========================================================= */
+
+.profil-client-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   CHAMP
+========================================================= */
+
+.profil-client-field {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.profil-client-field label {
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.profil-client-input {
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 13px;
+
+    box-sizing: border-box;
+
+    background: #f8fafc;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    transition: 0.2s ease;
+}
+
+.profil-client-input:focus-within {
+    background: #ffffff;
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+.profil-client-input svg {
+    flex-shrink: 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.profil-client-input input {
+    width: 100%;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #111827;
+
+    font-size: 13px;
+}
+
+.profil-client-input input::placeholder {
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   ACTIONS FORMULAIRE
+========================================================= */
+
+.profil-client-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 25px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.profil-client-cancel,
+.profil-client-save {
+    border: none;
+
+    border-radius: 7px;
+
+    padding: 10px 16px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    transition: 0.2s ease;
+}
+
+.profil-client-cancel {
+    background: #e4e6eb;
+
+    color: #1c1e21;
+}
+
+.profil-client-cancel:hover {
+    background: #d8dadf;
+}
+
+.profil-client-save {
+    background: #1877f2;
+
+    color: #ffffff;
+}
+
+.profil-client-save:hover {
+    background: #166fe5;
+}
+
+.profil-client-cancel:disabled,
+.profil-client-save:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   VISIONNEUSE PHOTO
+========================================================= */
+
+.photo-viewer-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    background: rgba(0, 0, 0, 0.78);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    animation: photoViewerFade 0.2s ease;
+}
+
+
+@keyframes photoViewerFade {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================================
+   CONTENU VISIONNEUSE
+========================================================= */
+
+.photo-viewer {
+    width: min(900px, 100%);
+
+    max-height: 90vh;
+
+    background: #111827;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4);
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   HEADER VISIONNEUSE
+========================================================= */
+
+.photo-viewer-header {
+    min-height: 55px;
+
+    padding: 0 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background: #111827;
+
+    color: #ffffff;
+
+    box-sizing: border-box;
+}
+
+.photo-viewer-header h3 {
+    margin: 0;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}
+
+.photo-viewer-header button {
+    width: 35px;
+
+    height: 35px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #374151;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: 0.2s ease;
+}
+
+.photo-viewer-header button:hover {
+    background: #4b5563;
+}
+
+
+/* =========================================================
+   PHOTO GRAND FORMAT
+========================================================= */
+
+.photo-viewer-content {
+    flex: 1;
+
+    min-height: 400px;
+
+    max-height: calc(90vh - 55px);
+
+    background: #000000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+.photo-viewer-content img {
+    display: block;
+
+    max-width: 100%;
+
+    max-height: calc(90vh - 55px);
+
+    width: auto;
+
+    height: auto;
+
+    object-fit: contain;
+}
+
+
+/* =========================================================
+   PHOTO VIDE
+========================================================= */
+
+.photo-viewer-empty {
+    color: #94a3b8;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    font-size: 14px;
+}
+
+.photo-viewer-empty svg {
+    font-size: 55px;
+}
+
+
+/* =========================================================
+   TABLETTE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .profil-client-page {
+        padding: 25px;
+    }
+
+    .profil-facebook-cover {
+        height: 210px;
+    }
+
+    .profil-facebook-avatar {
+        width: 150px;
+        height: 150px;
+        font-size: 55px;
+    }
+
+    .profil-client-photo-info {
+        padding-top: 65px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .profil-client-page {
+        padding: 18px 12px 35px;
+    }
+
+
+    .profil-client-header {
+        margin-bottom: 18px;
+    }
+
+
+    .profil-client-back {
+        margin-bottom: 17px;
+    }
+
+
+    .profil-client-back span {
+        display: inline;
+    }
+
+
+    .profil-client-header h1 {
+        font-size: 25px;
+    }
+
+
+    .profil-client-header p {
+        line-height: 1.5;
+    }
+
+
+    /* PHOTO */
+
+    .profil-facebook-cover {
+        height: 175px;
+    }
+
+
+    .profil-facebook-avatar {
+        width: 125px;
+        height: 125px;
+
+        margin-bottom: -45px;
+
+        border-width: 5px;
+
+        font-size: 45px;
+    }
+
+
+    .profil-view-photo {
+        right: 14px;
+        bottom: 13px;
+
+        width: 38px;
+        height: 38px;
+    }
+
+
+    .profil-client-photo-info {
+        padding:
+            60px
+            18px
+            20px;
+    }
+
+
+    .profil-client-photo-info h2 {
+        font-size: 20px;
+    }
+
+
+    /* COMPARAISON */
+
+    .photo-comparison {
+        margin: 0 15px 18px;
+        padding: 15px;
+    }
+
+
+    .photo-comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+
+    .photo-version-image {
+        height: 220px;
+    }
+
+
+    .photo-comparison-actions {
+        flex-direction: column-reverse;
+    }
+
+
+    .photo-cancel-button,
+    .photo-save-button {
+        width: 100%;
+    }
+
+
+    /* FORM */
+
+    .profil-client-form-card {
+        padding: 20px 16px;
+    }
+
+
+    .profil-client-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+
+    .profil-client-actions {
+        flex-direction: column-reverse;
+    }
+
+
+    .profil-client-cancel,
+    .profil-client-save {
+        width: 100%;
+    }
+
+
+    /* MODAL */
+
+    .photo-viewer-overlay {
+        padding: 10px;
+    }
+
+
+    .photo-viewer {
+        width: 100%;
+        max-height: 92vh;
+        border-radius: 9px;
+    }
+
+
+    .photo-viewer-content {
+        min-height: 300px;
+    }
+
+}
+
+
+/* =========================================================
+   PETIT MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .profil-client-page {
+        padding: 15px 10px 30px;
+    }
+
+
+    .profil-facebook-cover {
+        height: 150px;
+    }
+
+
+    .profil-facebook-avatar {
+        width: 105px;
+        height: 105px;
+
+        margin-bottom: -38px;
+
+        font-size: 38px;
+    }
+
+
+    .profil-client-photo-info {
+        padding-top: 52px;
+    }
+
+
+    .profil-client-photo-button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+
+    .photo-version-image {
+        height: 190px;
+    }
+
+
+    .profil-client-form-card {
+        padding: 18px 13px;
+    }
+
+
+    .photo-viewer-header {
+        padding: 0 12px;
+    }
+
+}
+
