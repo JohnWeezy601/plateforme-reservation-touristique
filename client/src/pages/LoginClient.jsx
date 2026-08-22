@@ -152,27 +152,25 @@ function LoginClient(){
 
         const utilisateurConnecte = {
 
-            id_utilisateur:
-                res.data.utilisateur.id,
+           id_utilisateur:
+        res.data.utilisateur.id,
 
-            nom:
-                res.data.utilisateur.nom,
+    nom:
+        res.data.utilisateur.nom,
 
-            prenom:
-                res.data.utilisateur.prenom,
+    prenom:
+        res.data.utilisateur.prenom,
 
-            email:
-                res.data.utilisateur.email,
+    email:
+        res.data.utilisateur.email,
 
-            role:
-                res.data.utilisateur.role,
+    role:
+        res.data.utilisateur.role,
 
-            photo:
-                res.data.utilisateur.photo
+    photo:
+        res.data.utilisateur.photo
 
-        };
-
-
+};
         localStorage.setItem(
 
             "utilisateur",
@@ -314,24 +312,24 @@ function LoginClient(){
             const utilisateurConnecte = {
 
                 id_utilisateur:
-                    res.data.utilisateur.id,
+        res.data.utilisateur.id,
 
-                nom:
-                    res.data.utilisateur.nom,
+    nom:
+        res.data.utilisateur.nom,
 
-                prenom:
-                    res.data.utilisateur.prenom,
+    prenom:
+        res.data.utilisateur.prenom,
 
-                email:
-                    res.data.utilisateur.email,
+    email:
+        res.data.utilisateur.email,
 
-                role:
-                    res.data.utilisateur.role,
+    role:
+        res.data.utilisateur.role,
 
-                photo:
-                    res.data.utilisateur.photo
+    photo:
+        res.data.utilisateur.photo
 
-            };
+};
 
 
             localStorage.setItem(

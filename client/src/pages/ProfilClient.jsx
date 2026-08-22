@@ -60,34 +60,41 @@ function ProfilClient() {
 
 
     // =====================================================
-    // CONSTRUIRE URL PHOTO
+// CONSTRUIRE URL PHOTO
+// =====================================================
+
+const getPhotoUrl = (photoValue) => {
+
+    if (!photoValue) {
+        return null;
+    }
+
+    // =====================================================
+    // URL CLOUDINARY OU URL EXTERNE
     // =====================================================
 
-    const getPhotoUrl = (photoValue) => {
+    if (
+        photoValue.startsWith("http://") ||
+        photoValue.startsWith("https://") ||
+        photoValue.startsWith("blob:")
+    ) {
+        return photoValue;
+    }
 
-        if (!photoValue) {
-            return null;
-        }
+    // =====================================================
+    // ANCIENNES PHOTOS LOCALES
+    // =====================================================
 
-        if (
-            photoValue.startsWith("http://") ||
-            photoValue.startsWith("https://") ||
-            photoValue.startsWith("blob:")
-        ) {
-            return photoValue;
-        }
+    if (photoValue.startsWith("/uploads/")) {
+        return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
+    }
 
-        if (photoValue.startsWith("/uploads/")) {
-            return `http://localhost:8081${photoValue}`;
-        }
+    if (photoValue.startsWith("/")) {
+        return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
+    }
 
-        if (photoValue.startsWith("/")) {
-            return `http://localhost:8081${photoValue}`;
-        }
-
-        return `http://localhost:8081/uploads/${photoValue}`;
-    };
-
+    return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}/uploads/${photoValue}`;
+};
 
     // =====================================================
     // RÉCUPÉRATION UTILISATEUR

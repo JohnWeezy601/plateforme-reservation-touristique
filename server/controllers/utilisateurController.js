@@ -1568,56 +1568,56 @@ exports.getUtilisateurById = async (req, res) => {
 };
 
 
+
+
 // =====================================================
 // MODIFIER PHOTO UTILISATEUR
 // =====================================================
 
 exports.updatePhoto = async (req, res) => {
 
-    const id =
-        req.params.id;
+    const id = req.params.id;
 
+    // =====================================================
+    // VÉRIFIER FICHIER
+    // =====================================================
 
     if (!req.file) {
 
         return res.status(400).json({
 
-            message:
-                "Aucune photo envoyée"
+            message: "Aucune photo envoyée"
 
         });
 
     }
 
-
     try {
 
-        const [utilisateurs] =
-            await db.query(
+        // =====================================================
+        // RÉCUPÉRER ANCIENNE PHOTO
+        // =====================================================
 
-                `
-                SELECT photo
+        const [utilisateurs] = await db.query(
 
-                FROM utilisateur
+            `
+            SELECT
+                id_utilisateur,
+                photo
+            FROM utilisateur
+            WHERE id_utilisateur=?
+            `,
 
-                WHERE id_utilisateur=?
-                `,
+            [id]
 
-                [
-
-                    id
-
-                ]
-
-            );
+        );
 
 
         if (utilisateurs.length === 0) {
 
             return res.status(404).json({
 
-                message:
-                    "Utilisateur introuvable"
+                message: "Utilisateur introuvable"
 
             });
 
@@ -1629,95 +1629,113 @@ exports.updatePhoto = async (req, res) => {
 
 
         console.log(
-
-            "☁️ Upload photo utilisateur vers Cloudinary..."
-
+            "☁️ Upload nouvelle photo vers Cloudinary..."
         );
 
+
+        // =====================================================
+        // UPLOAD BUFFER VERS CLOUDINARY
+        // =====================================================
 
         const resultat =
-            await cloudinary.uploader.upload(
+            await new Promise((resolve, reject) => {
 
-                req.file.path,
+                const stream =
+                    cloudinary.uploader.upload_stream(
 
-                {
+                        {
+                            folder:
+                                "plateforme-touristique/utilisateurs",
 
-                    folder:
-                        "plateforme-touristique/utilisateurs",
+                            resource_type:
+                                "image"
+                        },
 
-                    resource_type:
-                        "image"
+                        (error, result) => {
 
-                }
+                            if (error) {
 
-            );
+                                reject(error);
+
+                            }
+                            else {
+
+                                resolve(result);
+
+                            }
+
+                        }
+
+                    );
+
+
+                stream.end(
+                    req.file.buffer
+                );
+
+            });
 
 
         console.log(
-
             "✅ Upload Cloudinary réussi"
-
         );
 
 
         console.log(
-
             "URL :",
-
             resultat.secure_url
-
         );
 
 
         console.log(
-
             "Public ID :",
-
             resultat.public_id
-
         );
 
+
+        // =====================================================
+        // NOUVELLE PHOTO
+        // =====================================================
 
         const nouvellePhoto =
             resultat.secure_url;
 
 
+        // =====================================================
+        // METTRE À JOUR LA BASE
+        // =====================================================
+
         await db.query(
 
             `
             UPDATE utilisateur
-
             SET photo=?
-
             WHERE id_utilisateur=?
             `,
 
             [
-
                 nouvellePhoto,
-
                 id
-
             ]
 
         );
 
 
         console.log(
-
             "✅ Base de données mise à jour"
-
         );
 
+
+        // =====================================================
+        // SUPPRIMER ANCIENNE PHOTO CLOUDINARY
+        // =====================================================
 
         if (
 
             anciennePhoto &&
 
             anciennePhoto.includes(
-
                 "res.cloudinary.com"
-
             )
 
         ) {
@@ -1726,9 +1744,7 @@ exports.updatePhoto = async (req, res) => {
 
                 const partie =
                     anciennePhoto.split(
-
                         "/upload/"
-
                     )[1];
 
 
@@ -1736,30 +1752,21 @@ exports.updatePhoto = async (req, res) => {
 
                     const sansVersion =
                         partie.replace(
-
                             /^v\d+\//,
-
                             ""
-
                         );
 
 
                     const publicIdAncien =
                         sansVersion.replace(
-
                             /\.[^/.]+$/,
-
                             ""
-
                         );
 
 
                     console.log(
-
                         "🗑️ Suppression ancienne photo :",
-
                         publicIdAncien
-
                     );
 
 
@@ -1768,30 +1775,25 @@ exports.updatePhoto = async (req, res) => {
                         publicIdAncien,
 
                         {
-
                             resource_type:
                                 "image"
-
                         }
 
                     );
 
 
                     console.log(
-
                         "✅ Ancienne photo supprimée de Cloudinary"
-
                     );
 
                 }
 
             }
-
             catch (cloudinaryError) {
 
                 console.log(
 
-                    "⚠️ Impossible de supprimer l'ancienne photo Cloudinary :",
+                    "⚠️ Impossible de supprimer l'ancienne photo :",
 
                     cloudinaryError.message
 
@@ -1802,49 +1804,35 @@ exports.updatePhoto = async (req, res) => {
         }
 
 
-        try {
+        // =====================================================
+        // RÉCUPÉRER UTILISATEUR MIS À JOUR
+        // =====================================================
 
-            if (
+        const [utilisateurMisAJour] =
+            await db.query(
 
-                req.file.path &&
+                `
+                SELECT
+                    id_utilisateur,
+                    nom,
+                    prenom,
+                    email,
+                    telephone,
+                    role,
+                    photo,
+                    date_inscription
+                FROM utilisateur
+                WHERE id_utilisateur=?
+                `,
 
-                fs.existsSync(
-
-                    req.file.path
-
-                )
-
-            ) {
-
-                fs.unlinkSync(
-
-                    req.file.path
-
-                );
-
-
-                console.log(
-
-                    "🗑️ Fichier local temporaire supprimé"
-
-                );
-
-            }
-
-        }
-
-        catch (fileError) {
-
-            console.log(
-
-                "⚠️ Impossible de supprimer le fichier local :",
-
-                fileError.message
+                [id]
 
             );
 
-        }
 
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.json({
 
@@ -1855,20 +1843,19 @@ exports.updatePhoto = async (req, res) => {
                 nouvellePhoto,
 
             public_id:
-                resultat.public_id
+                resultat.public_id,
+
+            utilisateur:
+                utilisateurMisAJour[0]
 
         });
 
     }
-
     catch (error) {
 
-        console.log(
-
+        console.error(
             "❌ Erreur modification photo :",
-
             error
-
         );
 
 
