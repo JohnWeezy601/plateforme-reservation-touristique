@@ -15,9 +15,7 @@ import {
     FaStar,
     FaBell,
     FaArrowRight,
-    FaChartLine,
-    FaPhone,
-    FaEnvelope
+    FaChartLine
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -109,26 +107,37 @@ function EspaceClient() {
                 return;
             }
 
+
             const idUtilisateur =
                 utilisateur.id_utilisateur ||
                 utilisateur.id ||
                 utilisateur.idUtilisateur;
 
+
             if (!idUtilisateur) {
+
                 console.warn(
                     "ID utilisateur introuvable."
                 );
+
                 return;
+
             }
+
 
             try {
 
                 /*
-                 * Récupération des données complètes
-                 * depuis la base de données.
+                 * Récupération des informations
+                 * complètes depuis le backend.
                  *
-                 * L'endpoint utilisé est :
-                 * GET /utilisateurs/:id
+                 * Cela permet notamment de récupérer :
+                 *
+                 * - nom
+                 * - prenom
+                 * - email
+                 * - telephone
+                 * - photo
                  */
 
                 const response =
@@ -136,11 +145,6 @@ function EspaceClient() {
                         `/utilisateurs/${idUtilisateur}`
                     );
 
-
-                /*
-                 * Selon la structure de ton backend,
-                 * on accepte plusieurs formats.
-                 */
 
                 const utilisateurAPI =
                     response?.data?.utilisateur ||
@@ -156,7 +160,6 @@ function EspaceClient() {
                     const utilisateurMisAJour = {
 
                         ...utilisateur,
-
                         ...utilisateurAPI
 
                     };
@@ -168,9 +171,9 @@ function EspaceClient() {
 
 
                     /*
-                     * Mise à jour du localStorage
-                     * afin que le téléphone reste disponible
-                     * dans les autres pages.
+                     * On sauvegarde également
+                     * les informations actualisées
+                     * dans localStorage.
                      */
 
                     localStorage.setItem(
@@ -217,6 +220,16 @@ function EspaceClient() {
     // TÉLÉPHONE
     // =====================================================
 
+    /*
+     * La colonne principale de ta base MySQL est :
+     *
+     * telephone
+     *
+     * On garde quelques variantes pour éviter
+     * les problèmes si certaines données anciennes
+     * utilisent un autre nom.
+     */
+
     const telephone =
         utilisateur.telephone ||
         utilisateur.tel ||
@@ -254,10 +267,12 @@ function EspaceClient() {
                 continue;
             }
 
+
             try {
 
                 const parsed =
                     JSON.parse(data);
+
 
                 if (Array.isArray(parsed)) {
 
@@ -273,6 +288,7 @@ function EspaceClient() {
             }
 
         }
+
 
         return [];
 
@@ -359,119 +375,6 @@ function EspaceClient() {
 
 
             {/* =================================================
-                INFORMATIONS RAPIDES DU CLIENT
-                Placées directement à côté du sidebar
-            ================================================= */}
-
-            <section className="client-identity-bar">
-
-
-                {/* PHOTO */}
-
-                <div className="client-identity-photo">
-
-                    {photoUtilisateur ? (
-
-                        <img
-                            src={photoUtilisateur}
-                            alt="Photo de profil"
-                        />
-
-                    ) : (
-
-                        <FaUser />
-
-                    )}
-
-                </div>
-
-
-                {/* IDENTITÉ */}
-
-                <div className="client-identity-main">
-
-                    <span className="client-identity-label">
-                        MON ESPACE
-                    </span>
-
-                    <h2>
-
-                        {utilisateur.prenom ||
-                            utilisateur.nom ||
-                            "Client"}
-
-                        {" "}
-
-                        {utilisateur.nom
-                            ? utilisateur.nom
-                            : ""}
-
-                    </h2>
-
-                </div>
-
-
-                {/* EMAIL */}
-
-                <div className="client-identity-item">
-
-                    <FaEnvelope />
-
-                    <div>
-
-                        <span>
-                            Email
-                        </span>
-
-                        <strong>
-                            {utilisateur.email || "-"}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                {/* TÉLÉPHONE */}
-
-                <div className="client-identity-item">
-
-                    <FaPhone />
-
-                    <div>
-
-                        <span>
-                            Téléphone
-                        </span>
-
-                        <strong>
-                            {telephone}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                {/* BOUTON PROFIL */}
-
-                <button
-                    type="button"
-                    className="identity-profile-button"
-                    onClick={() =>
-                        navigate(routes.profil)
-                    }
-                >
-
-                    Voir mon profil
-
-                </button>
-
-
-            </section>
-
-
-            {/* =================================================
                 HEADER
             ================================================= */}
 
@@ -510,7 +413,9 @@ function EspaceClient() {
                 </div>
 
 
-                {/* BOUTON PHOTO */}
+                {/* =================================================
+                    PHOTO PROFIL
+                ================================================= */}
 
                 <button
                     type="button"
@@ -556,6 +461,7 @@ function EspaceClient() {
                             ACTIVITÉ DU CLIENT
                         </span>
 
+
                         <h2>
                             Votre activité
                         </h2>
@@ -576,6 +482,7 @@ function EspaceClient() {
                         <strong>
                             {statistiques.taux}%
                         </strong>
+
 
                         <span>
                             taux d'activité
@@ -629,7 +536,9 @@ function EspaceClient() {
             <section className="client-dashboard-cards">
 
 
-                {/* PROFIL */}
+                {/* =================================================
+                    MON PROFIL
+                ================================================= */}
 
                 <div
                     className="client-card"
@@ -645,7 +554,9 @@ function EspaceClient() {
                             e.key === " "
                         ) {
 
-                            navigate(routes.profil);
+                            navigate(
+                                routes.profil
+                            );
 
                         }
 
@@ -653,7 +564,9 @@ function EspaceClient() {
                 >
 
                     <div className="client-card-icon">
+
                         <FaUser />
+
                     </div>
 
 
@@ -663,6 +576,7 @@ function EspaceClient() {
                             Mon profil
                         </h3>
 
+
                         <p>
                             Consultez et modifiez vos informations personnelles.
                         </p>
@@ -670,12 +584,16 @@ function EspaceClient() {
                     </div>
 
 
-                    <FaArrowRight className="card-arrow" />
+                    <FaArrowRight
+                        className="card-arrow"
+                    />
 
                 </div>
 
 
-                {/* RÉSERVATIONS */}
+                {/* =================================================
+                    MES RÉSERVATIONS
+                ================================================= */}
 
                 <div
                     className="client-card"
@@ -701,7 +619,9 @@ function EspaceClient() {
                 >
 
                     <div className="client-card-icon">
+
                         <FaCalendarAlt />
+
                     </div>
 
 
@@ -711,6 +631,7 @@ function EspaceClient() {
                             Mes réservations
                         </h3>
 
+
                         <p>
                             Consultez toutes vos réservations touristiques.
                         </p>
@@ -718,12 +639,16 @@ function EspaceClient() {
                     </div>
 
 
-                    <FaArrowRight className="card-arrow" />
+                    <FaArrowRight
+                        className="card-arrow"
+                    />
 
                 </div>
 
 
-                {/* TRANSACTIONS */}
+                {/* =================================================
+                    MES TRANSACTIONS
+                ================================================= */}
 
                 <div
                     className="client-card"
@@ -749,7 +674,9 @@ function EspaceClient() {
                 >
 
                     <div className="client-card-icon">
+
                         <FaCreditCard />
+
                     </div>
 
 
@@ -759,6 +686,7 @@ function EspaceClient() {
                             Mes transactions
                         </h3>
 
+
                         <p>
                             Consultez vos paiements et transactions.
                         </p>
@@ -766,12 +694,16 @@ function EspaceClient() {
                     </div>
 
 
-                    <FaArrowRight className="card-arrow" />
+                    <FaArrowRight
+                        className="card-arrow"
+                    />
 
                 </div>
 
 
-                {/* AVIS */}
+                {/* =================================================
+                    MES AVIS
+                ================================================= */}
 
                 <div
                     className="client-card"
@@ -787,7 +719,9 @@ function EspaceClient() {
                             e.key === " "
                         ) {
 
-                            navigate(routes.avis);
+                            navigate(
+                                routes.avis
+                            );
 
                         }
 
@@ -795,7 +729,9 @@ function EspaceClient() {
                 >
 
                     <div className="client-card-icon">
+
                         <FaStar />
+
                     </div>
 
 
@@ -805,6 +741,7 @@ function EspaceClient() {
                             Mes avis
                         </h3>
 
+
                         <p>
                             Consultez vos avis publiés.
                         </p>
@@ -812,12 +749,16 @@ function EspaceClient() {
                     </div>
 
 
-                    <FaArrowRight className="card-arrow" />
+                    <FaArrowRight
+                        className="card-arrow"
+                    />
 
                 </div>
 
 
-                {/* NOTIFICATIONS */}
+                {/* =================================================
+                    NOTIFICATIONS
+                ================================================= */}
 
                 <div
                     className="client-card"
@@ -843,7 +784,9 @@ function EspaceClient() {
                 >
 
                     <div className="client-card-icon">
+
                         <FaBell />
+
                     </div>
 
 
@@ -853,6 +796,7 @@ function EspaceClient() {
                             Notifications
                         </h3>
 
+
                         <p>
                             Consultez vos notifications.
                         </p>
@@ -860,7 +804,9 @@ function EspaceClient() {
                     </div>
 
 
-                    <FaArrowRight className="card-arrow" />
+                    <FaArrowRight
+                        className="card-arrow"
+                    />
 
                 </div>
 
@@ -870,6 +816,7 @@ function EspaceClient() {
 
             {/* =================================================
                 INFORMATIONS CLIENT
+                UNE SEULE SECTION
             ================================================= */}
 
             <section className="client-profile-summary">
@@ -883,6 +830,7 @@ function EspaceClient() {
                         <span>
                             PROFIL
                         </span>
+
 
                         <h2>
                             Mes informations
@@ -909,13 +857,47 @@ function EspaceClient() {
                 <div className="profile-info">
 
 
-                    {/* NOM */}
+                    {/* =================================================
+                        PHOTO
+                    ================================================= */}
+
+                    <div className="profile-photo-info">
+
+                        <strong>
+                            Photo
+                        </strong>
+
+
+                        <div className="profile-photo-wrapper">
+
+                            {photoUtilisateur ? (
+
+                                <img
+                                    src={photoUtilisateur}
+                                    alt="Photo de profil"
+                                />
+
+                            ) : (
+
+                                <FaUser />
+
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    {/* =================================================
+                        NOM
+                    ================================================= */}
 
                     <div>
 
                         <strong>
                             Nom
                         </strong>
+
 
                         <span>
                             {utilisateur.nom || "-"}
@@ -924,13 +906,16 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* PRÉNOM */}
+                    {/* =================================================
+                        PRÉNOM
+                    ================================================= */}
 
                     <div>
 
                         <strong>
                             Prénom
                         </strong>
+
 
                         <span>
                             {utilisateur.prenom || "-"}
@@ -939,13 +924,16 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* EMAIL */}
+                    {/* =================================================
+                        EMAIL
+                    ================================================= */}
 
                     <div>
 
                         <strong>
                             Email
                         </strong>
+
 
                         <span>
                             {utilisateur.email || "-"}
@@ -954,13 +942,16 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* TÉLÉPHONE */}
+                    {/* =================================================
+                        TÉLÉPHONE
+                    ================================================= */}
 
                     <div>
 
                         <strong>
                             Téléphone
                         </strong>
+
 
                         <span>
                             {telephone}
