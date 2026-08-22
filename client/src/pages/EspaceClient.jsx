@@ -131,7 +131,7 @@ function EspaceClient() {
                  * Récupération des informations
                  * complètes depuis le backend.
                  *
-                 * Cela permet notamment de récupérer :
+                 * Permet notamment de récupérer :
                  *
                  * - nom
                  * - prenom
@@ -171,9 +171,9 @@ function EspaceClient() {
 
 
                     /*
-                     * On sauvegarde également
-                     * les informations actualisées
-                     * dans localStorage.
+                     * Mise à jour du localStorage
+                     * avec les informations récupérées
+                     * depuis la base de données.
                      */
 
                     localStorage.setItem(
@@ -221,13 +221,12 @@ function EspaceClient() {
     // =====================================================
 
     /*
-     * La colonne principale de ta base MySQL est :
+     * La colonne principale de la base MySQL est :
      *
      * telephone
      *
-     * On garde quelques variantes pour éviter
-     * les problèmes si certaines données anciennes
-     * utilisent un autre nom.
+     * On garde quelques variantes pour
+     * les anciennes données éventuelles.
      */
 
     const telephone =
@@ -244,6 +243,11 @@ function EspaceClient() {
     // =====================================================
     // PHOTO
     // =====================================================
+
+    /*
+     * La photo est utilisée uniquement
+     * dans le header de cette page.
+     */
 
     const photoUtilisateur =
         utilisateur.photo ||
@@ -414,7 +418,7 @@ function EspaceClient() {
 
 
                 {/* =================================================
-                    PHOTO PROFIL
+                    PHOTO PROFIL DU HEADER
                 ================================================= */}
 
                 <button
@@ -816,7 +820,7 @@ function EspaceClient() {
 
             {/* =================================================
                 INFORMATIONS CLIENT
-                UNE SEULE SECTION
+                SANS PHOTO
             ================================================= */}
 
             <section className="client-profile-summary">
@@ -855,37 +859,6 @@ function EspaceClient() {
 
 
                 <div className="profile-info">
-
-
-                    {/* =================================================
-                        PHOTO
-                    ================================================= */}
-
-                    <div className="profile-photo-info">
-
-                        <strong>
-                            Photo
-                        </strong>
-
-
-                        <div className="profile-photo-wrapper">
-
-                            {photoUtilisateur ? (
-
-                                <img
-                                    src={photoUtilisateur}
-                                    alt="Photo de profil"
-                                />
-
-                            ) : (
-
-                                <FaUser />
-
-                            )}
-
-                        </div>
-
-                    </div>
 
 
                     {/* =================================================
