@@ -44,6 +44,7 @@ import EspaceClient from "./pages/EspaceClient";
 import ProfilClient from "./pages/ProfilClient";
 import TransactionsClient from "./pages/TransactionsClient";
 import AvisClient from "./pages/AvisClient";
+import EspaceClientLayout from "./components/EspaceClientLayout";
 
 function App() {
 
@@ -597,57 +598,49 @@ path="/mes-reservations"
 
 
 
-<Route
-    path="/espace-client"
-    element={<EspaceClient />}
-/>
+{/* =========================================
+    ESPACE CLIENT
+========================================= */}
 
-<Route
-    path="/espace-client/profil"
-    element={
-        <PublicLayout>
-            <ProfilClient />
-        </PublicLayout>
-    }
-/>
+<Route element={<EspaceClientLayout />}>
 
-<Route
-    path="/espace-client/reservations"
-    element={
-        <PublicLayout>
-            <MesReservations />
-        </PublicLayout>
-    }
-/>
+    {/* Accueil espace client */}
+    <Route
+        path="/espace-client"
+        element={<EspaceClient />}
+    />
 
-<Route
-    path="/espace-client/transactions"
-    element={
-        <PublicLayout>
-            <TransactionsClient />
-        </PublicLayout>
-    }
-/>
+    {/* Mon profil */}
+    <Route
+        path="/espace-client/profil"
+        element={<ProfilClient />}
+    />
 
-<Route
-    path="/espace-client/avis"
-    element={
-        <PublicLayout>
-            <AvisClient />
-        </PublicLayout>
-    }
-/>
+    {/* Mes réservations */}
+    <Route
+        path="/espace-client/reservations"
+        element={<MesReservations />}
+    />
 
-<Route
-    path="/espace-client/notifications"
-    element={
-        <PublicLayout>
-            <NotificationsClient />
-        </PublicLayout>
-    }
-/>
+    {/* Mes transactions */}
+    <Route
+        path="/espace-client/transactions"
+        element={<TransactionsClient />}
+    />
 
+    {/* Mes avis */}
+    <Route
+        path="/espace-client/avis"
+        element={<AvisClient />}
+    />
 
+    {/* Notifications */}
+    <Route
+        path="/espace-client/notifications"
+        element={<NotificationsClient />}
+    />
+
+</Route>
 <Route
     path="/recommandations-client"
     element={

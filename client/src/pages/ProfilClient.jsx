@@ -60,41 +60,42 @@ function ProfilClient() {
 
 
     // =====================================================
-// CONSTRUIRE URL PHOTO
-// =====================================================
-
-const getPhotoUrl = (photoValue) => {
-
-    if (!photoValue) {
-        return null;
-    }
-
-    // =====================================================
-    // URL CLOUDINARY OU URL EXTERNE
+    // CONSTRUIRE URL PHOTO
     // =====================================================
 
-    if (
-        photoValue.startsWith("http://") ||
-        photoValue.startsWith("https://") ||
-        photoValue.startsWith("blob:")
-    ) {
-        return photoValue;
-    }
+    const getPhotoUrl = (photoValue) => {
 
-    // =====================================================
-    // ANCIENNES PHOTOS LOCALES
-    // =====================================================
+        if (!photoValue) {
+            return null;
+        }
 
-    if (photoValue.startsWith("/uploads/")) {
-        return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
-    }
+        // =====================================================
+        // URL CLOUDINARY OU URL EXTERNE
+        // =====================================================
 
-    if (photoValue.startsWith("/")) {
-        return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
-    }
+        if (
+            photoValue.startsWith("http://") ||
+            photoValue.startsWith("https://") ||
+            photoValue.startsWith("blob:")
+        ) {
+            return photoValue;
+        }
 
-    return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}/uploads/${photoValue}`;
-};
+        // =====================================================
+        // ANCIENNES PHOTOS LOCALES
+        // =====================================================
+
+        if (photoValue.startsWith("/uploads/")) {
+            return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
+        }
+
+        if (photoValue.startsWith("/")) {
+            return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}${photoValue}`;
+        }
+
+        return `${import.meta.env.VITE_API_URL || "http://localhost:8081"}/uploads/${photoValue}`;
+    };
+
 
     // =====================================================
     // RÉCUPÉRATION UTILISATEUR
@@ -126,25 +127,67 @@ const getPhotoUrl = (photoValue) => {
                     : parsedData;
 
 
-            setUtilisateur(user);
+            // =====================================================
+            // NORMALISER L'ID UTILISATEUR
+            // =====================================================
 
+            const utilisateurNormalise = {
+
+                ...user,
+
+                id_utilisateur:
+                    user.id_utilisateur ||
+                    user.id,
+
+                // =================================================
+                // RÉCUPÉRER AUTOMATIQUEMENT LE TÉLÉPHONE
+                // =================================================
+
+                telephone:
+                    user.telephone || ""
+
+            };
+
+
+            setUtilisateur(
+                utilisateurNormalise
+            );
+
+
+            // =====================================================
+            // REMPLIR AUTOMATIQUEMENT LE FORMULAIRE
+            // =====================================================
 
             setFormData({
-                nom: user.nom || "",
-                prenom: user.prenom || "",
-                email: user.email || "",
-                telephone: user.telephone || ""
+
+                nom:
+                    utilisateurNormalise.nom || "",
+
+                prenom:
+                    utilisateurNormalise.prenom || "",
+
+                email:
+                    utilisateurNormalise.email || "",
+
+                telephone:
+                    utilisateurNormalise.telephone || ""
+
             });
 
 
+            // =====================================================
+            // PHOTO EXISTANTE
+            // =====================================================
+
             const anciennePhoto =
-                getPhotoUrl(user.photo);
+                getPhotoUrl(
+                    utilisateurNormalise.photo
+                );
 
 
             setPhotoOriginale(
                 anciennePhoto
             );
-
 
         }
         catch (err) {
@@ -237,6 +280,7 @@ const getPhotoUrl = (photoValue) => {
 
 
         // Vérifier type
+
         if (!file.type.startsWith("image/")) {
 
             setError(
@@ -249,6 +293,7 @@ const getPhotoUrl = (photoValue) => {
 
 
         // Vérifier taille
+
         if (file.size > 5 * 1024 * 1024) {
 
             setError(
@@ -261,6 +306,7 @@ const getPhotoUrl = (photoValue) => {
 
 
         // Supprimer ancienne preview
+
         if (photoPreview) {
 
             URL.revokeObjectURL(
@@ -499,6 +545,26 @@ const getPhotoUrl = (photoValue) => {
         }
 
 
+        // =====================================================
+        // VÉRIFIER ID
+        // =====================================================
+
+        const idUtilisateur =
+            utilisateur.id_utilisateur ||
+            utilisateur.id;
+
+
+        if (!idUtilisateur) {
+
+            setError(
+                "Utilisateur non identifié."
+            );
+
+            return;
+
+        }
+
+
         setSaving(true);
 
         setMessage("");
@@ -508,21 +574,65 @@ const getPhotoUrl = (photoValue) => {
 
         try {
 
+            // =================================================
+            // DONNÉES ENVOYÉES AU BACKEND
+            // =================================================
+
+            const donneesModification = {
+
+                nom:
+                    formData.nom.trim(),
+
+                prenom:
+                    formData.prenom.trim(),
+
+                email:
+                    formData.email.trim(),
+
+                telephone:
+                    formData.telephone.trim(),
+
+                // =================================================
+                // IMPORTANT :
+                // Le backend updateUtilisateur exige le rôle.
+                // Le client ne modifie pas son rôle, on conserve
+                // simplement celui qui existe déjà.
+                // =================================================
+
+                role:
+                    utilisateur.role || "Touriste"
+
+            };
+
+
+            console.log(
+                "📤 Modification profil :",
+                donneesModification
+            );
+
+
             const response =
                 await api.put(
 
-                    `/utilisateurs/${utilisateur.id_utilisateur}`,
+                    `/utilisateurs/${idUtilisateur}`,
 
-                    formData
+                    donneesModification
 
                 );
 
 
+            // =================================================
+            // RÉCUPÉRER UTILISATEUR RETOURNÉ PAR LE BACKEND
+            // =================================================
+
             const updatedUser =
                 response.data?.utilisateur ||
-                response.data ||
                 {};
 
+
+            // =================================================
+            // CONSTRUIRE UTILISATEUR FINAL
+            // =================================================
 
             const utilisateurFinal = {
 
@@ -530,7 +640,23 @@ const getPhotoUrl = (photoValue) => {
 
                 ...updatedUser,
 
-                ...formData
+                id_utilisateur:
+                    idUtilisateur,
+
+                nom:
+                    donneesModification.nom,
+
+                prenom:
+                    donneesModification.prenom,
+
+                email:
+                    donneesModification.email,
+
+                telephone:
+                    donneesModification.telephone,
+
+                role:
+                    donneesModification.role
 
             };
 
@@ -550,21 +676,49 @@ const getPhotoUrl = (photoValue) => {
             );
 
 
+            // =================================================
+            // ÉTAT UTILISATEUR
+            // =================================================
+
             setUtilisateur(
                 utilisateurFinal
             );
 
 
-            setMessage(
-                "Vos informations ont été mises à jour avec succès."
-            );
+            // =================================================
+            // METTRE À JOUR LE FORMULAIRE
+            // =================================================
+
+            setFormData({
+
+                nom:
+                    utilisateurFinal.nom || "",
+
+                prenom:
+                    utilisateurFinal.prenom || "",
+
+                email:
+                    utilisateurFinal.email || "",
+
+                telephone:
+                    utilisateurFinal.telephone || ""
+
+            });
 
 
-            // Informer navbar
+            // =================================================
+            // INFORMER NAVBAR
+            // =================================================
+
             window.dispatchEvent(
                 new Event(
                     "utilisateurConnecte"
                 )
+            );
+
+
+            setMessage(
+                "Vos informations ont été mises à jour avec succès."
             );
 
 
@@ -574,6 +728,12 @@ const getPhotoUrl = (photoValue) => {
             console.error(
                 "Erreur modification profil :",
                 err
+            );
+
+
+            console.error(
+                "Réponse serveur :",
+                err.response?.data
             );
 
 
@@ -765,7 +925,9 @@ const getPhotoUrl = (photoValue) => {
                             setError("")
                         }
                     >
+
                         <FaTimes />
+
                     </button>
 
                 </div>
@@ -1343,6 +1505,7 @@ const getPhotoUrl = (photoValue) => {
 
 
                     </div>
+
 
                 </div>
 
