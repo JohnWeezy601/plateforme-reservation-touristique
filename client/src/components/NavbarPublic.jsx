@@ -797,7 +797,7 @@ function NavbarPublic() {
                                         fermerMenus();
 
                                         navigate(
-                                            "/transactions"
+                                            "/espace-client/transactions"
                                         );
 
                                     }}
@@ -823,7 +823,7 @@ function NavbarPublic() {
                                         fermerMenus();
 
                                         navigate(
-                                            "/mes-avis"
+                                            "/espace-client/avis"
                                         );
 
                                     }}
@@ -889,7 +889,7 @@ function NavbarPublic() {
                                         fermerMenus();
 
                                         navigate(
-                                            "/profil"
+                                            "/espace-client/profil"
                                         );
 
                                     }}
