@@ -16,7 +16,7 @@ function MesReservations() {
 
     const [reservations, setReservations] = useState([]);
 
-    const [photosOffres, setPhotosOffres] = useState({});
+    const [offresDetails, setOffresDetails] = useState({});
 
     const [paiements, setPaiements] = useState([]);
 
@@ -44,34 +44,13 @@ function MesReservations() {
     // UTILISATEUR
     // =====================================================
 
-    const utilisateur = (() => {
-
-        try {
-
-            const data =
-                localStorage.getItem("utilisateur");
-
-            return data
-                ? JSON.parse(data)
-                : null;
-
-        }
-        catch (error) {
-
-            console.error(
-                "Erreur lecture utilisateur :",
-                error
-            );
-
-            return null;
-
-        }
-
-    })();
+    const utilisateur = JSON.parse(
+        localStorage.getItem("utilisateur")
+    );
 
 
     // =====================================================
-    // NORMALISER LE STATUT
+    // NORMALISER STATUT
     // =====================================================
 
     const normaliserStatut = (statut) => {
@@ -88,53 +67,38 @@ function MesReservations() {
     // =====================================================
     // CONSTRUIRE URL PHOTO
     // =====================================================
-    //
-    // Compatible avec :
-    //
-    // - URL Cloudinary
-    // - URL HTTP / HTTPS
-    // - blob:
-    // - /uploads/photo.jpg
-    // - uploads/photo.jpg
-    // - ancien nom de fichier
-    //
-    // =====================================================
 
     const construireUrlPhoto = (photo) => {
 
         if (!photo) {
-
             return null;
-
         }
 
 
-        let valeurPhoto = null;
+        let nomPhoto = null;
 
 
-        // =================================================
-        // PHOTO SOUS FORME DE TEXTE
-        // =================================================
+        // -------------------------------------------------
+        // STRING
+        // -------------------------------------------------
 
         if (typeof photo === "string") {
 
-            valeurPhoto = photo;
+            nomPhoto = photo;
 
         }
 
 
-        // =================================================
-        // PHOTO SOUS FORME D'OBJET
-        // =================================================
+        // -------------------------------------------------
+        // OBJET
+        // -------------------------------------------------
 
-        else if (
-            typeof photo === "object"
-        ) {
+        else if (typeof photo === "object") {
 
-            valeurPhoto =
-                photo.chemin_photo ||
+            nomPhoto =
                 photo.secure_url ||
                 photo.url ||
+                photo.chemin_photo ||
                 photo.photo ||
                 photo.image ||
                 photo.nom_photo ||
@@ -145,124 +109,98 @@ function MesReservations() {
         }
 
 
-        if (!valeurPhoto) {
-
+        if (!nomPhoto) {
             return null;
-
         }
 
 
-        valeurPhoto =
-            String(valeurPhoto).trim();
+        nomPhoto = String(
+            nomPhoto
+        ).trim();
 
 
-        if (!valeurPhoto) {
-
+        if (!nomPhoto) {
             return null;
-
         }
 
 
-        // =================================================
+        // -------------------------------------------------
         // CLOUDINARY / URL EXTERNE
-        // =================================================
+        // -------------------------------------------------
 
         if (
-            valeurPhoto.startsWith(
-                "http://"
-            ) ||
-            valeurPhoto.startsWith(
-                "https://"
-            ) ||
-            valeurPhoto.startsWith(
-                "blob:"
-            )
+            nomPhoto.startsWith("http://") ||
+            nomPhoto.startsWith("https://") ||
+            nomPhoto.startsWith("blob:")
         ) {
 
-            return valeurPhoto;
+            return nomPhoto;
 
         }
 
 
-        // =================================================
+        // -------------------------------------------------
         // URL SERVEUR
-        // =================================================
+        // -------------------------------------------------
 
-        const serveur = (
-            import.meta.env.VITE_SERVER_URL ||
-            import.meta.env.VITE_API_URL ||
-            "http://localhost:8081"
-        ).replace(/\/$/, "");
+        const serveur =
+            (
+                import.meta.env.VITE_SERVER_URL ||
+                import.meta.env.VITE_API_URL ||
+                "http://localhost:8081"
+            ).replace(/\/$/, "");
 
 
-        // =================================================
-        // /uploads/photo.jpg
-        // =================================================
+        // -------------------------------------------------
+        // /uploads/...
+        // -------------------------------------------------
 
         if (
-            valeurPhoto.startsWith(
-                "/uploads/"
-            )
+            nomPhoto.startsWith("/uploads/")
         ) {
 
-            return (
-                serveur +
-                valeurPhoto
-            );
+            return `${serveur}${nomPhoto}`;
 
         }
 
 
-        // =================================================
-        // uploads/photo.jpg
-        // =================================================
+        // -------------------------------------------------
+        // uploads/...
+        // -------------------------------------------------
 
         if (
-            valeurPhoto.startsWith(
-                "uploads/"
-            )
+            nomPhoto.startsWith("uploads/")
         ) {
 
-            return (
-                serveur +
-                "/" +
-                valeurPhoto
-            );
+            return `${serveur}/${nomPhoto}`;
 
         }
 
 
-        // =================================================
-        // AUTRE CHEMIN SERVEUR
-        // =================================================
+        // -------------------------------------------------
+        // AUTRE CHEMIN
+        // -------------------------------------------------
 
         if (
-            valeurPhoto.startsWith("/")
+            nomPhoto.startsWith("/")
         ) {
 
-            return (
-                serveur +
-                valeurPhoto
-            );
+            return `${serveur}${nomPhoto}`;
 
         }
 
 
-        // =================================================
+        // -------------------------------------------------
         // ANCIEN NOM DE FICHIER
-        // =================================================
+        // -------------------------------------------------
 
-        return (
-            serveur +
-            "/uploads/" +
-            valeurPhoto
-        );
+        return `${serveur}/uploads/${nomPhoto}`;
 
     };
 
 
     // =====================================================
-    // EXTRAIRE LES PHOTOS
+    // EXTRAIRE PHOTOS
     // =====================================================
 
     const extrairePhotos = (data) => {
@@ -310,21 +248,29 @@ function MesReservations() {
 
 
     // =====================================================
-    // CHARGER LES PHOTOS DES OFFRES
+    // CHARGER LES INFORMATIONS COMPLÈTES DES OFFRES
+    // =====================================================
+    //
+    // Pour chaque offre réservée :
+    //
+    // offre.image  = image principale
+    //
+    // offre.photos = photos détaillées
+    //
     // =====================================================
 
-    const chargerPhotosOffres = async (
+    const chargerDetailsOffres = async (
         reservations
     ) => {
 
         try {
 
-            const photosParOffre = {};
+            const details = {};
 
 
-            // =================================================
-            // RECUPERER LES IDS UNIQUES
-            // =================================================
+            // -------------------------------------------------
+            // ID OFFRES UNIQUES
+            // -------------------------------------------------
 
             const offresUniques = [
                 ...new Set(
@@ -333,11 +279,7 @@ function MesReservations() {
                             (reservation) =>
                                 reservation.id_offre
                         )
-                        .filter(
-                            (id) =>
-                                id !== null &&
-                                id !== undefined
-                        )
+                        .filter(Boolean)
                 )
             ];
 
@@ -347,29 +289,18 @@ function MesReservations() {
             );
 
             console.log(
-                "IDS OFFRES POUR LES PHOTOS :",
+                "OFFRES À RÉCUPÉRER :",
                 offresUniques
             );
 
-
-            // =================================================
-            // AUCUNE OFFRE
-            // =================================================
-
-            if (
-                offresUniques.length === 0
-            ) {
-
-                setPhotosOffres({});
-
-                return;
-
-            }
+            console.log(
+                "======================================"
+            );
 
 
-            // =================================================
-            // RECUPERATION DES PHOTOS
-            // =================================================
+            // -------------------------------------------------
+            // RÉCUPÉRATION DES OFFRES
+            // -------------------------------------------------
 
             await Promise.all(
 
@@ -379,49 +310,110 @@ function MesReservations() {
                         try {
 
                             console.log(
-                                `Récupération photos offre ${idOffre}`
+                                `Récupération offre ${idOffre}...`
                             );
 
 
                             const response =
                                 await api.get(
-                                    `/offres/${idOffre}/photos`
+                                    `/offres/${idOffre}`
                                 );
 
 
+                            const offre =
+                                response.data;
+
+
                             console.log(
-                                `Photos reçues pour offre ${idOffre} :`,
-                                response.data
+                                `Détails offre ${idOffre} :`,
+                                offre
                             );
 
+
+                            // -------------------------------------------------
+                            // PHOTO PRINCIPALE
+                            // -------------------------------------------------
+
+                            const imagePrincipale =
+                                offre?.image ||
+                                offre?.image_principale ||
+                                offre?.photo ||
+                                null;
+
+
+                            // -------------------------------------------------
+                            // PHOTOS DÉTAILLÉES
+                            // -------------------------------------------------
 
                             const photos =
                                 extrairePhotos(
-                                    response.data
+                                    offre
                                 );
 
 
-                            photosParOffre[idOffre] =
-                                photos;
+                            details[idOffre] = {
+
+                                ...offre,
+
+                                image:
+                                    imagePrincipale,
+
+                                photos:
+                                    photos
+
+                            };
 
 
                             console.log(
-                                `Nombre photos offre ${idOffre} :`,
-                                photos.length
+                                `Image principale offre ${idOffre} :`,
+                                imagePrincipale
+                            );
+
+
+                            console.log(
+                                `Photos détaillées offre ${idOffre} :`,
+                                photos
                             );
 
                         }
+
                         catch (error) {
 
                             console.error(
-                                `Erreur photos offre ${idOffre} :`,
+                                `Erreur récupération offre ${idOffre} :`,
                                 error.response?.data ||
                                 error.message
                             );
 
 
-                            photosParOffre[idOffre] =
-                                [];
+                            // -------------------------------------------------
+                            // FALLBACK
+                            // Si GET /offres/:id échoue,
+                            // on utilise éventuellement les données
+                            // présentes dans la réservation.
+                            // -------------------------------------------------
+
+                            const reservation =
+                                reservations.find(
+                                    (item) =>
+                                        Number(
+                                            item.id_offre
+                                        ) ===
+                                        Number(
+                                            idOffre
+                                        )
+                                );
+
+
+                            details[idOffre] = {
+
+                                image:
+                                    reservation?.image ||
+                                    null,
+
+                                photos: []
+
+                            };
 
                         }
 
@@ -431,30 +423,39 @@ function MesReservations() {
             );
 
 
-            // =================================================
+            // -------------------------------------------------
             // ENREGISTRER
-            // =================================================
+            // -------------------------------------------------
 
-            setPhotosOffres(
-                photosParOffre
+            setOffresDetails(
+                details
             );
 
 
             console.log(
-                "PHOTOS DE TOUTES LES OFFRES :",
-                photosParOffre
+                "======================================"
+            );
+
+            console.log(
+                "DÉTAILS DE TOUTES LES OFFRES :",
+                details
+            );
+
+            console.log(
+                "======================================"
             );
 
         }
+
         catch (error) {
 
             console.error(
-                "Erreur générale photos offres :",
+                "Erreur générale récupération offres :",
                 error
             );
 
 
-            setPhotosOffres({});
+            setOffresDetails({});
 
         }
 
@@ -462,207 +463,87 @@ function MesReservations() {
 
 
     // =====================================================
-    // CHARGER LES DONNEES
+    // CHARGER RESERVATIONS + PAIEMENTS
     // =====================================================
 
     useEffect(() => {
 
-        let interval = null;
-
-        let actif = true;
+        let interval;
 
 
-        const chargerDonnees = async () => {
+        const chargerDonnees =
+            async () => {
 
-            if (!utilisateur) {
+                if (!utilisateur) {
 
-                if (!actif) {
+                    setReservations([]);
+
+                    setPaiements([]);
+
+                    setOffresDetails({});
+
+                    setChargement(false);
+
                     return;
+
                 }
 
-                setReservations([]);
-
-                setPaiements([]);
-
-                setPhotosOffres({});
-
-                setChargement(false);
-
-                return;
-
-            }
-
-
-            try {
-
-                // =================================================
-                // RESERVATIONS
-                // =================================================
-
-                const resReservations =
-                    await api.get(
-                        "/reservations"
-                    );
-
-
-                console.log(
-                    "Toutes les réservations :",
-                    resReservations.data
-                );
-
-
-                // =================================================
-                // VERIFIER FORMAT
-                // =================================================
-
-                const toutesReservations =
-                    Array.isArray(
-                        resReservations.data
-                    )
-                        ? resReservations.data
-                        : (
-                            Array.isArray(
-                                resReservations.data?.reservations
-                            )
-                                ? resReservations.data.reservations
-                                : []
-                        );
-
-
-                // =================================================
-                // MES RESERVATIONS
-                // =================================================
-
-                const mesReservations =
-                    toutesReservations.filter(
-                        (reservation) =>
-                            Number(
-                                reservation.id_utilisateur
-                            ) ===
-                            Number(
-                                utilisateur.id_utilisateur
-                            )
-                    );
-
-
-                console.log(
-                    "Mes réservations :",
-                    mesReservations
-                );
-
-
-                // =================================================
-                // RESERVATIONS VISIBLES
-                // =================================================
-
-                const reservationsVisibles =
-                    mesReservations.filter(
-                        (reservation) => {
-
-                            const statut =
-                                normaliserStatut(
-                                    reservation.statut
-                                );
-
-
-                            return (
-
-                                statut ===
-                                    "en attente" ||
-
-                                statut ===
-                                    "attente" ||
-
-                                statut ===
-                                    "annulee" ||
-
-                                statut ===
-                                    "rejetee"
-
-                            );
-
-                        }
-                    );
-
-
-                if (!actif) {
-                    return;
-                }
-
-
-                setReservations(
-                    reservationsVisibles
-                );
-
-
-                // =================================================
-                // PHOTOS
-                // =================================================
-
-                await chargerPhotosOffres(
-                    reservationsVisibles
-                );
-
-
-                // =================================================
-                // PAIEMENTS
-                // =================================================
 
                 try {
 
-                    const resPaiements =
+                    // =================================================
+                    // RESERVATIONS
+                    // =================================================
+
+                    const resReservations =
                         await api.get(
-                            "/paiements"
+                            "/reservations"
                         );
 
 
                     console.log(
-                        "Tous les paiements :",
-                        resPaiements.data
+                        "Toutes les réservations :",
+                        resReservations.data
                     );
 
 
-                    const tousPaiements =
+                    // =================================================
+                    // MES RESERVATIONS
+                    // =================================================
+
+                    const mesReservations =
                         Array.isArray(
-                            resPaiements.data
+                            resReservations.data
                         )
-                            ? resPaiements.data
-                            : (
-                                Array.isArray(
-                                    resPaiements.data?.paiements
-                                )
-                                    ? resPaiements.data.paiements
-                                    : []
-                            );
+                            ? resReservations.data.filter(
+                                (reservation) =>
+                                    Number(
+                                        reservation.id_utilisateur
+                                    ) ===
+                                    Number(
+                                        utilisateur.id_utilisateur
+                                    )
+                            )
+                            : [];
+
+
+                    console.log(
+                        "Mes réservations :",
+                        mesReservations
+                    );
 
 
                     // =================================================
-                    // MES PAIEMENTS
+                    // RESERVATIONS VISIBLES
                     // =================================================
 
-                    const mesPaiements =
-                        tousPaiements.filter(
-                            (paiement) =>
-                                Number(
-                                    paiement.id_utilisateur
-                                ) ===
-                                Number(
-                                    utilisateur.id_utilisateur
-                                )
-                        );
-
-
-                    // =================================================
-                    // PAIEMENTS NECESSITANT UNE ACTION
-                    // =================================================
-
-                    const paiementsVisibles =
-                        mesPaiements.filter(
-                            (paiement) => {
+                    const reservationsVisibles =
+                        mesReservations.filter(
+                            (reservation) => {
 
                                 const statut =
                                     normaliserStatut(
-                                        paiement.statut
+                                        reservation.statut
                                     );
 
 
@@ -675,16 +556,10 @@ function MesReservations() {
                                         "attente" ||
 
                                     statut ===
-                                        "non valide" ||
+                                        "annulee" ||
 
                                     statut ===
-                                        "non validee" ||
-
-                                    statut ===
-                                        "echoue" ||
-
-                                    statut ===
-                                        "echec"
+                                        "rejetee"
 
                                 );
 
@@ -692,26 +567,103 @@ function MesReservations() {
                         );
 
 
-                    if (!actif) {
-                        return;
+                    setReservations(
+                        reservationsVisibles
+                    );
+
+
+                    // =================================================
+                    // RÉCUPÉRER LES OFFRES
+                    // =================================================
+
+                    await chargerDetailsOffres(
+                        reservationsVisibles
+                    );
+
+
+                    // =================================================
+                    // PAIEMENTS
+                    // =================================================
+
+                    try {
+
+                        const resPaiements =
+                            await api.get(
+                                "/paiements"
+                            );
+
+
+                        console.log(
+                            "Tous les paiements :",
+                            resPaiements.data
+                        );
+
+
+                        const mesPaiements =
+                            Array.isArray(
+                                resPaiements.data
+                            )
+                                ? resPaiements.data.filter(
+                                    (paiement) =>
+                                        Number(
+                                            paiement.id_utilisateur
+                                        ) ===
+                                        Number(
+                                            utilisateur.id_utilisateur
+                                        )
+                                )
+                                : [];
+
+
+                        const paiementsVisibles =
+                            mesPaiements.filter(
+                                (paiement) => {
+
+                                    const statut =
+                                        normaliserStatut(
+                                            paiement.statut
+                                        );
+
+
+                                    return (
+
+                                        statut ===
+                                            "en attente" ||
+
+                                        statut ===
+                                            "attente" ||
+
+                                        statut ===
+                                            "non valide" ||
+
+                                        statut ===
+                                            "non validee" ||
+
+                                        statut ===
+                                            "echoue" ||
+
+                                        statut ===
+                                            "echec"
+
+                                    );
+
+                                }
+                            );
+
+
+                        setPaiements(
+                            paiementsVisibles
+                        );
+
                     }
 
+                    catch (error) {
 
-                    setPaiements(
-                        paiementsVisibles
-                    );
+                        console.error(
+                            "Erreur chargement paiements :",
+                            error
+                        );
 
-                }
-                catch (error) {
-
-                    console.error(
-                        "Erreur chargement paiements :",
-                        error.response?.data ||
-                        error.message
-                    );
-
-
-                    if (actif) {
 
                         setPaiements([]);
 
@@ -719,36 +671,27 @@ function MesReservations() {
 
                 }
 
-            }
-            catch (error) {
+                catch (error) {
 
-                console.error(
-                    "Erreur chargement réservations :",
-                    error.response?.data ||
-                    error.message
-                );
+                    console.error(
+                        "Erreur chargement réservations :",
+                        error
+                    );
 
-
-                if (actif) {
 
                     setReservations([]);
 
-                    setPhotosOffres({});
+                    setOffresDetails({});
 
                 }
 
-            }
-            finally {
-
-                if (actif) {
+                finally {
 
                     setChargement(false);
 
                 }
 
-            }
-
-        };
+            };
 
 
         // =================================================
@@ -769,21 +712,11 @@ function MesReservations() {
             );
 
 
-        // =================================================
-        // NETTOYAGE
-        // =================================================
-
         return () => {
 
-            actif = false;
-
-            if (interval) {
-
-                clearInterval(
-                    interval
-                );
-
-            }
+            clearInterval(
+                interval
+            );
 
         };
 
@@ -839,7 +772,7 @@ function MesReservations() {
 
 
     // =====================================================
-    // CLASSE STATUT RESERVATION
+    // STATUT RESERVATION
     // =====================================================
 
     const statutClass = (statut) => {
@@ -883,7 +816,7 @@ function MesReservations() {
 
 
     // =====================================================
-    // CLASSE STATUT PAIEMENT
+    // STATUT PAIEMENT
     // =====================================================
 
     const paiementClass = (statut) => {
@@ -962,12 +895,8 @@ function MesReservations() {
                         const nouvellesReservations =
                             anciennesReservations.filter(
                                 (reservation) =>
-                                    Number(
-                                        reservation.id_reservation
-                                    ) !==
-                                    Number(
-                                        idReservation
-                                    )
+                                    reservation.id_reservation !==
+                                    idReservation
                             );
 
 
@@ -979,15 +908,9 @@ function MesReservations() {
 
 
                         if (
-                            nouvelleTotalPages === 0
-                        ) {
-
-                            setPageReservations(1);
-
-                        }
-                        else if (
+                            nouvelleTotalPages > 0 &&
                             pageReservations >
-                            nouvelleTotalPages
+                                nouvelleTotalPages
                         ) {
 
                             setPageReservations(
@@ -1005,12 +928,8 @@ function MesReservations() {
 
                 if (
                     detailReservation &&
-                    Number(
-                        detailReservation.id_reservation
-                    ) ===
-                    Number(
+                    detailReservation.id_reservation ===
                         idReservation
-                    )
                 ) {
 
                     setDetailReservation(
@@ -1020,6 +939,7 @@ function MesReservations() {
                 }
 
             }
+
             catch (error) {
 
                 console.error(
@@ -1071,12 +991,8 @@ function MesReservations() {
                         const nouveauxPaiements =
                             anciensPaiements.filter(
                                 (paiement) =>
-                                    Number(
-                                        paiement.id_paiement
-                                    ) !==
-                                    Number(
-                                        idPaiement
-                                    )
+                                    paiement.id_paiement !==
+                                    idPaiement
                             );
 
 
@@ -1088,15 +1004,9 @@ function MesReservations() {
 
 
                         if (
-                            nouvelleTotalPages === 0
-                        ) {
-
-                            setPagePaiements(1);
-
-                        }
-                        else if (
+                            nouvelleTotalPages > 0 &&
                             pagePaiements >
-                            nouvelleTotalPages
+                                nouvelleTotalPages
                         ) {
 
                             setPagePaiements(
@@ -1112,6 +1022,7 @@ function MesReservations() {
                 );
 
             }
+
             catch (error) {
 
                 console.error(
@@ -1131,6 +1042,21 @@ function MesReservations() {
 
 
     // =====================================================
+    // OUVRIR MODALE
+    // =====================================================
+
+    const ouvrirDetailsReservation = (
+        reservation
+    ) => {
+
+        setDetailReservation(
+            reservation
+        );
+
+    };
+
+
+    // =====================================================
     // CHARGEMENT
     // =====================================================
 
@@ -1138,15 +1064,21 @@ function MesReservations() {
 
         return (
 
-            <div className="mes-reservations">
+            <div className="mes-reservations-page">
 
-                <h1>
-                    Mes réservations
-                </h1>
+                <div className="reservations-loading">
 
-                <p className="subtitle">
-                    Chargement de vos réservations...
-                </p>
+                    <div className="loading-spinner"></div>
+
+                    <h2>
+                        Chargement de vos réservations
+                    </h2>
+
+                    <p>
+                        Veuillez patienter...
+                    </p>
+
+                </div>
 
             </div>
 
@@ -1161,306 +1093,732 @@ function MesReservations() {
 
     return (
 
-        <div className="mes-reservations">
+        <div className="mes-reservations-page">
 
 
             {/* =================================================
-                RETOUR
+                CONTENEUR
             ================================================= */}
 
-            <button
-                type="button"
-                className="retour-page-button"
-                onClick={() =>
-                    navigate(-1)
-                }
-            >
-
-                ← Retour
-
-            </button>
+            <div className="mes-reservations-container">
 
 
-            <h1>
-                Mes réservations
-            </h1>
+                {/* =================================================
+                    HEADER
+                ================================================= */}
+
+                <div className="page-header">
+
+                    <button
+                        type="button"
+                        className="retour-page-button"
+                        onClick={() =>
+                            navigate(-1)
+                        }
+                    >
+
+                        <span>
+                            ←
+                        </span>
+
+                        Retour
+
+                    </button>
 
 
-            <p className="subtitle">
+                    <div className="page-title">
 
-                Retrouvez vos réservations en attente,
-                annulées ou rejetées ainsi que vos paiements
-                nécessitant une action.
+                        <span className="title-icon">
+                            📋
+                        </span>
 
-            </p>
+                        <div>
 
+                            <h1>
+                                Mes réservations
+                            </h1>
 
-            {/* =================================================
-                RESERVATIONS
-            ================================================= */}
+                            <p>
+                                Retrouvez vos réservations et
+                                les paiements nécessitant une action.
+                            </p>
 
-            <section className="reservations-section">
-
-                <h2>
-                    📋 Mes réservations
-                </h2>
-
-
-                {reservations.length === 0 ? (
-
-                    <div className="empty">
-
-                        Aucune réservation à afficher.
+                        </div>
 
                     </div>
 
-                ) : (
-
-                    <>
-
-                        <div className="reservations-list">
-
-                            {reservationsPage.map(
-                                (reservation) => {
-
-                                    const photos =
-                                        photosOffres[
-                                            reservation.id_offre
-                                        ] || [];
+                </div>
 
 
-                                    return (
+                {/* =================================================
+                    RESERVATIONS
+                ================================================= */}
 
-                                        <div
-                                            className="reservation-client-card"
-                                            key={
-                                                reservation.id_reservation
-                                            }
-                                        >
+                <section className="reservations-section">
 
 
-                                            {/* =================================================
-                                                PHOTOS
-                                            ================================================= */}
+                    <div className="section-header">
 
-                                            <div className="reservation-image">
+                        <div>
 
-                                                {photos.length > 0 ? (
+                            <h2>
+                                Mes réservations
+                            </h2>
 
-                                                    <div className="reservation-photos">
+                            <p>
+                                Réservations en attente,
+                                annulées ou rejetées
+                            </p>
 
-                                                        {photos.map(
-                                                            (
-                                                                photo,
-                                                                index
-                                                            ) => {
-
-                                                                const url =
-                                                                    construireUrlPhoto(
-                                                                        photo
-                                                                    );
+                        </div>
 
 
-                                                                if (!url) {
+                        <span className="section-count">
 
-                                                                    return null;
+                            {reservations.length}
 
-                                                                }
+                            {" "}
 
+                            réservation
+                            {reservations.length > 1 ? "s" : ""}
 
-                                                                return (
+                        </span>
 
-                                                                    <img
-                                                                        key={
-                                                                            photo.id_photo ||
-                                                                            photo.id ||
-                                                                            photo.id_offre_photo ||
-                                                                            index
-                                                                        }
-                                                                        src={url}
-                                                                        alt={
-                                                                            reservation.titre ||
-                                                                            "Photo de l'offre"
-                                                                        }
-                                                                        loading="lazy"
-                                                                        onError={(
-                                                                            event
-                                                                        ) => {
-
-                                                                            console.error(
-                                                                                "Erreur chargement photo Cloudinary :",
-                                                                                url
-                                                                            );
+                    </div>
 
 
-                                                                            event.currentTarget.style.display =
-                                                                                "none";
+                    {reservations.length === 0 ? (
 
-                                                                        }}
-                                                                    />
+                        <div className="empty-state">
 
+                            <div className="empty-icon">
+                                🏝️
+                            </div>
+
+                            <h3>
+                                Aucune réservation
+                            </h3>
+
+                            <p>
+                                Vous n'avez actuellement aucune
+                                réservation nécessitant une action.
+                            </p>
+
+                        </div>
+
+                    ) : (
+
+                        <>
+
+
+                            <div className="reservations-list">
+
+
+                                {reservationsPage.map(
+                                    (reservation) => {
+
+                                        // -------------------------------------------------
+                                        // RÉCUPÉRER L'OFFRE
+                                        // -------------------------------------------------
+
+                                        const offre =
+                                            offresDetails[
+                                                reservation.id_offre
+                                            ] || {};
+
+
+                                        // -------------------------------------------------
+                                        // IMAGE PRINCIPALE UNIQUEMENT
+                                        // POUR LA CARTE
+                                        // -------------------------------------------------
+
+                                        const imagePrincipale =
+                                            offre.image ||
+                                            reservation.image ||
+                                            null;
+
+
+                                        const imageUrl =
+                                            construireUrlPhoto(
+                                                imagePrincipale
+                                            );
+
+
+                                        return (
+
+                                            <article
+                                                className="reservation-client-card"
+                                                key={
+                                                    reservation.id_reservation
+                                                }
+                                            >
+
+
+                                                {/* =================================================
+                                                    IMAGE PRINCIPALE
+                                                ================================================= */}
+
+                                                <div className="reservation-card-image">
+
+
+                                                    {imageUrl ? (
+
+                                                        <img
+                                                            src={imageUrl}
+                                                            alt={
+                                                                reservation.titre ||
+                                                                "Offre touristique"
+                                                            }
+                                                            onError={(event) => {
+
+                                                                console.error(
+                                                                    "Erreur image principale :",
+                                                                    imageUrl
                                                                 );
 
-                                                            }
-                                                        )}
+                                                                event.currentTarget.style.display =
+                                                                    "none";
 
-                                                    </div>
+                                                            }}
+                                                        />
 
-                                                ) : reservation.image ? (
+                                                    ) : (
 
-                                                    <img
-                                                        src={
-                                                            construireUrlPhoto(
-                                                                reservation.image
-                                                            )
-                                                        }
-                                                        alt={
-                                                            reservation.titre ||
-                                                            "Offre touristique"
-                                                        }
-                                                        loading="lazy"
-                                                        onError={(
-                                                            event
-                                                        ) => {
+                                                        <div className="reservation-no-image">
 
-                                                            console.error(
-                                                                "Erreur image principale :",
-                                                                reservation.image
-                                                            );
+                                                            <span>
+                                                                🏝️
+                                                            </span>
+
+                                                            <small>
+                                                                Aucune image
+                                                            </small>
+
+                                                        </div>
+
+                                                    )}
 
 
-                                                            event.currentTarget.style.display =
-                                                                "none";
+                                                    {/* STATUT SUR IMAGE */}
 
-                                                        }}
-                                                    />
-
-                                                ) : (
-
-                                                    <div className="reservation-no-image">
-
-                                                        🏝️
-
-                                                    </div>
-
-                                                )}
-
-                                            </div>
-
-
-                                            {/* =================================================
-                                                INFORMATIONS
-                                            ================================================= */}
-
-                                            <div className="reservation-info">
-
-                                                <h2>
-
-                                                    {
-                                                        reservation.titre ||
-                                                        "Offre touristique"
-                                                    }
-
-                                                </h2>
-
-
-                                                <p>
-
-                                                    📅 Date réservation :{" "}
-
-                                                    {
-                                                        reservation.date_reservation
-                                                            ? new Date(
-                                                                reservation.date_reservation
-                                                            ).toLocaleDateString(
-                                                                "fr-FR"
-                                                            )
-                                                            : "-"
-                                                    }
-
-                                                </p>
-
-
-                                                <p>
-
-                                                    👥 Nombre personnes :{" "}
-
-                                                    {
-                                                        reservation.nombre_personnes ||
-                                                        0
-                                                    }
-
-                                                </p>
-
-
-                                                <p>
-
-                                                    💰 Montant :{" "}
-
-                                                    <strong>
-
-                                                        {
-                                                            Number(
-                                                                reservation.montant_total ||
-                                                                0
-                                                            ).toLocaleString(
-                                                                "fr-FR"
-                                                            )
-                                                        }{" "}
-
-                                                        Ar
-
-                                                    </strong>
-
-                                                </p>
-
-
-                                                <span
-                                                    className={
-                                                        `statut ${statutClass(
-                                                            reservation.statut
-                                                        )}`
-                                                    }
-                                                >
-
-                                                    {
-                                                        reservation.statut ||
-                                                        "En attente"
-                                                    }
-
-                                                </span>
-
-
-                                                {/* ACTIONS */}
-
-                                                <div className="reservation-actions">
-
-                                                    <button
-                                                        type="button"
-                                                        className="voir-plus-button"
-                                                        onClick={() =>
-                                                            setDetailReservation(
-                                                                reservation
-                                                            )
+                                                    <span
+                                                        className={
+                                                            `image-status ${statutClass(
+                                                                reservation.statut
+                                                            )}`
                                                         }
                                                     >
 
-                                                        👁️ Voir plus
+                                                        {reservation.statut ||
+                                                            "En attente"}
 
-                                                    </button>
+                                                    </span>
 
+
+                                                </div>
+
+
+                                                {/* =================================================
+                                                    INFORMATIONS
+                                                ================================================= */}
+
+                                                <div className="reservation-info">
+
+
+                                                    <div className="reservation-info-top">
+
+                                                        <span className="reservation-label">
+                                                            RÉSERVATION
+                                                        </span>
+
+                                                        <span className="reservation-number">
+
+                                                            #
+
+                                                            {
+                                                                reservation.id_reservation
+                                                            }
+
+                                                        </span>
+
+                                                    </div>
+
+
+                                                    <h2>
+
+                                                        {
+                                                            reservation.titre ||
+                                                            "Offre touristique"
+                                                        }
+
+                                                    </h2>
+
+
+                                                    {reservation.destination && (
+
+                                                        <p className="reservation-destination">
+
+                                                            📍
+
+                                                            {
+                                                                reservation.destination
+                                                            }
+
+                                                        </p>
+
+                                                    )}
+
+
+                                                    <div className="reservation-meta">
+
+
+                                                        <div>
+
+                                                            <span>
+                                                                📅
+                                                            </span>
+
+                                                            <div>
+
+                                                                <small>
+                                                                    Date
+                                                                </small>
+
+                                                                <strong>
+
+                                                                    {
+                                                                        reservation.date_reservation
+                                                                            ? new Date(
+                                                                                reservation.date_reservation
+                                                                            ).toLocaleDateString(
+                                                                                "fr-FR"
+                                                                            )
+                                                                            : "-"
+                                                                    }
+
+                                                                </strong>
+
+                                                            </div>
+
+                                                        </div>
+
+
+                                                        <div>
+
+                                                            <span>
+                                                                👥
+                                                            </span>
+
+                                                            <div>
+
+                                                                <small>
+                                                                    Personnes
+                                                                </small>
+
+                                                                <strong>
+
+                                                                    {
+                                                                        reservation.nombre_personnes ||
+                                                                        0
+                                                                    }
+
+                                                                </strong>
+
+                                                            </div>
+
+                                                        </div>
+
+
+                                                        <div>
+
+                                                            <span>
+                                                                💰
+                                                            </span>
+
+                                                            <div>
+
+                                                                <small>
+                                                                    Montant
+                                                                </small>
+
+                                                                <strong>
+
+                                                                    {
+                                                                        Number(
+                                                                            reservation.montant_total ||
+                                                                            0
+                                                                        ).toLocaleString(
+                                                                            "fr-FR"
+                                                                        )
+                                                                    }
+
+                                                                    {" "}
+                                                                    Ar
+
+                                                                </strong>
+
+                                                            </div>
+
+                                                        </div>
+
+
+                                                    </div>
+
+
+                                                    {/* =================================================
+                                                        ACTIONS
+                                                    ================================================= */}
+
+                                                    <div className="reservation-actions">
+
+
+                                                        <button
+                                                            type="button"
+                                                            className="voir-plus-button"
+                                                            onClick={() =>
+                                                                ouvrirDetailsReservation(
+                                                                    reservation
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <span>
+                                                                👁️
+                                                            </span>
+
+                                                            Voir les détails
+
+                                                        </button>
+
+
+                                                        <button
+                                                            type="button"
+                                                            className="supprimer-button"
+                                                            onClick={() =>
+                                                                supprimerReservation(
+                                                                    reservation.id_reservation
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <span>
+                                                                🗑️
+                                                            </span>
+
+                                                            Supprimer
+
+                                                        </button>
+
+
+                                                    </div>
+
+
+                                                </div>
+
+                                            </article>
+
+                                        );
+
+                                    }
+                                )}
+
+                            </div>
+
+
+                            {/* =================================================
+                                PAGINATION
+                            ================================================= */}
+
+                            {totalPagesReservations > 1 && (
+
+                                <div className="pagination">
+
+
+                                    <button
+                                        type="button"
+                                        disabled={
+                                            pageReservations === 1
+                                        }
+                                        onClick={() =>
+                                            setPageReservations(
+                                                pageReservations - 1
+                                            )
+                                        }
+                                    >
+
+                                        ←
+                                        <span>
+                                            Précédent
+                                        </span>
+
+                                    </button>
+
+
+                                    {Array.from(
+                                        {
+                                            length:
+                                                totalPagesReservations
+                                        },
+                                        (_, index) => (
+
+                                            <button
+                                                type="button"
+                                                key={
+                                                    index + 1
+                                                }
+                                                className={
+                                                    pageReservations ===
+                                                    index + 1
+                                                        ? "active"
+                                                        : ""
+                                                }
+                                                onClick={() =>
+                                                    setPageReservations(
+                                                        index + 1
+                                                    )
+                                                }
+                                            >
+
+                                                {
+                                                    index + 1
+                                                }
+
+                                            </button>
+
+                                        )
+                                    )}
+
+
+                                    <button
+                                        type="button"
+                                        disabled={
+                                            pageReservations ===
+                                            totalPagesReservations
+                                        }
+                                        onClick={() =>
+                                            setPageReservations(
+                                                pageReservations + 1
+                                            )
+                                        }
+                                    >
+
+                                        <span>
+                                            Suivant
+                                        </span>
+                                        →
+
+                                    </button>
+
+
+                                </div>
+
+                            )}
+
+                        </>
+
+                    )}
+
+                </section>
+
+
+                {/* =================================================
+                    PAIEMENTS
+                ================================================= */}
+
+                <section className="paiements-section">
+
+
+                    <div className="section-header">
+
+                        <div>
+
+                            <h2>
+                                Paiements nécessitant une action
+                            </h2>
+
+                            <p>
+                                Paiements en attente,
+                                non valides ou échoués
+                            </p>
+
+                        </div>
+
+
+                        <span className="section-count payment-count">
+
+                            {paiements.length}
+
+                            {" "}
+
+                            paiement
+                            {paiements.length > 1 ? "s" : ""}
+
+                        </span>
+
+                    </div>
+
+
+                    {paiements.length === 0 ? (
+
+                        <div className="empty-state payment-empty">
+
+                            <div className="empty-icon">
+                                💳
+                            </div>
+
+                            <h3>
+                                Aucun paiement à traiter
+                            </h3>
+
+                            <p>
+                                Tous vos paiements sont actuellement
+                                à jour.
+                            </p>
+
+                        </div>
+
+                    ) : (
+
+                        <>
+
+
+                            <div className="paiements-list">
+
+
+                                {paiementsPage.map(
+                                    (paiement) => (
+
+                                        <article
+                                            className="paiement-client-card"
+                                            key={
+                                                paiement.id_paiement
+                                            }
+                                        >
+
+                                            <div className="paiement-icon">
+                                                💳
+                                            </div>
+
+
+                                            <div className="paiement-info">
+
+                                                <div className="paiement-header">
+
+                                                    <h3>
+
+                                                        Paiement #
+
+                                                        {
+                                                            paiement.id_paiement
+                                                        }
+
+                                                    </h3>
+
+
+                                                    <span
+                                                        className={
+                                                            `paiement-statut ${paiementClass(
+                                                                paiement.statut
+                                                            )}`
+                                                        }
+                                                    >
+
+                                                        {
+                                                            paiement.statut ||
+                                                            "En attente"
+                                                        }
+
+                                                    </span>
+
+                                                </div>
+
+
+                                                {paiement.id_reservation && (
+
+                                                    <p>
+
+                                                        <strong>
+                                                            Réservation :
+                                                        </strong>
+
+                                                        {" #"}
+
+                                                        {
+                                                            paiement.id_reservation
+                                                        }
+
+                                                    </p>
+
+                                                )}
+
+
+                                                <div className="paiement-details-row">
+
+
+                                                    <div>
+
+                                                        <span>
+                                                            Montant
+                                                        </span>
+
+                                                        <strong>
+
+                                                            {
+                                                                Number(
+                                                                    paiement.montant ||
+                                                                    paiement.montant_total ||
+                                                                    0
+                                                                ).toLocaleString(
+                                                                    "fr-FR"
+                                                                )
+                                                            }
+
+                                                            {" "}
+                                                            Ar
+
+                                                        </strong>
+
+                                                    </div>
+
+
+                                                    {paiement.mode_paiement && (
+
+                                                        <div>
+
+                                                            <span>
+                                                                Mode de paiement
+                                                            </span>
+
+                                                            <strong>
+
+                                                                {
+                                                                    paiement.mode_paiement
+                                                                }
+
+                                                            </strong>
+
+                                                        </div>
+
+                                                    )}
+
+                                                </div>
+
+
+                                                <div className="paiement-actions">
 
                                                     <button
                                                         type="button"
                                                         className="supprimer-button"
                                                         onClick={() =>
-                                                            supprimerReservation(
-                                                                reservation.id_reservation
+                                                            supprimerPaiement(
+                                                                paiement.id_paiement
                                                             )
                                                         }
                                                     >
 
-                                                        🗑️ Supprimer
+                                                        🗑️
+
+                                                        Supprimer
 
                                                     </button>
 
@@ -1468,349 +1826,110 @@ function MesReservations() {
 
                                             </div>
 
-                                        </div>
-
-                                    );
-
-                                }
-                            )}
-
-                        </div>
-
-
-                        {/* =================================================
-                            PAGINATION
-                        ================================================= */}
-
-                        {totalPagesReservations > 1 && (
-
-                            <div className="pagination">
-
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setPageReservations(
-                                            (page) =>
-                                                page - 1
-                                        )
-                                    }
-                                    disabled={
-                                        pageReservations === 1
-                                    }
-                                >
-
-                                    ← Précédent
-
-                                </button>
-
-
-                                {Array.from(
-                                    {
-                                        length:
-                                            totalPagesReservations
-                                    },
-                                    (_, index) => (
-
-                                        <button
-                                            type="button"
-                                            key={
-                                                index + 1
-                                            }
-                                            className={
-                                                pageReservations ===
-                                                index + 1
-                                                    ? "active"
-                                                    : ""
-                                            }
-                                            onClick={() =>
-                                                setPageReservations(
-                                                    index + 1
-                                                )
-                                            }
-                                        >
-
-                                            {index + 1}
-
-                                        </button>
+                                        </article>
 
                                     )
                                 )}
 
-
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setPageReservations(
-                                            (page) =>
-                                                page + 1
-                                        )
-                                    }
-                                    disabled={
-                                        pageReservations ===
-                                        totalPagesReservations
-                                    }
-                                >
-
-                                    Suivant →
-
-                                </button>
-
                             </div>
 
-                        )}
 
-                    </>
+                            {totalPagesPaiements > 1 && (
 
-                )}
-
-            </section>
+                                <div className="pagination">
 
 
-            {/* =================================================
-                PAIEMENTS
-            ================================================= */}
-
-            <section className="paiements-section">
-
-                <h2>
-                    💳 Paiements nécessitant une action
-                </h2>
-
-
-                {paiements.length === 0 ? (
-
-                    <div className="empty">
-
-                        Aucun paiement nécessitant une action.
-
-                    </div>
-
-                ) : (
-
-                    <>
-
-                        <div className="paiements-list">
-
-                            {paiementsPage.map(
-                                (paiement) => (
-
-                                    <div
-                                        className="paiement-client-card"
-                                        key={
-                                            paiement.id_paiement
+                                    <button
+                                        type="button"
+                                        disabled={
+                                            pagePaiements === 1
+                                        }
+                                        onClick={() =>
+                                            setPagePaiements(
+                                                pagePaiements - 1
+                                            )
                                         }
                                     >
 
-                                        <div className="paiement-info">
+                                        ←
+                                        <span>
+                                            Précédent
+                                        </span>
 
-                                            <h3>
+                                    </button>
 
-                                                💳 Paiement #
 
-                                                {
-                                                    paiement.id_paiement
+                                    {Array.from(
+                                        {
+                                            length:
+                                                totalPagesPaiements
+                                        },
+                                        (_, index) => (
+
+                                            <button
+                                                type="button"
+                                                key={
+                                                    index + 1
                                                 }
-
-                                            </h3>
-
-
-                                            {paiement.id_reservation && (
-
-                                                <p>
-
-                                                    📋 Réservation :{" "}
-
-                                                    <strong>
-
-                                                        #
-
-                                                        {
-                                                            paiement.id_reservation
-                                                        }
-
-                                                    </strong>
-
-                                                </p>
-
-                                            )}
-
-
-                                            <p>
-
-                                                💰 Montant :{" "}
-
-                                                <strong>
-
-                                                    {
-                                                        Number(
-                                                            paiement.montant ||
-                                                            paiement.montant_total ||
-                                                            0
-                                                        ).toLocaleString(
-                                                            "fr-FR"
-                                                        )
-                                                    }{" "}
-
-                                                    Ar
-
-                                                </strong>
-
-                                            </p>
-
-
-                                            {paiement.mode_paiement && (
-
-                                                <p>
-
-                                                    💳 Mode de paiement :{" "}
-
-                                                    <strong>
-
-                                                        {
-                                                            paiement.mode_paiement
-                                                        }
-
-                                                    </strong>
-
-                                                </p>
-
-                                            )}
-
-
-                                            <span
                                                 className={
-                                                    `paiement-statut ${paiementClass(
-                                                        paiement.statut
-                                                    )}`
+                                                    pagePaiements ===
+                                                    index + 1
+                                                        ? "active"
+                                                        : ""
+                                                }
+                                                onClick={() =>
+                                                    setPagePaiements(
+                                                        index + 1
+                                                    )
                                                 }
                                             >
 
                                                 {
-                                                    paiement.statut ||
-                                                    "En attente"
+                                                    index + 1
                                                 }
 
-                                            </span>
+                                            </button>
+
+                                        )
+                                    )}
 
 
-                                            <div className="paiement-actions">
+                                    <button
+                                        type="button"
+                                        disabled={
+                                            pagePaiements ===
+                                            totalPagesPaiements
+                                        }
+                                        onClick={() =>
+                                            setPagePaiements(
+                                                pagePaiements + 1
+                                            )
+                                        }
+                                    >
 
-                                                <button
-                                                    type="button"
-                                                    className="supprimer-button"
-                                                    onClick={() =>
-                                                        supprimerPaiement(
-                                                            paiement.id_paiement
-                                                        )
-                                                    }
-                                                >
+                                        <span>
+                                            Suivant
+                                        </span>
 
-                                                    🗑️ Supprimer
+                                        →
 
-                                                </button>
+                                    </button>
 
-                                            </div>
+                                </div>
 
-                                        </div>
-
-                                    </div>
-
-                                )
                             )}
 
-                        </div>
+                        </>
 
+                    )}
 
-                        {/* =================================================
-                            PAGINATION PAIEMENTS
-                        ================================================= */}
+                </section>
 
-                        {totalPagesPaiements > 1 && (
-
-                            <div className="pagination">
-
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setPagePaiements(
-                                            (page) =>
-                                                page - 1
-                                        )
-                                    }
-                                    disabled={
-                                        pagePaiements === 1
-                                    }
-                                >
-
-                                    ← Précédent
-
-                                </button>
-
-
-                                {Array.from(
-                                    {
-                                        length:
-                                            totalPagesPaiements
-                                    },
-                                    (_, index) => (
-
-                                        <button
-                                            type="button"
-                                            key={
-                                                index + 1
-                                            }
-                                            className={
-                                                pagePaiements ===
-                                                index + 1
-                                                    ? "active"
-                                                    : ""
-                                            }
-                                            onClick={() =>
-                                                setPagePaiements(
-                                                    index + 1
-                                                )
-                                            }
-                                        >
-
-                                            {index + 1}
-
-                                        </button>
-
-                                    )
-                                )}
-
-
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setPagePaiements(
-                                            (page) =>
-                                                page + 1
-                                        )
-                                    }
-                                    disabled={
-                                        pagePaiements ===
-                                        totalPagesPaiements
-                                    }
-                                >
-
-                                    Suivant →
-
-                                </button>
-
-                            </div>
-
-                        )}
-
-                    </>
-
-                )}
-
-            </section>
+            </div>
 
 
             {/* =====================================================
-                MODALE DETAIL RESERVATION
+                MODALE
             ===================================================== */}
 
             {detailReservation && (
@@ -1818,9 +1937,7 @@ function MesReservations() {
                 <div
                     className="reservation-modal-overlay"
                     onClick={() =>
-                        setDetailReservation(
-                            null
-                        )
+                        setDetailReservation(null)
                     }
                 >
 
@@ -1833,19 +1950,27 @@ function MesReservations() {
 
 
                         {/* =================================================
-                            HEADER
+                            HEADER MODALE
                         ================================================= */}
 
                         <div className="reservation-modal-header">
 
-                            <h2>
+                            <div>
 
-                                {
-                                    detailReservation.titre ||
-                                    "Détails de la réservation"
-                                }
+                                <span>
+                                    DÉTAILS DE LA RÉSERVATION
+                                </span>
 
-                            </h2>
+                                <h2>
+
+                                    {
+                                        detailReservation.titre ||
+                                        "Offre touristique"
+                                    }
+
+                                </h2>
+
+                            </div>
 
 
                             <button
@@ -1866,241 +1991,401 @@ function MesReservations() {
 
 
                         {/* =================================================
-                            PHOTOS
+                            CONTENU MODALE
                         ================================================= */}
 
-                        {(
-                            photosOffres[
-                                detailReservation.id_offre
-                            ] || []
-                        ).length > 0 ? (
+                        <div className="reservation-modal-content">
 
-                            <div className="reservation-modal-photos">
 
-                                {(
-                                    photosOffres[
+                            {/* =================================================
+                                GALERIE
+                            ================================================= */}
+
+                            {(() => {
+
+                                const offre =
+                                    offresDetails[
                                         detailReservation.id_offre
-                                    ] || []
-                                ).map(
-                                    (
-                                        photo,
-                                        index
-                                    ) => {
-
-                                        const url =
-                                            construireUrlPhoto(
-                                                photo
-                                            );
+                                    ] || {};
 
 
-                                        if (!url) {
+                                const imagePrincipale =
+                                    offre.image ||
+                                    detailReservation.image ||
+                                    null;
 
-                                            return null;
 
-                                        }
+                                const photosDetail =
+                                    extrairePhotos(
+                                        offre
+                                    );
 
 
-                                        return (
+                                const imagePrincipaleUrl =
+                                    construireUrlPhoto(
+                                        imagePrincipale
+                                    );
 
-                                            <img
-                                                key={
-                                                    photo.id_photo ||
-                                                    photo.id ||
-                                                    photo.id_offre_photo ||
-                                                    index
+
+                                return (
+
+                                    <div className="reservation-gallery">
+
+
+                                        {/* IMAGE PRINCIPALE */}
+
+                                        {imagePrincipaleUrl && (
+
+                                            <div className="gallery-main-image">
+
+                                                <img
+                                                    src={
+                                                        imagePrincipaleUrl
+                                                    }
+                                                    alt={
+                                                        detailReservation.titre ||
+                                                        "Image principale de l'offre"
+                                                    }
+                                                    onError={(event) => {
+
+                                                        console.error(
+                                                            "Erreur image principale modale :",
+                                                            imagePrincipaleUrl
+                                                        );
+
+                                                        event.currentTarget.style.display =
+                                                            "none";
+
+                                                    }}
+                                                />
+
+                                                <span className="gallery-main-label">
+
+                                                    Image principale
+
+                                                </span>
+
+                                            </div>
+
+                                        )}
+
+
+                                        {/* =================================================
+                                            PHOTOS DÉTAILLÉES
+                                        ================================================= */}
+
+                                        {photosDetail.length > 0 && (
+
+                                            <div className="gallery-details">
+
+                                                <div className="gallery-title">
+
+                                                    <h3>
+                                                        Galerie de l'offre
+                                                    </h3>
+
+                                                    <span>
+
+                                                        {
+                                                            photosDetail.length
+                                                        }
+
+                                                        {" "}
+                                                        photo
+                                                        {
+                                                            photosDetail.length > 1
+                                                                ? "s"
+                                                                : ""
+                                                        }
+
+                                                    </span>
+
+                                                </div>
+
+
+                                                <div className="gallery-grid">
+
+                                                    {photosDetail.map(
+                                                        (
+                                                            photo,
+                                                            index
+                                                        ) => {
+
+                                                            const url =
+                                                                construireUrlPhoto(
+                                                                    photo
+                                                                );
+
+
+                                                            if (!url) {
+
+                                                                return null;
+
+                                                            }
+
+
+                                                            return (
+
+                                                                <div
+                                                                    className="gallery-detail-image"
+                                                                    key={
+                                                                        photo.id_photo ||
+                                                                        photo.id ||
+                                                                        index
+                                                                    }
+                                                                >
+
+                                                                    <img
+                                                                        src={url}
+                                                                        alt={
+                                                                            `${detailReservation.titre || "Offre"} - photo ${index + 1}`
+                                                                        }
+                                                                        onError={(event) => {
+
+                                                                            console.error(
+                                                                                "Erreur photo détaillée :",
+                                                                                url
+                                                                            );
+
+                                                                            event.currentTarget.style.display =
+                                                                                "none";
+
+                                                                        }}
+                                                                    />
+
+                                                                </div>
+
+                                                            );
+
+                                                        }
+                                                    )}
+
+                                                </div>
+
+                                            </div>
+
+                                        )}
+
+
+                                        {/* AUCUNE IMAGE */}
+
+                                        {!imagePrincipaleUrl &&
+                                            photosDetail.length === 0 && (
+
+                                                <div className="modal-no-image">
+
+                                                    <span>
+                                                        🏝️
+                                                    </span>
+
+                                                    <p>
+                                                        Aucune photo disponible
+                                                        pour cette offre.
+                                                    </p>
+
+                                                </div>
+
+                                            )}
+
+                                    </div>
+
+                                );
+
+                            })()}
+
+
+                            {/* =================================================
+                                INFORMATIONS RESERVATION
+                            ================================================= */}
+
+                            <div className="reservation-details">
+
+
+                                <div className="details-title">
+
+                                    <span>
+                                        📋
+                                    </span>
+
+                                    <h3>
+                                        Informations de réservation
+                                    </h3>
+
+                                </div>
+
+
+                                <div className="details-grid">
+
+
+                                    <div className="detail-item">
+
+                                        <span>
+                                            Statut
+                                        </span>
+
+                                        <strong>
+
+                                            <span
+                                                className={
+                                                    `statut ${statutClass(
+                                                        detailReservation.statut
+                                                    )}`
                                                 }
-                                                src={url}
-                                                alt={
-                                                    detailReservation.titre ||
-                                                    "Photo de l'offre"
+                                            >
+
+                                                {
+                                                    detailReservation.statut ||
+                                                    "En attente"
                                                 }
-                                                loading="lazy"
-                                                onError={(
-                                                    event
-                                                ) => {
 
-                                                    console.error(
-                                                        "Erreur photo modale :",
-                                                        url
-                                                    );
+                                            </span>
+
+                                        </strong>
+
+                                    </div>
 
 
-                                                    event.currentTarget.style.display =
-                                                        "none";
+                                    <div className="detail-item">
 
-                                                }}
-                                            />
+                                        <span>
+                                            Numéro
+                                        </span>
 
-                                        );
+                                        <strong>
 
-                                    }
+                                            #
+
+                                            {
+                                                detailReservation.id_reservation
+                                            }
+
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="detail-item">
+
+                                        <span>
+                                            Date de réservation
+                                        </span>
+
+                                        <strong>
+
+                                            {
+                                                detailReservation.date_reservation
+                                                    ? new Date(
+                                                        detailReservation.date_reservation
+                                                    ).toLocaleDateString(
+                                                        "fr-FR"
+                                                    )
+                                                    : "-"
+                                            }
+
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="detail-item">
+
+                                        <span>
+                                            Nombre de personnes
+                                        </span>
+
+                                        <strong>
+
+                                            {
+                                                detailReservation.nombre_personnes ||
+                                                0
+                                            }
+
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="detail-item">
+
+                                        <span>
+                                            Montant total
+                                        </span>
+
+                                        <strong className="detail-price">
+
+                                            {
+                                                Number(
+                                                    detailReservation.montant_total ||
+                                                    0
+                                                ).toLocaleString(
+                                                    "fr-FR"
+                                                )
+                                            }
+
+                                            {" "}
+                                            Ar
+
+                                        </strong>
+
+                                    </div>
+
+
+                                    {detailReservation.destination && (
+
+                                        <div className="detail-item">
+
+                                            <span>
+                                                Destination
+                                            </span>
+
+                                            <strong>
+
+                                                📍
+
+                                                {
+                                                    detailReservation.destination
+                                                }
+
+                                            </strong>
+
+                                        </div>
+
+                                    )}
+
+                                </div>
+
+
+                                {/* =================================================
+                                    MESSAGE
+                                ================================================= */}
+
+                                {detailReservation.message && (
+
+                                    <div className="reservation-message">
+
+                                        <span>
+                                            💬
+                                        </span>
+
+                                        <div>
+
+                                            <strong>
+                                                Message
+                                            </strong>
+
+                                            <p>
+                                                {
+                                                    detailReservation.message
+                                                }
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
                                 )}
 
                             </div>
-
-                        ) : detailReservation.image ? (
-
-                            <div className="reservation-modal-image">
-
-                                <img
-                                    src={
-                                        construireUrlPhoto(
-                                            detailReservation.image
-                                        )
-                                    }
-                                    alt={
-                                        detailReservation.titre ||
-                                        "Offre touristique"
-                                    }
-                                    loading="lazy"
-                                    onError={(
-                                        event
-                                    ) => {
-
-                                        console.error(
-                                            "Erreur image principale modale :",
-                                            detailReservation.image
-                                        );
-
-
-                                        event.currentTarget.style.display =
-                                            "none";
-
-                                    }}
-                                />
-
-                            </div>
-
-                        ) : (
-
-                            <div className="reservation-modal-no-image">
-
-                                🏝️
-
-                                <span>
-                                    Aucune photo disponible
-                                </span>
-
-                            </div>
-
-                        )}
-
-
-                        {/* =================================================
-                            DETAILS
-                        ================================================= */}
-
-                        <div className="reservation-details">
-
-                            <p>
-
-                                <strong>
-                                    Statut :
-                                </strong>{" "}
-
-                                <span
-                                    className={
-                                        `statut ${statutClass(
-                                            detailReservation.statut
-                                        )}`
-                                    }
-                                >
-
-                                    {
-                                        detailReservation.statut ||
-                                        "En attente"
-                                    }
-
-                                </span>
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    Date de réservation :
-                                </strong>{" "}
-
-                                {
-                                    detailReservation.date_reservation
-                                        ? new Date(
-                                            detailReservation.date_reservation
-                                        ).toLocaleDateString(
-                                            "fr-FR"
-                                        )
-                                        : "-"
-                                }
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    Nombre de personnes :
-                                </strong>{" "}
-
-                                {
-                                    detailReservation.nombre_personnes ||
-                                    0
-                                }
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    Montant total :
-                                </strong>{" "}
-
-                                {
-                                    Number(
-                                        detailReservation.montant_total ||
-                                        0
-                                    ).toLocaleString(
-                                        "fr-FR"
-                                    )
-                                }{" "}
-
-                                Ar
-
-                            </p>
-
-
-                            {detailReservation.destination && (
-
-                                <p>
-
-                                    <strong>
-                                        Destination :
-                                    </strong>{" "}
-
-                                    {
-                                        detailReservation.destination
-                                    }
-
-                                </p>
-
-                            )}
-
-
-                            {detailReservation.message && (
-
-                                <p>
-
-                                    <strong>
-                                        Message :
-                                    </strong>{" "}
-
-                                    {
-                                        detailReservation.message
-                                    }
-
-                                </p>
-
-                            )}
 
                         </div>
 
@@ -2126,6 +2411,7 @@ function MesReservations() {
                             </button>
 
                         </div>
+
 
                     </div>
 
