@@ -213,7 +213,7 @@ const voirOffre = (id) => {
 
 
 // =====================================================
-// FORMAT PRIX
+// FORMAT PRIX EN EURO
 // =====================================================
 
 const formaterPrix = (prix) => {
@@ -221,7 +221,11 @@ const formaterPrix = (prix) => {
     return Number(
         prix || 0
     ).toLocaleString(
-        "fr-FR"
+        "fr-FR",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
     );
 
 };
@@ -601,9 +605,9 @@ return (
 
 
                                const image =
-    recommandation.image
-        ? recommandation.image
-        : null;
+                                recommandation.image
+                                 ? recommandation.image
+                                  : null;
 
 
                                 return (
@@ -749,13 +753,13 @@ return (
 
                                                     <strong>
 
-                                                        {
-                                                            formaterPrix(
-                                                                recommandation.prix
-                                                            )
-                                                        }
+                                                       {
+                                                      formaterPrix(
+                                                      recommandation.prix
+                                                              )
+                                                       }
 
-                                                        {" "}Ar
+                                                        {" "}€
 
                                                     </strong>
 
