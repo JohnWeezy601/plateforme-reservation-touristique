@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -7,7 +7,14 @@ import {
     FaCheckCircle,
     FaClock,
     FaTimesCircle,
-    FaMoneyBillWave
+    FaMoneyBillWave,
+    FaCalendarAlt,
+    FaReceipt,
+    FaShieldAlt,
+    FaChevronRight,
+    FaWallet,
+    FaExclamationCircle,
+    FaSyncAlt
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -19,6 +26,11 @@ function TransactionsClient() {
 
     const navigate = useNavigate();
 
+
+    // =====================================================
+    // ETATS
+    // =====================================================
+
     const [utilisateur, setUtilisateur] = useState(null);
 
     const [transactions, setTransactions] = useState([]);
@@ -27,14 +39,18 @@ function TransactionsClient() {
 
     const [error, setError] = useState("");
 
+    const [refreshing, setRefreshing] = useState(false);
+
 
     // =====================================================
-    // UTILISATEUR
+    // UTILISATEUR CONNECTÉ
     // =====================================================
 
     useEffect(() => {
 
-        const data = localStorage.getItem("utilisateur");
+        const data =
+            localStorage.getItem("utilisateur");
+
 
         if (!data) {
 
@@ -44,13 +60,26 @@ function TransactionsClient() {
 
         }
 
+
         try {
 
-            setUtilisateur(JSON.parse(data));
+            const parsed =
+                JSON.parse(data);
 
-        } catch {
+            setUtilisateur(parsed);
 
-            localStorage.removeItem("utilisateur");
+        }
+
+        catch (error) {
+
+            console.error(
+                "Erreur lecture utilisateur :",
+                error
+            );
+
+            localStorage.removeItem(
+                "utilisateur"
+            );
 
             navigate("/login-client");
 
@@ -60,228 +89,42 @@ function TransactionsClient() {
 
 
     // =====================================================
-    // RÉCUPÉRER LES TRANSACTIONS
+    // FORMAT MONTANT EURO
     // =====================================================
 
-    useEffect(() => {
-
-        if (!utilisateur) return;
-
-        const chargerTransactions = async () => {
-
-            setLoading(true);
-            setError("");
-
-            try {
-
-                /*
-                 * Route prévue :
-                 * GET /paiements/utilisateur/:id
-                 */
-
-                const response = await api.get(
-                    `/paiements/utilisateur/${utilisateur.id_utilisateur}`
-                );
-
-                const data =
-                    response.data?.paiements ||
-                    response.data?.transactions ||
-                    response.data ||
-                    [];
-
-                setTransactions(
-                    Array.isArray(data)
-                        ? data
-                        : []
-                );
-
-
-            } catch (err) {
-
-                console.error(
-                    "Erreur récupération transactions :",
-                    err
-                );
-
-                /*
-                 * On essaye également les données
-                 * éventuellement enregistrées localement.
-                 */
-
-                try {
-
-                    const localData =
-                        localStorage.getItem(
-                            "mesTransactions"
-                        );
-
-                    if (localData) {
-
-                        const parsed =
-                            JSON.parse(localData);
-
-                        setTransactions(
-                            Array.isArray(parsed)
-                                ? parsed
-                                : []
-                        );
-
-                    } else {
-
-                        setTransactions([]);
-
-                    }
-
-                } catch {
-
-                    setTransactions([]);
-
-                }
-
-                setError(
-                    "Impossible de récupérer les transactions depuis le serveur."
-                );
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        };
-
-
-        chargerTransactions();
-
-    }, [utilisateur]);
-
-
-    // =====================================================
-    // STATUT
-    // =====================================================
-
-    const getStatusIcon = (statut) => {
-
-        const value =
-            String(statut || "")
-                .toLowerCase();
+    const formatPrix = (montant) => {
 
         if (
-            value.includes("success") ||
-            value.includes("réussi") ||
-            value.includes("reussi") ||
-            value.includes("payé") ||
-            value.includes("paye") ||
-            value.includes("confirm")
+            montant === null ||
+            montant === undefined ||
+            montant === ""
         ) {
 
-            return <FaCheckCircle />;
+            return "0,00 €";
 
         }
 
-        if (
-            value.includes("attente") ||
-            value.includes("pending")
-        ) {
-
-            return <FaClock />;
-
-        }
-
-        if (
-            value.includes("annul") ||
-            value.includes("refus") ||
-            value.includes("failed") ||
-            value.includes("échec") ||
-            value.includes("echec")
-        ) {
-
-            return <FaTimesCircle />;
-
-        }
-
-        return <FaCreditCard />;
-
-    };
-
-
-    const getStatusClass = (statut) => {
-
-        const value =
-            String(statut || "")
-                .toLowerCase();
-
-        if (
-            value.includes("success") ||
-            value.includes("réussi") ||
-            value.includes("reussi") ||
-            value.includes("payé") ||
-            value.includes("paye") ||
-            value.includes("confirm")
-        ) {
-
-            return "success";
-
-        }
-
-        if (
-            value.includes("attente") ||
-            value.includes("pending")
-        ) {
-
-            return "pending";
-
-        }
-
-        if (
-            value.includes("annul") ||
-            value.includes("refus") ||
-            value.includes("failed") ||
-            value.includes("échec") ||
-            value.includes("echec")
-        ) {
-
-            return "failed";
-
-        }
-
-        return "default";
-
-    };
-
-
-    // =====================================================
-    // FORMAT PRIX
-    // =====================================================
-
-    const formatPrix = (prix) => {
-
-        if (
-            prix === null ||
-            prix === undefined ||
-            prix === ""
-        ) {
-
-            return "-";
-
-        }
 
         const number =
-            Number(prix);
+            Number(montant);
+
 
         if (Number.isNaN(number)) {
 
-            return prix;
+            return "0,00 €";
 
         }
 
-        return number.toLocaleString(
-            "fr-FR",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        ) + " €";
+
+        return (
+            number.toLocaleString(
+                "fr-FR",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            ) + " €"
+        );
 
     };
 
@@ -292,14 +135,67 @@ function TransactionsClient() {
 
     const formatDate = (date) => {
 
-        if (!date) return "-";
+        if (!date) {
+
+            return "-";
+
+        }
+
 
         const parsed =
             new Date(date);
 
-        if (Number.isNaN(parsed.getTime())) {
+
+        if (
+            Number.isNaN(
+                parsed.getTime()
+            )
+        ) {
+
             return date;
+
         }
+
+
+        return parsed.toLocaleDateString(
+            "fr-FR",
+            {
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+    };
+
+
+    // =====================================================
+    // FORMAT DATE COURTE
+    // =====================================================
+
+    const formatDateCourte = (date) => {
+
+        if (!date) {
+
+            return "-";
+
+        }
+
+
+        const parsed =
+            new Date(date);
+
+
+        if (
+            Number.isNaN(
+                parsed.getTime()
+            )
+        ) {
+
+            return "-";
+
+        }
+
 
         return parsed.toLocaleDateString(
             "fr-FR",
@@ -314,15 +210,550 @@ function TransactionsClient() {
 
 
     // =====================================================
+    // NORMALISER STATUT
+    // =====================================================
+
+    const normaliserStatut = (statut) => {
+
+        return String(statut || "")
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            );
+
+    };
+
+
+    // =====================================================
+    // STATUT RÉUSSI
+    // =====================================================
+
+    const estReussi = (statut) => {
+
+        const value =
+            normaliserStatut(statut);
+
+
+        return (
+            value.includes("success") ||
+            value.includes("reussi") ||
+            value.includes("paye") ||
+            value.includes("valide") ||
+            value.includes("confirme") ||
+            value.includes("confirmee") ||
+            value.includes("complete")
+        );
+
+    };
+
+
+    // =====================================================
+    // STATUT EN ATTENTE
+    // =====================================================
+
+    const estEnAttente = (statut) => {
+
+        const value =
+            normaliserStatut(statut);
+
+
+        return (
+            value.includes("attente") ||
+            value.includes("pending")
+        );
+
+    };
+
+
+    // =====================================================
+    // STATUT ÉCHOUÉ
+    // =====================================================
+
+    const estEchoue = (statut) => {
+
+        const value =
+            normaliserStatut(statut);
+
+
+        return (
+            value.includes("echec") ||
+            value.includes("echoue") ||
+            value.includes("failed") ||
+            value.includes("refus") ||
+            value.includes("annul")
+        );
+
+    };
+
+
+    // =====================================================
+    // ICÔNE STATUT
+    // =====================================================
+
+    const getStatusIcon = (statut) => {
+
+        if (estReussi(statut)) {
+
+            return <FaCheckCircle />;
+
+        }
+
+
+        if (estEnAttente(statut)) {
+
+            return <FaClock />;
+
+        }
+
+
+        if (estEchoue(statut)) {
+
+            return <FaTimesCircle />;
+
+        }
+
+
+        return <FaCreditCard />;
+
+    };
+
+
+    // =====================================================
+    // CLASSE STATUT
+    // =====================================================
+
+    const getStatusClass = (statut) => {
+
+        if (estReussi(statut)) {
+
+            return "success";
+
+        }
+
+
+        if (estEnAttente(statut)) {
+
+            return "pending";
+
+        }
+
+
+        if (estEchoue(statut)) {
+
+            return "failed";
+
+        }
+
+
+        return "default";
+
+    };
+
+
+    // =====================================================
+    // LIBELLÉ STATUT
+    // =====================================================
+
+    const getStatusLabel = (statut) => {
+
+        if (!statut) {
+
+            return "Non renseigné";
+
+        }
+
+
+        return statut;
+
+    };
+
+
+    // =====================================================
+    // RÉCUPÉRER LES TRANSACTIONS
+    // =====================================================
+
+    const chargerTransactions = async (
+        afficherChargement = true
+    ) => {
+
+        if (!utilisateur) {
+
+            return;
+
+        }
+
+
+        if (afficherChargement) {
+
+            setLoading(true);
+
+        }
+
+        else {
+
+            setRefreshing(true);
+
+        }
+
+
+        setError("");
+
+
+        try {
+
+            /*
+             * IMPORTANT :
+             *
+             * On récupère uniquement les paiements
+             * appartenant à l'utilisateur connecté.
+             *
+             * Exemple :
+             *
+             * GET /paiements/utilisateur/5
+             *
+             */
+
+            const response =
+                await api.get(
+                    `/paiements/utilisateur/${utilisateur.id_utilisateur}`
+                );
+
+
+            const data =
+                response.data?.paiements ||
+                response.data?.transactions ||
+                response.data?.data ||
+                response.data ||
+                [];
+
+
+            const liste =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+
+            /*
+             * Sécurité supplémentaire côté frontend :
+             * même si l'API retourne plusieurs paiements,
+             * on garde uniquement ceux du client connecté.
+             */
+
+            const transactionsClient =
+                liste.filter(
+                    (transaction) => {
+
+                        if (
+                            transaction.id_utilisateur ===
+                            undefined ||
+                            transaction.id_utilisateur ===
+                            null
+                        ) {
+
+                            return true;
+
+                        }
+
+
+                        return (
+                            Number(
+                                transaction.id_utilisateur
+                            ) ===
+                            Number(
+                                utilisateur.id_utilisateur
+                            )
+                        );
+
+                    }
+                );
+
+
+            /*
+             * Trier du plus récent
+             * au plus ancien.
+             */
+
+            transactionsClient.sort(
+                (a, b) => {
+
+                    const dateA =
+                        new Date(
+                            a.date_paiement ||
+                            a.date_transaction ||
+                            a.created_at ||
+                            a.date ||
+                            0
+                        ).getTime();
+
+
+                    const dateB =
+                        new Date(
+                            b.date_paiement ||
+                            b.date_transaction ||
+                            b.created_at ||
+                            b.date ||
+                            0
+                        ).getTime();
+
+
+                    return dateB - dateA;
+
+                }
+            );
+
+
+            setTransactions(
+                transactionsClient
+            );
+
+
+            /*
+             * Sauvegarde locale facultative.
+             */
+
+            try {
+
+                localStorage.setItem(
+                    "mesTransactions",
+                    JSON.stringify(
+                        transactionsClient
+                    )
+                );
+
+            }
+
+            catch {
+
+                // Rien à faire.
+
+            }
+
+        }
+
+        catch (err) {
+
+            console.error(
+                "Erreur récupération transactions :",
+                err.response?.data ||
+                err
+            );
+
+
+            /*
+             * FALLBACK LOCAL
+             */
+
+            try {
+
+                const localData =
+                    localStorage.getItem(
+                        "mesTransactions"
+                    );
+
+
+                if (localData) {
+
+                    const parsed =
+                        JSON.parse(
+                            localData
+                        );
+
+
+                    if (
+                        Array.isArray(parsed)
+                    ) {
+
+                        const transactionsClient =
+                            parsed.filter(
+                                (transaction) => {
+
+                                    if (
+                                        transaction.id_utilisateur ===
+                                        undefined ||
+                                        transaction.id_utilisateur ===
+                                        null
+                                    ) {
+
+                                        return true;
+
+                                    }
+
+
+                                    return (
+                                        Number(
+                                            transaction.id_utilisateur
+                                        ) ===
+                                        Number(
+                                            utilisateur.id_utilisateur
+                                        )
+                                    );
+
+                                }
+                            );
+
+
+                        setTransactions(
+                            transactionsClient
+                        );
+
+                    }
+
+                    else {
+
+                        setTransactions([]);
+
+                    }
+
+                }
+
+                else {
+
+                    setTransactions([]);
+
+                }
+
+            }
+
+            catch {
+
+                setTransactions([]);
+
+            }
+
+
+            setError(
+                "Impossible de récupérer vos transactions depuis le serveur."
+            );
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+            setRefreshing(false);
+
+        }
+
+    };
+
+
+    // =====================================================
+    // CHARGEMENT
+    // =====================================================
+
+    useEffect(() => {
+
+        if (!utilisateur) {
+
+            return;
+
+        }
+
+
+        chargerTransactions(
+            true
+        );
+
+    }, [utilisateur]);
+
+
+    // =====================================================
+    // STATISTIQUES
+    // =====================================================
+
+    const statistiques =
+        useMemo(() => {
+
+            const total =
+                transactions.reduce(
+                    (
+                        somme,
+                        transaction
+                    ) => {
+
+                        return (
+                            somme +
+                            Number(
+                                transaction.montant ??
+                                transaction.montant_total ??
+                                transaction.prix ??
+                                0
+                            )
+                        );
+
+                    },
+                    0
+                );
+
+
+            const reussies =
+                transactions.filter(
+                    (transaction) =>
+                        estReussi(
+                            transaction.statut ||
+                            transaction.status ||
+                            transaction.etat
+                        )
+                ).length;
+
+
+            const attente =
+                transactions.filter(
+                    (transaction) =>
+                        estEnAttente(
+                            transaction.statut ||
+                            transaction.status ||
+                            transaction.etat
+                        )
+                ).length;
+
+
+            const echouees =
+                transactions.filter(
+                    (transaction) =>
+                        estEchoue(
+                            transaction.statut ||
+                            transaction.status ||
+                            transaction.etat
+                        )
+                ).length;
+
+
+            return {
+
+                total,
+
+                reussies,
+
+                attente,
+
+                echouees
+
+            };
+
+        }, [transactions]);
+
+
+    // =====================================================
     // RETOUR
     // =====================================================
 
     const retour = () => {
 
-        navigate("/espace-client");
+        navigate(
+            "/espace-client"
+        );
 
     };
 
+
+    // =====================================================
+    // AFFICHAGE
+    // =====================================================
 
     return (
 
@@ -335,33 +766,66 @@ function TransactionsClient() {
 
             <header className="transactions-client-header">
 
-                <button
-                    className="transactions-client-back"
-                    onClick={retour}
-                >
 
-                    <FaArrowLeft />
-
-                    <span>
-                        Retour à mon espace
-                    </span>
-
-                </button>
+                <div className="transactions-client-header-inner">
 
 
-                <div>
+                    <button
+                        type="button"
+                        className="transactions-client-back"
+                        onClick={retour}
+                    >
 
-                    <span>
-                        ESPACE CLIENT
-                    </span>
+                        <FaArrowLeft />
 
-                    <h1>
-                        Mes transactions
-                    </h1>
+                        <span>
+                            Retour à mon espace
+                        </span>
 
-                    <p>
-                        Consultez l'historique de vos paiements.
-                    </p>
+                    </button>
+
+
+                    <div className="transactions-client-heading">
+
+                        <span className="transactions-eyebrow">
+                            ESPACE CLIENT
+                        </span>
+
+                        <h1>
+                            Mes transactions
+                        </h1>
+
+                        <p>
+                            Consultez et suivez
+                            l'ensemble de vos paiements.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        className="transactions-refresh-button"
+                        onClick={() =>
+                            chargerTransactions(false)
+                        }
+                        disabled={refreshing}
+                    >
+
+                        <FaSyncAlt
+                            className={
+                                refreshing
+                                    ? "refresh-spinning"
+                                    : ""
+                            }
+                        />
+
+                        <span>
+                            Actualiser
+                        </span>
+
+                    </button>
+
 
                 </div>
 
@@ -369,231 +833,519 @@ function TransactionsClient() {
 
 
             {/* =================================================
-                ERREUR
+                CONTENU PRINCIPAL
             ================================================= */}
 
-            {error && (
+            <main className="transactions-client-main">
 
-                <div className="transactions-client-error">
-                    {error}
-                </div>
 
-            )}
+                {/* =================================================
+                    ERREUR
+                ================================================= */}
 
+                {error && (
 
-            {/* =================================================
-                STATISTIQUES
-            ================================================= */}
+                    <div className="transactions-client-error">
 
-            <div className="transactions-client-summary">
+                        <FaExclamationCircle />
 
-                <div>
+                        <div>
 
-                    <div className="summary-icon">
-                        <FaCreditCard />
-                    </div>
+                            <strong>
+                                Attention
+                            </strong>
 
-                    <div>
+                            <p>
+                                {error}
+                            </p>
 
-                        <span>
-                            TRANSACTIONS
-                        </span>
-
-                        <strong>
-                            {transactions.length}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <div className="summary-icon">
-                        <FaMoneyBillWave />
-                    </div>
-
-                    <div>
-
-                        <span>
-                            TOTAL
-                        </span>
-
-                        <strong>
-
-                            {formatPrix(
-                                transactions.reduce(
-                                    (total, transaction) =>
-                                        total +
-                                        Number(
-                                            transaction.montant ||
-                                            transaction.prix ||
-                                            0
-                                        ),
-                                    0
-                                )
-                            )}
-
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {/* =================================================
-                TRANSACTIONS
-            ================================================= */}
-
-            <section className="transactions-client-card">
-
-
-                <div className="transactions-client-title">
-
-                    <div>
-
-                        <span>
-                            HISTORIQUE
-                        </span>
-
-                        <h2>
-                            Mes paiements
-                        </h2>
-
-                    </div>
-
-                    <FaCreditCard />
-
-                </div>
-
-
-                {loading ? (
-
-                    <div className="transactions-client-empty">
-                        Chargement des transactions...
-                    </div>
-
-                ) : transactions.length === 0 ? (
-
-                    <div className="transactions-client-empty">
-
-                        <FaCreditCard />
-
-                        <h3>
-                            Aucune transaction
-                        </h3>
-
-                        <p>
-                            Vous n'avez encore effectué aucun paiement.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    <div className="transactions-client-list">
-
-                        {transactions.map(
-                            (transaction, index) => {
-
-                                const statut =
-                                    transaction.statut ||
-                                    transaction.status ||
-                                    transaction.etat ||
-                                    "Non renseigné";
-
-                                return (
-
-                                    <div
-                                        className="transaction-client-item"
-                                        key={
-                                            transaction.id_paiement ||
-                                            transaction.id_transaction ||
-                                            transaction.id ||
-                                            index
-                                        }
-                                    >
-
-
-                                        <div className="transaction-client-icon">
-
-                                            {getStatusIcon(statut)}
-
-                                        </div>
-
-
-                                        <div className="transaction-client-info">
-
-                                            <strong>
-
-                                                {transaction.reference ||
-                                                transaction.reference_paiement ||
-                                                `Transaction #${index + 1}`}
-
-                                            </strong>
-
-                                            <span>
-
-                                                {transaction.mode_paiement ||
-                                                transaction.methode_paiement ||
-                                                transaction.moyen_paiement ||
-                                                "Paiement"}
-
-                                            </span>
-
-                                            <small>
-
-                                                {formatDate(
-                                                    transaction.date_paiement ||
-                                                    transaction.date_transaction ||
-                                                    transaction.created_at ||
-                                                    transaction.date
-                                                )}
-
-                                            </small>
-
-                                        </div>
-
-
-                                        <div className="transaction-client-amount">
-
-                                            <strong>
-                                                {formatPrix(
-                                                    transaction.montant ||
-                                                    transaction.prix ||
-                                                    0
-                                                )}
-                                            </strong>
-
-
-                                            <span
-                                                className={`transaction-status ${getStatusClass(statut)}`}
-                                            >
-
-                                                {getStatusIcon(statut)}
-
-                                                {statut}
-
-                                            </span>
-
-                                        </div>
-
-
-                                    </div>
-
-                                );
-
-                            }
-                        )}
+                        </div>
 
                     </div>
 
                 )}
 
-            </section>
+
+                {/* =================================================
+                    STATISTIQUES
+                ================================================= */}
+
+                {!loading && (
+
+                    <section className="transactions-summary-grid">
+
+
+                        {/* TOTAL TRANSACTIONS */}
+
+                        <div className="transaction-summary-card">
+
+                            <div className="summary-card-icon blue">
+
+                                <FaReceipt />
+
+                            </div>
+
+                            <div className="summary-card-content">
+
+                                <span>
+                                    TRANSACTIONS
+                                </span>
+
+                                <strong>
+                                    {transactions.length}
+                                </strong>
+
+                                <small>
+                                    Paiement
+                                    {transactions.length > 1 ? "s" : ""}
+                                    enregistré
+                                    {transactions.length > 1 ? "s" : ""}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* TOTAL */}
+
+                        <div className="transaction-summary-card">
+
+                            <div className="summary-card-icon green">
+
+                                <FaMoneyBillWave />
+
+                            </div>
+
+                            <div className="summary-card-content">
+
+                                <span>
+                                    TOTAL
+                                </span>
+
+                                <strong>
+                                    {formatPrix(
+                                        statistiques.total
+                                    )}
+                                </strong>
+
+                                <small>
+                                    Montant cumulé
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* RÉUSSIES */}
+
+                        <div className="transaction-summary-card">
+
+                            <div className="summary-card-icon success">
+
+                                <FaCheckCircle />
+
+                            </div>
+
+                            <div className="summary-card-content">
+
+                                <span>
+                                    RÉUSSIES
+                                </span>
+
+                                <strong>
+                                    {statistiques.reussies}
+                                </strong>
+
+                                <small>
+                                    Paiement
+                                    {statistiques.reussies > 1 ? "s" : ""}
+                                    confirmé
+                                    {statistiques.reussies > 1 ? "s" : ""}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* EN ATTENTE */}
+
+                        <div className="transaction-summary-card">
+
+                            <div className="summary-card-icon orange">
+
+                                <FaClock />
+
+                            </div>
+
+                            <div className="summary-card-content">
+
+                                <span>
+                                    EN ATTENTE
+                                </span>
+
+                                <strong>
+                                    {statistiques.attente}
+                                </strong>
+
+                                <small>
+                                    À traiter
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                    </section>
+
+                )}
+
+
+                {/* =================================================
+                    SECTION HISTORIQUE
+                ================================================= */}
+
+                <section className="transactions-client-card">
+
+
+                    {/* HEADER */}
+
+                    <div className="transactions-client-title">
+
+                        <div>
+
+                            <span>
+                                HISTORIQUE DES PAIEMENTS
+                            </span>
+
+                            <h2>
+                                Toutes mes transactions
+                            </h2>
+
+                            <p>
+                                Retrouvez ici l'historique
+                                de vos paiements effectués
+                                sur la plateforme.
+                            </p>
+
+                        </div>
+
+
+                        <div className="transactions-title-icon">
+
+                            <FaWallet />
+
+                        </div>
+
+                    </div>
+
+
+                    {/* =================================================
+                        CHARGEMENT
+                    ================================================= */}
+
+                    {loading ? (
+
+                        <div className="transactions-loading">
+
+                            <div className="transaction-spinner"></div>
+
+                            <h3>
+                                Chargement de vos transactions
+                            </h3>
+
+                            <p>
+                                Nous récupérons vos paiements...
+                            </p>
+
+                        </div>
+
+                    ) : transactions.length === 0 ? (
+
+                        /* =================================================
+                            VIDE
+                        ================================================= */
+
+                        <div className="transactions-client-empty">
+
+                            <div className="empty-transaction-icon">
+
+                                <FaCreditCard />
+
+                            </div>
+
+                            <h3>
+                                Aucune transaction
+                            </h3>
+
+                            <p>
+                                Vous n'avez encore effectué
+                                aucun paiement sur la plateforme.
+                            </p>
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    navigate("/")
+                                }
+                            >
+                                Découvrir les offres
+
+                                <FaChevronRight />
+
+                            </button>
+
+                        </div>
+
+                    ) : (
+
+                        /* =================================================
+                            LISTE
+                        ================================================= */
+
+                        <div className="transactions-client-list">
+
+
+                            {transactions.map(
+                                (
+                                    transaction,
+                                    index
+                                ) => {
+
+
+                                    const statut =
+                                        transaction.statut ||
+                                        transaction.status ||
+                                        transaction.etat ||
+                                        "Non renseigné";
+
+
+                                    const montant =
+                                        transaction.montant ??
+                                        transaction.montant_total ??
+                                        transaction.prix ??
+                                        0;
+
+
+                                    const reference =
+                                        transaction.reference ||
+                                        transaction.reference_paiement ||
+                                        transaction.numero_transaction ||
+                                        `Transaction #${transaction.id_paiement || index + 1}`;
+
+
+                                    const date =
+                                        transaction.date_paiement ||
+                                        transaction.date_transaction ||
+                                        transaction.created_at ||
+                                        transaction.date;
+
+
+                                    const mode =
+                                        transaction.mode_paiement ||
+                                        transaction.methode_paiement ||
+                                        transaction.moyen_paiement ||
+                                        "Paiement";
+
+
+                                    return (
+
+                                        <article
+                                            className="transaction-client-item"
+                                            key={
+                                                transaction.id_paiement ||
+                                                transaction.id_transaction ||
+                                                transaction.id ||
+                                                index
+                                            }
+                                        >
+
+
+                                            {/* ICÔNE */}
+
+                                            <div
+                                                className={`transaction-client-icon ${getStatusClass(statut)}`}
+                                            >
+
+                                                {getStatusIcon(
+                                                    statut
+                                                )}
+
+                                            </div>
+
+
+                                            {/* INFORMATIONS */}
+
+                                            <div className="transaction-client-info">
+
+
+                                                <div className="transaction-reference">
+
+                                                    <strong>
+                                                        {reference}
+                                                    </strong>
+
+                                                    {transaction.id_reservation && (
+
+                                                        <span>
+                                                            Réservation #
+                                                            {transaction.id_reservation}
+                                                        </span>
+
+                                                    )}
+
+                                                </div>
+
+
+                                                <div className="transaction-meta">
+
+
+                                                    <span>
+
+                                                        <FaCreditCard />
+
+                                                        {mode}
+
+                                                    </span>
+
+
+                                                    <span>
+
+                                                        <FaCalendarAlt />
+
+                                                        {formatDateCourte(
+                                                            date
+                                                        )}
+
+                                                    </span>
+
+
+                                                    {transaction.date_paiement && (
+
+                                                        <span className="transaction-date-full">
+
+                                                            {formatDate(
+                                                                transaction.date_paiement
+                                                            )}
+
+                                                        </span>
+
+                                                    )}
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                            {/* MONTANT */}
+
+                                            <div className="transaction-client-amount">
+
+
+                                                <strong>
+                                                    {formatPrix(
+                                                        montant
+                                                    )}
+                                                </strong>
+
+
+                                                <span
+                                                    className={`transaction-status ${getStatusClass(statut)}`}
+                                                >
+
+                                                    {getStatusIcon(
+                                                        statut
+                                                    )}
+
+                                                    {getStatusLabel(
+                                                        statut
+                                                    )}
+
+                                                </span>
+
+
+                                            </div>
+
+
+                                            <div className="transaction-arrow">
+
+                                                <FaChevronRight />
+
+                                            </div>
+
+
+                                        </article>
+
+                                    );
+
+                                }
+                            )}
+
+
+                        </div>
+
+                    )}
+
+
+                    {/* =================================================
+                        SÉCURITÉ
+                    ================================================= */}
+
+                    {!loading &&
+                        transactions.length > 0 && (
+
+                            <div className="transactions-security">
+
+                                <div className="security-icon">
+
+                                    <FaShieldAlt />
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Paiements sécurisés
+                                    </strong>
+
+                                    <p>
+                                        Vos transactions sont
+                                        traitées de manière
+                                        sécurisée et vos données
+                                        de paiement sont protégées.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        )}
+
+
+                </section>
+
+
+                {/* =================================================
+                    FOOTER INFO
+                ================================================= */}
+
+                <div className="transactions-bottom-info">
+
+                    <FaShieldAlt />
+
+                    <span>
+                        Vos informations de paiement
+                        restent confidentielles et sécurisées.
+                    </span>
+
+                </div>
+
+
+            </main>
 
 
         </div>
