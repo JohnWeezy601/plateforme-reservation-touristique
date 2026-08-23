@@ -771,7 +771,7 @@ function NavbarPublic() {
                                         fermerMenus();
 
                                         navigate(
-                                            "/mes-reservations"
+                                            "/espace-client/reservations"
                                         );
 
                                     }}

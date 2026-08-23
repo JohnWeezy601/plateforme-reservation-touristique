@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,26 +9,45 @@ function MesReservations() {
 
     const navigate = useNavigate();
 
+
+    // =====================================================
+    // ETATS
+    // =====================================================
+
     const [reservations, setReservations] = useState([]);
+
     const [photosOffres, setPhotosOffres] = useState({});
+
     const [paiements, setPaiements] = useState([]);
 
-    const [detailReservation, setDetailReservation] = useState(null);
+    const [detailReservation, setDetailReservation] =
+        useState(null);
 
-    const [chargement, setChargement] = useState(true);
+    const [chargement, setChargement] =
+        useState(true);
+
 
     // =====================================================
     // PAGINATION
     // =====================================================
 
-    const [pageReservations, setPageReservations] = useState(1);
-    const [pagePaiements, setPagePaiements] = useState(1);
+    const [pageReservations, setPageReservations] =
+        useState(1);
+
+    const [pagePaiements, setPagePaiements] =
+        useState(1);
 
     const elementsParPage = 3;
+
+
+    // =====================================================
+    // UTILISATEUR
+    // =====================================================
 
     const utilisateur = JSON.parse(
         localStorage.getItem("utilisateur")
     );
+
 
     // =====================================================
     // NORMALISER LE STATUT
@@ -45,8 +63,27 @@ function MesReservations() {
 
     };
 
+
     // =====================================================
     // CONSTRUIRE URL PHOTO
+    // =====================================================
+    //
+    // Cette fonction accepte :
+    //
+    // 1. Une URL Cloudinary complète
+    // 2. Une URL HTTP/HTTPS
+    // 3. /uploads/photo.jpg
+    // 4. uploads/photo.jpg
+    // 5. photo.jpg
+    // 6. Un objet contenant :
+    //    - photo
+    //    - url
+    //    - secure_url
+    //    - image
+    //    - nom_photo
+    //    - filename
+    //    - file_name
+    //
     // =====================================================
 
     const construireUrlPhoto = (photo) => {
@@ -55,41 +92,205 @@ function MesReservations() {
             return null;
         }
 
-        const nomPhoto =
-            typeof photo === "string"
-                ? photo
-                : photo.photo ||
-                  photo.nom_photo ||
-                  photo.image ||
-                  photo.filename ||
-                  photo.file_name;
+
+        // =================================================
+        // RECUPERER LA VALEUR DE LA PHOTO
+        // =================================================
+
+        let nomPhoto = null;
+
+
+        if (typeof photo === "string") {
+
+            nomPhoto = photo;
+
+        }
+        else if (typeof photo === "object") {
+
+            nomPhoto =
+                photo.secure_url ||
+                photo.url ||
+                photo.photo ||
+                photo.image ||
+                photo.nom_photo ||
+                photo.filename ||
+                photo.file_name ||
+                null;
+
+        }
+
 
         if (!nomPhoto) {
             return null;
         }
 
-        if (
-            nomPhoto.startsWith("http://") ||
-            nomPhoto.startsWith("https://")
-        ) {
-            return nomPhoto;
+
+        // =================================================
+        // NETTOYAGE
+        // =================================================
+
+        nomPhoto = String(nomPhoto).trim();
+
+
+        if (!nomPhoto) {
+            return null;
         }
 
+
+        // =================================================
+        // CLOUDINARY / URL EXTERNE
+        // =================================================
+
+        if (
+            nomPhoto.startsWith("http://") ||
+            nomPhoto.startsWith("https://") ||
+            nomPhoto.startsWith("blob:")
+        ) {
+
+            return nomPhoto;
+
+        }
+
+
+        // =================================================
+        // URL SERVEUR
+        // =================================================
+
         const serveur =
-            import.meta.env.VITE_SERVER_URL?.replace(/\/$/, "");
+            (
+                import.meta.env.VITE_SERVER_URL ||
+                import.meta.env.VITE_API_URL ||
+                "http://localhost:8081"
+            ).replace(/\/$/, "");
+
+
+        // =================================================
+        // /uploads/...
+        // =================================================
+
+        if (nomPhoto.startsWith("/uploads/")) {
+
+            return `${serveur}${nomPhoto}`;
+
+        }
+
+
+        // =================================================
+        // uploads/...
+        // =================================================
+
+        if (nomPhoto.startsWith("uploads/")) {
+
+            return `${serveur}/${nomPhoto}`;
+
+        }
+
+
+        // =================================================
+        // AUTRE CHEMIN COMMENÇANT PAR /
+        // =================================================
+
+        if (nomPhoto.startsWith("/")) {
+
+            return `${serveur}${nomPhoto}`;
+
+        }
+
+
+        // =================================================
+        // ANCIEN NOM DE FICHIER
+        // =================================================
 
         return `${serveur}/uploads/${nomPhoto}`;
+
     };
+
+
+    // =====================================================
+    // EXTRAIRE LES PHOTOS DE LA REPONSE
+    // =====================================================
+    //
+    // Le backend peut éventuellement retourner :
+    //
+    // [
+    //    {...},
+    //    {...}
+    // ]
+    //
+    // ou :
+    //
+    // {
+    //    photos: [...]
+    // }
+    //
+    // ou :
+    //
+    // {
+    //    data: [...]
+    // }
+    //
+    // =====================================================
+
+    const extrairePhotos = (data) => {
+
+        if (Array.isArray(data)) {
+
+            return data;
+
+        }
+
+
+        if (
+            data &&
+            Array.isArray(data.photos)
+        ) {
+
+            return data.photos;
+
+        }
+
+
+        if (
+            data &&
+            Array.isArray(data.data)
+        ) {
+
+            return data.data;
+
+        }
+
+
+        if (
+            data &&
+            Array.isArray(data.images)
+        ) {
+
+            return data.images;
+
+        }
+
+
+        return [];
+
+    };
+
 
     // =====================================================
     // CHARGER TOUTES LES PHOTOS DES OFFRES
     // =====================================================
 
-    const chargerPhotosOffres = async (reservations) => {
+    const chargerPhotosOffres = async (
+        reservations
+    ) => {
 
         try {
 
             const photosParOffre = {};
+
+
+            // =================================================
+            // RECUPERER LES ID OFFRES UNIQUES
+            // =================================================
 
             const offresUniques = [
                 ...new Set(
@@ -102,43 +303,92 @@ function MesReservations() {
                 )
             ];
 
-            await Promise.all(
-                offresUniques.map(async (idOffre) => {
-
-                    try {
-
-                        const response = await api.get(
-                            `/offres/${idOffre}/photos`
-                        );
-
-                        const photos = Array.isArray(
-                            response.data
-                        )
-                            ? response.data
-                            : [];
-
-                        photosParOffre[idOffre] = photos;
-
-                    }
-                    catch (error) {
-
-                        console.error(
-                            `Erreur récupération photos offre ${idOffre} :`,
-                            error.response?.data ||
-                            error.message
-                        );
-
-                        photosParOffre[idOffre] = [];
-
-                    }
-
-                })
-            );
-
-            setPhotosOffres(photosParOffre);
 
             console.log(
-                "Photos des offres :",
+                "IDs offres à récupérer :",
+                offresUniques
+            );
+
+
+            // =================================================
+            // RECUPERER LES PHOTOS DE CHAQUE OFFRE
+            // =================================================
+
+            await Promise.all(
+
+                offresUniques.map(
+                    async (idOffre) => {
+
+                        try {
+
+                            console.log(
+                                `Récupération photos offre ${idOffre}...`
+                            );
+
+
+                            const response =
+                                await api.get(
+                                    `/offres/${idOffre}/photos`
+                                );
+
+
+                            console.log(
+                                `Réponse photos offre ${idOffre} :`,
+                                response.data
+                            );
+
+
+                            const photos =
+                                extrairePhotos(
+                                    response.data
+                                );
+
+
+                            // =================================================
+                            // STOCKER LES PHOTOS
+                            // =================================================
+
+                            photosParOffre[idOffre] =
+                                photos;
+
+
+                            console.log(
+                                `Photos offre ${idOffre} :`,
+                                photos
+                            );
+
+                        }
+                        catch (error) {
+
+                            console.error(
+                                `Erreur récupération photos offre ${idOffre} :`,
+                                error.response?.data ||
+                                error.message
+                            );
+
+
+                            photosParOffre[idOffre] =
+                                [];
+
+                        }
+
+                    }
+                )
+
+            );
+
+
+            // =================================================
+            // ENREGISTRER DANS LE STATE
+            // =================================================
+
+            setPhotosOffres(
+                photosParOffre
+            );
+
+
+            console.log(
+                "Photos de toutes les offres :",
                 photosParOffre
             );
 
@@ -150,11 +400,13 @@ function MesReservations() {
                 error
             );
 
+
             setPhotosOffres({});
 
         }
 
     };
+
 
     // =====================================================
     // CHARGER RESERVATIONS + PAIEMENTS
@@ -164,113 +416,55 @@ function MesReservations() {
 
         let interval;
 
-        const chargerDonnees = async () => {
 
-            if (!utilisateur) {
+        const chargerDonnees =
+            async () => {
 
-                setReservations([]);
-                setPaiements([]);
-                setPhotosOffres([]);
-                setChargement(false);
+                if (!utilisateur) {
 
-                return;
-            }
+                    setReservations([]);
 
-            try {
+                    setPaiements([]);
 
-                // =================================================
-                // RESERVATIONS
-                // =================================================
+                    setPhotosOffres({});
 
-                const resReservations =
-                    await api.get("/reservations");
+                    setChargement(false);
 
-                console.log(
-                    "Toutes les réservations :",
-                    resReservations.data
-                );
+                    return;
 
-                // =================================================
-                // MES RESERVATIONS
-                // =================================================
+                }
 
-                const mesReservations =
-                    Array.isArray(resReservations.data)
-                        ? resReservations.data.filter(
-                            (reservation) =>
-                                Number(
-                                    reservation.id_utilisateur
-                                ) ===
-                                Number(
-                                    utilisateur.id_utilisateur
-                                )
-                        )
-                        : [];
-
-                console.log(
-                    "Mes réservations :",
-                    mesReservations
-                );
-
-                // =================================================
-                // RESERVATIONS VISIBLES
-                // =================================================
-
-                const reservationsVisibles =
-                    mesReservations.filter(
-                        (reservation) => {
-
-                            const statut =
-                                normaliserStatut(
-                                    reservation.statut
-                                );
-
-                            return (
-                                statut === "en attente" ||
-                                statut === "attente" ||
-                                statut === "annulee" ||
-                                statut === "rejetee"
-                            );
-
-                        }
-                    );
-
-                setReservations(
-                    reservationsVisibles
-                );
-
-                // =================================================
-                // PHOTOS DES OFFRES
-                // =================================================
-
-                await chargerPhotosOffres(
-                    reservationsVisibles
-                );
-
-                // =================================================
-                // PAIEMENTS
-                // =================================================
 
                 try {
 
-                    const resPaiements =
-                        await api.get("/paiements");
+                    // =================================================
+                    // RESERVATIONS
+                    // =================================================
+
+                    const resReservations =
+                        await api.get(
+                            "/reservations"
+                        );
+
 
                     console.log(
-                        "Tous les paiements :",
-                        resPaiements.data
+                        "Toutes les réservations :",
+                        resReservations.data
                     );
 
+
                     // =================================================
-                    // MES PAIEMENTS
+                    // MES RESERVATIONS
                     // =================================================
 
-                    const mesPaiements =
-                        Array.isArray(resPaiements.data)
-                            ? resPaiements.data.filter(
-                                (paiement) =>
+                    const mesReservations =
+                        Array.isArray(
+                            resReservations.data
+                        )
+                            ? resReservations.data.filter(
+                                (reservation) =>
                                     Number(
-                                        paiement.id_utilisateur
+                                        reservation.id_utilisateur
                                     ) ===
                                     Number(
                                         utilisateur.id_utilisateur
@@ -278,71 +472,172 @@ function MesReservations() {
                             )
                             : [];
 
+
                     console.log(
-                        "Mes paiements :",
-                        mesPaiements
+                        "Mes réservations :",
+                        mesReservations
                     );
 
+
                     // =================================================
-                    // PAIEMENTS VISIBLES
+                    // RESERVATIONS VISIBLES
                     // =================================================
 
-                    const paiementsVisibles =
-                        mesPaiements.filter(
-                            (paiement) => {
+                    const reservationsVisibles =
+                        mesReservations.filter(
+                            (reservation) => {
 
                                 const statut =
                                     normaliserStatut(
-                                        paiement.statut
+                                        reservation.statut
                                     );
 
+
                                 return (
-                                    statut === "en attente" ||
-                                    statut === "attente" ||
-                                    statut === "non valide" ||
-                                    statut === "non validee" ||
-                                    statut === "echoue" ||
-                                    statut === "echec"
+                                    statut ===
+                                        "en attente" ||
+                                    statut ===
+                                        "attente" ||
+                                    statut ===
+                                        "annulee" ||
+                                    statut ===
+                                        "rejetee"
                                 );
 
                             }
                         );
 
-                    setPaiements(
-                        paiementsVisibles
+
+                    setReservations(
+                        reservationsVisibles
                     );
+
+
+                    // =================================================
+                    // PHOTOS DES OFFRES
+                    // =================================================
+
+                    await chargerPhotosOffres(
+                        reservationsVisibles
+                    );
+
+
+                    // =================================================
+                    // PAIEMENTS
+                    // =================================================
+
+                    try {
+
+                        const resPaiements =
+                            await api.get(
+                                "/paiements"
+                            );
+
+
+                        console.log(
+                            "Tous les paiements :",
+                            resPaiements.data
+                        );
+
+
+                        // =================================================
+                        // MES PAIEMENTS
+                        // =================================================
+
+                        const mesPaiements =
+                            Array.isArray(
+                                resPaiements.data
+                            )
+                                ? resPaiements.data.filter(
+                                    (paiement) =>
+                                        Number(
+                                            paiement.id_utilisateur
+                                        ) ===
+                                        Number(
+                                            utilisateur.id_utilisateur
+                                        )
+                                )
+                                : [];
+
+
+                        console.log(
+                            "Mes paiements :",
+                            mesPaiements
+                        );
+
+
+                        // =================================================
+                        // PAIEMENTS VISIBLES
+                        // =================================================
+
+                        const paiementsVisibles =
+                            mesPaiements.filter(
+                                (paiement) => {
+
+                                    const statut =
+                                        normaliserStatut(
+                                            paiement.statut
+                                        );
+
+
+                                    return (
+                                        statut ===
+                                            "en attente" ||
+                                        statut ===
+                                            "attente" ||
+                                        statut ===
+                                            "non valide" ||
+                                        statut ===
+                                            "non validee" ||
+                                        statut ===
+                                            "echoue" ||
+                                        statut ===
+                                            "echec"
+                                    );
+
+                                }
+                            );
+
+
+                        setPaiements(
+                            paiementsVisibles
+                        );
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Erreur chargement paiements :",
+                            error
+                        );
+
+
+                        setPaiements([]);
+
+                    }
 
                 }
                 catch (error) {
 
                     console.error(
-                        "Erreur chargement paiements :",
+                        "Erreur chargement réservations :",
                         error
                     );
 
-                    setPaiements([]);
+
+                    setReservations([]);
+
+                    setPhotosOffres({});
+
+                }
+                finally {
+
+                    setChargement(false);
 
                 }
 
-            }
-            catch (error) {
+            };
 
-                console.error(
-                    "Erreur chargement réservations :",
-                    error
-                );
-
-                setReservations([]);
-                setPhotosOffres({});
-
-            }
-            finally {
-
-                setChargement(false);
-
-            }
-
-        };
 
         // =====================================================
         // PREMIER CHARGEMENT
@@ -350,14 +645,17 @@ function MesReservations() {
 
         chargerDonnees();
 
+
         // =====================================================
         // ACTUALISATION AUTOMATIQUE
         // =====================================================
 
-        interval = setInterval(
-            chargerDonnees,
-            5000
-        );
+        interval =
+            setInterval(
+                chargerDonnees,
+                5000
+            );
+
 
         // =====================================================
         // NETTOYAGE
@@ -365,11 +663,14 @@ function MesReservations() {
 
         return () => {
 
-            clearInterval(interval);
+            clearInterval(
+                interval
+            );
 
         };
 
     }, []);
+
 
     // =====================================================
     // PAGINATION RESERVATIONS
@@ -381,9 +682,11 @@ function MesReservations() {
             elementsParPage
         );
 
+
     const indexDebutReservations =
         (pageReservations - 1) *
         elementsParPage;
+
 
     const reservationsPage =
         reservations.slice(
@@ -391,6 +694,7 @@ function MesReservations() {
             indexDebutReservations +
             elementsParPage
         );
+
 
     // =====================================================
     // PAGINATION PAIEMENTS
@@ -402,9 +706,11 @@ function MesReservations() {
             elementsParPage
         );
 
+
     const indexDebutPaiements =
         (pagePaiements - 1) *
         elementsParPage;
+
 
     const paiementsPage =
         paiements.slice(
@@ -413,6 +719,7 @@ function MesReservations() {
             elementsParPage
         );
 
+
     // =====================================================
     // CLASSE STATUT RESERVATION
     // =====================================================
@@ -420,23 +727,36 @@ function MesReservations() {
     const statutClass = (statut) => {
 
         const valeur =
-            normaliserStatut(statut);
+            normaliserStatut(
+                statut
+            );
+
 
         if (valeur === "annulee") {
+
             return "annulee";
+
         }
+
 
         if (valeur === "rejetee") {
+
             return "rejetee";
+
         }
 
+
         if (valeur === "confirmee") {
+
             return "confirmee";
+
         }
+
 
         return "attente";
 
     };
+
 
     // =====================================================
     // CLASSE STATUT PAIEMENT
@@ -445,32 +765,45 @@ function MesReservations() {
     const paiementClass = (statut) => {
 
         const valeur =
-            normaliserStatut(statut);
+            normaliserStatut(
+                statut
+            );
+
 
         if (
             valeur === "echoue" ||
             valeur === "echec"
         ) {
+
             return "paiement-echoue";
+
         }
+
 
         if (
             valeur === "non valide" ||
             valeur === "non validee"
         ) {
+
             return "paiement-non-valide";
+
         }
+
 
         if (
             valeur === "valide" ||
             valeur === "paye"
         ) {
+
             return "paiement-valide";
+
         }
+
 
         return "paiement-attente";
 
     };
+
 
     // =====================================================
     // SUPPRIMER RESERVATION
@@ -484,15 +817,20 @@ function MesReservations() {
                     "Voulez-vous vraiment supprimer cette réservation ?"
                 );
 
+
             if (!confirmer) {
+
                 return;
+
             }
+
 
             try {
 
                 await api.delete(
                     `/reservations/${idReservation}`
                 );
+
 
                 setReservations(
                     (anciennesReservations) => {
@@ -504,15 +842,17 @@ function MesReservations() {
                                     idReservation
                             );
 
+
                         const nouvelleTotalPages =
                             Math.ceil(
                                 nouvellesReservations.length /
                                 elementsParPage
                             );
 
+
                         if (
                             pageReservations >
-                            nouvelleTotalPages &&
+                                nouvelleTotalPages &&
                             nouvelleTotalPages > 0
                         ) {
 
@@ -522,18 +862,22 @@ function MesReservations() {
 
                         }
 
+
                         return nouvellesReservations;
 
                     }
                 );
 
+
                 if (
                     detailReservation &&
                     detailReservation.id_reservation ===
-                    idReservation
+                        idReservation
                 ) {
 
-                    setDetailReservation(null);
+                    setDetailReservation(
+                        null
+                    );
 
                 }
 
@@ -546,6 +890,7 @@ function MesReservations() {
                     error.message
                 );
 
+
                 alert(
                     "Impossible de supprimer cette réservation."
                 );
@@ -553,6 +898,7 @@ function MesReservations() {
             }
 
         };
+
 
     // =====================================================
     // SUPPRIMER PAIEMENT
@@ -566,15 +912,20 @@ function MesReservations() {
                     "Voulez-vous vraiment supprimer ce paiement ?"
                 );
 
+
             if (!confirmer) {
+
                 return;
+
             }
+
 
             try {
 
                 await api.delete(
                     `/paiements/${idPaiement}`
                 );
+
 
                 setPaiements(
                     (anciensPaiements) => {
@@ -586,15 +937,17 @@ function MesReservations() {
                                     idPaiement
                             );
 
+
                         const nouvelleTotalPages =
                             Math.ceil(
                                 nouveauxPaiements.length /
                                 elementsParPage
                             );
 
+
                         if (
                             pagePaiements >
-                            nouvelleTotalPages &&
+                                nouvelleTotalPages &&
                             nouvelleTotalPages > 0
                         ) {
 
@@ -603,6 +956,7 @@ function MesReservations() {
                             );
 
                         }
+
 
                         return nouveauxPaiements;
 
@@ -618,6 +972,7 @@ function MesReservations() {
                     error.message
                 );
 
+
                 alert(
                     "Impossible de supprimer ce paiement."
                 );
@@ -625,6 +980,7 @@ function MesReservations() {
             }
 
         };
+
 
     // =====================================================
     // CHARGEMENT
@@ -650,6 +1006,7 @@ function MesReservations() {
 
     }
 
+
     // =====================================================
     // AFFICHAGE
     // =====================================================
@@ -658,6 +1015,7 @@ function MesReservations() {
 
         <div className="mes-reservations">
 
+
             {/* =================================================
                 BOUTON RETOUR
             ================================================= */}
@@ -665,20 +1023,29 @@ function MesReservations() {
             <button
                 type="button"
                 className="retour-page-button"
-                onClick={() => navigate(-1)}
+                onClick={() =>
+                    navigate(-1)
+                }
             >
+
                 ← Retour
+
             </button>
+
 
             <h1>
                 Mes réservations
             </h1>
 
+
             <p className="subtitle">
+
                 Retrouvez vos réservations en attente,
                 annulées ou rejetées ainsi que vos paiements
                 nécessitant une action.
+
             </p>
+
 
             {/* =================================================
                 RESERVATIONS
@@ -690,10 +1057,13 @@ function MesReservations() {
                     📋 Mes réservations
                 </h2>
 
+
                 {reservations.length === 0 ? (
 
                     <div className="empty">
+
                         Aucune réservation à afficher.
+
                     </div>
 
                 ) : (
@@ -710,6 +1080,7 @@ function MesReservations() {
                                             reservation.id_offre
                                         ] || [];
 
+
                                     return (
 
                                         <div
@@ -719,7 +1090,10 @@ function MesReservations() {
                                             }
                                         >
 
-                                            {/* IMAGE / PHOTOS */}
+
+                                            {/* =================================================
+                                                IMAGE / PHOTOS
+                                            ================================================= */}
 
                                             <div className="reservation-image">
 
@@ -738,9 +1112,13 @@ function MesReservations() {
                                                                         photo
                                                                     );
 
+
                                                                 if (!url) {
+
                                                                     return null;
+
                                                                 }
+
 
                                                                 return (
 
@@ -748,9 +1126,12 @@ function MesReservations() {
                                                                         key={
                                                                             photo.id_photo ||
                                                                             photo.id ||
+                                                                            photo.id_offre_photo ||
                                                                             index
                                                                         }
-                                                                        src={url}
+                                                                        src={
+                                                                            url
+                                                                        }
                                                                         alt={
                                                                             reservation.titre ||
                                                                             "Photo de l'offre"
@@ -763,6 +1144,7 @@ function MesReservations() {
                                                                                 "Erreur chargement photo :",
                                                                                 url
                                                                             );
+
 
                                                                             event.currentTarget.style.display =
                                                                                 "none";
@@ -798,6 +1180,7 @@ function MesReservations() {
                                                                 reservation.image
                                                             );
 
+
                                                             event.currentTarget.style.display =
                                                                 "none";
 
@@ -807,26 +1190,36 @@ function MesReservations() {
                                                 ) : (
 
                                                     <div className="reservation-no-image">
+
                                                         🏝️
+
                                                     </div>
 
                                                 )}
 
                                             </div>
 
-                                            {/* INFORMATIONS */}
+
+                                            {/* =================================================
+                                                INFORMATIONS
+                                            ================================================= */}
 
                                             <div className="reservation-info">
 
                                                 <h2>
+
                                                     {
                                                         reservation.titre ||
                                                         "Offre touristique"
                                                     }
+
                                                 </h2>
 
+
                                                 <p>
+
                                                     📅 Date réservation :{" "}
+
                                                     {
                                                         reservation.date_reservation
                                                             ? new Date(
@@ -836,19 +1229,28 @@ function MesReservations() {
                                                             )
                                                             : "-"
                                                     }
+
                                                 </p>
 
+
                                                 <p>
+
                                                     👥 Nombre personnes :{" "}
+
                                                     {
                                                         reservation.nombre_personnes ||
                                                         0
                                                     }
+
                                                 </p>
 
+
                                                 <p>
+
                                                     💰 Montant :{" "}
+
                                                     <strong>
+
                                                         {
                                                             Number(
                                                                 reservation.montant_total ||
@@ -857,9 +1259,13 @@ function MesReservations() {
                                                                 "fr-FR"
                                                             )
                                                         }{" "}
+
                                                         Ar
+
                                                     </strong>
+
                                                 </p>
+
 
                                                 {/* STATUT */}
 
@@ -870,11 +1276,14 @@ function MesReservations() {
                                                         )}`
                                                     }
                                                 >
+
                                                     {
                                                         reservation.statut ||
                                                         "En attente"
                                                     }
+
                                                 </span>
+
 
                                                 {/* ACTIONS */}
 
@@ -889,8 +1298,11 @@ function MesReservations() {
                                                             )
                                                         }
                                                     >
+
                                                         👁️ Voir plus
+
                                                     </button>
+
 
                                                     <button
                                                         type="button"
@@ -901,7 +1313,9 @@ function MesReservations() {
                                                             )
                                                         }
                                                     >
+
                                                         🗑️ Supprimer
+
                                                     </button>
 
                                                 </div>
@@ -917,7 +1331,10 @@ function MesReservations() {
 
                         </div>
 
-                        {/* PAGINATION RESERVATIONS */}
+
+                        {/* =================================================
+                            PAGINATION RESERVATIONS
+                        ================================================= */}
 
                         {totalPagesReservations > 1 && (
 
@@ -934,8 +1351,11 @@ function MesReservations() {
                                         pageReservations === 1
                                     }
                                 >
+
                                     ← Précédent
+
                                 </button>
+
 
                                 {Array.from(
                                     {
@@ -959,11 +1379,14 @@ function MesReservations() {
                                                 )
                                             }
                                         >
+
                                             {index + 1}
+
                                         </button>
 
                                     )
                                 )}
+
 
                                 <button
                                     type="button"
@@ -977,7 +1400,9 @@ function MesReservations() {
                                         totalPagesReservations
                                     }
                                 >
+
                                     Suivant →
+
                                 </button>
 
                             </div>
@@ -990,6 +1415,7 @@ function MesReservations() {
 
             </section>
 
+
             {/* =================================================
                 PAIEMENTS
             ================================================= */}
@@ -1000,10 +1426,13 @@ function MesReservations() {
                     💳 Paiements nécessitant une action
                 </h2>
 
+
                 {paiements.length === 0 ? (
 
                     <div className="empty">
+
                         Aucun paiement nécessitant une action.
+
                     </div>
 
                 ) : (
@@ -1025,29 +1454,43 @@ function MesReservations() {
                                         <div className="paiement-info">
 
                                             <h3>
+
                                                 💳 Paiement #
+
                                                 {
                                                     paiement.id_paiement
                                                 }
+
                                             </h3>
+
 
                                             {paiement.id_reservation && (
 
                                                 <p>
+
                                                     📋 Réservation :{" "}
+
                                                     <strong>
+
                                                         #
+
                                                         {
                                                             paiement.id_reservation
                                                         }
+
                                                     </strong>
+
                                                 </p>
 
                                             )}
 
+
                                             <p>
+
                                                 💰 Montant :{" "}
+
                                                 <strong>
+
                                                     {
                                                         Number(
                                                             paiement.montant ||
@@ -1057,22 +1500,32 @@ function MesReservations() {
                                                             "fr-FR"
                                                         )
                                                     }{" "}
+
                                                     Ar
+
                                                 </strong>
+
                                             </p>
+
 
                                             {paiement.mode_paiement && (
 
                                                 <p>
+
                                                     💳 Mode de paiement :{" "}
+
                                                     <strong>
+
                                                         {
                                                             paiement.mode_paiement
                                                         }
+
                                                     </strong>
+
                                                 </p>
 
                                             )}
+
 
                                             <span
                                                 className={
@@ -1081,11 +1534,14 @@ function MesReservations() {
                                                     )}`
                                                 }
                                             >
+
                                                 {
                                                     paiement.statut ||
                                                     "En attente"
                                                 }
+
                                             </span>
+
 
                                             <div className="paiement-actions">
 
@@ -1098,7 +1554,9 @@ function MesReservations() {
                                                         )
                                                     }
                                                 >
+
                                                     🗑️ Supprimer
+
                                                 </button>
 
                                             </div>
@@ -1112,7 +1570,10 @@ function MesReservations() {
 
                         </div>
 
-                        {/* PAGINATION PAIEMENTS */}
+
+                        {/* =================================================
+                            PAGINATION PAIEMENTS
+                        ================================================= */}
 
                         {totalPagesPaiements > 1 && (
 
@@ -1129,8 +1590,11 @@ function MesReservations() {
                                         pagePaiements === 1
                                     }
                                 >
+
                                     ← Précédent
+
                                 </button>
+
 
                                 {Array.from(
                                     {
@@ -1154,11 +1618,14 @@ function MesReservations() {
                                                 )
                                             }
                                         >
+
                                             {index + 1}
+
                                         </button>
 
                                     )
                                 )}
+
 
                                 <button
                                     type="button"
@@ -1172,7 +1639,9 @@ function MesReservations() {
                                         totalPagesPaiements
                                     }
                                 >
+
                                     Suivant →
+
                                 </button>
 
                             </div>
@@ -1185,9 +1654,10 @@ function MesReservations() {
 
             </section>
 
-            {/* =================================================
+
+            {/* =====================================================
                 MODALE VOIR PLUS
-            ================================================= */}
+            ===================================================== */}
 
             {detailReservation && (
 
@@ -1205,30 +1675,43 @@ function MesReservations() {
                         }
                     >
 
-                        {/* HEADER */}
+
+                        {/* =================================================
+                            HEADER
+                        ================================================= */}
 
                         <div className="reservation-modal-header">
 
                             <h2>
+
                                 {
                                     detailReservation.titre ||
                                     "Détails de la réservation"
                                 }
+
                             </h2>
+
 
                             <button
                                 type="button"
                                 className="reservation-modal-close"
                                 onClick={() =>
-                                    setDetailReservation(null)
+                                    setDetailReservation(
+                                        null
+                                    )
                                 }
                             >
+
                                 ×
+
                             </button>
 
                         </div>
 
-                        {/* PHOTOS */}
+
+                        {/* =================================================
+                            PHOTOS
+                        ================================================= */}
 
                         {(
                             photosOffres[
@@ -1243,16 +1726,23 @@ function MesReservations() {
                                         detailReservation.id_offre
                                     ] || []
                                 ).map(
-                                    (photo, index) => {
+                                    (
+                                        photo,
+                                        index
+                                    ) => {
 
                                         const url =
                                             construireUrlPhoto(
                                                 photo
                                             );
 
+
                                         if (!url) {
+
                                             return null;
+
                                         }
+
 
                                         return (
 
@@ -1260,6 +1750,7 @@ function MesReservations() {
                                                 key={
                                                     photo.id_photo ||
                                                     photo.id ||
+                                                    photo.id_offre_photo ||
                                                     index
                                                 }
                                                 src={url}
@@ -1270,6 +1761,12 @@ function MesReservations() {
                                                 onError={(
                                                     event
                                                 ) => {
+
+                                                    console.error(
+                                                        "Erreur chargement photo modale :",
+                                                        url
+                                                    );
+
 
                                                     event.currentTarget.style.display =
                                                         "none";
@@ -1298,17 +1795,47 @@ function MesReservations() {
                                         detailReservation.titre ||
                                         "Offre touristique"
                                     }
+                                    onError={(
+                                        event
+                                    ) => {
+
+                                        console.error(
+                                            "Erreur chargement image principale modale :",
+                                            detailReservation.image
+                                        );
+
+
+                                        event.currentTarget.style.display =
+                                            "none";
+
+                                    }}
                                 />
 
                             </div>
 
-                        ) : null}
+                        ) : (
 
-                        {/* DETAILS */}
+                            <div className="reservation-modal-no-image">
+
+                                🏝️
+
+                                <span>
+                                    Aucune photo disponible
+                                </span>
+
+                            </div>
+
+                        )}
+
+
+                        {/* =================================================
+                            DETAILS
+                        ================================================= */}
 
                         <div className="reservation-details">
 
                             <p>
+
                                 <strong>
                                     Statut :
                                 </strong>{" "}
@@ -1320,13 +1847,18 @@ function MesReservations() {
                                         )}`
                                     }
                                 >
+
                                     {
                                         detailReservation.statut
                                     }
+
                                 </span>
+
                             </p>
 
+
                             <p>
+
                                 <strong>
                                     Date de réservation :
                                 </strong>{" "}
@@ -1340,9 +1872,12 @@ function MesReservations() {
                                         )
                                         : "-"
                                 }
+
                             </p>
 
+
                             <p>
+
                                 <strong>
                                     Nombre de personnes :
                                 </strong>{" "}
@@ -1351,9 +1886,12 @@ function MesReservations() {
                                     detailReservation.nombre_personnes ||
                                     0
                                 }
+
                             </p>
 
+
                             <p>
+
                                 <strong>
                                     Montant total :
                                 </strong>{" "}
@@ -1366,12 +1904,16 @@ function MesReservations() {
                                         "fr-FR"
                                     )
                                 }{" "}
+
                                 Ar
+
                             </p>
+
 
                             {detailReservation.destination && (
 
                                 <p>
+
                                     <strong>
                                         Destination :
                                     </strong>{" "}
@@ -1379,13 +1921,16 @@ function MesReservations() {
                                     {
                                         detailReservation.destination
                                     }
+
                                 </p>
 
                             )}
 
+
                             {detailReservation.message && (
 
                                 <p>
+
                                     <strong>
                                         Message :
                                     </strong>{" "}
@@ -1393,13 +1938,17 @@ function MesReservations() {
                                     {
                                         detailReservation.message
                                     }
+
                                 </p>
 
                             )}
 
                         </div>
 
-                        {/* FOOTER */}
+
+                        {/* =================================================
+                            FOOTER
+                        ================================================= */}
 
                         <div className="reservation-modal-footer">
 
@@ -1407,10 +1956,14 @@ function MesReservations() {
                                 type="button"
                                 className="fermer-modal-button"
                                 onClick={() =>
-                                    setDetailReservation(null)
+                                    setDetailReservation(
+                                        null
+                                    )
                                 }
                             >
+
                                 Fermer
+
                             </button>
 
                         </div>
@@ -1429,4 +1982,3 @@ function MesReservations() {
 
 
 export default MesReservations;
-
