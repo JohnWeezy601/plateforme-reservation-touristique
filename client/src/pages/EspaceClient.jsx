@@ -264,9 +264,9 @@ function EspaceClient() {
                 try {
 
                     const responseReservations =
-                        await api.get(
-                            "/reservation"
-                        );
+                      await api.get(
+                     "/reservations"
+                    );
 
 
                     const dataReservations =
