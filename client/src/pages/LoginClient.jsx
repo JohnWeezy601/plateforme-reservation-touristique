@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
@@ -152,25 +151,27 @@ function LoginClient(){
 
         const utilisateurConnecte = {
 
-           id_utilisateur:
-        res.data.utilisateur.id,
+            id_utilisateur:
+                res.data.utilisateur.id,
 
-    nom:
-        res.data.utilisateur.nom,
+            nom:
+                res.data.utilisateur.nom,
 
-    prenom:
-        res.data.utilisateur.prenom,
+            prenom:
+                res.data.utilisateur.prenom,
 
-    email:
-        res.data.utilisateur.email,
+            email:
+                res.data.utilisateur.email,
 
-    role:
-        res.data.utilisateur.role,
+            role:
+                res.data.utilisateur.role,
 
-    photo:
-        res.data.utilisateur.photo
+            photo:
+                res.data.utilisateur.photo
 
-};
+        };
+
+
         localStorage.setItem(
 
             "utilisateur",
@@ -213,6 +214,18 @@ function LoginClient(){
 
             navigate(
                 "/prestataire"
+            );
+
+        }
+
+        // =====================================================
+        // TOURISTE
+        // =====================================================
+
+        else if(role === "Touriste"){
+
+            navigate(
+                "/espace-client"
             );
 
         }
@@ -312,24 +325,25 @@ function LoginClient(){
             const utilisateurConnecte = {
 
                 id_utilisateur:
-        res.data.utilisateur.id,
+                    res.data.utilisateur.id,
 
-    nom:
-        res.data.utilisateur.nom,
+                nom:
+                    res.data.utilisateur.nom,
 
-    prenom:
-        res.data.utilisateur.prenom,
+                prenom:
+                    res.data.utilisateur.prenom,
 
-    email:
-        res.data.utilisateur.email,
+                email:
+                    res.data.utilisateur.email,
 
-    role:
-        res.data.utilisateur.role,
+                role:
+                    res.data.utilisateur.role,
 
-    photo:
-        res.data.utilisateur.photo
+                photo:
+                    res.data.utilisateur.photo
 
-};
+            };
+
 
             localStorage.setItem(
 
@@ -373,6 +387,18 @@ function LoginClient(){
 
                 navigate(
                     "/prestataire"
+                );
+
+            }
+
+            // =====================================================
+            // TOURISTE
+            // =====================================================
+
+            else if(role === "Touriste"){
+
+                navigate(
+                    "/espace-client"
                 );
 
             }
@@ -535,7 +561,9 @@ const connexionFacebook = () => {
     }
 
     if (loading) {
+
         return;
+
     }
 
     setLoading(true);
@@ -676,6 +704,7 @@ const connexionFacebook = () => {
     }
 
 };
+
 
     // =====================================================
     // AFFICHAGE
@@ -844,8 +873,12 @@ const connexionFacebook = () => {
                         GOOGLE
                     ===================================================== */}
 
-                    <div className="google-login-container">
-
+                    <div
+                        className="google-login-container"
+                        style={{
+                            width: "100%"
+                        }}
+                    >
 
                         <GoogleLogin
 
@@ -874,6 +907,8 @@ const connexionFacebook = () => {
 
                             size="large"
 
+                            width="100%"
+
                         />
 
 
@@ -884,35 +919,35 @@ const connexionFacebook = () => {
                         FACEBOOK
                     ===================================================== */}
 
-                   {/* =====================================================
+                    {/* =====================================================
     FACEBOOK
 ===================================================== */}
 
-<div className="facebook-login-container">
+                    <div className="facebook-login-container">
 
-    <button
-        type="button"
-        className="facebook-login-button"
-        onClick={connexionFacebook}
-        disabled={
-            loading ||
-            !facebookReady
-        }
-    >
+                        <button
+                            type="button"
+                            className="facebook-login-button"
+                            onClick={connexionFacebook}
+                            disabled={
+                                loading ||
+                                !facebookReady
+                            }
+                        >
 
-        <FaFacebookF />
+                            <FaFacebookF />
 
-        <span>
-            {
-                !facebookReady
-                    ? "Chargement de Facebook..."
-                    : "Continuer avec Facebook"
-            }
-        </span>
+                            <span>
+                                {
+                                    !facebookReady
+                                        ? "Chargement de Facebook..."
+                                        : "Continuer avec Facebook"
+                                }
+                            </span>
 
-    </button>
+                        </button>
 
-</div>
+                    </div>
 
 
                     {/* =====================================================
@@ -965,4 +1000,3 @@ const connexionFacebook = () => {
 
 
 export default LoginClient;
-
