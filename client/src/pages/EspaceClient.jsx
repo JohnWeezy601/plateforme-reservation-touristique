@@ -15,7 +15,9 @@ import {
     FaStar,
     FaBell,
     FaArrowRight,
-    FaChartLine
+    FaChartLine,
+    FaCompass,
+    FaSearch
 } from "react-icons/fa";
 
 import api from "../api/api";
@@ -89,6 +91,9 @@ function EspaceClient() {
         notifications:
             "/espace-client/notifications",
 
+        offres:
+            "/offres",
+
         login:
             "/login-client"
 
@@ -127,19 +132,6 @@ function EspaceClient() {
 
             try {
 
-                /*
-                 * Récupération des informations
-                 * complètes depuis le backend.
-                 *
-                 * Permet notamment de récupérer :
-                 *
-                 * - nom
-                 * - prenom
-                 * - email
-                 * - telephone
-                 * - photo
-                 */
-
                 const response =
                     await api.get(
                         `/utilisateurs/${idUtilisateur}`
@@ -169,12 +161,6 @@ function EspaceClient() {
                         utilisateurMisAJour
                     );
 
-
-                    /*
-                     * Mise à jour du localStorage
-                     * avec les informations récupérées
-                     * depuis la base de données.
-                     */
 
                     localStorage.setItem(
                         "utilisateur",
@@ -220,15 +206,6 @@ function EspaceClient() {
     // TÉLÉPHONE
     // =====================================================
 
-    /*
-     * La colonne principale de la base MySQL est :
-     *
-     * telephone
-     *
-     * On garde quelques variantes pour
-     * les anciennes données éventuelles.
-     */
-
     const telephone =
         utilisateur.telephone ||
         utilisateur.tel ||
@@ -243,11 +220,6 @@ function EspaceClient() {
     // =====================================================
     // PHOTO
     // =====================================================
-
-    /*
-     * La photo est utilisée uniquement
-     * dans le header de cette page.
-     */
 
     const photoUtilisateur =
         utilisateur.photo ||
@@ -357,7 +329,19 @@ function EspaceClient() {
         return {
 
             totalActions,
-            taux
+            taux,
+
+            reservations:
+                reservations.length,
+
+            transactions:
+                transactions.length,
+
+            avis:
+                avis.length,
+
+            notifications:
+                notifications.length
 
         };
 
@@ -367,6 +351,29 @@ function EspaceClient() {
         avis.length,
         notifications.length
     ]);
+
+
+    // =====================================================
+    // FONCTION NAVIGATION CLAVIER
+    // =====================================================
+
+    const gererNavigationClavier = (
+        event,
+        route
+    ) => {
+
+        if (
+            event.key === "Enter" ||
+            event.key === " "
+        ) {
+
+            event.preventDefault();
+
+            navigate(route);
+
+        }
+
+    };
 
 
     // =====================================================
@@ -385,7 +392,7 @@ function EspaceClient() {
             <header className="espace-client-header">
 
 
-                <div>
+                <div className="client-header-text">
 
                     <span className="welcome-label">
 
@@ -418,7 +425,7 @@ function EspaceClient() {
 
 
                 {/* =================================================
-                    PHOTO PROFIL DU HEADER
+                    PHOTO PROFIL
                 ================================================= */}
 
                 <button
@@ -447,6 +454,67 @@ function EspaceClient() {
 
 
             </header>
+
+
+            {/* =================================================
+                DÉCOUVRIR LES OFFRES
+            ================================================= */}
+
+            <section className="discover-offers-section">
+
+
+                <div className="discover-offers-content">
+
+
+                    <div className="discover-offers-icon">
+
+                        <FaCompass />
+
+                    </div>
+
+
+                    <div className="discover-offers-text">
+
+                        <span>
+                            EXPLOREZ NOS DESTINATIONS
+                        </span>
+
+                        <h2>
+                            Découvrez les offres touristiques
+                        </h2>
+
+                        <p>
+                            Trouvez votre prochaine destination,
+                            explorez nos offres et préparez votre
+                            prochaine expérience touristique.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        className="btn-discover-offers"
+                        onClick={() =>
+                            navigate(routes.offres)
+                        }
+                    >
+
+                        <FaSearch />
+
+                        <span>
+                            Découvrir les offres
+                        </span>
+
+                        <FaArrowRight />
+
+                    </button>
+
+
+                </div>
+
+
+            </section>
 
 
             {/* =================================================
@@ -534,6 +602,192 @@ function EspaceClient() {
 
 
             {/* =================================================
+                COMPTEURS RAPIDES
+            ================================================= */}
+
+            <section className="client-counters">
+
+
+                {/* RÉSERVATIONS */}
+
+                <div
+                    className="client-counter counter-reservations"
+                    onClick={() =>
+                        navigate(routes.reservations)
+                    }
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.reservations
+                        )
+                    }
+                >
+
+                    <div className="counter-icon">
+
+                        <FaCalendarAlt />
+
+                    </div>
+
+
+                    <div className="counter-content">
+
+                        <span>
+                            Réservations
+                        </span>
+
+                        <strong>
+                            {statistiques.reservations}
+                        </strong>
+
+                    </div>
+
+
+                    <FaArrowRight
+                        className="counter-arrow"
+                    />
+
+                </div>
+
+
+                {/* TRANSACTIONS */}
+
+                <div
+                    className="client-counter counter-transactions"
+                    onClick={() =>
+                        navigate(routes.transactions)
+                    }
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.transactions
+                        )
+                    }
+                >
+
+                    <div className="counter-icon">
+
+                        <FaCreditCard />
+
+                    </div>
+
+
+                    <div className="counter-content">
+
+                        <span>
+                            Transactions
+                        </span>
+
+                        <strong>
+                            {statistiques.transactions}
+                        </strong>
+
+                    </div>
+
+
+                    <FaArrowRight
+                        className="counter-arrow"
+                    />
+
+                </div>
+
+
+                {/* AVIS */}
+
+                <div
+                    className="client-counter counter-avis"
+                    onClick={() =>
+                        navigate(routes.avis)
+                    }
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.avis
+                        )
+                    }
+                >
+
+                    <div className="counter-icon">
+
+                        <FaStar />
+
+                    </div>
+
+
+                    <div className="counter-content">
+
+                        <span>
+                            Avis publiés
+                        </span>
+
+                        <strong>
+                            {statistiques.avis}
+                        </strong>
+
+                    </div>
+
+
+                    <FaArrowRight
+                        className="counter-arrow"
+                    />
+
+                </div>
+
+
+                {/* NOTIFICATIONS */}
+
+                <div
+                    className="client-counter counter-notifications"
+                    onClick={() =>
+                        navigate(routes.notifications)
+                    }
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.notifications
+                        )
+                    }
+                >
+
+                    <div className="counter-icon">
+
+                        <FaBell />
+
+                    </div>
+
+
+                    <div className="counter-content">
+
+                        <span>
+                            Notifications
+                        </span>
+
+                        <strong>
+                            {statistiques.notifications}
+                        </strong>
+
+                    </div>
+
+
+                    <FaArrowRight
+                        className="counter-arrow"
+                    />
+
+                </div>
+
+
+            </section>
+
+
+            {/* =================================================
                 CARTES CLIENT
             ================================================= */}
 
@@ -551,20 +805,12 @@ function EspaceClient() {
                     onClick={() =>
                         navigate(routes.profil)
                     }
-                    onKeyDown={(e) => {
-
-                        if (
-                            e.key === "Enter" ||
-                            e.key === " "
-                        ) {
-
-                            navigate(
-                                routes.profil
-                            );
-
-                        }
-
-                    }}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.profil
+                        )
+                    }
                 >
 
                     <div className="client-card-icon">
@@ -606,20 +852,12 @@ function EspaceClient() {
                     onClick={() =>
                         navigate(routes.reservations)
                     }
-                    onKeyDown={(e) => {
-
-                        if (
-                            e.key === "Enter" ||
-                            e.key === " "
-                        ) {
-
-                            navigate(
-                                routes.reservations
-                            );
-
-                        }
-
-                    }}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.reservations
+                        )
+                    }
                 >
 
                     <div className="client-card-icon">
@@ -629,11 +867,19 @@ function EspaceClient() {
                     </div>
 
 
-                    <div>
+                    <div className="client-card-main">
 
-                        <h3>
-                            Mes réservations
-                        </h3>
+                        <div className="client-card-title">
+
+                            <h3>
+                                Mes réservations
+                            </h3>
+
+                            <span className="card-counter">
+                                {statistiques.reservations}
+                            </span>
+
+                        </div>
 
 
                         <p>
@@ -661,20 +907,12 @@ function EspaceClient() {
                     onClick={() =>
                         navigate(routes.transactions)
                     }
-                    onKeyDown={(e) => {
-
-                        if (
-                            e.key === "Enter" ||
-                            e.key === " "
-                        ) {
-
-                            navigate(
-                                routes.transactions
-                            );
-
-                        }
-
-                    }}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.transactions
+                        )
+                    }
                 >
 
                     <div className="client-card-icon">
@@ -684,11 +922,19 @@ function EspaceClient() {
                     </div>
 
 
-                    <div>
+                    <div className="client-card-main">
 
-                        <h3>
-                            Mes transactions
-                        </h3>
+                        <div className="client-card-title">
+
+                            <h3>
+                                Mes transactions
+                            </h3>
+
+                            <span className="card-counter">
+                                {statistiques.transactions}
+                            </span>
+
+                        </div>
 
 
                         <p>
@@ -716,20 +962,12 @@ function EspaceClient() {
                     onClick={() =>
                         navigate(routes.avis)
                     }
-                    onKeyDown={(e) => {
-
-                        if (
-                            e.key === "Enter" ||
-                            e.key === " "
-                        ) {
-
-                            navigate(
-                                routes.avis
-                            );
-
-                        }
-
-                    }}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.avis
+                        )
+                    }
                 >
 
                     <div className="client-card-icon">
@@ -739,11 +977,19 @@ function EspaceClient() {
                     </div>
 
 
-                    <div>
+                    <div className="client-card-main">
 
-                        <h3>
-                            Mes avis
-                        </h3>
+                        <div className="client-card-title">
+
+                            <h3>
+                                Mes avis
+                            </h3>
+
+                            <span className="card-counter">
+                                {statistiques.avis}
+                            </span>
+
+                        </div>
 
 
                         <p>
@@ -771,20 +1017,12 @@ function EspaceClient() {
                     onClick={() =>
                         navigate(routes.notifications)
                     }
-                    onKeyDown={(e) => {
-
-                        if (
-                            e.key === "Enter" ||
-                            e.key === " "
-                        ) {
-
-                            navigate(
-                                routes.notifications
-                            );
-
-                        }
-
-                    }}
+                    onKeyDown={(e) =>
+                        gererNavigationClavier(
+                            e,
+                            routes.notifications
+                        )
+                    }
                 >
 
                     <div className="client-card-icon">
@@ -794,11 +1032,19 @@ function EspaceClient() {
                     </div>
 
 
-                    <div>
+                    <div className="client-card-main">
 
-                        <h3>
-                            Notifications
-                        </h3>
+                        <div className="client-card-title">
+
+                            <h3>
+                                Notifications
+                            </h3>
+
+                            <span className="card-counter">
+                                {statistiques.notifications}
+                            </span>
+
+                        </div>
 
 
                         <p>
@@ -820,7 +1066,6 @@ function EspaceClient() {
 
             {/* =================================================
                 INFORMATIONS CLIENT
-                SANS PHOTO
             ================================================= */}
 
             <section className="client-profile-summary">
@@ -861,9 +1106,7 @@ function EspaceClient() {
                 <div className="profile-info">
 
 
-                    {/* =================================================
-                        NOM
-                    ================================================= */}
+                    {/* NOM */}
 
                     <div>
 
@@ -879,9 +1122,7 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* =================================================
-                        PRÉNOM
-                    ================================================= */}
+                    {/* PRÉNOM */}
 
                     <div>
 
@@ -897,9 +1138,7 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* =================================================
-                        EMAIL
-                    ================================================= */}
+                    {/* EMAIL */}
 
                     <div>
 
@@ -915,9 +1154,7 @@ function EspaceClient() {
                     </div>
 
 
-                    {/* =================================================
-                        TÉLÉPHONE
-                    ================================================= */}
+                    {/* TÉLÉPHONE */}
 
                     <div>
 

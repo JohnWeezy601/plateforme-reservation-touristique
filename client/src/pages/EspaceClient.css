@@ -1,241 +1,15 @@
 /* =========================================================
    ESPACE CLIENT
-========================================================= */
-
-.espace-client {
-    width: 100%;
-    min-height: 100vh;
-
-    background: #f6f9fb;
-}
-
-
-/* =========================================================
-   CONTENU PRINCIPAL
-
-   IMPORTANT :
-   Le sidebar est déjà géré par EspaceClientLayout.
-   On NE met donc PAS de margin-left ici.
+   DESIGN PROFESSIONNEL — RESPONSIVE
 ========================================================= */
 
 .espace-client-content {
-
     width: 100%;
-    min-height: 100vh;
-
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 35px 40px 60px;
     box-sizing: border-box;
-
-    padding: 20px 25px 35px 20px;
-}
-
-
-/* =========================================================
-   INFORMATIONS RAPIDES DU CLIENT
-========================================================= */
-
-.client-identity-bar {
-
-    width: 100%;
-
-    min-height: 74px;
-
-    box-sizing: border-box;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 18px;
-
-    padding: 12px 16px;
-
-    margin-bottom: 20px;
-
-    background: #ffffff;
-
-    border: 1px solid #edf1f3;
-
-    border-radius: 13px;
-
-    box-shadow:
-        0 4px 15px rgba(23, 59, 87, 0.045);
-}
-
-
-/* =========================================================
-   PHOTO CLIENT
-========================================================= */
-
-.client-identity-photo {
-
-    width: 52px;
-    height: 52px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-
-    border-radius: 50%;
-
-    background: #e8f4f8;
-
-    color: #168aad;
-
-    font-size: 21px;
-}
-
-.client-identity-photo img {
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-
-
-/* =========================================================
-   IDENTITÉ
-========================================================= */
-
-.client-identity-main {
-
-    min-width: 170px;
-
-    padding-right: 12px;
-
-    border-right: 1px solid #edf1f3;
-}
-
-.client-identity-label {
-
-    display: block;
-
-    margin-bottom: 3px;
-
-    font-size: 9px;
-
-    font-weight: 800;
-
-    letter-spacing: 1.2px;
-
-    color: #168aad;
-}
-
-.client-identity-main h2 {
-
-    margin: 0;
-
-    font-size: 16px;
-
-    line-height: 1.3;
-
-    color: #173b57;
-}
-
-
-/* =========================================================
-   EMAIL / TÉLÉPHONE
-========================================================= */
-
-.client-identity-item {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    min-width: 0;
-
-    flex: 1;
-}
-
-.client-identity-item > svg {
-
-    flex-shrink: 0;
-
-    font-size: 15px;
-
-    color: #168aad;
-}
-
-.client-identity-item div {
-
-    min-width: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 2px;
-}
-
-.client-identity-item span {
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    color: #8a969d;
-}
-
-.client-identity-item strong {
-
-    display: block;
-
-    max-width: 220px;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-
-    font-size: 12px;
-
-    color: #173b57;
-}
-
-
-/* =========================================================
-   BOUTON PROFIL
-========================================================= */
-
-.identity-profile-button {
-
-    flex-shrink: 0;
-
-    padding: 8px 13px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #e8f4f8;
-
-    color: #168aad;
-
-    font-size: 11px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.identity-profile-button:hover {
-
-    background: #d8edf3;
-
-    transform: translateY(-1px);
+    color: #172033;
 }
 
 
@@ -244,120 +18,273 @@
 ========================================================= */
 
 .espace-client-header {
-
-    width: 100%;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
-    gap: 20px;
-
-    margin-bottom: 22px;
+    gap: 30px;
+    margin-bottom: 30px;
 }
 
-.espace-client-header > div {
-
-    min-width: 0;
+.client-header-text {
+    flex: 1;
 }
 
 .welcome-label {
-
-    display: block;
-
-    margin-bottom: 6px;
-
-    font-size: 11px;
-
+    display: inline-block;
+    margin-bottom: 8px;
+    font-size: 12px;
     font-weight: 800;
-
     letter-spacing: 1.5px;
-
-    color: #168aad;
+    color: #0f766e;
 }
 
 .espace-client-header h1 {
-
-    margin: 0 0 7px;
-
-    font-size: 30px;
-
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
     line-height: 1.2;
-
-    color: #173b57;
+    color: #172033;
 }
 
 .espace-client-header p {
-
-    margin: 0;
-
+    margin: 10px 0 0;
     max-width: 700px;
+    color: #687386;
+    font-size: 15px;
+    line-height: 1.6;
+}
 
-    font-size: 14px;
+.header-profile-button {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
 
-    line-height: 1.55;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    color: #71808a;
+    padding: 0;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+
+    background: #e8f5f3;
+    color: #0f766e;
+
+    box-shadow:
+        0 6px 20px rgba(15, 118, 110, 0.15);
+
+    cursor: pointer;
+    overflow: hidden;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.header-profile-button:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 25px rgba(15, 118, 110, 0.22);
+}
+
+.header-profile-button svg {
+    font-size: 25px;
+}
+
+.header-profile-button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 
 /* =========================================================
-   BOUTON PROFIL HEADER
+   SECTION DÉCOUVRIR LES OFFRES
 ========================================================= */
 
-.header-profile-button {
+.discover-offers-section {
+    position: relative;
 
-    width: 55px;
-    height: 55px;
+    margin-bottom: 30px;
+    padding: 26px 30px;
 
-    flex-shrink: 0;
+    border-radius: 20px;
 
-    border: none;
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e 0%,
+            #0d9488 50%,
+            #14b8a6 100%
+        );
 
-    border-radius: 50%;
-
-    background: #e8f4f8;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
+    color: #ffffff;
 
     overflow: hidden;
 
-    cursor: pointer;
-
-    color: #168aad;
-
     box-shadow:
-        0 4px 15px rgba(0, 0, 0, 0.08);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        0 12px 35px rgba(15, 118, 110, 0.20);
 }
 
-.header-profile-button:hover {
+.discover-offers-section::before {
+    content: "";
 
-    transform: scale(1.05);
+    position: absolute;
+
+    width: 240px;
+    height: 240px;
+
+    right: -80px;
+    top: -100px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.discover-offers-section::after {
+    content: "";
+
+    position: absolute;
+
+    width: 160px;
+    height: 160px;
+
+    left: 35%;
+    bottom: -120px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.discover-offers-content {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+
+    gap: 22px;
+}
+
+.discover-offers-icon {
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.15);
+
+    color: #ffffff;
+
+    backdrop-filter: blur(5px);
+}
+
+.discover-offers-icon svg {
+    font-size: 25px;
+}
+
+.discover-offers-text {
+    flex: 1;
+}
+
+.discover-offers-text span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.discover-offers-text h2 {
+    margin: 0;
+
+    font-size: 23px;
+    font-weight: 800;
+
+    color: #ffffff;
+}
+
+.discover-offers-text p {
+    margin: 7px 0 0;
+
+    max-width: 650px;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: rgba(255, 255, 255, 0.86);
+}
+
+.btn-discover-offers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    min-height: 48px;
+
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #ffffff;
+    color: #0f766e;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    cursor: pointer;
 
     box-shadow:
         0 6px 18px rgba(0, 0, 0, 0.12);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
 }
 
-.header-profile-button img {
+.btn-discover-offers:hover {
+    transform: translateY(-2px);
 
-    width: 100%;
-    height: 100%;
+    background: #f8fffe;
 
-    object-fit: cover;
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.18);
 }
 
-.header-profile-button svg {
+.btn-discover-offers:active {
+    transform: translateY(0);
+}
 
-    font-size: 22px;
+.btn-discover-offers svg {
+    font-size: 14px;
+}
+
+.btn-discover-offers svg:last-child {
+    transition: transform 0.2s ease;
+}
+
+.btn-discover-offers:hover svg:last-child {
+    transform: translateX(4px);
 }
 
 
@@ -366,1132 +293,791 @@
 ========================================================= */
 
 .client-statistics {
+    margin-bottom: 30px;
 
-    width: 100%;
+    padding: 25px 28px;
 
-    box-sizing: border-box;
+    border: 1px solid #e8edf3;
+    border-radius: 18px;
 
     background: #ffffff;
 
-    border-radius: 14px;
-
-    padding: 20px 22px;
-
-    margin-bottom: 20px;
-
-    border: 1px solid #edf1f3;
-
     box-shadow:
-        0 4px 15px rgba(23, 59, 87, 0.045);
+        0 5px 20px rgba(15, 23, 42, 0.05);
 }
 
 .statistics-header {
-
     display: flex;
-
     align-items: center;
     justify-content: space-between;
 
-    margin-bottom: 18px;
+    margin-bottom: 22px;
 }
 
 .statistics-header span {
-
     display: block;
 
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 
     font-size: 10px;
-
     font-weight: 800;
 
-    letter-spacing: 1.2px;
+    letter-spacing: 1.3px;
 
-    color: #168aad;
+    color: #8a95a5;
 }
 
 .statistics-header h2 {
-
     margin: 0;
 
-    font-size: 20px;
+    font-size: 21px;
+    font-weight: 800;
 
-    color: #173b57;
+    color: #172033;
 }
 
 .statistics-header > svg {
-
-    font-size: 22px;
-
-    color: #168aad;
+    font-size: 23px;
+    color: #0f766e;
 }
 
-
-/* =========================================================
-   PROGRESSION
-========================================================= */
-
 .activity-progress-info {
-
     display: flex;
-
     align-items: baseline;
 
-    gap: 8px;
+    gap: 10px;
 
     margin-bottom: 9px;
 }
 
 .activity-progress-info strong {
-
-    font-size: 26px;
-
-    color: #173b57;
+    font-size: 27px;
+    font-weight: 800;
+    color: #0f766e;
 }
 
 .activity-progress-info span {
-
-    font-size: 12px;
-
-    color: #78858e;
+    font-size: 13px;
+    color: #7a8494;
 }
 
 .progress-bar {
-
     width: 100%;
-
-    height: 8px;
-
-    background: #edf2f4;
-
-    border-radius: 20px;
+    height: 9px;
 
     overflow: hidden;
+
+    border-radius: 50px;
+
+    background: #e8eef2;
 }
 
 .progress-value {
-
     height: 100%;
 
-    background: #168aad;
+    border-radius: inherit;
 
-    border-radius: 20px;
+    background:
+        linear-gradient(
+            90deg,
+            #0f766e,
+            #14b8a6
+        );
 
-    transition:
-        width 0.5s ease;
+    transition: width 0.6s ease;
 }
 
 .activity-progress p {
-
-    margin: 8px 0 0;
-
-    font-size: 12px;
-
-    color: #7a8790;
-}
-
-
-/* =========================================================
-   CARTES CLIENT
-========================================================= */
-
-.client-dashboard-cards {
-
-    width: 100%;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 14px;
-
-    margin-bottom: 20px;
-}
-
-.client-card {
-
-    position: relative;
-
-    min-width: 0;
-
-    min-height: 105px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 14px;
-
-    padding: 17px 18px;
-
-    box-sizing: border-box;
-
-    background: #ffffff;
-
-    border: 1px solid #edf1f3;
-
-    border-radius: 13px;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 3px 14px rgba(23, 59, 87, 0.035);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        border-color 0.2s ease;
-}
-
-.client-card:hover {
-
-    transform: translateY(-2px);
-
-    border-color: #cde5ed;
-
-    box-shadow:
-        0 7px 20px rgba(23, 59, 87, 0.07);
-}
-
-
-/* =========================================================
-   ICÔNE CARTE
-========================================================= */
-
-.client-card-icon {
-
-    width: 47px;
-    height: 47px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: #e8f4f8;
-
-    color: #168aad;
-
-    font-size: 19px;
-}
-
-
-/* =========================================================
-   CONTENU CARTE
-========================================================= */
-
-.client-card > div:not(.client-card-icon) {
-
-    min-width: 0;
-}
-
-.client-card h3 {
-
-    margin: 0 0 5px;
-
-    font-size: 15px;
-
-    color: #173b57;
-}
-
-.client-card p {
-
-    margin: 0;
-
-    font-size: 12px;
-
-    line-height: 1.45;
-
-    color: #7a8790;
-}
-
-
-/* =========================================================
-   FLÈCHE
-========================================================= */
-
-.card-arrow {
-
-    margin-left: auto;
-
-    flex-shrink: 0;
-
-    color: #9baab3;
+    margin: 10px 0 0;
 
     font-size: 13px;
+
+    color: #7a8494;
 }
 
 
 /* =========================================================
-   INFORMATIONS CLIENT
+   COMPTEURS
 ========================================================= */
 
-.client-profile-summary {
-
-    width: 100%;
-
-    box-sizing: border-box;
-
-    background: #ffffff;
-
-    border: 1px solid #edf1f3;
-
-    border-radius: 14px;
-
-    padding: 20px 22px;
-
-    box-shadow:
-        0 4px 15px rgba(23, 59, 87, 0.045);
-}
-
-
-/* =========================================================
-   TITRE
-========================================================= */
-
-.section-title {
-
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 20px;
-
-    margin-bottom: 20px;
-}
-
-.section-title > div {
-
-    min-width: 0;
-}
-
-.section-title span {
-
-    display: block;
-
-    margin-bottom: 5px;
-
-    font-size: 10px;
-
-    font-weight: 800;
-
-    letter-spacing: 1.2px;
-
-    color: #168aad;
-}
-
-.section-title h2 {
-
-    margin: 0;
-
-    font-size: 20px;
-
-    color: #173b57;
-}
-
-.section-title button {
-
-    flex-shrink: 0;
-
-    padding: 8px 15px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #e8f4f8;
-
-    color: #168aad;
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease;
-}
-
-.section-title button:hover {
-
-    background: #d8edf3;
-}
-
-
-/* =========================================================
-   INFORMATIONS PROFIL
-========================================================= */
-
-.profile-info {
-
-    width: 100%;
-
+.client-counters {
     display: grid;
 
     grid-template-columns:
         repeat(4, minmax(0, 1fr));
 
-    gap: 12px;
+    gap: 18px;
+
+    margin-bottom: 32px;
 }
 
-.profile-info > div {
-
-    min-width: 0;
+.client-counter {
+    position: relative;
 
     display: flex;
+    align-items: center;
 
-    flex-direction: column;
+    gap: 14px;
 
-    gap: 5px;
+    min-height: 100px;
 
-    padding: 13px;
+    padding: 18px;
 
-    border-radius: 9px;
+    border: 1px solid #e8edf3;
+    border-radius: 16px;
 
-    background: #f7fafb;
+    background: #ffffff;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.045);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
 }
 
-.profile-info strong {
+.client-counter:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 28px rgba(15, 23, 42, 0.09);
+
+    border-color: #d6e4e2;
+}
+
+.counter-icon {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: #eef8f6;
+    color: #0f766e;
+}
+
+.counter-icon svg {
+    font-size: 18px;
+}
+
+.counter-content {
+    min-width: 0;
+}
+
+.counter-content span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #7a8494;
+}
+
+.counter-content strong {
+    display: block;
+
+    font-size: 25px;
+    font-weight: 800;
+
+    line-height: 1;
+
+    color: #172033;
+}
+
+.counter-arrow {
+    margin-left: auto;
+
+    font-size: 12px;
+
+    color: #b0b8c4;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+.client-counter:hover .counter-arrow {
+    color: #0f766e;
+    transform: translateX(3px);
+}
+
+
+/* Variantes */
+
+.counter-reservations .counter-icon {
+    background: #eef7ff;
+    color: #2563eb;
+}
+
+.counter-transactions .counter-icon {
+    background: #f4f0ff;
+    color: #7c3aed;
+}
+
+.counter-avis .counter-icon {
+    background: #fff8e8;
+    color: #d97706;
+}
+
+.counter-notifications .counter-icon {
+    background: #fff0f0;
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   CARTES DU TABLEAU DE BORD
+========================================================= */
+
+.client-dashboard-cards {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 32px;
+}
+
+.client-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 17px;
+
+    min-height: 110px;
+
+    padding: 21px 22px;
+
+    border: 1px solid #e8edf3;
+    border-radius: 17px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.045);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.client-card:hover {
+    transform: translateY(-4px);
+
+    border-color: #d3e7e4;
+
+    box-shadow:
+        0 12px 30px rgba(15, 23, 42, 0.09);
+}
+
+.client-card:focus-visible,
+.client-counter:focus-visible,
+.header-profile-button:focus-visible,
+.btn-discover-offers:focus-visible {
+    outline: 3px solid rgba(20, 184, 166, 0.28);
+    outline-offset: 3px;
+}
+
+.client-card-icon {
+    width: 50px;
+    height: 50px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #eef8f6;
+
+    color: #0f766e;
+}
+
+.client-card-icon svg {
+    font-size: 19px;
+}
+
+.client-card-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.client-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.client-card h3 {
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    color: #172033;
+}
+
+.client-card p {
+    margin: 6px 0 0;
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    color: #7a8494;
+}
+
+.card-counter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 25px;
+    height: 25px;
+
+    padding: 0 7px;
+
+    border-radius: 50px;
+
+    background: #e8f5f3;
+
+    color: #0f766e;
 
     font-size: 11px;
-
-    color: #7b8992;
-
-    font-weight: 600;
+    font-weight: 800;
 }
 
-.profile-info span {
+.card-arrow {
+    flex-shrink: 0;
+
+    color: #b2bac5;
 
     font-size: 13px;
 
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+.client-card:hover .card-arrow {
+    color: #0f766e;
+    transform: translateX(4px);
+}
+
+
+/* =========================================================
+   RÉSUMÉ PROFIL
+========================================================= */
+
+.client-profile-summary {
+    padding: 26px 28px;
+
+    border: 1px solid #e8edf3;
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 5px 20px rgba(15, 23, 42, 0.05);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 24px;
+}
+
+.section-title span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.3px;
+
+    color: #8a95a5;
+}
+
+.section-title h2 {
+    margin: 0;
+
+    font-size: 21px;
+    font-weight: 800;
+
+    color: #172033;
+}
+
+.section-title button {
+    padding: 9px 16px;
+
+    border: 1px solid #cfe4e1;
+    border-radius: 9px;
+
+    background: #f1faf8;
+    color: #0f766e;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.section-title button:hover {
+    background: #e2f4f1;
+    border-color: #b7dcd7;
+}
+
+.profile-info {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+}
+
+.profile-info > div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    border: 1px solid #edf0f3;
+}
+
+.profile-info strong {
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    color: #8a95a5;
+}
+
+.profile-info span {
+    font-size: 14px;
     font-weight: 600;
 
-    color: #173b57;
+    color: #263143;
 
     overflow-wrap: anywhere;
 }
 
 
 /* =========================================================
-   GRAND ÉCRAN
-========================================================= */
-
-@media (min-width: 1400px) {
-
-    .espace-client-content {
-
-        padding-left: 20px;
-        padding-right: 30px;
-    }
-
-    .espace-client-header h1 {
-
-        font-size: 32px;
-    }
-
-    .client-dashboard-cards {
-
-        gap: 16px;
-    }
-
-    .client-card {
-
-        min-height: 110px;
-    }
-}
-
-
-/* =========================================================
-   PETIT DESKTOP
+   RESPONSIVE — TABLETTE
 ========================================================= */
 
 @media (max-width: 1100px) {
 
     .espace-client-content {
-
-        padding:
-            18px
-            18px
-            30px
-            15px;
+        padding: 30px 25px 50px;
     }
 
-    .client-identity-bar {
-
-        gap: 12px;
-
-        padding: 11px;
-    }
-
-    .client-identity-main {
-
-        min-width: 140px;
-    }
-
-    .profile-info {
-
+    .client-counters {
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
     }
 
+    .discover-offers-content {
+        flex-wrap: wrap;
+    }
+
+    .discover-offers-text {
+        min-width: 250px;
+    }
+
+    .btn-discover-offers {
+        margin-left: 80px;
+    }
+
 }
 
 
 /* =========================================================
-   TABLETTE
+   RESPONSIVE — MOBILE
 ========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 700px) {
 
     .espace-client-content {
-
-        padding:
-            16px
-            15px
-            25px
-            12px;
+        padding: 22px 15px 40px;
     }
 
-    .client-identity-bar {
 
-        flex-wrap: wrap;
+    /* HEADER */
 
-        min-height: auto;
-    }
+    .espace-client-header {
+        align-items: flex-start;
 
-    .client-identity-main {
+        gap: 15px;
 
-        border-right: none;
-
-        flex: 1;
-    }
-
-    .client-identity-item {
-
-        flex: 1 1 40%;
-    }
-
-    .identity-profile-button {
-
-        margin-left: auto;
+        margin-bottom: 22px;
     }
 
     .espace-client-header h1 {
-
         font-size: 27px;
     }
 
-    .client-dashboard-cards {
-
-        grid-template-columns: 1fr;
+    .espace-client-header p {
+        font-size: 13px;
     }
 
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-
-    .espace-client-content {
-
-        width: 100%;
-
-        min-height: calc(100vh - 60px);
-
-        box-sizing: border-box;
-
-        /*
-         * Le navbar mobile est déjà géré
-         * par EspaceClientLayout.
-         */
-        padding:
-            70px
-            10px
-            20px;
-    }
-
-
-    /* =====================================================
-       INFORMATIONS CLIENT MOBILE
-    ===================================================== */
-
-    .client-identity-bar {
-
-        display: grid;
-
-        grid-template-columns:
-            auto 1fr;
-
-        gap: 10px;
-
-        padding: 12px;
-
-        margin-bottom: 15px;
-
-        border-radius: 11px;
-    }
-
-    .client-identity-photo {
-
-        width: 45px;
-        height: 45px;
-
-        grid-row: span 2;
-    }
-
-    .client-identity-main {
-
-        min-width: 0;
-
-        padding: 0;
-
-    }
-
-    .client-identity-label {
-
-        font-size: 8px;
-    }
-
-    .client-identity-main h2 {
-
-        font-size: 14px;
-    }
-
-    .client-identity-item {
-
-        min-width: 0;
-
-        gap: 7px;
-    }
-
-    .client-identity-item > svg {
-
-        font-size: 12px;
-    }
-
-    .client-identity-item span {
-
-        font-size: 8px;
-    }
-
-    .client-identity-item strong {
-
-        max-width: 180px;
-
+    .welcome-label {
         font-size: 10px;
     }
 
-    .identity-profile-button {
+    .header-profile-button {
+        width: 52px;
+        height: 52px;
+    }
 
+
+    /* OFFRES */
+
+    .discover-offers-section {
+        padding: 22px 19px;
+
+        border-radius: 17px;
+    }
+
+    .discover-offers-content {
+        display: grid;
+
+        grid-template-columns: 48px 1fr;
+
+        gap: 15px;
+    }
+
+    .discover-offers-icon {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 13px;
+    }
+
+    .discover-offers-icon svg {
+        font-size: 21px;
+    }
+
+    .discover-offers-text {
+        min-width: 0;
+    }
+
+    .discover-offers-text h2 {
+        font-size: 19px;
+        line-height: 1.3;
+    }
+
+    .discover-offers-text p {
+        font-size: 13px;
+    }
+
+    .btn-discover-offers {
         grid-column: 1 / -1;
 
         width: 100%;
 
-        padding: 7px;
+        margin-left: 0;
 
-        font-size: 10px;
-    }
-
-
-    /* =====================================================
-       HEADER
-    ===================================================== */
-
-    .espace-client-header {
-
-        width: 100%;
-
-        align-items: flex-start;
-
-        gap: 10px;
-
-        margin-bottom: 15px;
-    }
-
-    .welcome-label {
-
-        font-size: 9px;
-
-        letter-spacing: 1px;
-
-        margin-bottom: 5px;
-    }
-
-    .espace-client-header h1 {
-
-        font-size: 21px;
-
-        margin-bottom: 5px;
-    }
-
-    .espace-client-header p {
-
-        font-size: 12px;
-
-        line-height: 1.45;
-    }
-
-    .header-profile-button {
-
-        width: 43px;
-        height: 43px;
-    }
-
-    .header-profile-button svg {
-
-        font-size: 18px;
-    }
-
-
-    /* =====================================================
-       STATISTIQUES
-    ===================================================== */
-
-    .client-statistics {
-
-        padding: 16px;
-
-        border-radius: 12px;
-
-        margin-bottom: 14px;
-    }
-
-    .statistics-header {
-
-        margin-bottom: 14px;
-    }
-
-    .statistics-header span {
-
-        font-size: 9px;
-    }
-
-    .statistics-header h2 {
-
-        font-size: 17px;
-    }
-
-    .statistics-header > svg {
-
-        font-size: 19px;
-    }
-
-    .activity-progress-info {
-
-        margin-bottom: 7px;
-    }
-
-    .activity-progress-info strong {
-
-        font-size: 23px;
-    }
-
-    .activity-progress-info span {
-
-        font-size: 11px;
-    }
-
-    .progress-bar {
-
-        height: 7px;
-    }
-
-    .activity-progress p {
-
-        font-size: 11px;
-
-        margin-top: 7px;
-    }
-
-
-    /* =====================================================
-       CARTES
-    ===================================================== */
-
-    .client-dashboard-cards {
-
-        grid-template-columns: 1fr;
-
-        gap: 10px;
-
-        margin-bottom: 14px;
-    }
-
-    .client-card {
-
-        min-height: 82px;
-
-        padding: 13px;
-
-        gap: 11px;
-
-        border-radius: 11px;
-    }
-
-    .client-card-icon {
-
-        width: 40px;
-        height: 40px;
-
-        border-radius: 9px;
-
-        font-size: 16px;
-    }
-
-    .client-card h3 {
-
-        font-size: 13px;
-
-        margin-bottom: 3px;
-    }
-
-    .client-card p {
-
-        font-size: 11px;
-
-        line-height: 1.4;
-    }
-
-    .card-arrow {
-
-        font-size: 11px;
-    }
-
-
-    /* =====================================================
-       PROFIL
-    ===================================================== */
-
-    .client-profile-summary {
-
-        padding: 16px;
-
-        border-radius: 12px;
-    }
-
-    .section-title {
-
-        gap: 8px;
-
-        margin-bottom: 15px;
-
-        align-items: flex-start;
-    }
-
-    .section-title span {
-
-        font-size: 9px;
-    }
-
-    .section-title h2 {
-
-        font-size: 17px;
-    }
-
-    .section-title button {
-
-        padding: 7px 10px;
-
-        font-size: 11px;
-    }
-
-    .profile-info {
-
-        grid-template-columns:
-            1fr 1fr;
-
-        gap: 8px;
-    }
-
-    .profile-info > div {
-
-        padding: 11px;
-
-        border-radius: 8px;
-    }
-
-    .profile-info strong {
-
-        font-size: 10px;
-    }
-
-    .profile-info span {
-
-        font-size: 12px;
-    }
-
-}
-
-
-/* =========================================================
-   PETIT TÉLÉPHONE
-========================================================= */
-
-@media (max-width: 480px) {
-
-    .espace-client-content {
-
-        padding:
-            67px
-            8px
-            16px;
-    }
-
-    .client-identity-bar {
-
-        padding: 10px;
-
-        gap: 8px;
-
-        margin-bottom: 13px;
-    }
-
-    .client-identity-photo {
-
-        width: 40px;
-        height: 40px;
-    }
-
-    .client-identity-main h2 {
-
-        font-size: 13px;
-    }
-
-    .client-identity-item strong {
-
-        font-size: 9px;
-
-        max-width: 150px;
-    }
-
-    .espace-client-header {
-
-        margin-bottom: 13px;
-    }
-
-    .welcome-label {
-
-        font-size: 8px;
-    }
-
-    .espace-client-header h1 {
-
-        font-size: 19px;
-
-        line-height: 1.2;
-    }
-
-    .espace-client-header p {
-
-        font-size: 11px;
-
-        line-height: 1.4;
-    }
-
-    .header-profile-button {
-
-        width: 39px;
-        height: 39px;
+        min-height: 47px;
     }
 
 
     /* STATISTIQUES */
 
     .client-statistics {
+        padding: 20px;
 
-        padding: 14px;
-
-        margin-bottom: 12px;
-    }
-
-    .statistics-header {
-
-        margin-bottom: 12px;
+        border-radius: 16px;
     }
 
     .statistics-header h2 {
-
-        font-size: 16px;
+        font-size: 19px;
     }
 
-    .statistics-header > svg {
 
-        font-size: 17px;
+    /* COMPTEURS */
+
+    .client-counters {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 11px;
     }
 
-    .activity-progress-info strong {
+    .client-counter {
+        min-height: 85px;
 
+        padding: 13px;
+
+        gap: 10px;
+
+        border-radius: 13px;
+    }
+
+    .counter-icon {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 10px;
+    }
+
+    .counter-icon svg {
+        font-size: 15px;
+    }
+
+    .counter-content span {
+        font-size: 10px;
+    }
+
+    .counter-content strong {
         font-size: 21px;
     }
 
-    .activity-progress-info span {
-
-        font-size: 10px;
-    }
-
-    .activity-progress p {
-
-        font-size: 10px;
+    .counter-arrow {
+        display: none;
     }
 
 
     /* CARTES */
 
     .client-dashboard-cards {
+        grid-template-columns: 1fr;
 
-        gap: 8px;
-
-        margin-bottom: 12px;
+        gap: 12px;
     }
 
     .client-card {
+        min-height: 92px;
 
-        min-height: 76px;
+        padding: 17px;
 
-        padding: 11px;
-
-        gap: 10px;
+        border-radius: 14px;
     }
 
     .client-card-icon {
+        width: 44px;
+        height: 44px;
 
-        width: 37px;
-        height: 37px;
-
-        font-size: 15px;
+        border-radius: 11px;
     }
 
     .client-card h3 {
-
-        font-size: 12px;
+        font-size: 15px;
     }
 
     .client-card p {
-
-        font-size: 10px;
-    }
-
-    .card-arrow {
-
-        font-size: 10px;
+        font-size: 12px;
     }
 
 
     /* PROFIL */
 
     .client-profile-summary {
+        padding: 21px 18px;
 
-        padding: 14px;
-    }
-
-    .section-title {
-
-        margin-bottom: 13px;
+        border-radius: 16px;
     }
 
     .section-title h2 {
-
-        font-size: 16px;
-    }
-
-    .section-title button {
-
-        padding: 6px 9px;
-
-        font-size: 10px;
+        font-size: 19px;
     }
 
     .profile-info {
+        grid-template-columns: 1fr;
 
-        grid-template-columns:
-            1fr 1fr;
-
-        gap: 7px;
-    }
-
-    .profile-info > div {
-
-        padding: 10px;
-    }
-
-    .profile-info strong {
-
-        font-size: 9px;
-    }
-
-    .profile-info span {
-
-        font-size: 11px;
+        gap: 10px;
     }
 
 }
 
 
 /* =========================================================
-   TRÈS PETIT TÉLÉPHONE
+   PETITS ÉCRANS
 ========================================================= */
 
-@media (max-width: 360px) {
+@media (max-width: 420px) {
 
     .espace-client-content {
-
-        padding:
-            67px
-            7px
-            14px;
-    }
-
-    .client-identity-item strong {
-
-        max-width: 120px;
-
-        font-size: 8px;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .espace-client-header h1 {
-
-        font-size: 18px;
+        font-size: 23px;
     }
 
-    .espace-client-header p {
-
-        font-size: 10px;
+    .client-counters {
+        gap: 8px;
     }
 
-    .header-profile-button {
-
-        width: 36px;
-        height: 36px;
+    .client-counter {
+        padding: 11px;
     }
 
-    .client-card {
-
-        min-height: 72px;
-
-        padding: 10px;
+    .counter-content strong {
+        font-size: 19px;
     }
 
-    .client-card-icon {
-
-        width: 35px;
-        height: 35px;
-
-        font-size: 14px;
+    .discover-offers-text h2 {
+        font-size: 17px;
     }
 
-    .client-profile-summary {
+    .btn-discover-offers {
+        font-size: 13px;
+    }
 
-        padding: 12px;
+}
+
+
+/* =========================================================
+   ACCESSIBILITÉ
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .client-card,
+    .client-counter,
+    .btn-discover-offers,
+    .header-profile-button,
+    .counter-arrow,
+    .card-arrow,
+    .progress-value {
+        transition: none;
     }
 
 }

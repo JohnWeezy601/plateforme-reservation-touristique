@@ -331,7 +331,6 @@ function LoginClient(){
 
 };
 
-
             localStorage.setItem(
 
                 "utilisateur",
