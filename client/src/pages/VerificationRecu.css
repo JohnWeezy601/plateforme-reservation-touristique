@@ -1,0 +1,360 @@
+/* =========================================
+   PAGE VERIFICATION RECU
+========================================= */
+
+.verification-page {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 25px;
+
+    background: #f4f7fb;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================
+   CARTE
+========================================= */
+
+.verification-card {
+
+    width: 100%;
+
+    max-width: 520px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.10);
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================
+   ICÔNE
+========================================= */
+
+.verification-icon {
+
+    font-size: 65px;
+
+    margin-bottom: 10px;
+
+}
+
+
+/* =========================================
+   TITRE
+========================================= */
+
+.verification-card h1 {
+
+    margin: 5px 0 10px;
+
+    font-size: 30px;
+
+}
+
+
+.verification-message {
+
+    margin: 0 auto;
+
+    color: #666;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================
+   LIGNE
+========================================= */
+
+.ligne-verification {
+
+    width: 100%;
+
+    height: 1px;
+
+    background: #e5e5e5;
+
+    margin: 25px 0;
+
+}
+
+
+/* =========================================
+   INFORMATIONS
+========================================= */
+
+.verification-informations {
+
+    text-align: left;
+
+}
+
+
+.verification-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #eeeeee;
+
+}
+
+
+.verification-row span {
+
+    color: #777;
+
+}
+
+
+.verification-row strong {
+
+    text-align: right;
+
+    color: #222;
+
+}
+
+
+/* =========================================
+   PAIEMENT
+========================================= */
+
+.paiement-confirme {
+
+    color: #198754 !important;
+
+}
+
+
+/* =========================================
+   CONFIRMATION
+========================================= */
+
+.confirmation-box {
+
+    margin-top: 25px;
+
+    padding: 18px;
+
+    border-radius: 12px;
+
+    background: #eaf8ef;
+
+    border: 1px solid #b8e6c7;
+
+}
+
+
+.confirmation-box strong {
+
+    color: #198754;
+
+    font-size: 17px;
+
+}
+
+
+.confirmation-box p {
+
+    margin: 8px 0 0;
+
+    color: #4d6956;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================
+   REÇU INVALIDE
+========================================= */
+
+.verification-invalide {
+
+    border-top: 5px solid #dc3545;
+
+}
+
+
+.verification-invalide .verification-icon {
+
+    color: #dc3545;
+
+}
+
+
+.verification-invalide h1 {
+
+    color: #dc3545;
+
+}
+
+
+/* =========================================
+   REÇU VALIDE
+========================================= */
+
+.verification-valide {
+
+    border-top: 5px solid #198754;
+
+}
+
+
+.verification-valide h1 {
+
+    color: #198754;
+
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.verification-footer {
+
+    margin-top: 25px;
+
+    color: #888;
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================
+   CHARGEMENT
+========================================= */
+
+.chargement-verification {
+
+    padding: 50px 30px;
+
+}
+
+
+.spinner {
+
+    width: 45px;
+
+    height: 45px;
+
+    margin: 0 auto 20px;
+
+    border: 4px solid #e5e5e5;
+
+    border-top-color: #198754;
+
+    border-radius: 50%;
+
+    animation: rotation 0.8s linear infinite;
+
+}
+
+
+@keyframes rotation {
+
+    from {
+
+        transform: rotate(0deg);
+
+    }
+
+    to {
+
+        transform: rotate(360deg);
+
+    }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .verification-page {
+
+        padding: 15px;
+
+        align-items: flex-start;
+
+        padding-top: 35px;
+
+    }
+
+
+    .verification-card {
+
+        padding: 25px 20px;
+
+        border-radius: 15px;
+
+    }
+
+
+    .verification-card h1 {
+
+        font-size: 25px;
+
+    }
+
+
+    .verification-icon {
+
+        font-size: 55px;
+
+    }
+
+
+    .verification-row {
+
+        flex-direction: column;
+
+        gap: 4px;
+
+    }
+
+
+    .verification-row strong {
+
+        text-align: left;
+
+    }
+
+}

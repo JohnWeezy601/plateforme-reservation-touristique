@@ -45,6 +45,7 @@ import ProfilClient from "./pages/ProfilClient";
 import TransactionsClient from "./pages/TransactionsClient";
 import AvisClient from "./pages/AvisClient";
 import EspaceClientLayout from "./components/EspaceClientLayout";
+import VerificationRecu from "./pages/VerificationRecu";
 
 function App() {
 
@@ -641,6 +642,8 @@ path="/mes-reservations"
     />
 
 </Route>
+
+
 <Route
     path="/recommandations-client"
     element={
@@ -648,6 +651,11 @@ path="/mes-reservations"
             <RecommandationsClient/>
         </PublicLayout>
     }
+/>
+
+<Route
+    path="/verification/:id"
+    element={<VerificationRecu />}
 />
 
 </Routes>

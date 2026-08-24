@@ -64,6 +64,10 @@ require("./routes/dashboardRoutes");
 const recuRoutes =
 require("./routes/recuRoutes");
 
+const verificationRecuRoutes = require(
+    "./routes/verificationRecuRoutes"
+);
+
 const assistantRoutes =
  require("./routes/assistantRoutes");
 
@@ -231,6 +235,11 @@ notificationRoutes
 app.use(
 "/api/recu",
 recuRoutes
+);
+
+app.use(
+    "/api/verification-recu",
+    verificationRecuRoutes
 );
 
 
