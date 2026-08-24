@@ -7,9 +7,23 @@ const verificationRecuController = require(
 );
 
 
+// =========================================
+// VERIFIER UN RECU AVEC SON TOKEN
+// =========================================
+
 router.get(
-    "/:id",
+    "/:token",
     verificationRecuController.verifierRecu
+);
+
+
+// =========================================
+// CONFIRMER L'ARRIVEE / UTILISER LE RECU
+// =========================================
+
+router.post(
+    "/:token/utiliser",
+    verificationRecuController.utiliserRecu
 );
 
 

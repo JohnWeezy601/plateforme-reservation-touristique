@@ -654,7 +654,7 @@ path="/mes-reservations"
 />
 
 <Route
-    path="/verification/:id"
+    path="/verification/:token"
     element={<VerificationRecu />}
 />
 

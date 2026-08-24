@@ -1,14 +1,51 @@
 const db = require("../db");
 
+
+// ======================================================
+// VERIFIER UN RECU AVEC SON TOKEN
+// ======================================================
+
 exports.verifierRecu = async (req, res) => {
 
-    const idPaiement = req.params.id;
+
+    const token = req.params.token;
+
 
     try {
+
+
+        // =========================================
+        // VERIFICATION DU TOKEN
+        // =========================================
+
+        if (!token) {
+
+
+            return res.status(400).json({
+
+                valide: false,
+
+                message:
+                    "Token de vérification manquant."
+
+            });
+
+        }
+
+
+        // =========================================
+        // RECHERCHE DU TOKEN
+        // =========================================
 
         const sql = `
 
             SELECT
+
+                vr.id_verification,
+                vr.id_paiement,
+                vr.token,
+                vr.statut AS statut_verification,
+                vr.date_verification,
 
                 p.id_paiement,
                 p.montant,
@@ -29,7 +66,10 @@ exports.verifierRecu = async (req, res) => {
 
                 pr.nom_entreprise AS nom_prestataire
 
-            FROM paiement p
+            FROM verification_recu vr
+
+            INNER JOIN paiement p
+                ON vr.id_paiement = p.id_paiement
 
             INNER JOIN reservation r
                 ON p.id_reservation = r.id_reservation
@@ -46,7 +86,7 @@ exports.verifierRecu = async (req, res) => {
             INNER JOIN prestataire pr
                 ON o.id_prestataire = pr.id_prestataire
 
-            WHERE p.id_paiement = ?
+            WHERE vr.token = ?
 
             LIMIT 1
 
@@ -55,36 +95,65 @@ exports.verifierRecu = async (req, res) => {
 
         const [result] = await db.query(
             sql,
-            [idPaiement]
+            [token]
         );
 
 
         // =========================================
-        // REÇU INTROUVABLE
+        // TOKEN INTROUVABLE
         // =========================================
 
         if (result.length === 0) {
+
 
             return res.status(404).json({
 
                 valide: false,
 
                 message:
-                    "Ce reçu ne correspond à aucune réservation."
+                    "Ce QR Code ne correspond à aucun reçu officiel."
 
             });
 
         }
 
 
-        const paiement = result[0];
+        const verification = result[0];
 
 
         // =========================================
-        // VÉRIFICATION DU PAIEMENT
+        // RECU DEJA UTILISE
         // =========================================
 
-        if (paiement.statut_paiement !== "Paye") {
+        if (
+            verification.statut_verification ===
+            "UTILISE"
+        ) {
+
+
+            return res.status(409).json({
+
+                valide: false,
+
+                utilise: true,
+
+                message:
+                    "Ce reçu a déjà été utilisé. Il ne peut plus être présenté comme un nouveau reçu."
+
+            });
+
+        }
+
+
+        // =========================================
+        // VERIFICATION DU PAIEMENT
+        // =========================================
+
+        if (
+            verification.statut_paiement !==
+            "Paye"
+        ) {
+
 
             return res.status(400).json({
 
@@ -99,22 +168,26 @@ exports.verifierRecu = async (req, res) => {
 
 
         // =========================================
-        // REÇU VALIDE
+        // RECU VALIDE
         // =========================================
 
         return res.json({
 
             valide: true,
 
+            utilise: false,
+
             message:
                 "Ce reçu est authentique et la réservation est confirmée.",
 
-            reservation: paiement
+            reservation: verification
 
         });
 
+
     }
     catch (error) {
+
 
         console.error(
             "Erreur vérification reçu :",
@@ -128,6 +201,204 @@ exports.verifierRecu = async (req, res) => {
 
             message:
                 "Erreur lors de la vérification du reçu."
+
+        });
+
+    }
+
+};
+
+
+
+// ======================================================
+// UTILISER / VALIDER DEFINITIVEMENT LE RECU
+// ======================================================
+
+exports.utiliserRecu = async (req, res) => {
+
+
+    const token = req.params.token;
+
+
+    try {
+
+
+        // =========================================
+        // VERIFICATION DU TOKEN
+        // =========================================
+
+        if (!token) {
+
+
+            return res.status(400).json({
+
+                succes: false,
+
+                message:
+                    "Token de vérification manquant."
+
+            });
+
+        }
+
+
+        // =========================================
+        // VERIFICATION DU RECU AVANT UTILISATION
+        // =========================================
+
+        const [result] = await db.query(
+
+            `
+
+            SELECT
+
+                id_verification,
+                id_paiement,
+                statut
+
+            FROM verification_recu
+
+            WHERE token = ?
+
+            LIMIT 1
+
+            `,
+
+            [token]
+
+        );
+
+
+        // =========================================
+        // RECU INTROUVABLE
+        // =========================================
+
+        if (result.length === 0) {
+
+
+            return res.status(404).json({
+
+                succes: false,
+
+                message:
+                    "Ce reçu n'existe pas."
+
+            });
+
+        }
+
+
+        const verification = result[0];
+
+
+        // =========================================
+        // RECU DEJA UTILISE
+        // =========================================
+
+        if (
+            verification.statut ===
+            "UTILISE"
+        ) {
+
+
+            return res.status(409).json({
+
+                succes: false,
+
+                utilise: true,
+
+                message:
+                    "Ce reçu a déjà été utilisé."
+
+            });
+
+        }
+
+
+        // =========================================
+        // UTILISATION DU RECU
+        // =========================================
+
+        const [updateResult] = await db.query(
+
+            `
+
+            UPDATE verification_recu
+
+            SET
+
+                statut = 'UTILISE',
+
+                date_verification = NOW()
+
+            WHERE
+
+                token = ?
+
+                AND statut = 'VALIDE'
+
+            `,
+
+            [token]
+
+        );
+
+
+        // =========================================
+        // AUCUNE MODIFICATION
+        // =========================================
+
+        if (
+            updateResult.affectedRows === 0
+        ) {
+
+
+            return res.status(409).json({
+
+                succes: false,
+
+                utilise: true,
+
+                message:
+                    "Ce reçu a déjà été utilisé."
+
+            });
+
+        }
+
+
+        // =========================================
+        // RECU UTILISE AVEC SUCCES
+        // =========================================
+
+        return res.json({
+
+            succes: true,
+
+            utilise: true,
+
+            message:
+                "L'arrivée du client a été confirmée. Le reçu est maintenant marqué comme utilisé."
+
+        });
+
+
+    }
+    catch (error) {
+
+
+        console.error(
+            "Erreur utilisation reçu :",
+            error
+        );
+
+
+        return res.status(500).json({
+
+            succes: false,
+
+            message:
+                "Erreur lors de la validation du reçu."
 
         });
 

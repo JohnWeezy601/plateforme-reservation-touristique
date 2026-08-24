@@ -106,18 +106,19 @@ function Recu() {
     URL DE VERIFICATION DU RECU
     =========================================
 
-    Pour le moment nous utilisons
-    l'identifiant du paiement.
+    Le QR Code utilise maintenant
+    le token de vérification sécurisé.
 
     Exemple :
 
-    https://plateforme-touristique.onrender.com/verification/25
+    https://plateforme-touristique.onrender.com/verification/
+    351a6a273bfd8234f54532921c634a55442f85f24a0bce73e94990c64e3dcc40
 
     =========================================
     */
 
     const urlVerification =
-        `${window.location.origin}/verification/${recu.id_paiement}`;
+        `${window.location.origin}/verification/${recu.token_verification}`;
 
 
 
@@ -664,13 +665,16 @@ function Recu() {
 
 
                                 {
+
                                     Number(
                                         recu.montant
                                     )
                                         .toLocaleString(
                                             "fr-FR"
                                         )
+
                                 }
+
 
                                 {" "}€
 
@@ -728,31 +732,40 @@ function Recu() {
 
                         <QRCodeSVG
 
+
                             value={
                                 urlVerification
                             }
 
+
                             size={180}
+
 
                             level="H"
 
+
                             includeMargin={true}
+
 
                         />
 
 
                         <p className="qr-title">
 
+
                             Reçu officiel
+
 
                         </p>
 
 
                         <p className="qr-description">
 
+
                             Scannez ce QR Code pour
                             vérifier l'authenticité
                             de ce reçu.
+
 
                         </p>
 
