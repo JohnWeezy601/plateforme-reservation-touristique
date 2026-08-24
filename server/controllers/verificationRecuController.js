@@ -7,12 +7,10 @@ const db = require("../db");
 
 exports.verifierRecu = async (req, res) => {
 
-
     const token = req.params.token;
 
 
     try {
-
 
         // =========================================
         // VERIFICATION DU TOKEN
@@ -20,10 +18,11 @@ exports.verifierRecu = async (req, res) => {
 
         if (!token) {
 
-
             return res.status(400).json({
 
                 valide: false,
+
+                utilise: false,
 
                 message:
                     "Token de vérification manquant."
@@ -46,10 +45,13 @@ exports.verifierRecu = async (req, res) => {
                 vr.token,
                 vr.statut AS statut_verification,
                 vr.date_verification,
+                vr.date_creation,
 
                 p.id_paiement,
                 p.montant,
+                p.mode_paiement,
                 p.statut AS statut_paiement,
+                p.date_paiement,
 
                 r.id_reservation,
                 r.date_reservation,
@@ -57,13 +59,17 @@ exports.verifierRecu = async (req, res) => {
                 r.date_fin_sejour,
                 r.nombre_personnes,
 
+                u.id_utilisateur,
                 u.nom,
                 u.prenom,
 
+                o.id_offre,
                 o.titre,
 
+                d.id_destination,
                 d.nom AS nom_destination,
 
+                pr.id_prestataire,
                 pr.nom_entreprise AS nom_prestataire
 
             FROM verification_recu vr
@@ -94,8 +100,11 @@ exports.verifierRecu = async (req, res) => {
 
 
         const [result] = await db.query(
+
             sql,
+
             [token]
+
         );
 
 
@@ -105,10 +114,11 @@ exports.verifierRecu = async (req, res) => {
 
         if (result.length === 0) {
 
-
             return res.status(404).json({
 
                 valide: false,
+
+                utilise: false,
 
                 message:
                     "Ce QR Code ne correspond à aucun reçu officiel."
@@ -130,7 +140,6 @@ exports.verifierRecu = async (req, res) => {
             "UTILISE"
         ) {
 
-
             return res.status(409).json({
 
                 valide: false,
@@ -138,7 +147,10 @@ exports.verifierRecu = async (req, res) => {
                 utilise: true,
 
                 message:
-                    "Ce reçu a déjà été utilisé. Il ne peut plus être présenté comme un nouveau reçu."
+                    "Ce reçu a déjà été utilisé. L'arrivée du client a déjà été confirmée.",
+
+                date_verification:
+                    verification.date_verification
 
             });
 
@@ -154,10 +166,11 @@ exports.verifierRecu = async (req, res) => {
             "Paye"
         ) {
 
-
             return res.status(400).json({
 
                 valide: false,
+
+                utilise: false,
 
                 message:
                     "Le paiement associé à ce reçu n'est pas confirmé."
@@ -169,25 +182,27 @@ exports.verifierRecu = async (req, res) => {
 
         // =========================================
         // RECU VALIDE
+        // IMPORTANT :
+        // ON NE CHANGE PAS LE STATUT ICI
         // =========================================
 
-        return res.json({
+        return res.status(200).json({
 
             valide: true,
 
             utilise: false,
 
             message:
-                "Ce reçu est authentique et la réservation est confirmée.",
+                "Ce reçu est authentique. La réservation est confirmée. L'arrivée du client peut être validée.",
 
             reservation: verification
 
         });
 
-
     }
-    catch (error) {
 
+
+    catch (error) {
 
         console.error(
             "Erreur vérification reçu :",
@@ -198,6 +213,8 @@ exports.verifierRecu = async (req, res) => {
         return res.status(500).json({
 
             valide: false,
+
+            utilise: false,
 
             message:
                 "Erreur lors de la vérification du reçu."
@@ -210,18 +227,26 @@ exports.verifierRecu = async (req, res) => {
 
 
 
+
 // ======================================================
-// UTILISER / VALIDER DEFINITIVEMENT LE RECU
+// CONFIRMER L'ARRIVEE DU CLIENT
+// ======================================================
+//
+// Cette fonction est appelée lorsque le réceptionniste
+// clique sur :
+//
+// "Confirmer l'arrivée"
+//
+// C'est SEULEMENT ici que le reçu devient UTILISE.
+//
 // ======================================================
 
 exports.utiliserRecu = async (req, res) => {
-
 
     const token = req.params.token;
 
 
     try {
-
 
         // =========================================
         // VERIFICATION DU TOKEN
@@ -229,10 +254,11 @@ exports.utiliserRecu = async (req, res) => {
 
         if (!token) {
 
-
             return res.status(400).json({
 
                 succes: false,
+
+                utilise: false,
 
                 message:
                     "Token de vérification manquant."
@@ -243,7 +269,7 @@ exports.utiliserRecu = async (req, res) => {
 
 
         // =========================================
-        // VERIFICATION DU RECU AVANT UTILISATION
+        // VERIFIER QUE LE TOKEN EXISTE
         // =========================================
 
         const [result] = await db.query(
@@ -252,13 +278,18 @@ exports.utiliserRecu = async (req, res) => {
 
             SELECT
 
-                id_verification,
-                id_paiement,
-                statut
+                vr.id_verification,
+                vr.id_paiement,
+                vr.statut,
 
-            FROM verification_recu
+                p.statut AS statut_paiement
 
-            WHERE token = ?
+            FROM verification_recu vr
+
+            INNER JOIN paiement p
+                ON vr.id_paiement = p.id_paiement
+
+            WHERE vr.token = ?
 
             LIMIT 1
 
@@ -275,13 +306,14 @@ exports.utiliserRecu = async (req, res) => {
 
         if (result.length === 0) {
 
-
             return res.status(404).json({
 
                 succes: false,
 
+                utilise: false,
+
                 message:
-                    "Ce reçu n'existe pas."
+                    "Ce reçu n'existe pas ou le QR Code est invalide."
 
             });
 
@@ -300,7 +332,6 @@ exports.utiliserRecu = async (req, res) => {
             "UTILISE"
         ) {
 
-
             return res.status(409).json({
 
                 succes: false,
@@ -308,7 +339,7 @@ exports.utiliserRecu = async (req, res) => {
                 utilise: true,
 
                 message:
-                    "Ce reçu a déjà été utilisé."
+                    "Ce reçu a déjà été utilisé. L'arrivée du client a déjà été confirmée."
 
             });
 
@@ -316,7 +347,39 @@ exports.utiliserRecu = async (req, res) => {
 
 
         // =========================================
-        // UTILISATION DU RECU
+        // VERIFICATION DU PAIEMENT
+        // =========================================
+
+        if (
+            verification.statut_paiement !==
+            "Paye"
+        ) {
+
+            return res.status(400).json({
+
+                succes: false,
+
+                utilise: false,
+
+                message:
+                    "Impossible de confirmer l'arrivée : le paiement n'est pas confirmé."
+
+            });
+
+        }
+
+
+        // =========================================
+        // UTILISATION ATOMIQUE DU RECU
+        // =========================================
+        //
+        // Très important :
+        //
+        // statut = VALIDE
+        //
+        // permet d'éviter qu'un même reçu soit
+        // validé deux fois simultanément.
+        //
         // =========================================
 
         const [updateResult] = await db.query(
@@ -345,13 +408,12 @@ exports.utiliserRecu = async (req, res) => {
 
 
         // =========================================
-        // AUCUNE MODIFICATION
+        // LE RECU A ETE UTILISE ENTRE-TEMPS
         // =========================================
 
         if (
             updateResult.affectedRows === 0
         ) {
-
 
             return res.status(409).json({
 
@@ -360,7 +422,7 @@ exports.utiliserRecu = async (req, res) => {
                 utilise: true,
 
                 message:
-                    "Ce reçu a déjà été utilisé."
+                    "Ce reçu vient déjà d'être utilisé. L'arrivée du client a déjà été confirmée."
 
             });
 
@@ -368,27 +430,30 @@ exports.utiliserRecu = async (req, res) => {
 
 
         // =========================================
-        // RECU UTILISE AVEC SUCCES
+        // CONFIRMATION REUSSIE
         // =========================================
 
-        return res.json({
+        return res.status(200).json({
 
             succes: true,
 
             utilise: true,
 
             message:
-                "L'arrivée du client a été confirmée. Le reçu est maintenant marqué comme utilisé."
+                "L'arrivée du client a été confirmée avec succès. Le reçu est maintenant marqué comme utilisé.",
+
+            date_verification:
+                new Date()
 
         });
 
-
     }
+
+
     catch (error) {
 
-
         console.error(
-            "Erreur utilisation reçu :",
+            "Erreur confirmation arrivée :",
             error
         );
 
@@ -397,8 +462,10 @@ exports.utiliserRecu = async (req, res) => {
 
             succes: false,
 
+            utilise: false,
+
             message:
-                "Erreur lors de la validation du reçu."
+                "Erreur lors de la confirmation de l'arrivée du client."
 
         });
 
