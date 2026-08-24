@@ -1073,3 +1073,43 @@
     background: #2563eb;
     color: white;
 }
+
+/* =========================================
+   QR CODE - VÉRIFICATION DU REÇU
+   Ajout uniquement
+========================================= */
+
+.verification-recu {
+    margin-top: 30px;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px dashed #ccc;
+}
+
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-container svg {
+    display: block;
+    width: 180px;
+    height: 180px;
+}
+
+.qr-title {
+    margin-top: 12px;
+    margin-bottom: 5px;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.qr-description {
+    max-width: 400px;
+    margin: 0 auto;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+}

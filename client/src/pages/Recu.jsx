@@ -7,6 +7,10 @@ import {
     useParams
 } from "react-router-dom";
 
+import {
+    QRCodeSVG
+} from "qrcode.react";
+
 import api from "../api/api";
 
 import "./Recu.css";
@@ -72,25 +76,48 @@ function Recu() {
 
 
 
-
     if (!recu) {
 
 
         return (
 
+
             <div className="chargement">
+
 
                 <h2>
                     Chargement reçu...
                 </h2>
 
+
             </div>
+
 
         );
 
 
     }
 
+
+
+
+    /*
+    =========================================
+    URL DE VERIFICATION DU RECU
+    =========================================
+
+    Pour le moment nous utilisons
+    l'identifiant du paiement.
+
+    Exemple :
+
+    https://plateforme-touristique.onrender.com/verification/25
+
+    =========================================
+    */
+
+    const urlVerification =
+        `${window.location.origin}/verification/${recu.id_paiement}`;
 
 
 
@@ -145,12 +172,12 @@ function Recu() {
 
 
 
-
                 {/* =========================================
                     INFORMATIONS CLIENT
                 ========================================= */}
 
                 <section>
+
 
                     <h3>
                         👤 Informations client
@@ -162,15 +189,17 @@ function Recu() {
 
                         <div className="photo-zone">
 
-                           <img
-    src={
-        recu.photo
-            ? recu.photo
-            : "/avatar.png"
-    }
-    alt="Photo client"
-    className="photo-client"
-/>
+
+                            <img
+                                src={
+                                    recu.photo
+                                        ? recu.photo
+                                        : "/avatar.png"
+                                }
+                                alt="Photo client"
+                                className="photo-client"
+                            />
+
 
                         </div>
 
@@ -243,7 +272,6 @@ function Recu() {
 
 
 
-
                 {/* =========================================
                     PRESTATAIRE
                 ========================================= */}
@@ -297,6 +325,7 @@ function Recu() {
 
 
 
+
                         {/* INFORMATIONS PRESTATAIRE */}
 
                         {
@@ -328,6 +357,7 @@ function Recu() {
 
 
 
+
                                     {
 
                                         recu.ville_prestataire && (
@@ -350,6 +380,7 @@ function Recu() {
 
 
 
+
                                     {
 
                                         recu.telephone_prestataire && (
@@ -369,6 +400,7 @@ function Recu() {
                                         )
 
                                     }
+
 
 
 
@@ -401,6 +433,7 @@ function Recu() {
 
 
 
+
                         {/* DESTINATION */}
 
                         <div className="prestataire-destination">
@@ -425,6 +458,7 @@ function Recu() {
 
 
                         </div>
+
 
 
 
@@ -458,7 +492,6 @@ function Recu() {
 
 
 
-
                 {/* =========================================
                     DETAILS RESERVATION
                 ========================================= */}
@@ -488,6 +521,7 @@ function Recu() {
 
 
 
+
                         <p>
 
                             <strong>
@@ -499,6 +533,7 @@ function Recu() {
                             {recu.titre}
 
                         </p>
+
 
 
 
@@ -516,6 +551,7 @@ function Recu() {
 
 
 
+
                         <p>
 
                             <strong>
@@ -527,6 +563,7 @@ function Recu() {
                             {recu.nombre_personnes}
 
                         </p>
+
 
 
 
@@ -558,6 +595,7 @@ function Recu() {
                             }
 
                         </p>
+
 
 
 
@@ -599,7 +637,6 @@ function Recu() {
 
 
 
-
                 {/* =========================================
                     PAIEMENT
                 ========================================= */}
@@ -617,26 +654,32 @@ function Recu() {
 
                         <p>
 
+
                             <strong>
                                 Montant :
                             </strong>
 
 
-                           <span className="montant">
+                            <span className="montant">
 
-                             {
-                               Number(
-                            recu.montant
-                              )
-                          .toLocaleString(
-                              "fr-FR"
-                              )
-                             }
-                             {" "}€
+
+                                {
+                                    Number(
+                                        recu.montant
+                                    )
+                                        .toLocaleString(
+                                            "fr-FR"
+                                        )
+                                }
+
+                                {" "}€
+
 
                             </span>
 
+
                         </p>
+
 
 
 
@@ -665,6 +708,59 @@ function Recu() {
 
                 </section>
 
+
+
+
+                {/* =========================================
+                    QR CODE
+                ========================================= */}
+
+                <section className="verification-recu">
+
+
+                    <h3>
+                        🔐 Vérification du reçu
+                    </h3>
+
+
+                    <div className="qr-container">
+
+
+                        <QRCodeSVG
+
+                            value={
+                                urlVerification
+                            }
+
+                            size={180}
+
+                            level="H"
+
+                            includeMargin={true}
+
+                        />
+
+
+                        <p className="qr-title">
+
+                            Reçu officiel
+
+                        </p>
+
+
+                        <p className="qr-description">
+
+                            Scannez ce QR Code pour
+                            vérifier l'authenticité
+                            de ce reçu.
+
+                        </p>
+
+
+                    </div>
+
+
+                </section>
 
 
 
@@ -727,7 +823,6 @@ function Recu() {
 
 
 
-
                 {/* =========================================
                     ACTIONS
                 ========================================= */}
@@ -763,7 +858,7 @@ function Recu() {
 
                     >
 
-                       ↩ Retour
+                        ↩ Retour
 
                     </button>
 
