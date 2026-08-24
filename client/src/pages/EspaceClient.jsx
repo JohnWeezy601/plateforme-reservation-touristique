@@ -91,13 +91,42 @@ function EspaceClient() {
         notifications:
             "/espace-client/notifications",
 
+        // ==========================================
+        // VRAIE ROUTE PUBLIQUE DES OFFRES
+        // ==========================================
+
         offres:
-            "/offres",
+            "/offres-public",
 
         login:
             "/login-client"
 
     };
+
+
+    // =====================================================
+    // ÉTATS DES COMPTEURS
+    // =====================================================
+
+    const [reservations, setReservations] =
+        useState([]);
+
+    const [transactions, setTransactions] =
+        useState([]);
+
+    const [avis, setAvis] =
+        useState([]);
+
+    const [notifications, setNotifications] =
+        useState([]);
+
+
+    // =====================================================
+    // CHARGEMENT
+    // =====================================================
+
+    const [chargementCompteurs, setChargementCompteurs] =
+        useState(true);
 
 
     // =====================================================
@@ -190,6 +219,367 @@ function EspaceClient() {
 
 
     // =====================================================
+    // RÉCUPÉRATION DES VRAIS COMPTEURS
+    // DEPUIS LA BASE DE DONNÉES
+    // =====================================================
+
+    useEffect(() => {
+
+        const recupererCompteurs = async () => {
+
+            if (!utilisateur) {
+                return;
+            }
+
+
+            const idUtilisateur =
+                utilisateur.id_utilisateur ||
+                utilisateur.id ||
+                utilisateur.idUtilisateur;
+
+
+            if (!idUtilisateur) {
+
+                console.warn(
+                    "Impossible de récupérer les compteurs : ID utilisateur manquant."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                setChargementCompteurs(true);
+
+
+                // =====================================================
+                // 1. RÉCUPÉRER LES RÉSERVATIONS
+                // =====================================================
+
+                let reservationsUtilisateur = [];
+
+
+                try {
+
+                    const responseReservations =
+                        await api.get(
+                            "/reservation"
+                        );
+
+
+                    const dataReservations =
+                        responseReservations?.data;
+
+
+                    if (Array.isArray(dataReservations)) {
+
+                        reservationsUtilisateur =
+                            dataReservations.filter(
+                                (reservation) =>
+                                    Number(
+                                        reservation.id_utilisateur
+                                    ) ===
+                                    Number(idUtilisateur)
+                            );
+
+                    }
+
+                    else if (
+                        Array.isArray(
+                            dataReservations?.reservations
+                        )
+                    ) {
+
+                        reservationsUtilisateur =
+                            dataReservations.reservations.filter(
+                                (reservation) =>
+                                    Number(
+                                        reservation.id_utilisateur
+                                    ) ===
+                                    Number(idUtilisateur)
+                            );
+
+                    }
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Erreur récupération réservations :",
+                        error
+                    );
+
+                }
+
+
+                // =====================================================
+                // 2. RÉCUPÉRER LES TRANSACTIONS / PAIEMENTS
+                // =====================================================
+
+                let transactionsUtilisateur = [];
+
+
+                try {
+
+                    const responsePaiements =
+                        await api.get(
+                            "/paiements"
+                        );
+
+
+                    const dataPaiements =
+                        responsePaiements?.data;
+
+
+                    if (Array.isArray(dataPaiements)) {
+
+                        transactionsUtilisateur =
+                            dataPaiements.filter(
+                                (paiement) =>
+                                    Number(
+                                        paiement.id_utilisateur
+                                    ) ===
+                                    Number(idUtilisateur)
+                            );
+
+                    }
+
+                    else if (
+                        Array.isArray(
+                            dataPaiements?.paiements
+                        )
+                    ) {
+
+                        transactionsUtilisateur =
+                            dataPaiements.paiements.filter(
+                                (paiement) =>
+                                    Number(
+                                        paiement.id_utilisateur
+                                    ) ===
+                                    Number(idUtilisateur)
+                            );
+
+                    }
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Erreur récupération transactions :",
+                        error
+                    );
+
+                }
+
+
+                // =====================================================
+                // 3. RÉCUPÉRER LES AVIS
+                // =====================================================
+
+                let avisUtilisateur = [];
+
+
+                try {
+
+                    const responseAvis =
+                        await api.get(
+                            "/avis"
+                        );
+
+
+                    const dataAvis =
+                        responseAvis?.data;
+
+
+                    if (Array.isArray(dataAvis)) {
+
+                        avisUtilisateur =
+                            dataAvis.filter(
+                                (avisItem) =>
+                                    Number(
+                                        avisItem.id_utilisateur
+                                    ) ===
+                                    Number(idUtilisateur)
+                                    &&
+                                    String(
+                                        avisItem.statut || ""
+                                    )
+                                        .toLowerCase()
+                                        .startsWith("publi")
+                            );
+
+                    }
+
+                    else if (
+                        Array.isArray(
+                            dataAvis?.avis
+                        )
+                    ) {
+
+                        avisUtilisateur =
+                            dataAvis.avis.filter(
+                                (avisItem) =>
+                                    Number(
+                                        avisItem.id_utilisateur
+                                    ) ===
+                                    Number(idUtilisateur)
+                                    &&
+                                    String(
+                                        avisItem.statut || ""
+                                    )
+                                        .toLowerCase()
+                                        .startsWith("publi")
+                            );
+
+                    }
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Erreur récupération avis :",
+                        error
+                    );
+
+                }
+
+
+                // =====================================================
+                // 4. RÉCUPÉRER LES NOTIFICATIONS
+                // =====================================================
+
+                let notificationsUtilisateur = [];
+
+
+                try {
+
+                    const responseNotifications =
+                        await api.get(
+                            `/notifications/utilisateur/${idUtilisateur}`
+                        );
+
+
+                    const dataNotifications =
+                        responseNotifications?.data;
+
+
+                    if (
+                        Array.isArray(dataNotifications)
+                    ) {
+
+                        notificationsUtilisateur =
+                            dataNotifications;
+
+                    }
+
+                    else if (
+                        Array.isArray(
+                            dataNotifications?.notifications
+                        )
+                    ) {
+
+                        notificationsUtilisateur =
+                            dataNotifications.notifications;
+
+                    }
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Erreur récupération notifications :",
+                        error
+                    );
+
+                }
+
+
+                // =====================================================
+                // ENREGISTRER LES DONNÉES
+                // =====================================================
+
+                setReservations(
+                    reservationsUtilisateur
+                );
+
+
+                setTransactions(
+                    transactionsUtilisateur
+                );
+
+
+                setAvis(
+                    avisUtilisateur
+                );
+
+
+                setNotifications(
+                    notificationsUtilisateur
+                );
+
+
+                console.log(
+                    "===== COMPTEURS ESPACE CLIENT ====="
+                );
+
+                console.log(
+                    "Utilisateur :",
+                    idUtilisateur
+                );
+
+                console.log(
+                    "Réservations :",
+                    reservationsUtilisateur.length
+                );
+
+                console.log(
+                    "Transactions :",
+                    transactionsUtilisateur.length
+                );
+
+                console.log(
+                    "Avis publiés :",
+                    avisUtilisateur.length
+                );
+
+                console.log(
+                    "Notifications :",
+                    notificationsUtilisateur.length
+                );
+
+                console.log(
+                    "===================================="
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Erreur récupération compteurs :",
+                    error
+                );
+
+            }
+            finally {
+
+                setChargementCompteurs(false);
+
+            }
+
+        };
+
+
+        recupererCompteurs();
+
+
+    }, [
+        utilisateur?.id_utilisateur
+    ]);
+
+
+    // =====================================================
     // UTILISATEUR NON CONNECTÉ
     // =====================================================
 
@@ -229,77 +619,6 @@ function EspaceClient() {
 
 
     // =====================================================
-    // DONNÉES LOCALES
-    // =====================================================
-
-    const getLocalData = (keys) => {
-
-        for (const key of keys) {
-
-            const data =
-                localStorage.getItem(key);
-
-            if (!data) {
-                continue;
-            }
-
-
-            try {
-
-                const parsed =
-                    JSON.parse(data);
-
-
-                if (Array.isArray(parsed)) {
-
-                    return parsed;
-
-                }
-
-            }
-            catch {
-
-                return [];
-
-            }
-
-        }
-
-
-        return [];
-
-    };
-
-
-    const reservations =
-        getLocalData([
-            "mesReservations",
-            "reservations"
-        ]);
-
-
-    const transactions =
-        getLocalData([
-            "mesTransactions",
-            "transactions"
-        ]);
-
-
-    const avis =
-        getLocalData([
-            "mesAvis",
-            "avis"
-        ]);
-
-
-    const notifications =
-        getLocalData([
-            "mesNotifications",
-            "notifications"
-        ]);
-
-
-    // =====================================================
     // STATISTIQUES
     // =====================================================
 
@@ -329,6 +648,7 @@ function EspaceClient() {
         return {
 
             totalActions,
+
             taux,
 
             reservations:
@@ -346,10 +666,10 @@ function EspaceClient() {
         };
 
     }, [
-        reservations.length,
-        transactions.length,
-        avis.length,
-        notifications.length
+        reservations,
+        transactions,
+        avis,
+        notifications
     ]);
 
 
@@ -552,7 +872,11 @@ function EspaceClient() {
                     <div className="activity-progress-info">
 
                         <strong>
-                            {statistiques.taux}%
+
+                            {chargementCompteurs
+                                ? "..."
+                                : `${statistiques.taux}%`}
+
                         </strong>
 
 
@@ -578,19 +902,21 @@ function EspaceClient() {
 
                     <p>
 
-                        {statistiques.totalActions} action
-
-                        {statistiques.totalActions > 1
-                            ? "s"
-                            : ""}
-
-                        {" "}enregistrée
-
-                        {statistiques.totalActions > 1
-                            ? "s"
-                            : ""}
-
-                        {" "}dans votre espace.
+                        {chargementCompteurs
+                            ? "Chargement de votre activité..."
+                            :
+                            <>
+                                {statistiques.totalActions} action
+                                {statistiques.totalActions > 1
+                                    ? "s"
+                                    : ""}
+                                {" "}enregistrée
+                                {statistiques.totalActions > 1
+                                    ? "s"
+                                    : ""}
+                                {" "}dans votre espace.
+                            </>
+                        }
 
                     </p>
 
@@ -608,7 +934,9 @@ function EspaceClient() {
             <section className="client-counters">
 
 
-                {/* RÉSERVATIONS */}
+                {/* =================================================
+                    RÉSERVATIONS
+                ================================================= */}
 
                 <div
                     className="client-counter counter-reservations"
@@ -638,8 +966,13 @@ function EspaceClient() {
                             Réservations
                         </span>
 
+
                         <strong>
-                            {statistiques.reservations}
+
+                            {chargementCompteurs
+                                ? "..."
+                                : statistiques.reservations}
+
                         </strong>
 
                     </div>
@@ -652,7 +985,9 @@ function EspaceClient() {
                 </div>
 
 
-                {/* TRANSACTIONS */}
+                {/* =================================================
+                    TRANSACTIONS
+                ================================================= */}
 
                 <div
                     className="client-counter counter-transactions"
@@ -682,8 +1017,13 @@ function EspaceClient() {
                             Transactions
                         </span>
 
+
                         <strong>
-                            {statistiques.transactions}
+
+                            {chargementCompteurs
+                                ? "..."
+                                : statistiques.transactions}
+
                         </strong>
 
                     </div>
@@ -696,7 +1036,9 @@ function EspaceClient() {
                 </div>
 
 
-                {/* AVIS */}
+                {/* =================================================
+                    AVIS
+                ================================================= */}
 
                 <div
                     className="client-counter counter-avis"
@@ -726,8 +1068,13 @@ function EspaceClient() {
                             Avis publiés
                         </span>
 
+
                         <strong>
-                            {statistiques.avis}
+
+                            {chargementCompteurs
+                                ? "..."
+                                : statistiques.avis}
+
                         </strong>
 
                     </div>
@@ -740,7 +1087,9 @@ function EspaceClient() {
                 </div>
 
 
-                {/* NOTIFICATIONS */}
+                {/* =================================================
+                    NOTIFICATIONS
+                ================================================= */}
 
                 <div
                     className="client-counter counter-notifications"
@@ -770,8 +1119,13 @@ function EspaceClient() {
                             Notifications
                         </span>
 
+
                         <strong>
-                            {statistiques.notifications}
+
+                            {chargementCompteurs
+                                ? "..."
+                                : statistiques.notifications}
+
                         </strong>
 
                     </div>
@@ -875,8 +1229,13 @@ function EspaceClient() {
                                 Mes réservations
                             </h3>
 
+
                             <span className="card-counter">
-                                {statistiques.reservations}
+
+                                {chargementCompteurs
+                                    ? "..."
+                                    : statistiques.reservations}
+
                             </span>
 
                         </div>
@@ -930,8 +1289,13 @@ function EspaceClient() {
                                 Mes transactions
                             </h3>
 
+
                             <span className="card-counter">
-                                {statistiques.transactions}
+
+                                {chargementCompteurs
+                                    ? "..."
+                                    : statistiques.transactions}
+
                             </span>
 
                         </div>
@@ -985,8 +1349,13 @@ function EspaceClient() {
                                 Mes avis
                             </h3>
 
+
                             <span className="card-counter">
-                                {statistiques.avis}
+
+                                {chargementCompteurs
+                                    ? "..."
+                                    : statistiques.avis}
+
                             </span>
 
                         </div>
@@ -1040,8 +1409,13 @@ function EspaceClient() {
                                 Notifications
                             </h3>
 
+
                             <span className="card-counter">
-                                {statistiques.notifications}
+
+                                {chargementCompteurs
+                                    ? "..."
+                                    : statistiques.notifications}
+
                             </span>
 
                         </div>
