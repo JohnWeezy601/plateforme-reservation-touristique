@@ -1,10 +1,124 @@
 const db = require("../db");
+const crypto = require("crypto");
+
+
+// ======================================================
+// RECUPERER UN RECU
+// ======================================================
 
 exports.getRecu = async (req, res) => {
 
     const idPaiement = req.params.id;
 
     try {
+
+        // ==================================================
+        // 1. VERIFIER QUE LE PAIEMENT EXISTE
+        // ==================================================
+
+        const [paiementResult] = await db.query(
+            `
+            SELECT
+                id_paiement,
+                statut
+            FROM paiement
+            WHERE id_paiement = ?
+            LIMIT 1
+            `,
+            [idPaiement]
+        );
+
+
+        if (paiementResult.length === 0) {
+
+            return res.status(404).json({
+
+                message: "Paiement introuvable"
+
+            });
+
+        }
+
+
+        const paiement = paiementResult[0];
+
+
+        // ==================================================
+        // 2. VERIFIER QUE LE PAIEMENT EST PAYE
+        // ==================================================
+
+        if (paiement.statut !== "Paye") {
+
+            return res.status(400).json({
+
+                message:
+                    "Le reçu ne peut pas être généré car le paiement n'est pas confirmé."
+
+            });
+
+        }
+
+
+        // ==================================================
+        // 3. VERIFIER SI UN TOKEN EXISTE DEJA
+        // ==================================================
+
+        const [verificationResult] = await db.query(
+            `
+            SELECT
+                id_verification,
+                token,
+                statut
+            FROM verification_recu
+            WHERE id_paiement = ?
+            LIMIT 1
+            `,
+            [idPaiement]
+        );
+
+
+        // ==================================================
+        // 4. CREER AUTOMATIQUEMENT LE TOKEN S'IL N'EXISTE PAS
+        // ==================================================
+
+        if (verificationResult.length === 0) {
+
+            const token = crypto.randomBytes(32).toString("hex");
+
+
+            await db.query(
+                `
+                INSERT INTO verification_recu
+                (
+                    id_paiement,
+                    token,
+                    statut
+                )
+                VALUES
+                (
+                    ?,
+                    ?,
+                    'VALIDE'
+                )
+                `,
+                [
+                    idPaiement,
+                    token
+                ]
+            );
+
+
+            console.log(
+                "Token reçu créé automatiquement pour le paiement :",
+                idPaiement
+            );
+
+        }
+
+
+        // ==================================================
+        // 5. RECUPERER LES INFORMATIONS COMPLETES DU RECU
+        // ==================================================
 
         const sql = `
 
@@ -19,6 +133,8 @@ exports.getRecu = async (req, res) => {
         ========================================== */
 
         vr.token AS token_verification,
+
+        vr.statut AS statut_verification,
 
         r.id_reservation,
         r.date_reservation,
@@ -84,15 +200,16 @@ exports.getRecu = async (req, res) => {
         );
 
 
-        // =========================================
-        // PAIEMENT / RECU INTROUVABLE
-        // =========================================
+        // ==================================================
+        // 6. RECU INTROUVABLE
+        // ==================================================
 
         if (result.length === 0) {
 
             return res.status(404).json({
 
-                message: "Paiement introuvable"
+                message:
+                    "Impossible de récupérer les informations du reçu."
 
             });
 
@@ -105,23 +222,23 @@ exports.getRecu = async (req, res) => {
         );
 
 
-        // =========================================
-        // REPONSE
-        // =========================================
+        // ==================================================
+        // 7. REPONSE
+        // ==================================================
 
-        res.json(result[0]);
-
+        return res.json(result[0]);
 
     }
+
     catch (error) {
 
-        console.log(
+        console.error(
             "Erreur reçu :",
             error
         );
 
 
-        res.status(500).json({
+        return res.status(500).json({
 
             message: "Erreur serveur"
 
