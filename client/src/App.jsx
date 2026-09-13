@@ -46,6 +46,8 @@ import TransactionsClient from "./pages/TransactionsClient";
 import AvisClient from "./pages/AvisClient";
 import EspaceClientLayout from "./components/EspaceClientLayout";
 import VerificationRecu from "./pages/VerificationRecu";
+import EspacePrestataire from "./pages/EspacePrestataire";
+import EspacePrestataireLayout from "./components/EspacePrestataireLayout";
 
 function App() {
 
@@ -642,6 +644,24 @@ path="/mes-reservations"
     />
 
 </Route>
+
+{/* =========================================
+    ESPACE PRESTATAIRE
+========================================= */}
+
+<Route element={<EspacePrestataireLayout />}>
+
+    {/* Accueil espace prestataire */}
+    <Route
+        path="/espace-prestataire"
+        element={<EspacePrestataire />}
+    />
+
+</Route>
+
+
+
+
 
 
 <Route
