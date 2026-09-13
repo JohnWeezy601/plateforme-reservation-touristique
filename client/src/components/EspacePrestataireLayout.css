@@ -1,0 +1,48 @@
+/* =========================================================
+   ESPACE PRESTATAIRE - LAYOUT GLOBAL
+========================================================= */
+
+.espace-prestataire {
+    min-height: 100vh;
+    width: 100%;
+    background: #f5f7fb;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CONTENU PRINCIPAL
+========================================================= */
+
+.espace-prestataire > * {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   RESPONSIVE TABLETTE
+========================================================= */
+
+@media (max-width: 992px) {
+
+    .espace-prestataire {
+        min-height: 100vh;
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .espace-prestataire {
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+}

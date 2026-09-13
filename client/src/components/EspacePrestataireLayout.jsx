@@ -1,21 +1,29 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import "./EspacePrestataireLayout.css";
 
 function EspacePrestataireLayout() {
 
     const [utilisateur, setUtilisateur] = useState(null);
+
+    const [chargement, setChargement] = useState(true);
+
 
     useEffect(() => {
 
         const utilisateurConnecte =
             localStorage.getItem("utilisateur");
 
+
         if (utilisateurConnecte) {
 
             try {
 
+                const utilisateurParse =
+                    JSON.parse(utilisateurConnecte);
+
                 setUtilisateur(
-                    JSON.parse(utilisateurConnecte)
+                    utilisateurParse
                 );
 
             }
@@ -26,26 +34,69 @@ function EspacePrestataireLayout() {
                     error
                 );
 
+                setUtilisateur(null);
+
             }
 
         }
+        else {
+
+            setUtilisateur(null);
+
+        }
+
+
+        setChargement(false);
 
     }, []);
 
 
-    if (!utilisateur) {
+    // =====================================================
+    // ATTENDRE LA LECTURE DU LOCALSTORAGE
+    // =====================================================
 
-        return <Navigate to="/login-client" replace />;
+    if (chargement) {
+
+        return null;
 
     }
 
+
+    // =====================================================
+    // UTILISATEUR NON CONNECTÉ
+    // =====================================================
+
+    if (!utilisateur) {
+
+        return (
+            <Navigate
+                to="/login-client"
+                replace
+            />
+        );
+
+    }
+
+
+    // =====================================================
+    // VÉRIFICATION DU RÔLE
+    // =====================================================
 
     if (utilisateur.role !== "Prestataire") {
 
-        return <Navigate to="/login-client" replace />;
+        return (
+            <Navigate
+                to="/login-client"
+                replace
+            />
+        );
 
     }
 
+
+    // =====================================================
+    // ESPACE PRESTATAIRE
+    // =====================================================
 
     return (
 
@@ -58,5 +109,6 @@ function EspacePrestataireLayout() {
     );
 
 }
+
 
 export default EspacePrestataireLayout;
