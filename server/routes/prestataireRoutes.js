@@ -18,6 +18,18 @@ prestataireController.getPrestataires
 
 
 
+router.get(
+    "/utilisateur/:id",
+    prestataireController.getPrestataireByUtilisateur
+);
+
+router.get(
+    "/:id/statistiques",
+    prestataireController.getStatistiquesPrestataire
+);
+
+
+
 
 // POST ajouter
 

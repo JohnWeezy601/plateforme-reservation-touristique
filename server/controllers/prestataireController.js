@@ -363,11 +363,6 @@ error:error.message
 
 
 
-
-
-
-
-
 // =====================================
 // SUPPRIMER PRESTATAIRE
 // DELETE /api/prestataires/:id
@@ -444,5 +439,82 @@ error:error.message
 }
 
 
+
+};
+
+
+
+
+
+
+
+// =====================================
+// AFFICHER LE PRESTATAIRE D'UN UTILISATEUR
+// GET /api/prestataires/utilisateur/:id
+// =====================================
+
+exports.getPrestataireByUtilisateur = async (req, res) => {
+
+    const idUtilisateur = req.params.id;
+
+    try {
+
+        const [result] = await db.query(`
+
+            SELECT
+
+                p.id_prestataire,
+                p.id_utilisateur,
+                p.nom_entreprise,
+                p.description,
+                p.adresse,
+                p.ville,
+                p.telephone,
+                p.email,
+                p.statut,
+
+                u.nom,
+                u.prenom,
+                u.email AS email_utilisateur,
+                u.role
+
+            FROM prestataire p
+
+            LEFT JOIN utilisateur u
+                ON p.id_utilisateur = u.id_utilisateur
+
+            WHERE p.id_utilisateur = ?
+
+            LIMIT 1
+
+        `, [idUtilisateur]);
+
+
+        if (result.length === 0) {
+
+            return res.status(404).json({
+
+                message: "Prestataire introuvable"
+
+            });
+
+        }
+
+
+        res.json(result[0]);
+
+    }
+    catch(error) {
+
+        console.log(error);
+
+        res.status(500).json({
+
+            message: "Erreur récupération prestataire",
+            error: error.message
+
+        });
+
+    }
 
 };
