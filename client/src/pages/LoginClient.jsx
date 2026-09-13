@@ -386,7 +386,7 @@ function LoginClient(){
             else if(role === "Prestataire"){
 
                 navigate(
-                    "/prestataire"
+                    "/espace-prestataire"
                 );
 
             }
