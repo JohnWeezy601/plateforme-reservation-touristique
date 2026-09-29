@@ -22,6 +22,11 @@ router.get(
     prestataireController.getPrestataireByUtilisateur
 );
 
+router.get(
+    "/utilisateur/:id/reservations",
+    prestataireController.getReservationsPrestataire
+);
+
 // =====================================
 // GET statistiques d'un prestataire
 // GET /api/prestataires/:id/statistiques
