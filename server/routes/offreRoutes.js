@@ -69,6 +69,11 @@ router.delete(
 // ============================================================
 
 router.get(
+    "/prestataire/:id",
+    offreController.getOffresByPrestataire
+);
+
+router.get(
     "/:id",
     offreController.getOffreById
 );

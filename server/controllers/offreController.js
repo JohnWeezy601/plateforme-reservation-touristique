@@ -1292,6 +1292,194 @@ exports.getOffres = async (req, res) => {
 
 
 // ============================================================
+// AFFICHER LES OFFRES D'UN PRESTATAIRE
+// ============================================================
+
+exports.getOffresByPrestataire = async (req, res) => {
+
+    try {
+
+        const idPrestataire = Number(req.params.id);
+
+        console.log(
+            "======================================"
+        );
+
+        console.log(
+            "OFFRES DU PRESTATAIRE"
+        );
+
+        console.log(
+            "ID prestataire :",
+            idPrestataire
+        );
+
+        console.log(
+            "======================================"
+        );
+
+
+        if (!idPrestataire) {
+
+            return res.status(400).json({
+
+                message:
+                    "ID prestataire invalide."
+
+            });
+
+        }
+
+
+        // ====================================================
+        // VÉRIFIER LE PRESTATAIRE
+        // ====================================================
+
+        const [prestataires] =
+            await db.query(
+
+                `
+                SELECT
+                    id_prestataire,
+                    id_utilisateur,
+                    nom_entreprise,
+                    ville,
+                    statut
+
+                FROM prestataire
+
+                WHERE id_prestataire = ?
+
+                `,
+
+                [idPrestataire]
+
+            );
+
+
+        if (
+            prestataires.length === 0
+        ) {
+
+            return res.status(404).json({
+
+                message:
+                    "Prestataire introuvable."
+
+            });
+
+        }
+
+
+        // ====================================================
+        // RÉCUPÉRER LES OFFRES
+        // ====================================================
+
+        const [offres] =
+            await db.query(
+
+                `
+
+                SELECT
+
+                    o.id_offre,
+                    o.id_prestataire,
+                    o.id_destination,
+                    o.id_categorie,
+                    o.titre,
+                    o.description,
+                    o.prix,
+                    o.capacite,
+                    o.disponibilite,
+                    o.date_debut,
+                    o.date_fin,
+                    o.image,
+
+                    d.nom AS destination,
+
+                    c.nom AS categorie,
+
+                    p.nom_entreprise AS prestataire,
+
+                    p.ville AS ville
+
+                FROM offre o
+
+                LEFT JOIN destination d
+                    ON o.id_destination =
+                       d.id_destination
+
+                LEFT JOIN categorie c
+                    ON o.id_categorie =
+                       c.id_categorie
+
+                LEFT JOIN prestataire p
+                    ON o.id_prestataire =
+                       p.id_prestataire
+
+                WHERE o.id_prestataire = ?
+
+                ORDER BY
+                    o.id_offre DESC
+
+                `,
+
+                [idPrestataire]
+
+            );
+
+
+        // ====================================================
+        // IMAGES
+        // ====================================================
+
+        const offresAvecImages =
+            offres.map((offre) => ({
+
+                ...offre,
+
+                image:
+                    offre.image || null
+
+            }));
+
+
+        console.log(
+            "Nombre d'offres :",
+            offresAvecImages.length
+        );
+
+
+        return res.json(
+            offresAvecImages
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Erreur récupération offres prestataire :",
+            error
+        );
+
+
+        return res.status(500).json({
+
+            message:
+                "Erreur récupération des offres du prestataire.",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+};
+
+
+// ============================================================
 // AFFICHER UNE OFFRE PAR ID
 // AVEC SES PHOTOS DÉTAILLÉES
 // ============================================================
