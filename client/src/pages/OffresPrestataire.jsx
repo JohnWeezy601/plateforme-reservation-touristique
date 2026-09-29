@@ -40,20 +40,14 @@ function OffresPrestataire() {
     const [message, setMessage] = useState("");
 
     const [showModal, setShowModal] = useState(false);
-
     const [mode, setMode] = useState("ajout");
 
-    const [selectedOffre, setSelectedOffre] =
-        useState(null);
+    const [selectedOffre, setSelectedOffre] = useState(null);
 
-    const [form, setForm] =
-        useState(initialForm);
+    const [form, setForm] = useState(initialForm);
 
-    const [search, setSearch] =
-        useState("");
-
-    const [page, setPage] =
-        useState(1);
+    const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
 
 
     // =====================================================
@@ -64,14 +58,27 @@ function OffresPrestataire() {
 
         try {
 
-            const utilisateur =
+            const utilisateurStocke =
                 localStorage.getItem("utilisateur");
 
-            if (!utilisateur) {
+            console.log(
+                "UTILISATEUR LOCALSTORAGE :",
+                utilisateurStocke
+            );
+
+            if (!utilisateurStocke) {
                 return null;
             }
 
-            return JSON.parse(utilisateur);
+            const utilisateur =
+                JSON.parse(utilisateurStocke);
+
+            console.log(
+                "UTILISATEUR PARSE :",
+                utilisateur
+            );
+
+            return utilisateur;
 
         } catch (error) {
 
@@ -96,39 +103,74 @@ function OffresPrestataire() {
             const utilisateur =
                 getUtilisateurConnecte();
 
-            if (!utilisateur?.id) {
+
+            if (!utilisateur) {
 
                 setError(
-                    "Utilisateur connecté introuvable."
+                    "Aucun utilisateur connecté."
                 );
 
-                setLoading(false);
-
-                return;
+                return null;
             }
 
 
+            // Compatible avec les différents formats
+            // utilisés dans localStorage
+            const idUtilisateur =
+                utilisateur.id_utilisateur ||
+                utilisateur.id ||
+                utilisateur.user?.id_utilisateur ||
+                utilisateur.user?.id;
+
+
             console.log(
-                "Utilisateur connecté :",
+                "UTILISATEUR CONNECTE :",
                 utilisateur
             );
 
-
-            const response = await fetch(
-                `${API_URL}/prestataires/utilisateur/${utilisateur.id}`
+            console.log(
+                "ID UTILISATEUR :",
+                idUtilisateur
             );
+
+
+            if (!idUtilisateur) {
+
+                setError(
+                    "ID de l'utilisateur connecté introuvable."
+                );
+
+                return null;
+            }
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/prestataires/utilisateur/${idUtilisateur}`
+                );
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch {
+
+                data = {};
+            }
 
 
             if (!response.ok) {
 
                 throw new Error(
+                    data.message ||
+                    data.error ||
                     "Impossible de récupérer le prestataire."
                 );
             }
-
-
-            const data =
-                await response.json();
 
 
             console.log(
@@ -168,21 +210,33 @@ function OffresPrestataire() {
 
         try {
 
-            const response = await fetch(
-                `${API_URL}/offres/prestataire/${idPrestataire}`
-            );
+            const response =
+                await fetch(
+                    `${API_URL}/offres/prestataire/${idPrestataire}`
+                );
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch {
+
+                data = {};
+            }
 
 
             if (!response.ok) {
 
                 throw new Error(
+                    data.message ||
+                    data.error ||
                     "Impossible de récupérer les offres."
                 );
             }
-
-
-            const data =
-                await response.json();
 
 
             console.log(
@@ -220,21 +274,33 @@ function OffresPrestataire() {
 
         try {
 
-            const response = await fetch(
-                `${API_URL}/destinations`
-            );
+            const response =
+                await fetch(
+                    `${API_URL}/destinations`
+                );
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch {
+
+                data = {};
+            }
 
 
             if (!response.ok) {
 
                 throw new Error(
+                    data.message ||
+                    data.error ||
                     "Impossible de récupérer les destinations."
                 );
             }
-
-
-            const data =
-                await response.json();
 
 
             setDestinations(
@@ -261,21 +327,33 @@ function OffresPrestataire() {
 
         try {
 
-            const response = await fetch(
-                `${API_URL}/categories`
-            );
+            const response =
+                await fetch(
+                    `${API_URL}/categories`
+                );
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch {
+
+                data = {};
+            }
 
 
             if (!response.ok) {
 
                 throw new Error(
+                    data.message ||
+                    data.error ||
                     "Impossible de récupérer les catégories."
                 );
             }
-
-
-            const data =
-                await response.json();
 
 
             setCategories(
@@ -307,6 +385,7 @@ function OffresPrestataire() {
 
             const prestataireData =
                 await chargerPrestataire();
+
 
             await Promise.all([
                 chargerDestinations(),
@@ -475,6 +554,7 @@ function OffresPrestataire() {
             return;
         }
 
+
         setShowModal(false);
 
         setSelectedOffre(null);
@@ -515,7 +595,7 @@ function OffresPrestataire() {
         try {
 
             // =================================================
-            // 1. FORM DATA DE L'OFFRE
+            // 1. DONNEES DE L'OFFRE
             // =================================================
 
             const formData =
@@ -609,7 +689,7 @@ function OffresPrestataire() {
 
 
             console.log(
-                "Enregistrement offre :",
+                "ENREGISTREMENT OFFRE :",
                 method,
                 url
             );
@@ -643,7 +723,7 @@ function OffresPrestataire() {
 
 
             console.log(
-                "Réponse offre :",
+                "REPONSE OFFRE :",
                 data
             );
 
@@ -662,8 +742,7 @@ function OffresPrestataire() {
             // 3. RECUPERER ID OFFRE
             // =================================================
 
-            let idOffre =
-                null;
+            let idOffre = null;
 
 
             if (
@@ -691,7 +770,7 @@ function OffresPrestataire() {
 
 
             // =================================================
-            // 4. PHOTOS DETAILLEES
+            // 4. ENREGISTRER PHOTOS DETAILLEES
             // =================================================
 
             if (
@@ -717,7 +796,7 @@ function OffresPrestataire() {
 
 
                 console.log(
-                    "Envoi des photos détaillées :",
+                    "ENVOI PHOTOS DETAILLEES :",
                     form.photos.length
                 );
 
@@ -747,7 +826,7 @@ function OffresPrestataire() {
 
 
                 console.log(
-                    "Réponse photos :",
+                    "REPONSE PHOTOS :",
                     photosData
                 );
 
@@ -764,7 +843,7 @@ function OffresPrestataire() {
 
 
             // =================================================
-            // 5. MESSAGE DE SUCCES
+            // 5. SUCCES
             // =================================================
 
             setMessage(
@@ -775,7 +854,7 @@ function OffresPrestataire() {
 
 
             // =================================================
-            // 6. ACTUALISER LA LISTE
+            // 6. ACTUALISER LES OFFRES
             // =================================================
 
             await chargerOffres(
@@ -787,7 +866,7 @@ function OffresPrestataire() {
 
 
             // =================================================
-            // 7. FERMER MODAL
+            // 7. FERMER LE MODAL
             // =================================================
 
             setTimeout(() => {
@@ -860,7 +939,6 @@ function OffresPrestataire() {
 
 
             let data = {};
-
 
             try {
 
@@ -953,8 +1031,7 @@ function OffresPrestataire() {
     const offresPage =
         offresFiltrees.slice(
             indexDebut,
-            indexDebut +
-                OFFRES_PAR_PAGE
+            indexDebut + OFFRES_PAR_PAGE
         );
 
 
@@ -964,14 +1041,11 @@ function OffresPrestataire() {
             setPage(totalPages);
         }
 
-    }, [
-        page,
-        totalPages
-    ]);
+    }, [page, totalPages]);
 
 
     // =====================================================
-    // IMAGE
+    // URL IMAGE
     // =====================================================
 
     const getImageUrl = (image) => {
@@ -1030,10 +1104,13 @@ function OffresPrestataire() {
 
         return (
             <div className="offres-loading">
+
                 <div className="loading-spinner"></div>
+
                 <p>
                     Chargement de vos offres...
                 </p>
+
             </div>
         );
     }
@@ -1111,10 +1188,13 @@ function OffresPrestataire() {
                         placeholder="Rechercher une offre..."
                         value={search}
                         onChange={(e) => {
+
                             setSearch(
                                 e.target.value
                             );
+
                             setPage(1);
+
                         }}
                     />
 
@@ -1150,9 +1230,11 @@ function OffresPrestataire() {
                     </h2>
 
                     <p>
+
                         {search
                             ? "Aucune offre ne correspond à votre recherche."
                             : "Vous n'avez pas encore créé d'offre."}
+
                     </p>
 
 
@@ -1248,8 +1330,7 @@ function OffresPrestataire() {
 
                                             <span>
                                                 👥{" "}
-                                                {offre.capacite ||
-                                                    0}{" "}
+                                                {offre.capacite || 0}{" "}
                                                 personnes
                                             </span>
 
@@ -1331,9 +1412,7 @@ function OffresPrestataire() {
                         <div className="pagination">
 
                             <button
-                                disabled={
-                                    page === 1
-                                }
+                                disabled={page === 1}
                                 onClick={() =>
                                     setPage(
                                         page - 1
@@ -1346,8 +1425,7 @@ function OffresPrestataire() {
 
                             {Array.from(
                                 {
-                                    length:
-                                        totalPages
+                                    length: totalPages
                                 },
                                 (_, index) => {
 
@@ -1381,8 +1459,7 @@ function OffresPrestataire() {
 
                             <button
                                 disabled={
-                                    page ===
-                                    totalPages
+                                    page === totalPages
                                 }
                                 onClick={() =>
                                     setPage(
@@ -1403,7 +1480,7 @@ function OffresPrestataire() {
 
 
             {/* =====================================================
-                MODAL AJOUT / MODIFICATION
+                MODAL
             ===================================================== */}
 
             {showModal && (
@@ -1420,7 +1497,7 @@ function OffresPrestataire() {
                         }
                     >
 
-                        {/* HEADER MODAL */}
+                        {/* HEADER */}
 
                         <div className="modal-header">
 
@@ -1442,6 +1519,7 @@ function OffresPrestataire() {
 
 
                             <button
+                                type="button"
                                 className="modal-close"
                                 onClick={fermerModal}
                             >
@@ -1453,9 +1531,7 @@ function OffresPrestataire() {
 
                         {/* FORMULAIRE */}
 
-                        <form
-                            onSubmit={handleSubmit}
-                        >
+                        <form onSubmit={handleSubmit}>
 
                             <div className="form-grid">
 
@@ -1723,9 +1799,7 @@ function OffresPrestataire() {
                                 </div>
 
 
-                                {/* =================================================
-                                    IMAGE PRINCIPALE
-                                ================================================= */}
+                                {/* IMAGE PRINCIPALE */}
 
                                 <div className="form-group full-width">
 
@@ -1785,9 +1859,7 @@ function OffresPrestataire() {
                                 </div>
 
 
-                                {/* =================================================
-                                    PHOTOS DETAILLEES
-                                ================================================= */}
+                                {/* PHOTOS DETAILLEES */}
 
                                 <div className="form-group full-width">
 
@@ -1797,8 +1869,9 @@ function OffresPrestataire() {
 
                                     <p className="form-help">
 
-                                        Ajoutez plusieurs photos pour présenter
-                                        les différents aspects de votre offre.
+                                        Ajoutez plusieurs photos pour
+                                        présenter les différents aspects
+                                        de votre offre.
 
                                     </p>
 
@@ -1820,9 +1893,7 @@ function OffresPrestataire() {
 
                                                 <strong>
 
-                                                    {
-                                                        form.photos.length
-                                                    }{" "}
+                                                    {form.photos.length}{" "}
                                                     photo
                                                     {form.photos.length > 1
                                                         ? "s"
@@ -1880,36 +1951,26 @@ function OffresPrestataire() {
                             </div>
 
 
-                            {/* =================================================
-                                ERREUR DANS LE MODAL
-                            ================================================= */}
+                            {/* ERREUR */}
 
                             {error && (
 
                                 <div className="message erreur">
-
                                     {error}
-
                                 </div>
 
                             )}
 
 
-                            {/* =================================================
-                                ACTIONS MODAL
-                            ================================================= */}
+                            {/* ACTIONS */}
 
                             <div className="modal-actions">
 
                                 <button
                                     type="button"
                                     className="btn-annuler"
-                                    onClick={
-                                        fermerModal
-                                    }
-                                    disabled={
-                                        loadingForm
-                                    }
+                                    onClick={fermerModal}
+                                    disabled={loadingForm}
                                 >
                                     Annuler
                                 </button>
@@ -1918,9 +1979,7 @@ function OffresPrestataire() {
                                 <button
                                     type="submit"
                                     className="btn-enregistrer"
-                                    disabled={
-                                        loadingForm
-                                    }
+                                    disabled={loadingForm}
                                 >
 
                                     {loadingForm
