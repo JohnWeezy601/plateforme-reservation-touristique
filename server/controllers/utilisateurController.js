@@ -57,7 +57,15 @@ exports.register = async (req, res) => {
 
         telephone,
 
-        role
+        role,
+
+        nom_entreprise,
+
+        description,
+
+        adresse,
+
+        ville
 
     } = req.body;
 
@@ -103,7 +111,8 @@ exports.register = async (req, res) => {
 
             return res.status(400).json({
 
-                message: "Rôle invalide"
+                message:
+                    "Rôle invalide"
 
             });
 
@@ -146,6 +155,31 @@ exports.register = async (req, res) => {
 
 
         // =====================================================
+        // VÉRIFIER INFORMATIONS PRESTATAIRE
+        // =====================================================
+
+        if (role === "Prestataire") {
+
+            if (
+                !nom_entreprise ||
+                !description ||
+                !adresse ||
+                !ville
+            ) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Toutes les informations du prestataire sont obligatoires"
+
+                });
+
+            }
+
+        }
+
+
+        // =====================================================
         // HASH MOT DE PASSE
         // =====================================================
 
@@ -160,56 +194,144 @@ exports.register = async (req, res) => {
 
 
         // =====================================================
-        // INSERTION
+        // DÉBUT TRANSACTION
         // =====================================================
 
-        const [result] = await db.query(
-
-            `
-            INSERT INTO utilisateur
-            (
-                nom,
-                prenom,
-                email,
-                mot_de_passe,
-                telephone,
-                role,
-                provider
-            )
-
-            VALUES (?,?,?,?,?,?,?)
-            `,
-
-            [
-
-                nom,
-
-                prenom,
-
-                email,
-
-                hashPassword,
-
-                telephone,
-
-                role,
-
-                "local"
-
-            ]
-
-        );
+        await db.beginTransaction();
 
 
-        res.json({
+        try {
 
-            message:
-                "Utilisateur ajouté avec succès",
+            // =====================================================
+            // INSERTION UTILISATEUR
+            // =====================================================
 
-            id:
-                result.insertId
+            const [result] = await db.query(
 
-        });
+                `
+                INSERT INTO utilisateur
+                (
+                    nom,
+                    prenom,
+                    email,
+                    mot_de_passe,
+                    telephone,
+                    role,
+                    provider
+                )
+
+                VALUES (?,?,?,?,?,?,?)
+                `,
+
+                [
+
+                    nom,
+
+                    prenom,
+
+                    email,
+
+                    hashPassword,
+
+                    telephone,
+
+                    role,
+
+                    "local"
+
+                ]
+
+            );
+
+
+            const idUtilisateur =
+                result.insertId;
+
+
+            // =====================================================
+            // INSERTION PRESTATAIRE
+            // =====================================================
+
+            if (role === "Prestataire") {
+
+                await db.query(
+
+                    `
+                    INSERT INTO prestataire
+                    (
+                        id_utilisateur,
+                        nom_entreprise,
+                        description,
+                        adresse,
+                        ville,
+                        telephone,
+                        email,
+                        statut
+                    )
+
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    `,
+
+                    [
+
+                        idUtilisateur,
+
+                        nom_entreprise,
+
+                        description,
+
+                        adresse,
+
+                        ville,
+
+                        telephone,
+
+                        email,
+
+                        "En attente"
+
+                    ]
+
+                );
+
+            }
+
+
+            // =====================================================
+            // VALIDER TRANSACTION
+            // =====================================================
+
+            await db.commit();
+
+
+            // =====================================================
+            // RÉPONSE
+            // =====================================================
+
+            res.json({
+
+                message:
+                    "Utilisateur ajouté avec succès",
+
+                id:
+                    idUtilisateur
+
+            });
+
+        }
+
+        catch (transactionError) {
+
+            // =====================================================
+            // ANNULER TRANSACTION
+            // =====================================================
+
+            await db.rollback();
+
+
+            throw transactionError;
+
+        }
 
     }
 
@@ -1000,6 +1122,7 @@ exports.facebookLogin = async (req, res) => {
                 utilisateur.provider_id =
                     facebookId;
 
+
                 if (!utilisateur.photo) {
 
                     utilisateur.photo =
@@ -1568,7 +1691,6 @@ exports.getUtilisateurById = async (req, res) => {
 };
 
 
-
 // =====================================================
 // MODIFIER PHOTO UTILISATEUR
 // =====================================================
@@ -1584,7 +1706,10 @@ exports.updatePhoto = async (req, res) => {
     if (!req.file) {
 
         return res.status(400).json({
-            message: "Aucune photo envoyée"
+
+            message:
+                "Aucune photo envoyée"
+
         });
 
     }
@@ -1599,9 +1724,13 @@ exports.updatePhoto = async (req, res) => {
 
             `
             SELECT
+
                 id_utilisateur,
+
                 photo
+
             FROM utilisateur
+
             WHERE id_utilisateur=?
             `,
 
@@ -1613,7 +1742,10 @@ exports.updatePhoto = async (req, res) => {
         if (utilisateurs.length === 0) {
 
             return res.status(404).json({
-                message: "Utilisateur introuvable"
+
+                message:
+                    "Utilisateur introuvable"
+
             });
 
         }
@@ -1637,20 +1769,27 @@ exports.updatePhoto = async (req, res) => {
                     cloudinary.uploader.upload_stream(
 
                         {
+
                             folder:
                                 "plateforme-touristique/utilisateurs",
 
                             resource_type:
                                 "image"
+
                         },
 
                         (error, result) => {
 
                             if (error) {
+
                                 reject(error);
+
                             }
+
                             else {
+
                                 resolve(result);
+
                             }
 
                         }
@@ -1673,8 +1812,11 @@ exports.updatePhoto = async (req, res) => {
 
 
         console.log(
+
             "✅ Nouvelle photo Cloudinary :",
+
             nouvellePhoto
+
         );
 
 
@@ -1710,14 +1852,20 @@ exports.updatePhoto = async (req, res) => {
 
 
                     console.log(
+
                         "📸 Sauvegarde ancienne photo :",
+
                         anciennePhoto
+
                     );
 
 
                     console.log(
+
                         "🔑 Ancien public_id :",
+
                         publicIdAncien
+
                     );
 
 
@@ -1734,30 +1882,41 @@ exports.updatePhoto = async (req, res) => {
                             photo,
                             public_id
                         )
+
                         VALUES (?, ?, ?)
                         `,
 
                         [
+
                             id,
+
                             anciennePhoto,
+
                             publicIdAncien
+
                         ]
 
                     );
 
 
                     console.log(
+
                         "✅ Ancienne photo enregistrée dans l'historique"
+
                     );
 
                 }
 
             }
+
             catch (historiqueError) {
 
                 console.error(
+
                     "❌ Erreur sauvegarde historique :",
+
                     historiqueError
+
                 );
 
             }
@@ -1773,20 +1932,27 @@ exports.updatePhoto = async (req, res) => {
 
             `
             UPDATE utilisateur
+
             SET photo=?
+
             WHERE id_utilisateur=?
             `,
 
             [
+
                 nouvellePhoto,
+
                 id
+
             ]
 
         );
 
 
         console.log(
+
             "✅ Photo utilisateur mise à jour"
+
         );
 
 
@@ -1826,25 +1992,33 @@ exports.updatePhoto = async (req, res) => {
                         publicIdAncien,
 
                         {
+
                             resource_type:
                                 "image"
+
                         }
 
                     );
 
 
                     console.log(
+
                         "✅ Ancienne photo supprimée de Cloudinary"
+
                     );
 
                 }
 
             }
+
             catch (cloudinaryError) {
 
                 console.error(
-                    "⚠️ Impossible de supprimer ancienne photo Cloudinary :",
+
+                    "⚠️ Impossible de supprimer ancienne photo Cloudinary:",
+
                     cloudinaryError.message
+
                 );
 
             }
@@ -1861,15 +2035,25 @@ exports.updatePhoto = async (req, res) => {
 
                 `
                 SELECT
+
                     id_utilisateur,
+
                     nom,
+
                     prenom,
+
                     email,
+
                     telephone,
+
                     role,
+
                     photo,
+
                     date_inscription
+
                 FROM utilisateur
+
                 WHERE id_utilisateur=?
                 `,
 
@@ -1899,11 +2083,15 @@ exports.updatePhoto = async (req, res) => {
         });
 
     }
+
     catch (error) {
 
         console.error(
+
             "❌ Erreur modification photo :",
+
             error
+
         );
 
 
@@ -1921,6 +2109,7 @@ exports.updatePhoto = async (req, res) => {
 
 };
 
+
 // =====================================================
 // AJOUTER UNE PHOTO DANS L'HISTORIQUE DU PROFIL CLIENT
 // =====================================================
@@ -1930,9 +2119,13 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
     const id = req.params.id;
 
     const {
+
         photo,
+
         public_id
+
     } = req.body;
+
 
     try {
 
@@ -2001,9 +2194,13 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
             `,
 
             [
+
                 id,
+
                 photo,
+
                 public_id || null
+
             ]
 
         );
@@ -2029,7 +2226,7 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
 
         console.error(
 
-            "❌ Erreur ajout photo profil client :",
+            "❌ Erreur ajout photo profil client:",
 
             error
 
@@ -2051,7 +2248,6 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
 };
 
 
-
 // =====================================================
 // RÉCUPÉRER LES PHOTOS DE PROFIL DU CLIENT
 // =====================================================
@@ -2059,6 +2255,7 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
 exports.getPhotosProfilClient = async (req, res) => {
 
     const id = req.params.id;
+
 
     try {
 
@@ -2141,7 +2338,7 @@ exports.getPhotosProfilClient = async (req, res) => {
 
         console.error(
 
-            "❌ Erreur récupération photos profil client :",
+            "❌ Erreur récupération photos profil client:",
 
             error
 

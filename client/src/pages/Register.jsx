@@ -17,7 +17,6 @@ function Register() {
     const [confirmationMotDePasse, setConfirmationMotDePasse] = useState("");
 
 
-
     const [form, setForm] = useState({
 
         nom:"",
@@ -25,12 +24,14 @@ function Register() {
         email:"",
         telephone:"",
         mot_de_passe:"",
-        role:"Touriste"
+        role:"Touriste",
+
+        nom_entreprise:"",
+        description:"",
+        adresse:"",
+        ville:""
 
     });
-
-
-
 
 
     const handleChange = (e)=>{
@@ -48,15 +49,10 @@ function Register() {
     };
 
 
-
-
-
-
     const handleSubmit = async(e)=>{
 
 
         e.preventDefault();
-
 
 
         if(form.mot_de_passe !== confirmationMotDePasse){
@@ -72,9 +68,6 @@ function Register() {
         }
 
 
-
-
-
         try{
 
 
@@ -87,15 +80,12 @@ function Register() {
             );
 
 
-
             alert(
                 "Inscription réussie"
             );
 
 
-
-           navigate("/login-client");
-
+            navigate("/login-client");
 
 
         }
@@ -106,9 +96,25 @@ function Register() {
             console.log(error);
 
 
-            alert(
-                "Erreur lors de l'inscription"
-            );
+            if(
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            ){
+
+                alert(
+                    error.response.data.message
+                );
+
+            }
+
+            else{
+
+                alert(
+                    "Erreur lors de l'inscription"
+                );
+
+            }
 
 
         }
@@ -117,423 +123,546 @@ function Register() {
     };
 
 
+    return(
 
 
+        <div className="register-container">
 
 
+            <div className="register-card">
 
-return(
 
+                <h1>
 
-<div className="register-container">
+                    🌴 Créer un compte
 
+                </h1>
 
 
-<div className="register-card">
+                <p className="register-subtitle">
 
+                    Rejoignez Travel Explorer
 
+                </p>
 
 
+                <form
+                    className="register-form"
+                    onSubmit={handleSubmit}
+                >
 
-<h1>
-🌴 Créer un compte
-</h1>
 
+                    <div className="form-group">
 
 
+                        <label>
 
-<p className="register-subtitle">
+                            Nom
 
-Rejoignez Travel Explorer
+                        </label>
 
-</p>
 
+                        <input
 
+                            type="text"
 
+                            name="nom"
 
+                            placeholder="Votre nom"
 
-<form 
-className="register-form"
-onSubmit={handleSubmit}
->
+                            value={form.nom}
 
+                            onChange={handleChange}
 
+                            required
 
+                        />
 
 
-<div className="form-group">
+                    </div>
 
-<label>
-Nom
-</label>
 
-<input
+                    <div className="form-group">
 
-type="text"
 
-name="nom"
+                        <label>
 
-placeholder="Votre nom"
+                            Prénom
 
-value={form.nom}
+                        </label>
 
-onChange={handleChange}
 
-required
+                        <input
 
-/>
+                            type="text"
 
-</div>
+                            name="prenom"
 
+                            placeholder="Votre prénom"
 
+                            value={form.prenom}
 
+                            onChange={handleChange}
 
+                            required
 
+                        />
 
 
-<div className="form-group">
+                    </div>
 
-<label>
-Prénom
-</label>
 
-<input
+                    <div className="form-group">
 
-type="text"
 
-name="prenom"
+                        <label>
 
-placeholder="Votre prénom"
+                            Email
 
-value={form.prenom}
+                        </label>
 
-onChange={handleChange}
 
-required
+                        <input
 
-/>
+                            type="email"
 
-</div>
+                            name="email"
 
+                            placeholder="exemple@gmail.com"
 
+                            value={form.email}
 
+                            onChange={handleChange}
 
+                            required
 
+                        />
 
 
-<div className="form-group">
+                    </div>
 
-<label>
-Email
-</label>
 
-<input
+                    <div className="form-group">
 
-type="email"
 
-name="email"
+                        <label>
 
-placeholder="exemple@gmail.com"
+                            Téléphone
 
-value={form.email}
+                        </label>
 
-onChange={handleChange}
 
-required
+                        <input
 
-/>
+                            type="text"
 
-</div>
+                            name="telephone"
 
+                            placeholder="0340000000"
 
+                            value={form.telephone}
 
+                            onChange={handleChange}
 
+                        />
 
 
+                    </div>
 
-<div className="form-group">
 
-<label>
-Téléphone
-</label>
+                    <div className="form-group">
 
-<input
 
-type="text"
+                        <label>
 
-name="telephone"
+                            Mot de passe
 
-placeholder="0340000000"
+                        </label>
 
-value={form.telephone}
 
-onChange={handleChange}
+                        <div className="password-field">
 
-/>
 
-</div>
+                            <input
 
+                                type={
+                                    voirMotDePasse
+                                    ? "text"
+                                    : "password"
+                                }
 
+                                name="mot_de_passe"
 
+                                placeholder="Votre mot de passe"
 
+                                value={form.mot_de_passe}
 
+                                onChange={handleChange}
 
+                                required
 
+                            />
 
-<div className="form-group">
 
-<label>
-Mot de passe
-</label>
+                            <span
 
+                                className="password-eye"
 
-<div className="password-field">
+                                onClick={()=>
+                                    setVoirMotDePasse(
+                                        !voirMotDePasse
+                                    )
+                                }
 
+                            >
 
-<input
 
-type={
-voirMotDePasse
-?
-"text"
-:
-"password"
-}
+                                {
 
-name="mot_de_passe"
+                                    voirMotDePasse
 
-placeholder="Votre mot de passe"
+                                    ?
 
-value={form.mot_de_passe}
+                                    <FaEyeSlash/>
 
-onChange={handleChange}
+                                    :
 
-required
+                                    <FaEye/>
 
-/>
+                                }
 
 
+                            </span>
 
-<span
 
-className="password-eye"
+                        </div>
 
-onClick={()=>setVoirMotDePasse(!voirMotDePasse)}
 
->
+                    </div>
 
 
-{
+                    <div className="form-group">
 
-voirMotDePasse
 
-?
+                        <label>
 
-<FaEyeSlash/>
+                            Confirmer le mot de passe
 
-:
+                        </label>
 
-<FaEye/>
 
-}
+                        <div className="password-field">
 
 
-</span>
+                            <input
 
+                                type={
+                                    voirMotDePasse
+                                    ? "text"
+                                    : "password"
+                                }
 
+                                placeholder="Confirmer votre mot de passe"
 
-</div>
+                                value={confirmationMotDePasse}
 
+                                onChange={(e)=>
+                                    setConfirmationMotDePasse(
+                                        e.target.value
+                                    )
+                                }
 
-</div>
+                                required
 
+                            />
 
 
+                            <span
 
+                                className="password-eye"
 
+                                onClick={()=>
+                                    setVoirMotDePasse(
+                                        !voirMotDePasse
+                                    )
+                                }
 
+                            >
 
 
+                                {
 
-<div className="form-group">
+                                    voirMotDePasse
 
-<label>
-Confirmer le mot de passe
-</label>
+                                    ?
 
+                                    <FaEyeSlash/>
 
+                                    :
 
-<div className="password-field">
+                                    <FaEye/>
 
+                                }
 
-<input
 
-type={
-voirMotDePasse
-?
-"text"
-:
-"password"
-}
+                            </span>
 
-placeholder="Confirmer votre mot de passe"
 
-value={confirmationMotDePasse}
+                        </div>
 
-onChange={(e)=>
-setConfirmationMotDePasse(
-e.target.value
-)
-}
 
-required
+                    </div>
 
-/>
 
+                    <div className="form-group">
 
 
+                        <label>
 
+                            Type de compte
 
-<span
+                        </label>
 
-className="password-eye"
 
-onClick={()=>setVoirMotDePasse(!voirMotDePasse)}
+                        <select
 
->
+                            name="role"
 
-{
+                            value={form.role}
 
-voirMotDePasse
+                            onChange={handleChange}
 
-?
+                            required
 
-<FaEyeSlash/>
+                        >
 
-:
 
-<FaEye/>
+                            <option value="Touriste">
 
-}
+                                Touriste
 
+                            </option>
 
-</span>
 
+                            <option value="Prestataire">
 
+                                Prestataire
 
-</div>
+                            </option>
 
 
-</div>
+                        </select>
 
 
+                    </div>
 
 
+                    {form.role === "Prestataire" && (
 
 
+                        <div className="prestataire-form">
 
 
-<div className="form-group">
+                            <h2>
 
-<label>
-Type de compte
-</label>
+                                Informations du prestataire
 
+                            </h2>
 
 
-<select
+                            <p className="prestataire-description">
 
-name="role"
+                                Veuillez renseigner les informations
+                                de votre entreprise touristique.
 
-value={form.role}
+                            </p>
 
-onChange={handleChange}
 
->
+                            <div className="form-group">
 
 
-<option value="Touriste">
+                                <label>
 
-Touriste
+                                    Nom de l'entreprise
 
-</option>
+                                </label>
 
 
+                                <input
 
-<option value="Prestataire">
+                                    type="text"
 
-Prestataire
+                                    name="nom_entreprise"
 
-</option>
+                                    placeholder="Exemple : Hotel Palm Beach"
 
+                                    value={form.nom_entreprise}
 
+                                    onChange={handleChange}
 
-</select>
+                                    required
 
+                                />
 
 
-</div>
+                            </div>
 
 
+                            <div className="form-group">
 
 
+                                <label>
 
+                                    Description
 
+                                </label>
 
 
-<button type="submit">
+                                <textarea
 
-Créer mon compte
+                                    name="description"
 
-</button>
+                                    placeholder="Décrivez votre entreprise ou votre activité touristique"
 
+                                    value={form.description}
 
+                                    onChange={handleChange}
 
+                                    rows="4"
 
+                                    required
 
+                                />
 
 
-</form>
+                            </div>
 
 
+                            <div className="form-group">
 
 
+                                <label>
 
+                                    Adresse
 
+                                </label>
 
-<div className="register-link">
 
+                                <input
 
-<p>
+                                    type="text"
 
-Vous avez déjà un compte ?
+                                    name="adresse"
 
-<Link to="/login-client">
+                                    placeholder="Exemple : Au bord de la mer"
 
-Se connecter
+                                    value={form.adresse}
 
-</Link>
+                                    onChange={handleChange}
 
+                                    required
 
-</p>
+                                />
 
 
-</div>
+                            </div>
 
 
+                            <div className="form-group">
 
 
+                                <label>
 
+                                    Ville
 
+                                </label>
 
-</div>
 
+                                <input
 
-</div>
+                                    type="text"
 
+                                    name="ville"
 
-);
+                                    placeholder="Exemple : Nosy Be"
 
+                                    value={form.ville}
+
+                                    onChange={handleChange}
+
+                                    required
+
+                                />
+
+
+                            </div>
+
+
+                            <div className="prestataire-info">
+
+
+                                <strong>
+
+                                    Validation du compte
+
+                                </strong>
+
+
+                                <p>
+
+                                    Votre compte prestataire sera enregistré
+                                    avec le statut « En attente ». Un
+                                    administrateur devra valider votre compte.
+
+                                </p>
+
+
+                            </div>
+
+
+                        </div>
+
+                    )}
+
+
+                    <button type="submit">
+
+                        Créer mon compte
+
+                    </button>
+
+
+                </form>
+
+
+                <div className="register-link">
+
+
+                    <p>
+
+                        Vous avez déjà un compte ?
+
+
+                        <Link to="/login-client">
+
+                            Se connecter
+
+                        </Link>
+
+
+                    </p>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    );
 
 
 }
