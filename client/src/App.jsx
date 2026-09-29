@@ -48,7 +48,7 @@ import EspaceClientLayout from "./components/EspaceClientLayout";
 import VerificationRecu from "./pages/VerificationRecu";
 import EspacePrestataire from "./pages/EspacePrestataire";
 import EspacePrestataireLayout from "./components/EspacePrestataireLayout";
-import OffresPrestataire from "./pages/prestataire/OffresPrestataire";
+import OffresPrestataire from "./pages/OffresPrestataire";
 
 function App() {
 
