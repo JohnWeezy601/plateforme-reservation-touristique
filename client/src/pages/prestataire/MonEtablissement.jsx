@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../../api/api";
 import "./MonEtablissement.css";
 
@@ -24,8 +24,17 @@ function MonEtablissement() {
     const [sauvegardeEtablissement, setSauvegardeEtablissement] =
         useState(false);
 
+    const [sauvegardePhoto, setSauvegardePhoto] =
+        useState(false);
+
     const [message, setMessage] = useState("");
     const [erreur, setErreur] = useState("");
+
+    // =====================================================
+    // RÉFÉRENCE INPUT PHOTO
+    // =====================================================
+
+    const inputPhotoRef = useRef(null);
 
     // =====================================================
     // FORMULAIRE PROFIL
@@ -80,8 +89,9 @@ function MonEtablissement() {
             let utilisateurLocal;
 
             try {
-                utilisateurLocal =
-                    JSON.parse(utilisateurConnecte);
+                utilisateurLocal = JSON.parse(
+                    utilisateurConnecte
+                );
             } catch (error) {
                 console.error(
                     "Erreur lecture utilisateur :",
@@ -101,7 +111,7 @@ function MonEtablissement() {
             );
 
             // =================================================
-            // IMPORTANT
+            // RÉCUPÉRER ID UTILISATEUR
             // =================================================
 
             const idUtilisateur =
@@ -332,6 +342,201 @@ function MonEtablissement() {
     };
 
     // =====================================================
+    // OUVRIR SÉLECTEUR PHOTO
+    // =====================================================
+
+    const choisirPhoto = () => {
+        if (inputPhotoRef.current) {
+            inputPhotoRef.current.click();
+        }
+    };
+
+    // =====================================================
+    // MODIFIER PHOTO DE PROFIL
+    // =====================================================
+
+    const handlePhotoChange = async (event) => {
+        const fichier = event.target.files?.[0];
+
+        if (!fichier) {
+            return;
+        }
+
+        // =================================================
+        // VÉRIFIER TYPE DE FICHIER
+        // =================================================
+
+        if (!fichier.type.startsWith("image/")) {
+            setErreur(
+                "Veuillez sélectionner une image valide."
+            );
+
+            event.target.value = "";
+            return;
+        }
+
+        // =================================================
+        // VÉRIFIER TAILLE
+        // =================================================
+
+        const tailleMaximale =
+            5 * 1024 * 1024;
+
+        if (fichier.size > tailleMaximale) {
+            setErreur(
+                "La photo ne doit pas dépasser 5 Mo."
+            );
+
+            event.target.value = "";
+            return;
+        }
+
+        try {
+            setSauvegardePhoto(true);
+            setErreur("");
+            setMessage("");
+
+            if (!utilisateur?.id_utilisateur) {
+                setErreur(
+                    "Identifiant utilisateur introuvable."
+                );
+
+                return;
+            }
+
+            // =================================================
+            // FORM DATA
+            // =================================================
+
+            const formData = new FormData();
+
+            formData.append(
+                "photo",
+                fichier
+            );
+
+            console.log(
+                "ENVOI PHOTO PROFIL..."
+            );
+
+            // =================================================
+            // ENVOYER AU BACKEND
+            // =================================================
+
+            const response = await api.put(
+                `/utilisateurs/photo/${utilisateur.id_utilisateur}`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type":
+                            "multipart/form-data"
+                    }
+                }
+            );
+
+            console.log(
+                "PHOTO MODIFIÉE :",
+                response.data
+            );
+
+            // =================================================
+            // RÉCUPÉRER NOUVELLE PHOTO
+            // =================================================
+
+            const nouvellePhoto =
+                response.data?.photo ||
+                response.data?.utilisateur?.photo;
+
+            if (!nouvellePhoto) {
+                // Si le backend ne renvoie pas la photo,
+                // on recharge les informations.
+                await chargerInformations();
+
+                setMessage(
+                    "Votre photo de profil a été modifiée avec succès."
+                );
+
+                return;
+            }
+
+            // =================================================
+            // METTRE À JOUR UTILISATEUR
+            // =================================================
+
+            const utilisateurMisAJour = {
+                ...utilisateur,
+                photo: nouvellePhoto
+            };
+
+            setUtilisateur(
+                utilisateurMisAJour
+            );
+
+            // =================================================
+            // METTRE À JOUR LOCAL STORAGE
+            // =================================================
+
+            const utilisateurLocalString =
+                localStorage.getItem(
+                    "utilisateur"
+                );
+
+            if (utilisateurLocalString) {
+                const utilisateurLocal =
+                    JSON.parse(
+                        utilisateurLocalString
+                    );
+
+                const utilisateurLocalMisAJour = {
+                    ...utilisateurLocal,
+                    photo: nouvellePhoto
+                };
+
+                localStorage.setItem(
+                    "utilisateur",
+                    JSON.stringify(
+                        utilisateurLocalMisAJour
+                    )
+                );
+            }
+
+            setMessage(
+                "Votre photo de profil a été modifiée avec succès."
+            );
+
+        } catch (error) {
+            console.error(
+                "Erreur modification photo :",
+                error
+            );
+
+            if (error.response) {
+                console.error(
+                    "Statut :",
+                    error.response.status
+                );
+
+                console.error(
+                    "Réponse serveur :",
+                    error.response.data
+                );
+            }
+
+            setErreur(
+                error.response?.data?.message ||
+                "Impossible de modifier votre photo de profil."
+            );
+
+        } finally {
+            setSauvegardePhoto(false);
+
+            // Permet de sélectionner à nouveau
+            // le même fichier si nécessaire.
+            event.target.value = "";
+        }
+    };
+
+    // =====================================================
     // ENREGISTRER PROFIL
     // =====================================================
 
@@ -357,11 +562,7 @@ function MonEtablissement() {
                 nom: profilForm.nom,
                 prenom: profilForm.prenom,
                 email: profilForm.email,
-                telephone: profilForm.telephone,
-
-                // On conserve le rôle actuel.
-                // Le prestataire ne peut pas le modifier.
-                role: utilisateur.role
+                telephone: profilForm.telephone
             };
 
             console.log(
@@ -369,21 +570,44 @@ function MonEtablissement() {
                 donnees
             );
 
-            await api.put(
+            // =================================================
+            // APPEL API
+            // =================================================
+
+            const response = await api.put(
                 `/utilisateurs/${utilisateur.id_utilisateur}`,
                 donnees
             );
 
+            console.log(
+                "PROFIL MODIFIÉ :",
+                response.data
+            );
+
             // =================================================
-            // METTRE À JOUR L'ÉTAT
+            // RÉCUPÉRER UTILISATEUR MIS À JOUR
             // =================================================
+
+            const utilisateurRetour =
+                response.data?.utilisateur;
 
             const utilisateurMisAJour = {
                 ...utilisateur,
-                nom: profilForm.nom,
-                prenom: profilForm.prenom,
-                email: profilForm.email,
-                telephone: profilForm.telephone
+                nom:
+                    utilisateurRetour?.nom ??
+                    profilForm.nom,
+
+                prenom:
+                    utilisateurRetour?.prenom ??
+                    profilForm.prenom,
+
+                email:
+                    utilisateurRetour?.email ??
+                    profilForm.email,
+
+                telephone:
+                    utilisateurRetour?.telephone ??
+                    profilForm.telephone
             };
 
             setUtilisateur(
@@ -391,28 +615,35 @@ function MonEtablissement() {
             );
 
             // =================================================
-            // METTRE À JOUR LOCALSTORAGE
+            // METTRE À JOUR LOCAL STORAGE
             // =================================================
 
-            const utilisateurLocal =
-                JSON.parse(
-                    localStorage.getItem("utilisateur")
+            const utilisateurLocalString =
+                localStorage.getItem(
+                    "utilisateur"
                 );
 
-            const utilisateurLocalMisAJour = {
-                ...utilisateurLocal,
-                nom: profilForm.nom,
-                prenom: profilForm.prenom,
-                email: profilForm.email,
-                telephone: profilForm.telephone
-            };
+            if (utilisateurLocalString) {
+                const utilisateurLocal =
+                    JSON.parse(
+                        utilisateurLocalString
+                    );
 
-            localStorage.setItem(
-                "utilisateur",
-                JSON.stringify(
-                    utilisateurLocalMisAJour
-                )
-            );
+                const utilisateurLocalMisAJour = {
+                    ...utilisateurLocal,
+                    nom: profilForm.nom,
+                    prenom: profilForm.prenom,
+                    email: profilForm.email,
+                    telephone: profilForm.telephone
+                };
+
+                localStorage.setItem(
+                    "utilisateur",
+                    JSON.stringify(
+                        utilisateurLocalMisAJour
+                    )
+                );
+            }
 
             setModificationProfil(false);
 
@@ -477,8 +708,7 @@ function MonEtablissement() {
                 email:
                     etablissementForm.email,
 
-                // Le statut actuel est conservé.
-                // Il ne peut pas être modifié ici.
+                // Le statut reste inchangé.
                 statut:
                     etablissement.statut
             };
@@ -487,6 +717,10 @@ function MonEtablissement() {
                 "MODIFICATION ÉTABLISSEMENT :",
                 donnees
             );
+
+            // =================================================
+            // APPEL API
+            // =================================================
 
             await api.put(
                 `/prestataires/${etablissement.id_prestataire}`,
@@ -536,7 +770,11 @@ function MonEtablissement() {
 
                 <div className="etablissement-message">
 
-                    Chargement des informations...
+                    <div className="chargement-spinner"></div>
+
+                    <span>
+                        Chargement des informations...
+                    </span>
 
                 </div>
 
@@ -658,32 +896,61 @@ function MonEtablissement() {
 
                     <div className="profil-identite">
 
-                        <div className="profil-photo">
+                        <div className="profil-photo-container">
 
-                            {utilisateur.photo ? (
+                            <div className="profil-photo">
 
-                                <img
-                                    src={utilisateur.photo}
-                                    alt="Photo de profil"
+                                {utilisateur.photo ? (
+
+                                    <img
+                                        src={utilisateur.photo}
+                                        alt="Photo de profil"
+                                    />
+
+                                ) : (
+
+                                    <div className="profil-photo-placeholder">
+
+                                        {(
+                                            utilisateur.prenom?.charAt(0) ||
+                                            utilisateur.nom?.charAt(0) ||
+                                            "P"
+                                        ).toUpperCase()}
+
+                                    </div>
+
+                                )}
+
+                                {/* =================================================
+                                    BOUTON PHOTO
+                                ================================================= */}
+
+                                <button
+                                    type="button"
+                                    className="btn-photo"
+                                    onClick={choisirPhoto}
+                                    disabled={sauvegardePhoto}
+                                    title="Modifier la photo"
+                                >
+                                    {sauvegardePhoto
+                                        ? "..."
+                                        : "📷"}
+                                </button>
+
+                                <input
+                                    ref={inputPhotoRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="input-photo-hidden"
+                                    onChange={handlePhotoChange}
                                 />
 
-                            ) : (
-
-                                <div className="profil-photo-placeholder">
-
-                                    {(
-                                        utilisateur.prenom?.charAt(0) ||
-                                        utilisateur.nom?.charAt(0) ||
-                                        "P"
-                                    ).toUpperCase()}
-
-                                </div>
-
-                            )}
+                            </div>
 
                         </div>
 
-                        <div>
+
+                        <div className="profil-identite-info">
 
                             <h3>
                                 {utilisateur.prenom}{" "}
@@ -693,6 +960,10 @@ function MonEtablissement() {
                             <span>
                                 Prestataire
                             </span>
+
+                            <small>
+                                Cliquez sur 📷 pour modifier votre photo
+                            </small>
 
                         </div>
 
@@ -912,12 +1183,12 @@ function MonEtablissement() {
 
                             <h2>
                                 {etablissement.nom_entreprise ||
-                                "Mon établissement"}
+                                    "Mon établissement"}
                             </h2>
 
                             <span className="statut-badge">
                                 {etablissement.statut ||
-                                "Statut non défini"}
+                                    "Statut non défini"}
                             </span>
 
                         </div>
@@ -1110,7 +1381,7 @@ function MonEtablissement() {
 
                                 <p>
                                     {etablissement.description ||
-                                    "Aucune description disponible."}
+                                        "Aucune description disponible."}
                                 </p>
 
                             )}
@@ -1132,7 +1403,7 @@ function MonEtablissement() {
 
                                 <span className="statut-badge">
                                     {etablissement.statut ||
-                                    "Non défini"}
+                                        "Non défini"}
                                 </span>
 
                                 <small>

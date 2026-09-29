@@ -1,116 +1,105 @@
 /* =========================================================
-   PAGE MON ÉTABLISSEMENT
-   ========================================================= */
+   MON ÉTABLISSEMENT - PAGE PRESTATAIRE
+========================================================= */
 
 .mon-etablissement {
     width: 100%;
-    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
     box-sizing: border-box;
+    background: #f7f8fa;
+    min-height: 100%;
 }
-
 
 /* =========================================================
    EN-TÊTE
-   ========================================================= */
+========================================================= */
 
 .etablissement-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    margin-bottom: 28px;
+    margin-bottom: 25px;
 }
 
 .etablissement-header h1 {
-    margin: 0;
-
-    color: #1f2937;
-
-    font-size: 30px;
+    margin: 0 0 8px;
+    font-size: 28px;
     font-weight: 700;
+    color: #1f2937;
 }
 
 .etablissement-header p {
-    margin: 8px 0 0;
-
-    color: #6b7280;
-
+    margin: 0;
     font-size: 15px;
-}
-
-
-/* =========================================================
-   MESSAGE DE CHARGEMENT
-   ========================================================= */
-
-.etablissement-message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 180px;
-
-    padding: 30px;
-
-    box-sizing: border-box;
-
-    background: #ffffff;
-
-    border-radius: 14px;
-
     color: #6b7280;
-
-    font-size: 15px;
-
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-}
-
-
-/* =========================================================
-   MESSAGE D'ERREUR
-   ========================================================= */
-
-.etablissement-error {
-    padding: 20px 24px;
-
-    background: #fef2f2;
-
-    border: 1px solid #fecaca;
-
-    border-left: 5px solid #dc2626;
-
-    border-radius: 12px;
-
-    color: #991b1b;
-
-    box-shadow: 0 3px 12px rgba(220, 38, 38, 0.08);
-}
-
-.etablissement-error p {
-    margin: 0 0 15px;
-
-    font-size: 14px;
     line-height: 1.6;
 }
 
-.etablissement-error button {
-    padding: 9px 18px;
 
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.etablissement-success {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background: #ecfdf3;
+    border: 1px solid #a7f3d0;
+    color: #047857;
+}
+
+.etablissement-success span {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #10b981;
+    color: white;
+    font-weight: bold;
+}
+
+.etablissement-success p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.etablissement-error {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px 18px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+}
+
+.etablissement-error p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.etablissement-error button {
     border: none;
     border-radius: 7px;
-
+    padding: 9px 16px;
     background: #dc2626;
-
     color: white;
-
-    font-family: inherit;
-
     font-size: 13px;
     font-weight: 600;
-
     cursor: pointer;
-
-    transition: background 0.2s ease;
+    transition: 0.2s ease;
 }
 
 .etablissement-error button:hover {
@@ -119,88 +108,144 @@
 
 
 /* =========================================================
-   CARTE ÉTABLISSEMENT
-   ========================================================= */
+   CHARGEMENT
+========================================================= */
 
-.etablissement-card {
-    width: 100%;
-
-    box-sizing: border-box;
-
-    padding: 30px;
-
-    background: #ffffff;
-
-    border-radius: 16px;
-
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-}
-
-
-/* =========================================================
-   TITRE DE L'ÉTABLISSEMENT
-   ========================================================= */
-
-.etablissement-title {
-    display: flex;
-    align-items: center;
-
-    gap: 18px;
-
-    padding-bottom: 25px;
-
-    margin-bottom: 25px;
-
-    border-bottom: 1px solid #e5e7eb;
-}
-
-
-/* =========================================================
-   ICÔNE
-   ========================================================= */
-
-.etablissement-icon {
+.etablissement-message {
+    min-height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    width: 64px;
-    height: 64px;
-
-    min-width: 64px;
-
-    border-radius: 14px;
-
-    background: #ecfdf5;
-
-    font-size: 30px;
+    color: #6b7280;
+    font-size: 15px;
 }
 
 
 /* =========================================================
-   NOM
-   ========================================================= */
+   CARTE
+========================================================= */
 
-.etablissement-title h2 {
-    margin: 0 0 8px;
+.etablissement-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
 
-    color: #111827;
 
-    font-size: 23px;
+/* =========================================================
+   EN-TÊTE DE SECTION
+========================================================= */
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #edf0f2;
+}
+
+.section-header h2 {
+    margin: 0 0 5px;
+    color: #1f2937;
+    font-size: 21px;
     font-weight: 700;
 }
 
-.etablissement-title span {
-    display: inline-block;
+.section-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
 
-    padding: 5px 12px;
 
+/* =========================================================
+   BOUTON MODIFIER
+========================================================= */
+
+.btn-modifier {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid #2563eb;
+    border-radius: 8px;
+    padding: 10px 17px;
+    background: white;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-modifier:hover {
+    background: #2563eb;
+    color: white;
+}
+
+
+/* =========================================================
+   PROFIL - IDENTITÉ
+========================================================= */
+
+.profil-identite {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #eef2f7;
+}
+
+.profil-photo {
+    width: 78px;
+    height: 78px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.profil-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.profil-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2563eb;
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.profil-identite h3 {
+    margin: 0 0 5px;
+    color: #111827;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.profil-identite span {
+    display: inline-flex;
+    padding: 5px 10px;
     border-radius: 20px;
-
-    background: #ecfdf5;
-
-    color: #047857;
-
+    background: #eff6ff;
+    color: #2563eb;
     font-size: 12px;
     font-weight: 600;
 }
@@ -208,244 +253,237 @@
 
 /* =========================================================
    GRILLE DES INFORMATIONS
-   ========================================================= */
+========================================================= */
 
 .etablissement-grid {
     display: grid;
-
     grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    gap: 20px;
-
-    width: 100%;
+    gap: 22px 25px;
 }
-
-
-/* =========================================================
-   CHAMP
-   ========================================================= */
 
 .etablissement-field {
     min-width: 0;
-
-    padding: 18px 20px;
-
-    box-sizing: border-box;
-
-    background: #f9fafb;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 10px;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
 }
-
-.etablissement-field:hover {
-    border-color: #cbd5e1;
-
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
-}
-
-
-/* =========================================================
-   CHAMPS PLEINE LARGEUR
-   ========================================================= */
 
 .etablissement-field.full-width {
     grid-column: 1 / -1;
 }
 
-
-/* =========================================================
-   LABEL
-   ========================================================= */
-
 .etablissement-field label {
     display: block;
-
     margin-bottom: 8px;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+}
 
-    color: #6b7280;
+.etablissement-field > p {
+    min-height: 20px;
+    margin: 0;
+    padding: 12px 0;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+}
 
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.etablissement-field input,
+.etablissement-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 12px 13px;
+    outline: none;
+    background: white;
+    color: #1f2937;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.etablissement-field input {
+    height: 45px;
+}
+
+.etablissement-field textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.etablissement-field input::placeholder,
+.etablissement-field textarea::placeholder {
+    color: #9ca3af;
+}
+
+.etablissement-field input:focus,
+.etablissement-field textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+
+/* =========================================================
+   TITRE ÉTABLISSEMENT
+========================================================= */
+
+.etablissement-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding: 18px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #eef2f7;
+}
+
+.etablissement-icon {
+    width: 55px;
+    height: 55px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #eff6ff;
+    font-size: 27px;
+}
+
+.etablissement-title h2 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   STATUT
+========================================================= */
+
+.statut-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: #fef3c7;
+    color: #92400e;
     font-size: 12px;
     font-weight: 600;
+}
 
-    text-transform: uppercase;
+.statut-non-modifiable {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-height: 45px;
+    padding: 8px 0;
+}
 
-    letter-spacing: 0.5px;
+.statut-non-modifiable small {
+    color: #6b7280;
+    font-size: 12px;
 }
 
 
 /* =========================================================
-   VALEUR
-   ========================================================= */
+   BOUTONS FORMULAIRE
+========================================================= */
 
-.etablissement-field p {
-    margin: 0;
-
-    color: #1f2937;
-
-    font-size: 15px;
-    font-weight: 500;
-
-    line-height: 1.6;
-
-    overflow-wrap: anywhere;
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid #edf0f2;
 }
 
+.btn-annuler,
+.btn-enregistrer {
+    min-width: 115px;
+    height: 42px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
 
-/* =========================================================
-   DESCRIPTION
-   ========================================================= */
-
-.etablissement-field.full-width:last-child p {
+.btn-annuler {
+    border: 1px solid #d1d5db;
+    background: white;
     color: #4b5563;
-
-    font-weight: 400;
-
-    line-height: 1.7;
 }
 
-
-/* =========================================================
-   PIED DE LA CARTE
-   ========================================================= */
-
-.etablissement-footer {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    margin-top: 25px;
-
-    padding-top: 20px;
-
-    border-top: 1px solid #e5e7eb;
-}
-
-.etablissement-footer span {
-    color: #6b7280;
-
-    font-size: 14px;
-}
-
-.etablissement-footer strong {
-    padding: 6px 13px;
-
-    border-radius: 20px;
-
-    background: #ecfdf5;
-
-    color: #047857;
-
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   AUCUN ÉTABLISSEMENT
-   ========================================================= */
-
-.etablissement-empty {
-    display: flex;
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    min-height: 320px;
-
-    padding: 40px;
-
-    box-sizing: border-box;
-
-    background: #ffffff;
-
-    border-radius: 16px;
-
-    text-align: center;
-
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-}
-
-.etablissement-empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 75px;
-    height: 75px;
-
-    margin-bottom: 18px;
-
-    border-radius: 50%;
-
+.btn-annuler:hover:not(:disabled) {
     background: #f3f4f6;
-
-    font-size: 35px;
+    border-color: #9ca3af;
 }
 
-.etablissement-empty h2 {
-    margin: 0 0 8px;
-
-    color: #1f2937;
-
-    font-size: 20px;
+.btn-enregistrer {
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: white;
 }
 
-.etablissement-empty p {
-    max-width: 450px;
+.btn-enregistrer:hover:not(:disabled) {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
 
-    margin: 0;
-
-    color: #6b7280;
-
-    font-size: 14px;
-
-    line-height: 1.6;
+.btn-annuler:disabled,
+.btn-enregistrer:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 
 /* =========================================================
-   TABLETTE
-   ========================================================= */
+   RESPONSIVE - TABLETTE
+========================================================= */
 
-@media (max-width: 850px) {
+@media (max-width: 900px) {
 
-    .etablissement-header h1 {
-        font-size: 26px;
+    .mon-etablissement {
+        padding: 22px;
     }
 
     .etablissement-card {
-        padding: 24px;
+        padding: 22px;
     }
 
     .etablissement-grid {
-        grid-template-columns: 1fr;
+        gap: 18px;
     }
 
-    .etablissement-field.full-width {
-        grid-column: auto;
-    }
 }
 
 
 /* =========================================================
-   MOBILE
-   ========================================================= */
+   RESPONSIVE - MOBILE
+========================================================= */
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
 
     .mon-etablissement {
-        padding: 0;
+        padding: 15px;
     }
 
     .etablissement-header {
-        margin-bottom: 20px;
+        align-items: flex-start;
     }
 
     .etablissement-header h1 {
@@ -458,89 +496,167 @@
 
     .etablissement-card {
         padding: 18px;
-
         border-radius: 12px;
     }
 
-    .etablissement-title {
-        gap: 12px;
-
-        padding-bottom: 20px;
-
-        margin-bottom: 20px;
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
     }
 
-    .etablissement-icon {
-        width: 50px;
-        height: 50px;
-
-        min-width: 50px;
-
-        border-radius: 10px;
-
-        font-size: 24px;
+    .btn-modifier {
+        width: 100%;
     }
 
-    .etablissement-title h2 {
-        font-size: 18px;
-    }
-
-    .etablissement-title span {
-        font-size: 11px;
-    }
-
-    .etablissement-field {
+    .profil-identite {
         padding: 15px;
     }
 
-    .etablissement-field p {
-        font-size: 14px;
+    .profil-photo {
+        width: 65px;
+        height: 65px;
     }
 
-    .etablissement-footer {
-        flex-wrap: wrap;
+    .profil-identite h3 {
+        font-size: 17px;
     }
 
-    .etablissement-empty {
-        min-height: 280px;
-
-        padding: 25px 18px;
+    .etablissement-grid {
+        grid-template-columns: 1fr;
     }
+
+    .etablissement-field.full-width {
+        grid-column: auto;
+    }
+
+    .etablissement-title {
+        align-items: flex-start;
+        padding: 15px;
+    }
+
+    .etablissement-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 23px;
+    }
+
+    .etablissement-title h2 {
+        font-size: 17px;
+    }
+
+    .etablissement-error {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .etablissement-error button {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-annuler,
+    .btn-enregistrer {
+        width: 100%;
+    }
+
 }
 
 
 /* =========================================================
-   TRÈS PETITS ÉCRANS
-   ========================================================= */
+   PETIT MOBILE
+========================================================= */
 
-@media (max-width: 400px) {
+@media (max-width: 420px) {
 
-    .etablissement-header h1 {
-        font-size: 21px;
+    .mon-etablissement {
+        padding: 10px;
     }
 
     .etablissement-card {
         padding: 15px;
     }
 
-    .etablissement-title {
-        align-items: flex-start;
+    .profil-identite {
+        gap: 12px;
     }
 
-    .etablissement-icon {
-        width: 45px;
-        height: 45px;
-
-        min-width: 45px;
-
-        font-size: 21px;
+    .profil-photo {
+        width: 58px;
+        height: 58px;
     }
 
-    .etablissement-title h2 {
-        font-size: 16px;
+    .profil-photo-placeholder {
+        font-size: 22px;
     }
 
-    .etablissement-field {
-        padding: 13px;
-    }
+}
+
+
+/* =========================================================
+   PHOTO DE PROFIL - BOUTON MODIFICATION
+========================================================= */
+
+.profil-photo-container {
+    position: relative;
+}
+
+.profil-photo {
+    position: relative;
+}
+
+.btn-photo {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 3px solid white;
+    border-radius: 50%;
+
+    background: #2563eb;
+    color: white;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+
+    transition: all 0.2s ease;
+}
+
+.btn-photo:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: scale(1.08);
+}
+
+.btn-photo:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.input-photo-hidden {
+    display: none;
+}
+
+.profil-identite-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.profil-identite-info small {
+    margin-top: 4px;
+    color: #9ca3af;
+    font-size: 11px;
 }
