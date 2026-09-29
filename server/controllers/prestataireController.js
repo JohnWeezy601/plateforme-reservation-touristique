@@ -117,101 +117,170 @@ exports.getPrestataireByUtilisateur = async (req, res) => {
 // =====================================
 exports.getStatistiquesPrestataire = async (req, res) => {
 
-    const idPrestataire = req.params.id;
+    const idPrestataire = Number(req.params.id);
 
     try {
 
-        // ==============================
-        // NOMBRE D'OFFRES
-        // ==============================
+        // =====================================
+        // VÉRIFIER ID PRESTATAIRE
+        // =====================================
 
-        const [offres] = await db.query(`
-            SELECT COUNT(*) AS total
+        if (!idPrestataire) {
 
-            FROM offre
+            return res.status(400).json({
+                message: "ID prestataire invalide"
+            });
 
+        }
+
+
+        // =====================================
+        // VÉRIFIER QUE LE PRESTATAIRE EXISTE
+        // =====================================
+
+        const [prestataire] = await db.query(
+            `
+            SELECT
+                id_prestataire,
+                id_utilisateur,
+                nom_entreprise
+            FROM prestataire
             WHERE id_prestataire = ?
-        `, [idPrestataire]);
+            `,
+            [idPrestataire]
+        );
 
 
-        // ==============================
-        // NOMBRE DE RESERVATIONS
-        // ==============================
+        if (prestataire.length === 0) {
 
-        const [reservations] = await db.query(`
+            return res.status(404).json({
+                message: "Prestataire introuvable"
+            });
+
+        }
+
+
+        // =====================================
+        // NOMBRE D'OFFRES
+        // =====================================
+
+        const [offres] = await db.query(
+            `
             SELECT COUNT(*) AS total
+            FROM offre
+            WHERE id_prestataire = ?
+            `,
+            [idPrestataire]
+        );
 
+
+        // =====================================
+        // NOMBRE TOTAL DE RÉSERVATIONS
+        // =====================================
+
+        const [reservations] = await db.query(
+            `
+            SELECT COUNT(*) AS total
             FROM reservation r
-
             INNER JOIN offre o
                 ON r.id_offre = o.id_offre
-
             WHERE o.id_prestataire = ?
-        `, [idPrestataire]);
+            `,
+            [idPrestataire]
+        );
 
 
-        // ==============================
-        // RESERVATIONS EN ATTENTE
-        // ==============================
+        // =====================================
+        // RÉSERVATIONS EN ATTENTE
+        // =====================================
 
-        const [reservationsAttente] = await db.query(`
+        const [reservationsEnAttente] = await db.query(
+            `
             SELECT COUNT(*) AS total
-
             FROM reservation r
-
             INNER JOIN offre o
                 ON r.id_offre = o.id_offre
-
             WHERE o.id_prestataire = ?
-
             AND r.statut = 'En attente'
-        `, [idPrestataire]);
+            `,
+            [idPrestataire]
+        );
 
 
-        // ==============================
+        // =====================================
         // REVENUS
-        // ==============================
+        // =====================================
 
-        const [revenus] = await db.query(`
-            SELECT COALESCE(SUM(p.montant), 0) AS total
-
+        const [revenus] = await db.query(
+            `
+            SELECT
+                COALESCE(SUM(p.montant), 0) AS total
             FROM paiement p
-
             INNER JOIN reservation r
                 ON p.id_reservation = r.id_reservation
-
             INNER JOIN offre o
                 ON r.id_offre = o.id_offre
-
             WHERE o.id_prestataire = ?
-
             AND p.statut = 'Paye'
-        `, [idPrestataire]);
+            `,
+            [idPrestataire]
+        );
 
 
-        res.json({
-            offres: Number(offres[0].total),
-            reservations: Number(reservations[0].total),
-            reservationsEnAttente: Number(
-                reservationsAttente[0].total
-            ),
-            revenus: Number(revenus[0].total)
-        });
+        // =====================================
+        // RÉSULTAT FINAL
+        // =====================================
 
-    } catch (error) {
+        const statistiques = {
+
+            offres: Number(offres[0]?.total || 0),
+
+            reservations:
+                Number(reservations[0]?.total || 0),
+
+            reservationsEnAttente:
+                Number(
+                    reservationsEnAttente[0]?.total || 0
+                ),
+
+            revenus:
+                Number(revenus[0]?.total || 0)
+
+        };
+
+
+        console.log(
+            "📊 Statistiques prestataire",
+            idPrestataire,
+            statistiques
+        );
+
+
+        res.json(statistiques);
+
+    }
+
+    catch (error) {
 
         console.error(
-            "ERREUR STATISTIQUES PRESTATAIRE :",
+            "❌ ERREUR STATISTIQUES PRESTATAIRE :",
             error
         );
 
-        res.status(500).json({
-            message: "Erreur récupération statistiques",
-            error: error.message
-        });
-    }
-};
 
+        res.status(500).json({
+
+            message:
+                "Erreur récupération statistiques",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+};
 
 // =====================================
 // AJOUTER UN PRESTATAIRE

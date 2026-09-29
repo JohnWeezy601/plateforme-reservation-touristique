@@ -10,644 +10,611 @@ import {
     FaMoneyBillWave
 } from "react-icons/fa";
 
-
 function EspacePrestataire() {
-
-
     const [utilisateur, setUtilisateur] = useState(null);
-
     const [prestataire, setPrestataire] = useState(null);
-
     const [chargement, setChargement] = useState(true);
-
-
-    // =====================================
-    // STATISTIQUES
-    // =====================================
+    const [erreur, setErreur] = useState("");
 
     const [statistiques, setStatistiques] = useState({
-
         offres: 0,
-
         reservations: 0,
-
         reservationsEnAttente: 0,
-
         revenus: 0
-
     });
 
-
-    // =====================================
-    // CHARGEMENT INITIAL
-    // =====================================
+    // =====================================================
+    // RÉCUPÉRER L'UTILISATEUR CONNECTÉ
+    // =====================================================
 
     useEffect(() => {
-
-
         const utilisateurStocke =
             localStorage.getItem("utilisateur");
 
-
         if (!utilisateurStocke) {
+            console.error(
+                "Aucun utilisateur connecté"
+            );
+
+            setErreur(
+                "Aucun utilisateur connecté."
+            );
 
             setChargement(false);
-
             return;
-
         }
 
-
         try {
-
-
             const utilisateurData =
                 JSON.parse(utilisateurStocke);
 
-
-            setUtilisateur(
+            console.log(
+                "UTILISATEUR CONNECTÉ :",
                 utilisateurData
             );
 
-
-            // =====================================
-            // ID UTILISATEUR
-            // =====================================
+            setUtilisateur(utilisateurData);
 
             const idUtilisateur =
                 utilisateurData.id ||
                 utilisateurData.id_utilisateur;
 
-
             if (!idUtilisateur) {
-
                 console.error(
                     "ID utilisateur introuvable"
                 );
 
+                setErreur(
+                    "ID utilisateur introuvable."
+                );
+
                 setChargement(false);
-
                 return;
-
             }
 
-
-            chargerPrestataire(
+            console.log(
+                "ID UTILISATEUR :",
                 idUtilisateur
             );
 
+            chargerPrestataire(idUtilisateur);
 
-        }
-        catch(error) {
-
-
+        } catch (error) {
             console.error(
                 "Erreur lecture utilisateur :",
                 error
             );
 
+            setErreur(
+                "Impossible de récupérer les informations de l'utilisateur."
+            );
 
             setChargement(false);
-
         }
-
-
     }, []);
 
-
-
-    // =====================================
-    // CHARGER PRESTATAIRE + STATISTIQUES
-    // =====================================
+    // =====================================================
+    // CHARGER LE PRESTATAIRE ET SES STATISTIQUES
+    // =====================================================
 
     const chargerPrestataire = async (
         idUtilisateur
     ) => {
-
-
         try {
+            setErreur("");
 
-
-            // =====================================
-            // RECUPERER LE PRESTATAIRE
-            // =====================================
+            // ---------------------------------------------
+            // Récupération du prestataire
+            // ---------------------------------------------
 
             const res = await api.get(
-
                 `/prestataires/utilisateur/${idUtilisateur}`
-
             );
-
 
             console.log(
-                "PRESTATAIRE CONNECTE :",
+                "PRESTATAIRE CONNECTÉ :",
                 res.data
             );
 
+            setPrestataire(res.data);
 
-            setPrestataire(
-                res.data
+            const idPrestataire =
+                res.data.id_prestataire;
+
+            if (!idPrestataire) {
+                throw new Error(
+                    "ID prestataire introuvable"
+                );
+            }
+
+            console.log(
+                "ID PRESTATAIRE :",
+                idPrestataire
             );
 
-
-            // =====================================
-            // RECUPERER LES STATISTIQUES
-            // =====================================
+            // ---------------------------------------------
+            // Récupération des statistiques
+            // ---------------------------------------------
 
             const statistiquesRes =
                 await api.get(
-
-                    `/prestataires/${res.data.id_prestataire}/statistiques`
-
+                    `/prestataires/${idPrestataire}/statistiques`
                 );
-
 
             console.log(
                 "STATISTIQUES PRESTATAIRE :",
                 statistiquesRes.data
             );
 
-
             setStatistiques({
+                offres: Number(
+                    statistiquesRes.data.offres || 0
+                ),
 
-                offres:
-                    Number(
-                        statistiquesRes.data.offres || 0
-                    ),
+                reservations: Number(
+                    statistiquesRes.data.reservations || 0
+                ),
 
-                reservations:
-                    Number(
-                        statistiquesRes.data.reservations || 0
-                    ),
+                reservationsEnAttente: Number(
+                    statistiquesRes.data
+                        .reservationsEnAttente || 0
+                ),
 
-                reservationsEnAttente:
-                    Number(
-                        statistiquesRes.data.reservationsEnAttente || 0
-                    ),
-
-                revenus:
-                    Number(
-                        statistiquesRes.data.revenus || 0
-                    )
-
+                revenus: Number(
+                    statistiquesRes.data.revenus || 0
+                )
             });
 
-
-        }
-        catch(error) {
-
-
+        } catch (error) {
             console.error(
-
                 "Erreur récupération prestataire/statistiques :",
-
                 error
-
             );
 
+            console.error(
+                "Réponse serveur :",
+                error.response?.data
+            );
 
-        }
-        finally {
+            console.error(
+                "Code HTTP :",
+                error.response?.status
+            );
 
+            setErreur(
+                error.response?.data?.message ||
+                "Impossible de récupérer les informations du prestataire."
+            );
 
+        } finally {
             setChargement(false);
-
-
         }
-
     };
 
-
-
-    // =====================================
+    // =====================================================
     // CHARGEMENT
-    // =====================================
+    // =====================================================
 
     if (chargement) {
-
-
         return (
+            <div className="prestataire-page">
 
-            <div className="prestataire-loading">
+                <div className="prestataire-loading">
 
-                Chargement...
+                    <div className="loading-spinner"></div>
+
+                    <p>
+                        Chargement de votre espace...
+                    </p>
+
+                </div>
 
             </div>
-
         );
-
     }
 
+    // =====================================================
+    // ERREUR
+    // =====================================================
 
+    if (erreur && !prestataire) {
+        return (
+            <div className="prestataire-page">
 
-    // =====================================
-    // PAGE
-    // =====================================
+                <div className="prestataire-error">
+
+                    <FaBuilding />
+
+                    <h2>
+                        Impossible de charger votre espace
+                    </h2>
+
+                    <p>
+                        {erreur}
+                    </p>
+
+                </div>
+
+            </div>
+        );
+    }
+
+    // =====================================================
+    // INTERFACE PRINCIPALE
+    // =====================================================
 
     return (
+        <div className="prestataire-page">
 
+            {/* =================================================
+                EN-TÊTE
+            ================================================= */}
 
-        <div className="prestataire-dashboard">
-
-
-            {/* =====================================
-                HEADER
-            ===================================== */}
-
-            <div className="prestataire-dashboard-header">
-
+            <div className="prestataire-header">
 
                 <div>
 
-
                     <h1>
-
-
-                        <FaBuilding />
-
-
                         Bonjour{" "}
 
-
-                        {
-                            prestataire?.nom_entreprise ||
-
-                            utilisateur?.prenom ||
-
-                            "Prestataire"
-                        }
-
-
+                        <span>
+                            {prestataire?.nom_entreprise ||
+                                `${utilisateur?.prenom || ""} ${
+                                    utilisateur?.nom || ""
+                                }`}
+                        </span>
                     </h1>
 
-
                     <p>
-
-                        Gérez votre activité touristique
-                        depuis votre espace prestataire.
-
+                        Bienvenue dans votre espace prestataire.
                     </p>
-
 
                 </div>
 
+                <div className="prestataire-status">
+
+                    <span
+                        className={
+                            prestataire?.statut === "Validé"
+                                ? "status-valid"
+                                : prestataire?.statut === "Refusé"
+                                ? "status-refused"
+                                : "status-pending"
+                        }
+                    >
+                        {prestataire?.statut ||
+                            "En attente"}
+                    </span>
+
+                </div>
 
             </div>
 
+            {/* =================================================
+                MESSAGE D'ERREUR
+            ================================================= */}
 
+            {erreur && (
+                <div className="prestataire-warning">
+                    {erreur}
+                </div>
+            )}
 
-            {/* =====================================
+            {/* =================================================
                 STATISTIQUES
-            ===================================== */}
+            ================================================= */}
 
             <div className="prestataire-statistiques">
 
+                {/* MES OFFRES */}
 
-                {/* =================================
-                    MES OFFRES
-                ================================= */}
+                <div className="stat-card">
 
-                <div className="prestataire-card">
-
-
-                    <div className="prestataire-card-icon">
-
+                    <div className="stat-icon">
                         <FaHotel />
-
                     </div>
 
+                    <div className="stat-content">
 
-                    <div>
-
-
-                        <span>
-
+                        <span className="stat-label">
                             Mes offres
-
                         </span>
 
-
-                        <strong>
-
+                        <strong className="stat-value">
                             {statistiques.offres}
-
                         </strong>
-
 
                     </div>
 
-
                 </div>
 
+                {/* RÉSERVATIONS */}
 
+                <div className="stat-card">
 
-                {/* =================================
-                    RESERVATIONS
-                ================================= */}
-
-                <div className="prestataire-card">
-
-
-                    <div className="prestataire-card-icon">
-
+                    <div className="stat-icon">
                         <FaCalendarCheck />
-
                     </div>
 
+                    <div className="stat-content">
 
-                    <div>
-
-
-                        <span>
-
+                        <span className="stat-label">
                             Réservations
-
                         </span>
 
-
-                        <strong>
-
+                        <strong className="stat-value">
                             {statistiques.reservations}
-
                         </strong>
-
 
                     </div>
 
-
                 </div>
 
+                {/* EN ATTENTE */}
 
+                <div className="stat-card">
 
-                {/* =================================
-                    EN ATTENTE
-                ================================= */}
-
-                <div className="prestataire-card">
-
-
-                    <div className="prestataire-card-icon">
-
+                    <div className="stat-icon">
                         <FaClock />
-
                     </div>
 
+                    <div className="stat-content">
 
-                    <div>
-
-
-                        <span>
-
+                        <span className="stat-label">
                             En attente
-
                         </span>
 
-
-                        <strong>
-
+                        <strong className="stat-value">
                             {statistiques.reservationsEnAttente}
-
                         </strong>
 
-
                     </div>
-
 
                 </div>
 
+                {/* REVENUS */}
 
+                <div className="stat-card">
 
-                {/* =================================
-                    REVENUS
-                ================================= */}
-
-                <div className="prestataire-card">
-
-
-                    <div className="prestataire-card-icon">
-
+                    <div className="stat-icon">
                         <FaMoneyBillWave />
-
                     </div>
 
+                    <div className="stat-content">
 
-                    <div>
-
-
-                        <span>
-
+                        <span className="stat-label">
                             Revenus
-
                         </span>
 
-
-                        <strong>
-
-                            {
-                                statistiques.revenus.toLocaleString(
-                                    "fr-FR"
-                                )
-                            }{" "}
-
+                        <strong className="stat-value">
+                            {statistiques.revenus.toLocaleString(
+                                "fr-FR"
+                            )}{" "}
                             €
-
                         </strong>
-
 
                     </div>
 
-
                 </div>
-
 
             </div>
 
+            {/* =================================================
+                INFORMATIONS DE L'ENTREPRISE
+            ================================================= */}
 
+            <div className="prestataire-section">
 
-            {/* =====================================
-                INFORMATIONS ENTREPRISE
-            ===================================== */}
+                <div className="section-title">
 
-            <div className="prestataire-info">
+                    <FaBuilding />
 
+                    <h2>
+                        Informations de mon entreprise
+                    </h2>
 
-                <h2>
-
-                    Informations de votre entreprise
-
-                </h2>
-
-
+                </div>
 
                 <div className="prestataire-info-grid">
 
+                    {/* NOM ENTREPRISE */}
 
-                    {/* ENTREPRISE */}
+                    <div className="info-item">
 
-                    <div>
-
-
-                        <span>
-
-                            Entreprise
-
+                        <span className="info-label">
+                            Nom de l'entreprise
                         </span>
 
-
                         <strong>
-
-                            {
-                                prestataire?.nom_entreprise ||
-                                "-"
-                            }
-
+                            {prestataire?.nom_entreprise ||
+                                "Non renseigné"}
                         </strong>
 
-
                     </div>
-
-
 
                     {/* VILLE */}
 
-                    <div>
+                    <div className="info-item">
 
-
-                        <span>
-
+                        <span className="info-label">
                             Ville
-
                         </span>
 
-
                         <strong>
-
-                            {
-                                prestataire?.ville ||
-                                "-"
-                            }
-
+                            {prestataire?.ville ||
+                                "Non renseignée"}
                         </strong>
-
 
                     </div>
 
+                    {/* TÉLÉPHONE */}
 
+                    <div className="info-item">
 
-                    {/* TELEPHONE */}
-
-                    <div>
-
-
-                        <span>
-
+                        <span className="info-label">
                             Téléphone
-
                         </span>
 
-
                         <strong>
-
-                            {
-                                prestataire?.telephone ||
-                                "-"
-                            }
-
+                            {prestataire?.telephone ||
+                                "Non renseigné"}
                         </strong>
 
-
                     </div>
-
-
 
                     {/* EMAIL */}
 
-                    <div>
+                    <div className="info-item">
 
-
-                        <span>
-
+                        <span className="info-label">
                             Email
-
                         </span>
 
-
                         <strong>
-
-                            {
-                                prestataire?.email ||
-                                "-"
-                            }
-
+                            {prestataire?.email ||
+                                prestataire?.email_utilisateur ||
+                                "Non renseigné"}
                         </strong>
 
-
                     </div>
-
-
 
                     {/* ADRESSE */}
 
-                    <div>
+                    <div className="info-item info-full">
 
-
-                        <span>
-
+                        <span className="info-label">
                             Adresse
-
                         </span>
 
-
                         <strong>
-
-                            {
-                                prestataire?.adresse ||
-                                "-"
-                            }
-
+                            {prestataire?.adresse ||
+                                "Non renseignée"}
                         </strong>
-
 
                     </div>
 
+                    {/* DESCRIPTION */}
 
+                    <div className="info-item info-full">
+
+                        <span className="info-label">
+                            Description
+                        </span>
+
+                        <p>
+                            {prestataire?.description ||
+                                "Aucune description renseignée."}
+                        </p>
+
+                    </div>
 
                     {/* STATUT */}
 
-                    <div>
+                    <div className="info-item">
 
-
-                        <span>
-
+                        <span className="info-label">
                             Statut
-
                         </span>
 
-
                         <strong>
-
-                            {
-                                prestataire?.statut ||
-                                "-"
-                            }
-
+                            {prestataire?.statut ||
+                                "En attente"}
                         </strong>
-
 
                     </div>
 
-
                 </div>
-
 
             </div>
 
+            {/* =================================================
+                INFORMATIONS DU COMPTE
+            ================================================= */}
+
+            <div className="prestataire-section">
+
+                <div className="section-title">
+
+                    <FaBuilding />
+
+                    <h2>
+                        Informations du compte
+                    </h2>
+
+                </div>
+
+                <div className="prestataire-info-grid">
+
+                    {/* PRÉNOM */}
+
+                    <div className="info-item">
+
+                        <span className="info-label">
+                            Prénom
+                        </span>
+
+                        <strong>
+                            {utilisateur?.prenom ||
+                                prestataire?.prenom ||
+                                "Non renseigné"}
+                        </strong>
+
+                    </div>
+
+                    {/* NOM */}
+
+                    <div className="info-item">
+
+                        <span className="info-label">
+                            Nom
+                        </span>
+
+                        <strong>
+                            {utilisateur?.nom ||
+                                prestataire?.nom ||
+                                "Non renseigné"}
+                        </strong>
+
+                    </div>
+
+                    {/* EMAIL COMPTE */}
+
+                    <div className="info-item">
+
+                        <span className="info-label">
+                            Email du compte
+                        </span>
+
+                        <strong>
+                            {utilisateur?.email ||
+                                prestataire?.email_utilisateur ||
+                                "Non renseigné"}
+                        </strong>
+
+                    </div>
+
+                    {/* RÔLE */}
+
+                    <div className="info-item">
+
+                        <span className="info-label">
+                            Rôle
+                        </span>
+
+                        <strong>
+                            {utilisateur?.role ||
+                                prestataire?.role ||
+                                "Prestataire"}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
-
     );
-
 }
-
 
 export default EspacePrestataire;
