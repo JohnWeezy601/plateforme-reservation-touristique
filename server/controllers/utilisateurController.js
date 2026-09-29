@@ -194,54 +194,63 @@ exports.register = async (req, res) => {
 
 
         // =====================================================
-        // DÉBUT TRANSACTION
+        // RÉCUPÉRER UNE CONNEXION DU POOL
         // =====================================================
 
-        await db.beginTransaction();
+        const connection =
+            await db.getConnection();
 
 
         try {
 
             // =====================================================
+            // DÉBUT TRANSACTION
+            // =====================================================
+
+            await connection.beginTransaction();
+
+
+            // =====================================================
             // INSERTION UTILISATEUR
             // =====================================================
 
-            const [result] = await db.query(
+            const [result] =
+                await connection.query(
 
-                `
-                INSERT INTO utilisateur
-                (
-                    nom,
-                    prenom,
-                    email,
-                    mot_de_passe,
-                    telephone,
-                    role,
-                    provider
-                )
+                    `
+                    INSERT INTO utilisateur
+                    (
+                        nom,
+                        prenom,
+                        email,
+                        mot_de_passe,
+                        telephone,
+                        role,
+                        provider
+                    )
 
-                VALUES (?,?,?,?,?,?,?)
-                `,
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    `,
 
-                [
+                    [
 
-                    nom,
+                        nom,
 
-                    prenom,
+                        prenom,
 
-                    email,
+                        email,
 
-                    hashPassword,
+                        hashPassword,
 
-                    telephone,
+                        telephone,
 
-                    role,
+                        role,
 
-                    "local"
+                        "local"
 
-                ]
+                    ]
 
-            );
+                );
 
 
             const idUtilisateur =
@@ -254,7 +263,7 @@ exports.register = async (req, res) => {
 
             if (role === "Prestataire") {
 
-                await db.query(
+                await connection.query(
 
                     `
                     INSERT INTO prestataire
@@ -301,14 +310,14 @@ exports.register = async (req, res) => {
             // VALIDER TRANSACTION
             // =====================================================
 
-            await db.commit();
+            await connection.commit();
 
 
             // =====================================================
             // RÉPONSE
             // =====================================================
 
-            res.json({
+            return res.status(201).json({
 
                 message:
                     "Utilisateur ajouté avec succès",
@@ -326,10 +335,20 @@ exports.register = async (req, res) => {
             // ANNULER TRANSACTION
             // =====================================================
 
-            await db.rollback();
+            await connection.rollback();
 
 
             throw transactionError;
+
+        }
+
+        finally {
+
+            // =====================================================
+            // LIBÉRER LA CONNEXION
+            // =====================================================
+
+            connection.release();
 
         }
 
@@ -337,7 +356,13 @@ exports.register = async (req, res) => {
 
     catch (error) {
 
-        console.log(error);
+        console.error(
+
+            "❌ Erreur ajout utilisateur :",
+
+            error
+
+        );
 
 
         res.status(500).json({
@@ -1697,7 +1722,9 @@ exports.getUtilisateurById = async (req, res) => {
 
 exports.updatePhoto = async (req, res) => {
 
-    const id = req.params.id;
+    const id =
+        req.params.id;
+
 
     // =====================================================
     // VÉRIFIER FICHIER
@@ -1714,29 +1741,35 @@ exports.updatePhoto = async (req, res) => {
 
     }
 
+
     try {
 
         // =====================================================
         // RÉCUPÉRER PHOTO ACTUELLE
         // =====================================================
 
-        const [utilisateurs] = await db.query(
+        const [utilisateurs] =
+            await db.query(
 
-            `
-            SELECT
+                `
+                SELECT
 
-                id_utilisateur,
+                    id_utilisateur,
 
-                photo
+                    photo
 
-            FROM utilisateur
+                FROM utilisateur
 
-            WHERE id_utilisateur=?
-            `,
+                WHERE id_utilisateur=?
+                `,
 
-            [id]
+                [
 
-        );
+                    id
+
+                ]
+
+            );
 
 
         if (utilisateurs.length === 0) {
@@ -1753,6 +1786,7 @@ exports.updatePhoto = async (req, res) => {
 
         const utilisateur =
             utilisateurs[0];
+
 
         const anciennePhoto =
             utilisateur.photo;
@@ -1796,8 +1830,11 @@ exports.updatePhoto = async (req, res) => {
 
                     );
 
+
                 stream.end(
+
                     req.file.buffer
+
                 );
 
             });
@@ -1821,18 +1858,25 @@ exports.updatePhoto = async (req, res) => {
 
 
         // =====================================================
-        // SAUVEGARDER L'ANCIENNE PHOTO DANS L'HISTORIQUE
+        // SAUVEGARDER ANCIENNE PHOTO
         // =====================================================
 
         if (
+
             anciennePhoto &&
-            anciennePhoto.includes("res.cloudinary.com")
+
+            anciennePhoto.includes(
+                "res.cloudinary.com"
+            )
+
         ) {
 
             try {
 
                 const partie =
-                    anciennePhoto.split("/upload/")[1];
+                    anciennePhoto.split(
+                        "/upload/"
+                    )[1];
 
 
                 if (partie) {
@@ -1870,7 +1914,7 @@ exports.updatePhoto = async (req, res) => {
 
 
                     // =====================================================
-                    // ENREGISTRER DANS L'HISTORIQUE
+                    // ENREGISTRER DANS HISTORIQUE
                     // =====================================================
 
                     await db.query(
@@ -1961,14 +2005,21 @@ exports.updatePhoto = async (req, res) => {
         // =====================================================
 
         if (
+
             anciennePhoto &&
-            anciennePhoto.includes("res.cloudinary.com")
+
+            anciennePhoto.includes(
+                "res.cloudinary.com"
+            )
+
         ) {
 
             try {
 
                 const partie =
-                    anciennePhoto.split("/upload/")[1];
+                    anciennePhoto.split(
+                        "/upload/"
+                    )[1];
 
 
                 if (partie) {
@@ -2057,7 +2108,11 @@ exports.updatePhoto = async (req, res) => {
                 WHERE id_utilisateur=?
                 `,
 
-                [id]
+                [
+
+                    id
+
+                ]
 
             );
 
@@ -2116,7 +2171,9 @@ exports.updatePhoto = async (req, res) => {
 
 exports.ajouterPhotoProfilClient = async (req, res) => {
 
-    const id = req.params.id;
+    const id =
+        req.params.id;
+
 
     const {
 
@@ -2149,19 +2206,24 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
         // VÉRIFIER L'UTILISATEUR
         // =====================================================
 
-        const [utilisateurs] = await db.query(
+        const [utilisateurs] =
+            await db.query(
 
-            `
-            SELECT id_utilisateur
+                `
+                SELECT id_utilisateur
 
-            FROM utilisateur
+                FROM utilisateur
 
-            WHERE id_utilisateur=?
-            `,
+                WHERE id_utilisateur=?
+                `,
 
-            [id]
+                [
 
-        );
+                    id
+
+                ]
+
+            );
 
 
         if (utilisateurs.length === 0) {
@@ -2180,30 +2242,31 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
         // ENREGISTRER LA PHOTO
         // =====================================================
 
-        const [result] = await db.query(
+        const [result] =
+            await db.query(
 
-            `
-            INSERT INTO photo_profil_client
-            (
-                id_utilisateur,
-                photo,
-                public_id
-            )
+                `
+                INSERT INTO photo_profil_client
+                (
+                    id_utilisateur,
+                    photo,
+                    public_id
+                )
 
-            VALUES (?, ?, ?)
-            `,
+                VALUES (?, ?, ?)
+                `,
 
-            [
+                [
 
-                id,
+                    id,
 
-                photo,
+                    photo,
 
-                public_id || null
+                    public_id || null
 
-            ]
+                ]
 
-        );
+            );
 
 
         // =====================================================
@@ -2254,7 +2317,8 @@ exports.ajouterPhotoProfilClient = async (req, res) => {
 
 exports.getPhotosProfilClient = async (req, res) => {
 
-    const id = req.params.id;
+    const id =
+        req.params.id;
 
 
     try {
@@ -2263,19 +2327,24 @@ exports.getPhotosProfilClient = async (req, res) => {
         // VÉRIFIER L'UTILISATEUR
         // =====================================================
 
-        const [utilisateurs] = await db.query(
+        const [utilisateurs] =
+            await db.query(
 
-            `
-            SELECT id_utilisateur
+                `
+                SELECT id_utilisateur
 
-            FROM utilisateur
+                FROM utilisateur
 
-            WHERE id_utilisateur=?
-            `,
+                WHERE id_utilisateur=?
+                `,
 
-            [id]
+                [
 
-        );
+                    id
+
+                ]
+
+            );
 
 
         if (utilisateurs.length === 0) {
@@ -2294,32 +2363,37 @@ exports.getPhotosProfilClient = async (req, res) => {
         // RÉCUPÉRER LES PHOTOS
         // =====================================================
 
-        const [photos] = await db.query(
+        const [photos] =
+            await db.query(
 
-            `
-            SELECT
+                `
+                SELECT
 
-                id_photo,
+                    id_photo,
 
-                id_utilisateur,
+                    id_utilisateur,
 
-                photo,
+                    photo,
 
-                public_id,
+                    public_id,
 
-                date_ajout
+                    date_ajout
 
-            FROM photo_profil_client
+                FROM photo_profil_client
 
-            WHERE id_utilisateur=?
+                WHERE id_utilisateur=?
 
-            ORDER BY date_ajout DESC
+                ORDER BY date_ajout DESC
 
-            `,
+                `,
 
-            [id]
+                [
 
-        );
+                    id
+
+                ]
+
+            );
 
 
         // =====================================================
