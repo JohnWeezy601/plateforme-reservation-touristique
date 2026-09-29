@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "./OffresPrestataire.css";
 
 const API_URL =
@@ -15,7 +16,10 @@ const initialForm = {
     date_debut: "",
     date_fin: "",
     image: null,
+    photos: [],
 };
+
+const OFFRES_PAR_PAGE = 6;
 
 function OffresPrestataire() {
     const [utilisateur, setUtilisateur] = useState(null);
@@ -38,8 +42,10 @@ function OffresPrestataire() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
+    const [page, setPage] = useState(1);
+
     // ============================================================
-    // RECUPERATION DE L'UTILISATEUR CONNECTE
+    // UTILISATEUR CONNECTE
     // ============================================================
 
     useEffect(() => {
@@ -56,21 +62,29 @@ function OffresPrestataire() {
             const data = JSON.parse(utilisateurStocke);
             setUtilisateur(data);
         } catch (err) {
-            console.error(err);
-            setError("Impossible de récupérer les informations du compte.");
+            console.error(
+                "Erreur lecture utilisateur :",
+                err
+            );
+
+            setError(
+                "Impossible de récupérer les informations du compte."
+            );
+
             setLoading(false);
         }
     }, []);
 
     // ============================================================
-    // CHARGEMENT DU PRESTATAIRE
+    // CHARGEMENT PRESTATAIRE
     // ============================================================
 
     useEffect(() => {
         if (!utilisateur) return;
 
         const idUtilisateur =
-            utilisateur.id || utilisateur.id_utilisateur;
+            utilisateur.id ||
+            utilisateur.id_utilisateur;
 
         if (!idUtilisateur) {
             setError("ID utilisateur introuvable.");
@@ -82,7 +96,7 @@ function OffresPrestataire() {
     }, [utilisateur]);
 
     // ============================================================
-    // CHARGEMENT DES DESTINATIONS ET CATEGORIES
+    // DESTINATIONS + CATEGORIES
     // ============================================================
 
     useEffect(() => {
@@ -91,7 +105,7 @@ function OffresPrestataire() {
     }, []);
 
     // ============================================================
-    // RECUPERER LE PRESTATAIRE
+    // RECUPERER PRESTATAIRE
     // ============================================================
 
     const chargerPrestataire = async (idUtilisateur) => {
@@ -111,9 +125,14 @@ function OffresPrestataire() {
             setPrestataire(data);
 
             if (data?.id_prestataire) {
-                await chargerOffres(data.id_prestataire);
+                await chargerOffres(
+                    data.id_prestataire
+                );
             } else {
-                setError("Aucun prestataire associé à ce compte.");
+                setError(
+                    "Aucun prestataire associé à ce compte."
+                );
+
                 setLoading(false);
             }
         } catch (err) {
@@ -131,7 +150,7 @@ function OffresPrestataire() {
     };
 
     // ============================================================
-    // CHARGER LES OFFRES DU PRESTATAIRE
+    // CHARGER OFFRES
     // ============================================================
 
     const chargerOffres = async (idPrestataire) => {
@@ -151,7 +170,13 @@ function OffresPrestataire() {
 
             const data = await response.json();
 
-            setOffres(Array.isArray(data) ? data : []);
+            setOffres(
+                Array.isArray(data)
+                    ? data
+                    : data?.offres || []
+            );
+
+            setPage(1);
         } catch (err) {
             console.error(
                 "Erreur chargement offres :",
@@ -225,17 +250,37 @@ function OffresPrestataire() {
     };
 
     // ============================================================
-    // CHANGEMENT DU FORMULAIRE
+    // CHANGEMENT FORMULAIRE
     // ============================================================
 
     const handleChange = (e) => {
-        const { name, value, files } = e.target;
+        const {
+            name,
+            value,
+            files,
+        } = e.target;
 
+        // Image principale
         if (name === "image") {
             setForm((prev) => ({
                 ...prev,
                 image: files?.[0] || null,
             }));
+
+            return;
+        }
+
+        // Plusieurs photos
+        if (name === "photos") {
+            const nouvellesPhotos = files
+                ? Array.from(files)
+                : [];
+
+            setForm((prev) => ({
+                ...prev,
+                photos: nouvellesPhotos,
+            }));
+
             return;
         }
 
@@ -246,7 +291,21 @@ function OffresPrestataire() {
     };
 
     // ============================================================
-    // OUVRIR MODALE AJOUT
+    // SUPPRIMER PHOTO SELECTIONNEE
+    // ============================================================
+
+    const supprimerPhotoSelectionnee = (index) => {
+        setForm((prev) => ({
+            ...prev,
+            photos: prev.photos.filter(
+                (_, photoIndex) =>
+                    photoIndex !== index
+            ),
+        }));
+    };
+
+    // ============================================================
+    // OUVRIR AJOUT
     // ============================================================
 
     const ouvrirAjout = () => {
@@ -255,6 +314,7 @@ function OffresPrestataire() {
 
         setForm({
             ...initialForm,
+            photos: [],
         });
 
         setMessage("");
@@ -263,7 +323,7 @@ function OffresPrestataire() {
     };
 
     // ============================================================
-    // OUVRIR MODALE MODIFICATION
+    // OUVRIR MODIFICATION
     // ============================================================
 
     const ouvrirModification = (offre) => {
@@ -294,15 +354,21 @@ function OffresPrestataire() {
 
             date_debut:
                 offre.date_debut
-                    ? String(offre.date_debut).substring(0, 10)
+                    ? String(
+                          offre.date_debut
+                      ).substring(0, 10)
                     : "",
 
             date_fin:
                 offre.date_fin
-                    ? String(offre.date_fin).substring(0, 10)
+                    ? String(
+                          offre.date_fin
+                      ).substring(0, 10)
                     : "",
 
             image: null,
+
+            photos: [],
         });
 
         setMessage("");
@@ -319,7 +385,12 @@ function OffresPrestataire() {
 
         setShowModal(false);
         setSelectedOffre(null);
-        setForm(initialForm);
+
+        setForm({
+            ...initialForm,
+            photos: [],
+        });
+
         setMessage("");
         setError("");
     };
@@ -332,7 +403,10 @@ function OffresPrestataire() {
         e.preventDefault();
 
         if (!prestataire?.id_prestataire) {
-            setError("Prestataire introuvable.");
+            setError(
+                "Prestataire introuvable."
+            );
+
             return;
         }
 
@@ -393,6 +467,7 @@ function OffresPrestataire() {
                 form.date_fin
             );
 
+            // Image principale
             if (form.image) {
                 formData.append(
                     "image",
@@ -400,31 +475,58 @@ function OffresPrestataire() {
                 );
             }
 
-            let url = `${API_URL}/offres`;
+            // Photos supplémentaires
+            if (
+                form.photos &&
+                form.photos.length > 0
+            ) {
+                form.photos.forEach(
+                    (photo) => {
+                        formData.append(
+                            "photos",
+                            photo
+                        );
+                    }
+                );
+            }
+
+            let url =
+                `${API_URL}/offres`;
+
             let method = "POST";
 
             if (
                 mode === "modification" &&
                 selectedOffre
             ) {
-                url = `${API_URL}/offres/${selectedOffre.id_offre}`;
+                url =
+                    `${API_URL}/offres/${selectedOffre.id_offre}`;
+
                 method = "PUT";
             }
 
-            const response = await fetch(
-                url,
-                {
-                    method,
-                    body: formData,
-                }
-            );
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method,
+                        body: formData,
+                    }
+                );
 
-            const data = await response.json();
+            let data = {};
+
+            try {
+                data =
+                    await response.json();
+            } catch {
+                data = {};
+            }
 
             if (!response.ok) {
                 throw new Error(
                     data.message ||
-                    "Une erreur est survenue."
+                        "Une erreur est survenue lors de l'enregistrement."
                 );
             }
 
@@ -439,8 +541,17 @@ function OffresPrestataire() {
             );
 
             setTimeout(() => {
-                fermerModal();
+                setShowModal(false);
+                setSelectedOffre(null);
+
+                setForm({
+                    ...initialForm,
+                    photos: [],
+                });
+
+                setMessage("");
             }, 700);
+
         } catch (err) {
             console.error(
                 "Erreur enregistrement offre :",
@@ -449,7 +560,7 @@ function OffresPrestataire() {
 
             setError(
                 err.message ||
-                "Impossible d'enregistrer l'offre."
+                    "Impossible d'enregistrer l'offre."
             );
         } finally {
             setLoadingForm(false);
@@ -457,13 +568,14 @@ function OffresPrestataire() {
     };
 
     // ============================================================
-    // SUPPRIMER UNE OFFRE
+    // SUPPRIMER OFFRE
     // ============================================================
 
     const supprimerOffre = async (offre) => {
-        const confirmation = window.confirm(
-            `Voulez-vous vraiment supprimer l'offre "${offre.titre}" ?`
-        );
+        const confirmation =
+            window.confirm(
+                `Voulez-vous vraiment supprimer l'offre "${offre.titre}" ?`
+            );
 
         if (!confirmation) return;
 
@@ -471,19 +583,27 @@ function OffresPrestataire() {
             setError("");
             setMessage("");
 
-            const response = await fetch(
-                `${API_URL}/offres/${offre.id_offre}`,
-                {
-                    method: "DELETE",
-                }
-            );
+            const response =
+                await fetch(
+                    `${API_URL}/offres/${offre.id_offre}`,
+                    {
+                        method: "DELETE",
+                    }
+                );
 
-            const data = await response.json();
+            let data = {};
+
+            try {
+                data =
+                    await response.json();
+            } catch {
+                data = {};
+            }
 
             if (!response.ok) {
                 throw new Error(
                     data.message ||
-                    "Impossible de supprimer l'offre."
+                        "Impossible de supprimer l'offre."
                 );
             }
 
@@ -494,6 +614,7 @@ function OffresPrestataire() {
             await chargerOffres(
                 prestataire.id_prestataire
             );
+
         } catch (err) {
             console.error(
                 "Erreur suppression offre :",
@@ -502,42 +623,156 @@ function OffresPrestataire() {
 
             setError(
                 err.message ||
-                "Impossible de supprimer l'offre."
+                    "Impossible de supprimer l'offre."
             );
         }
     };
 
     // ============================================================
-    // FILTRAGE RECHERCHE
+    // RECHERCHE
     // ============================================================
 
-    const offresFiltrees = offres.filter((offre) => {
-        const recherche =
-            search.toLowerCase().trim();
+    const offresFiltrees =
+        offres.filter((offre) => {
+            const recherche =
+                search
+                    .toLowerCase()
+                    .trim();
 
-        if (!recherche) return true;
+            if (!recherche) {
+                return true;
+            }
 
-        return (
-            String(offre.titre || "")
-                .toLowerCase()
-                .includes(recherche) ||
+            return (
+                String(
+                    offre.titre || ""
+                )
+                    .toLowerCase()
+                    .includes(recherche) ||
 
-            String(offre.destination || "")
-                .toLowerCase()
-                .includes(recherche) ||
+                String(
+                    offre.destination || ""
+                )
+                    .toLowerCase()
+                    .includes(recherche) ||
 
-            String(offre.categorie || "")
-                .toLowerCase()
-                .includes(recherche)
+                String(
+                    offre.categorie || ""
+                )
+                    .toLowerCase()
+                    .includes(recherche)
+            );
+        });
+
+    // ============================================================
+    // PAGINATION
+    // ============================================================
+
+    const totalPages =
+        Math.ceil(
+            offresFiltrees.length /
+                OFFRES_PAR_PAGE
         );
-    });
+
+    const indexDebut =
+        (page - 1) *
+        OFFRES_PAR_PAGE;
+
+    const offresPaginees =
+        offresFiltrees.slice(
+            indexDebut,
+            indexDebut +
+                OFFRES_PAR_PAGE
+        );
+
+    useEffect(() => {
+        setPage(1);
+    }, [search]);
+
+    useEffect(() => {
+        if (
+            totalPages > 0 &&
+            page > totalPages
+        ) {
+            setPage(totalPages);
+        }
+    }, [totalPages, page]);
+
+    const allerPage = (numero) => {
+        if (
+            numero >= 1 &&
+            numero <= totalPages
+        ) {
+            setPage(numero);
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        }
+    };
+
+    const getPages = () => {
+        const pages = [];
+
+        if (totalPages <= 7) {
+            for (
+                let i = 1;
+                i <= totalPages;
+                i++
+            ) {
+                pages.push(i);
+            }
+
+            return pages;
+        }
+
+        pages.push(1);
+
+        if (page > 4) {
+            pages.push("...");
+        }
+
+        const debut =
+            Math.max(
+                2,
+                page - 1
+            );
+
+        const fin =
+            Math.min(
+                totalPages - 1,
+                page + 1
+            );
+
+        for (
+            let i = debut;
+            i <= fin;
+            i++
+        ) {
+            pages.push(i);
+        }
+
+        if (
+            page <
+            totalPages - 3
+        ) {
+            pages.push("...");
+        }
+
+        pages.push(totalPages);
+
+        return pages;
+    };
 
     // ============================================================
     // FORMAT PRIX
     // ============================================================
 
     const formatPrix = (prix) => {
-        return Number(prix || 0).toLocaleString(
+        return Number(
+            prix || 0
+        ).toLocaleString(
             "fr-FR"
         );
     };
@@ -547,11 +782,18 @@ function OffresPrestataire() {
     // ============================================================
 
     const formatDate = (date) => {
-        if (!date) return "Non définie";
+        if (!date) {
+            return "Non définie";
+        }
 
-        const d = new Date(date);
+        const d =
+            new Date(date);
 
-        if (Number.isNaN(d.getTime())) {
+        if (
+            Number.isNaN(
+                d.getTime()
+            )
+        ) {
             return date;
         }
 
@@ -561,7 +803,7 @@ function OffresPrestataire() {
     };
 
     // ============================================================
-    // AFFICHAGE
+    // CHARGEMENT
     // ============================================================
 
     if (loading) {
@@ -569,6 +811,7 @@ function OffresPrestataire() {
             <div className="offres-page">
                 <div className="offres-loading">
                     <div className="loading-spinner"></div>
+
                     <p>
                         Chargement de vos offres...
                     </p>
@@ -577,16 +820,19 @@ function OffresPrestataire() {
         );
     }
 
+    // ============================================================
+    // AFFICHAGE
+    // ============================================================
+
     return (
         <div className="offres-page">
 
-            {/* ==================================================
-                EN-TETE
-            ================================================== */}
+            {/* HEADER */}
 
             <div className="offres-header">
 
                 <div>
+
                     <div className="page-breadcrumb">
                         Espace prestataire
                         <span>/</span>
@@ -601,6 +847,7 @@ function OffresPrestataire() {
                         Gérez les offres touristiques
                         publiées par votre établissement.
                     </p>
+
                 </div>
 
                 <button
@@ -616,9 +863,7 @@ function OffresPrestataire() {
 
             </div>
 
-            {/* ==================================================
-                MESSAGES
-            ================================================== */}
+            {/* MESSAGES */}
 
             {message && (
                 <div className="alert alert-success">
@@ -634,13 +879,12 @@ function OffresPrestataire() {
                 </div>
             )}
 
-            {/* ==================================================
-                INFORMATIONS
-            ================================================== */}
+            {/* RESUME */}
 
             <div className="prestataire-summary">
 
                 <div className="summary-company">
+
                     <div className="company-icon">
                         🏨
                     </div>
@@ -655,24 +899,31 @@ function OffresPrestataire() {
                                 "Mon établissement"}
                         </strong>
                     </div>
+
                 </div>
 
                 <div className="summary-stat">
+
                     <strong>
                         {offres.length}
                     </strong>
 
                     <span>
-                        Offre{offres.length > 1 ? "s" : ""} publiée
-                        {offres.length > 1 ? "s" : ""}
+                        Offre
+                        {offres.length > 1
+                            ? "s"
+                            : ""}{" "}
+                        publiée
+                        {offres.length > 1
+                            ? "s"
+                            : ""}
                     </span>
+
                 </div>
 
             </div>
 
-            {/* ==================================================
-                BARRE DE RECHERCHE
-            ================================================== */}
+            {/* RECHERCHE */}
 
             <div className="offres-toolbar">
 
@@ -687,12 +938,15 @@ function OffresPrestataire() {
                         placeholder="Rechercher une offre, une destination..."
                         value={search}
                         onChange={(e) =>
-                            setSearch(e.target.value)
+                            setSearch(
+                                e.target.value
+                            )
                         }
                     />
 
                     {search && (
                         <button
+                            type="button"
                             className="clear-search"
                             onClick={() =>
                                 setSearch("")
@@ -705,19 +959,20 @@ function OffresPrestataire() {
                 </div>
 
                 <div className="result-count">
-                    {offresFiltrees.length} résultat
-                    {offresFiltrees.length > 1
+                    {offresFiltrees.length}{" "}
+                    résultat
+                    {offresFiltrees.length >
+                    1
                         ? "s"
                         : ""}
                 </div>
 
             </div>
 
-            {/* ==================================================
-                AUCUNE OFFRE
-            ================================================== */}
+            {/* AUCUNE OFFRE */}
 
             {offres.length === 0 ? (
+
                 <div className="empty-state">
 
                     <div className="empty-icon">
@@ -745,7 +1000,9 @@ function OffresPrestataire() {
                     </button>
 
                 </div>
+
             ) : offresFiltrees.length === 0 ? (
+
                 <div className="empty-search">
 
                     <div>
@@ -762,258 +1019,412 @@ function OffresPrestataire() {
                     </p>
 
                 </div>
+
             ) : (
 
-                /* ==================================================
-                   LISTE DES OFFRES
-                ================================================== */
+                <>
 
-                <div className="offres-grid">
+                    {/* GRILLE */}
 
-                    {offresFiltrees.map((offre) => (
+                    <div className="offres-grid">
 
-                        <article
-                            className="offre-card"
-                            key={offre.id_offre}
-                        >
+                        {offresPaginees.map(
+                            (offre) => (
 
-                            {/* IMAGE */}
+                                <article
+                                    className="offre-card"
+                                    key={
+                                        offre.id_offre
+                                    }
+                                >
 
-                            <div className="offre-image-container">
+                                    {/* IMAGE */}
 
-                                {offre.image ? (
-                                    <img
-                                        src={offre.image}
-                                        alt={offre.titre}
-                                        className="offre-image"
-                                    />
-                                ) : (
-                                    <div className="offre-no-image">
-                                        <span>
-                                            🏝️
-                                        </span>
+                                    <div className="offre-image-container">
 
-                                        <small>
-                                            Aucune image
-                                        </small>
+                                        {offre.image ? (
+
+                                            <img
+                                                src={
+                                                    offre.image
+                                                }
+                                                alt={
+                                                    offre.titre
+                                                }
+                                                className="offre-image"
+                                            />
+
+                                        ) : (
+
+                                            <div className="offre-no-image">
+                                                <span>
+                                                    🏝️
+                                                </span>
+
+                                                <small>
+                                                    Aucune image
+                                                </small>
+                                            </div>
+
+                                        )}
+
+                                        <div className="offre-status">
+                                            Publiée
+                                        </div>
+
+                                        <div className="offre-price">
+                                            <strong>
+                                                {formatPrix(
+                                                    offre.prix
+                                                )}
+                                            </strong>
+
+                                            <span>
+                                                €
+                                            </span>
+                                        </div>
+
                                     </div>
+
+                                    {/* CONTENU */}
+
+                                    <div className="offre-content">
+
+                                        <div className="offre-category">
+                                            {offre.categorie ||
+                                                "Offre touristique"}
+                                        </div>
+
+                                        <h2>
+                                            {offre.titre ||
+                                                "Offre sans titre"}
+                                        </h2>
+
+                                        <div className="offre-destination">
+
+                                            <span>
+                                                📍
+                                            </span>
+
+                                            {offre.destination ||
+                                                "Destination non définie"}
+
+                                        </div>
+
+                                        <p className="offre-description">
+                                            {offre.description
+                                                ? offre
+                                                      .description
+                                                      .length >
+                                                  110
+                                                    ? `${offre.description.substring(
+                                                          0,
+                                                          110
+                                                      )}...`
+                                                    : offre.description
+                                                : "Aucune description disponible."}
+                                        </p>
+
+                                        {/* DETAILS */}
+
+                                        <div className="offre-details">
+
+                                            <div>
+
+                                                <span>
+                                                    👥
+                                                </span>
+
+                                                <div>
+
+                                                    <small>
+                                                        Capacité
+                                                    </small>
+
+                                                    <strong>
+                                                        {offre.capacite ||
+                                                            0}{" "}
+                                                        personnes
+                                                    </strong>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div>
+
+                                                <span>
+                                                    🎟️
+                                                </span>
+
+                                                <div>
+
+                                                    <small>
+                                                        Disponibilité
+                                                    </small>
+
+                                                    <strong>
+                                                        {offre.disponibilite ||
+                                                            0}{" "}
+                                                        place
+                                                        {Number(
+                                                            offre.disponibilite
+                                                        ) > 1
+                                                            ? "s"
+                                                            : ""}
+                                                    </strong>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        {/* DATES */}
+
+                                        <div className="offre-dates">
+
+                                            <div>
+                                                <small>
+                                                    Début
+                                                </small>
+
+                                                <span>
+                                                    {formatDate(
+                                                        offre.date_debut
+                                                    )}
+                                                </span>
+                                            </div>
+
+                                            <div>
+                                                <small>
+                                                    Fin
+                                                </small>
+
+                                                <span>
+                                                    {formatDate(
+                                                        offre.date_fin
+                                                    )}
+                                                </span>
+                                            </div>
+
+                                        </div>
+
+                                        {/* ACTIONS */}
+
+                                        <div className="offre-actions">
+
+                                            <Link
+                                                to={`/detail-offre/${offre.id_offre}`}
+                                                className="btn-details"
+                                            >
+                                                👁
+                                                <span>
+                                                    Voir les détails
+                                                </span>
+                                            </Link>
+
+                                            <button
+                                                type="button"
+                                                className="btn-edit"
+                                                onClick={() =>
+                                                    ouvrirModification(
+                                                        offre
+                                                    )
+                                                }
+                                            >
+                                                ✎ Modifier
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className="btn-delete"
+                                                onClick={() =>
+                                                    supprimerOffre(
+                                                        offre
+                                                    )
+                                                }
+                                            >
+                                                🗑 Supprimer
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </article>
+
+                            )
+                        )}
+
+                    </div>
+
+                    {/* PAGINATION */}
+
+                    {totalPages > 1 && (
+
+                        <div className="pagination">
+
+                            <button
+                                type="button"
+                                className="pagination-button"
+                                disabled={
+                                    page === 1
+                                }
+                                onClick={() =>
+                                    allerPage(
+                                        page - 1
+                                    )
+                                }
+                            >
+                                ← Précédent
+                            </button>
+
+                            <div className="pagination-pages">
+
+                                {getPages().map(
+                                    (
+                                        numero,
+                                        index
+                                    ) =>
+                                        numero ===
+                                        "..." ? (
+
+                                            <span
+                                                key={`dots-${index}`}
+                                                className="pagination-dots"
+                                            >
+                                                ...
+                                            </span>
+
+                                        ) : (
+
+                                            <button
+                                                type="button"
+                                                key={
+                                                    numero
+                                                }
+                                                className={`pagination-page ${
+                                                    page ===
+                                                    numero
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                                onClick={() =>
+                                                    allerPage(
+                                                        numero
+                                                    )
+                                                }
+                                            >
+                                                {
+                                                    numero
+                                                }
+                                            </button>
+
+                                        )
                                 )}
 
-                                <div className="offre-status">
-                                    Publiée
-                                </div>
-
-                                <div className="offre-price">
-
-                                    <strong>
-                                        {formatPrix(
-                                            offre.prix
-                                        )}
-                                    </strong>
-
-                                    <span>
-                                        Ar
-                                    </span>
-
-                                </div>
-
                             </div>
 
-                            {/* CONTENU */}
+                            <button
+                                type="button"
+                                className="pagination-button"
+                                disabled={
+                                    page ===
+                                    totalPages
+                                }
+                                onClick={() =>
+                                    allerPage(
+                                        page + 1
+                                    )
+                                }
+                            >
+                                Suivant →
+                            </button>
 
-                            <div className="offre-content">
+                        </div>
 
-                                <div className="offre-category">
-                                    {offre.categorie ||
-                                        "Offre touristique"}
-                                </div>
+                    )}
 
-                                <h2>
-                                    {offre.titre}
-                                </h2>
+                    <div className="pagination-info">
 
-                                <div className="offre-destination">
-                                    <span>
-                                        📍
-                                    </span>
+                        Affichage de{" "}
+                        {indexDebut + 1} à{" "}
+                        {Math.min(
+                            indexDebut +
+                                OFFRES_PAR_PAGE,
+                            offresFiltrees.length
+                        )}{" "}
+                        sur{" "}
+                        {offresFiltrees.length}{" "}
+                        offre
+                        {offresFiltrees.length >
+                        1
+                            ? "s"
+                            : ""}
 
-                                    {offre.destination ||
-                                        "Destination non définie"}
-                                </div>
+                    </div>
 
-                                <p className="offre-description">
-                                    {offre.description
-                                        ? offre.description.length >
-                                          110
-                                            ? `${offre.description.substring(
-                                                  0,
-                                                  110
-                                              )}...`
-                                            : offre.description
-                                        : "Aucune description disponible."}
-                                </p>
-
-                                {/* DETAILS */}
-
-                                <div className="offre-details">
-
-                                    <div>
-                                        <span>
-                                            👥
-                                        </span>
-
-                                        <div>
-                                            <small>
-                                                Capacité
-                                            </small>
-
-                                            <strong>
-                                                {offre.capacite ||
-                                                    0}{" "}
-                                                personnes
-                                            </strong>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <span>
-                                            🎟️
-                                        </span>
-
-                                        <div>
-                                            <small>
-                                                Disponibilité
-                                            </small>
-
-                                            <strong>
-                                                {offre.disponibilite ||
-                                                    0}{" "}
-                                                place
-                                                {Number(
-                                                    offre.disponibilite
-                                                ) > 1
-                                                    ? "s"
-                                                    : ""}
-                                            </strong>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                {/* DATES */}
-
-                                <div className="offre-dates">
-
-                                    <div>
-                                        <small>
-                                            Début
-                                        </small>
-
-                                        <span>
-                                            {formatDate(
-                                                offre.date_debut
-                                            )}
-                                        </span>
-                                    </div>
-
-                                    <div>
-                                        <small>
-                                            Fin
-                                        </small>
-
-                                        <span>
-                                            {formatDate(
-                                                offre.date_fin
-                                            )}
-                                        </span>
-                                    </div>
-
-                                </div>
-
-                                {/* ACTIONS */}
-
-                                <div className="offre-actions">
-
-                                    <button
-                                        className="btn-edit"
-                                        onClick={() =>
-                                            ouvrirModification(
-                                                offre
-                                            )
-                                        }
-                                    >
-                                        ✎ Modifier
-                                    </button>
-
-                                    <button
-                                        className="btn-delete"
-                                        onClick={() =>
-                                            supprimerOffre(
-                                                offre
-                                            )
-                                        }
-                                    >
-                                        🗑 Supprimer
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        </article>
-
-                    ))}
-
-                </div>
+                </>
             )}
 
             {/* ==================================================
-                MODALE AJOUT / MODIFICATION
+                MODALE
             ================================================== */}
 
             {showModal && (
+
                 <div
                     className="modal-overlay"
                     onMouseDown={(e) => {
+
                         if (
                             e.target ===
                             e.currentTarget
                         ) {
                             fermerModal();
                         }
+
                     }}
                 >
 
                     <div className="offre-modal">
 
-                        {/* MODALE HEADER */}
+                        {/* HEADER */}
 
                         <div className="modal-header">
 
                             <div>
+
                                 <span>
-                                    {mode === "ajout"
+                                    {mode ===
+                                    "ajout"
                                         ? "Nouvelle publication"
                                         : "Modification"}
                                 </span>
 
                                 <h2>
-                                    {mode === "ajout"
+                                    {mode ===
+                                    "ajout"
                                         ? "Ajouter une offre"
                                         : "Modifier l'offre"}
                                 </h2>
+
                             </div>
 
                             <button
+                                type="button"
                                 className="modal-close"
-                                onClick={fermerModal}
+                                onClick={
+                                    fermerModal
+                                }
                             >
                                 ×
                             </button>
 
                         </div>
 
-                        {/* MESSAGE MODALE */}
+                        {/* MESSAGES */}
 
                         {message && (
                             <div className="modal-success">
@@ -1031,8 +1442,12 @@ function OffresPrestataire() {
 
                         <form
                             className="offre-form"
-                            onSubmit={handleSubmit}
+                            onSubmit={
+                                handleSubmit
+                            }
                         >
+
+                            {/* INFORMATIONS GENERALES */}
 
                             <div className="form-section">
 
@@ -1051,8 +1466,12 @@ function OffresPrestataire() {
                                         <input
                                             type="text"
                                             name="titre"
-                                            value={form.titre}
-                                            onChange={handleChange}
+                                            value={
+                                                form.titre
+                                            }
+                                            onChange={
+                                                handleChange
+                                            }
                                             placeholder="Ex : Séjour découverte de Nosy Be"
                                             required
                                         />
@@ -1081,7 +1500,10 @@ function OffresPrestataire() {
                                             </option>
 
                                             {destinations.map(
-                                                (destination) => (
+                                                (
+                                                    destination
+                                                ) => (
+
                                                     <option
                                                         key={
                                                             destination.id_destination
@@ -1094,6 +1516,7 @@ function OffresPrestataire() {
                                                             destination.nom
                                                         }
                                                     </option>
+
                                                 )
                                             )}
 
@@ -1123,7 +1546,10 @@ function OffresPrestataire() {
                                             </option>
 
                                             {categories.map(
-                                                (categorie) => (
+                                                (
+                                                    categorie
+                                                ) => (
+
                                                     <option
                                                         key={
                                                             categorie.id_categorie
@@ -1136,6 +1562,7 @@ function OffresPrestataire() {
                                                             categorie.nom
                                                         }
                                                     </option>
+
                                                 )
                                             )}
 
@@ -1168,6 +1595,8 @@ function OffresPrestataire() {
 
                             </div>
 
+                            {/* TARIFICATION */}
+
                             <div className="form-section">
 
                                 <h3>
@@ -1195,12 +1624,12 @@ function OffresPrestataire() {
                                                 }
                                                 min="1"
                                                 step="0.01"
-                                                placeholder="0"
+                                                placeholder="490"
                                                 required
                                             />
 
                                             <span>
-                                                Ar
+                                                €
                                             </span>
 
                                         </div>
@@ -1226,7 +1655,7 @@ function OffresPrestataire() {
                                                 }
                                                 min="1"
                                                 step="1"
-                                                placeholder="Ex : 20"
+                                                placeholder="20"
                                                 required
                                             />
 
@@ -1257,7 +1686,7 @@ function OffresPrestataire() {
                                                 }
                                                 min="0"
                                                 step="1"
-                                                placeholder="Ex : 10"
+                                                placeholder="10"
                                                 required
                                             />
 
@@ -1272,6 +1701,8 @@ function OffresPrestataire() {
                                 </div>
 
                             </div>
+
+                            {/* DATES */}
 
                             <div className="form-section">
 
@@ -1325,10 +1756,12 @@ function OffresPrestataire() {
 
                             </div>
 
+                            {/* IMAGE PRINCIPALE */}
+
                             <div className="form-section">
 
                                 <h3>
-                                    Image de l'offre
+                                    Image principale
                                 </h3>
 
                                 <div className="image-upload">
@@ -1348,7 +1781,7 @@ function OffresPrestataire() {
                                                 : mode ===
                                                   "modification"
                                                 ? "Choisir une nouvelle image"
-                                                : "Ajouter une image"}
+                                                : "Ajouter une image principale"}
                                         </strong>
 
                                         <small>
@@ -1369,16 +1802,166 @@ function OffresPrestataire() {
 
                                 </div>
 
+                                {/* APERCU IMAGE PRINCIPALE */}
+
+                                {form.image && (
+
+                                    <div className="main-image-preview">
+
+                                        <img
+                                            src={URL.createObjectURL(
+                                                form.image
+                                            )}
+                                            alt="Aperçu image principale"
+                                        />
+
+                                        <div>
+                                            <strong>
+                                                Image principale
+                                            </strong>
+
+                                            <span>
+                                                {form.image.name}
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                )}
+
                             </div>
 
-                            {/* BOUTONS */}
+                            {/* PHOTOS SUPPLEMENTAIRES */}
+
+                            <div className="form-section">
+
+                                <h3>
+                                    Photos supplémentaires
+                                </h3>
+
+                                <p className="form-help">
+                                    Ajoutez plusieurs photos
+                                    pour présenter votre offre
+                                    en détail.
+                                </p>
+
+                                <div className="image-upload">
+
+                                    <label
+                                        htmlFor="offre-photos"
+                                        className="image-upload-label"
+                                    >
+
+                                        <span>
+                                            🖼️
+                                        </span>
+
+                                        <strong>
+                                            Sélectionner plusieurs photos
+                                        </strong>
+
+                                        <small>
+                                            JPG, JPEG, PNG ou WEBP
+                                            — plusieurs fichiers autorisés
+                                        </small>
+
+                                    </label>
+
+                                    <input
+                                        id="offre-photos"
+                                        type="file"
+                                        name="photos"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={
+                                            handleChange
+                                        }
+                                    />
+
+                                </div>
+
+                                {form.photos.length >
+                                    0 && (
+
+                                    <div className="selected-photos">
+
+                                        <div className="photos-count">
+                                            {form.photos.length}{" "}
+                                            photo
+                                            {form.photos.length >
+                                            1
+                                                ? "s"
+                                                : ""}{" "}
+                                            sélectionnée
+                                            {form.photos.length >
+                                            1
+                                                ? "s"
+                                                : ""}
+                                        </div>
+
+                                        <div className="selected-photos-grid">
+
+                                            {form.photos.map(
+                                                (
+                                                    photo,
+                                                    index
+                                                ) => (
+
+                                                    <div
+                                                        className="selected-photo"
+                                                        key={`${photo.name}-${index}`}
+                                                    >
+
+                                                        <img
+                                                            src={URL.createObjectURL(
+                                                                photo
+                                                            )}
+                                                            alt={`Photo ${
+                                                                index +
+                                                                1
+                                                            }`}
+                                                        />
+
+                                                        <button
+                                                            type="button"
+                                                            className="remove-selected-photo"
+                                                            onClick={() =>
+                                                                supprimerPhotoSelectionnee(
+                                                                    index
+                                                                )
+                                                            }
+                                                            title="Supprimer cette photo"
+                                                        >
+                                                            ×
+                                                        </button>
+
+                                                        <span>
+                                                            {photo.name}
+                                                        </span>
+
+                                                    </div>
+
+                                                )
+                                            )}
+
+                                        </div>
+
+                                    </div>
+
+                                )}
+
+                            </div>
+
+                            {/* FOOTER */}
 
                             <div className="modal-footer">
 
                                 <button
                                     type="button"
                                     className="btn-cancel"
-                                    onClick={fermerModal}
+                                    onClick={
+                                        fermerModal
+                                    }
                                     disabled={
                                         loadingForm
                                     }
@@ -1393,21 +1976,29 @@ function OffresPrestataire() {
                                         loadingForm
                                     }
                                 >
+
                                     {loadingForm ? (
+
                                         <>
                                             <span className="button-spinner"></span>
                                             Enregistrement...
                                         </>
+
                                     ) : mode ===
                                       "ajout" ? (
+
                                         <>
                                             ✓ Publier l'offre
                                         </>
+
                                     ) : (
+
                                         <>
                                             ✓ Enregistrer les modifications
                                         </>
+
                                     )}
+
                                 </button>
 
                             </div>
@@ -1417,6 +2008,7 @@ function OffresPrestataire() {
                     </div>
 
                 </div>
+
             )}
 
         </div>
