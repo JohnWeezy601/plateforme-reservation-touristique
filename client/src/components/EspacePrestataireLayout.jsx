@@ -71,18 +71,24 @@ function EspacePrestataireLayout() {
 
     const handleLogout = () => {
 
-        localStorage.removeItem("token");
+    const confirmation = window.confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+    );
 
-        localStorage.removeItem("utilisateur");
+    if (!confirmation) {
+        return;
+    }
 
-        navigate(
-            "/login-client",
-            {
-                replace: true
-            }
-        );
+    localStorage.removeItem("token");
+    localStorage.removeItem("utilisateur");
 
-    };
+    navigate(
+        "/login-client",
+        {
+            replace: true
+        }
+    );
+};
 
 
     // =====================================================
@@ -151,7 +157,7 @@ function EspacePrestataireLayout() {
                 <div className="prestataire-logo">
 
                     <h2>
-                        🌴 Travel Explorer
+                       🌍 Reservation Touristique
                     </h2>
 
                     <p>
@@ -231,7 +237,7 @@ function EspacePrestataireLayout() {
 
 
                     <Link
-                        to="/espace-prestataire/offres"
+                        to="/prestataire/offres"
                         className="prestataire-menu-link"
                     >
 

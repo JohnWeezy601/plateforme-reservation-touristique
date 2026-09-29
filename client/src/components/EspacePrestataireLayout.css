@@ -431,24 +431,60 @@
     }
 
 
-    /* Déconnexion */
+   /* =========================================================
+   BOUTON DÉCONNEXION
+   ========================================================= */
 
-    .prestataire-sidebar-bottom {
-        padding: 14px 8px;
-    }
+.prestataire-logout {
+    display: flex;
+    align-items: center;
 
-    .prestataire-logout {
-        justify-content: center;
+    gap: 14px;
 
-        padding: 13px 8px;
+    width: 100%;
 
-        gap: 0;
-    }
+    padding: 13px 16px;
 
-    .prestataire-logout span {
-        display: none;
-    }
+    border: none;
+    border-radius: 9px;
 
+    background: #dc2626;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        transform 0.2s ease,
+        box-shadow 0.25s ease;
+}
+
+.prestataire-logout svg {
+    width: 18px;
+    min-width: 18px;
+
+    font-size: 17px;
+}
+
+.prestataire-logout:hover {
+    background: #b91c1c;
+
+    color: white;
+
+    transform: translateX(3px);
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.prestataire-logout:active {
+    transform: translateX(1px);
+}
 
     /* Contenu */
 

@@ -369,7 +369,7 @@ function EspacePrestataire() {
                     <div className="brand-text">
 
                         <strong>
-                            Travel Explorer
+                             Reservation Touristique
                         </strong>
 
                         <span>
@@ -404,20 +404,6 @@ function EspacePrestataire() {
 
                     </div>
 
-
-                    <button
-                        type="button"
-                        className="logout-button"
-                        onClick={handleDeconnexion}
-                    >
-
-                        <FaSignOutAlt />
-
-                        <span>
-                            Déconnexion
-                        </span>
-
-                    </button>
 
                 </div>
 
