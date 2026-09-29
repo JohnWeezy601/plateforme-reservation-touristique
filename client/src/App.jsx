@@ -49,7 +49,7 @@ import VerificationRecu from "./pages/VerificationRecu";
 import EspacePrestataire from "./pages/EspacePrestataire";
 import EspacePrestataireLayout from "./components/EspacePrestataireLayout";
 import OffresPrestataire from "./pages/OffresPrestataire";
-import MesReservationsPrestataire from "./pages/prestataire/MesReservationsPrestataire";
+import MesReservationsPrestataire from "./pages/prestataire/MesReservations";
 import MonEtablissement from "./pages/prestataire/MonEtablissement";
 
 function App() {
@@ -662,7 +662,7 @@ path="/mes-reservations"
 
     {/* Mes offres */}
     <Route
-        path="/espace-prestataire/offres"
+        path="/prestataire/offres"
         element={<OffresPrestataire />}
     />
 
