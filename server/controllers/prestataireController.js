@@ -282,6 +282,149 @@ exports.getStatistiquesPrestataire = async (req, res) => {
 
 };
 
+
+
+// =====================================
+// AFFICHER LES RÉSERVATIONS DU PRESTATAIRE
+// GET /api/prestataires/utilisateur/:id/reservations
+// =====================================
+exports.getReservationsPrestataire = async (req, res) => {
+
+    const idUtilisateur = Number(req.params.id);
+
+    try {
+
+        // =====================================
+        // VÉRIFIER ID UTILISATEUR
+        // =====================================
+
+        if (!idUtilisateur) {
+
+            return res.status(400).json({
+                message: "ID utilisateur invalide"
+            });
+
+        }
+
+
+        // =====================================
+        // VÉRIFIER QUE LE PRESTATAIRE EXISTE
+        // =====================================
+
+        const [prestataire] = await db.query(
+            `
+            SELECT
+                id_prestataire,
+                id_utilisateur,
+                nom_entreprise
+            FROM prestataire
+            WHERE id_utilisateur = ?
+            LIMIT 1
+            `,
+            [idUtilisateur]
+        );
+
+
+        if (prestataire.length === 0) {
+
+            return res.status(404).json({
+                message: "Prestataire introuvable"
+            });
+
+        }
+
+
+        const idPrestataire =
+            prestataire[0].id_prestataire;
+
+
+        // =====================================
+        // RÉCUPÉRER LES RÉSERVATIONS
+        // =====================================
+
+        const [reservations] = await db.query(
+            `
+            SELECT
+
+                r.id_reservation,
+                r.id_utilisateur,
+                r.id_offre,
+                r.date_reservation,
+                r.date_debut_sejour,
+                r.date_fin_sejour,
+                r.nombre_personnes,
+                r.montant_total,
+                r.statut,
+
+                u.nom,
+                u.prenom,
+                u.email,
+                u.telephone,
+
+                o.titre AS titre_offre,
+                o.id_prestataire,
+
+                d.nom AS nom_destination
+
+            FROM reservation r
+
+            INNER JOIN utilisateur u
+                ON r.id_utilisateur = u.id_utilisateur
+
+            INNER JOIN offre o
+                ON r.id_offre = o.id_offre
+
+            LEFT JOIN destination d
+                ON o.id_destination = d.id_destination
+
+            WHERE o.id_prestataire = ?
+
+            ORDER BY r.date_reservation DESC
+            `,
+            [idPrestataire]
+        );
+
+
+        // =====================================
+        // LOG
+        // =====================================
+
+        console.log(
+            "📋 Réservations prestataire :",
+            idPrestataire,
+            reservations.length
+        );
+
+
+        // =====================================
+        // RÉPONSE
+        // =====================================
+
+        res.json(reservations);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ ERREUR RÉCUPÉRATION RÉSERVATIONS PRESTATAIRE :",
+            error
+        );
+
+        res.status(500).json({
+
+            message:
+                "Erreur récupération réservations",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+};
+
 // =====================================
 // AJOUTER UN PRESTATAIRE
 // POST /api/prestataires
