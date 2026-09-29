@@ -134,14 +134,14 @@ function Register() {
 
                 <h1>
 
-                    🌴 Créer un compte
+                    🌍 Créer un compte
 
                 </h1>
 
 
                 <p className="register-subtitle">
 
-                    Rejoignez Travel Explorer
+                    Rejoignez Reservation Touristique
 
                 </p>
 
