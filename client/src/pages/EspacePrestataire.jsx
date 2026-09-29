@@ -405,6 +405,20 @@ function EspacePrestataire() {
                     </div>
 
 
+                    <button
+                        type="button"
+                        className="logout-button"
+                        onClick={handleDeconnexion}
+                    >
+
+                        <FaSignOutAlt />
+
+                        <span>
+                            Déconnexion
+                        </span>
+
+                    </button>
+
                 </div>
 
             </header>
@@ -507,7 +521,7 @@ function EspacePrestataire() {
 
 
                 <Link
-                    to="/prestataire/reservations"
+                    to="/espace-prestataire/reservations"
                     className="stat-card stat-reservations"
                 >
 
@@ -535,7 +549,7 @@ function EspacePrestataire() {
 
 
                 <Link
-                    to="/prestataire/reservations"
+                    to="/espace-prestataire/reservations"
                     className="stat-card stat-attente"
                 >
 
@@ -677,7 +691,7 @@ function EspacePrestataire() {
 
 
                     <Link
-                        to="/prestataire/reservations"
+                        to="/espace-prestataire/reservations"
                         className="action-card"
                     >
 
@@ -703,7 +717,7 @@ function EspacePrestataire() {
 
 
                     <Link
-                        to="/prestataire/profil"
+                        to="/espace-prestataire/etablissement"
                         className="action-card"
                     >
 
@@ -921,7 +935,7 @@ function EspacePrestataire() {
 
 
                     <Link
-                        to="/prestataire/profil"
+                        to="/espace-prestataire/etablissement"
                         className="section-link"
                     >
                         Modifier
