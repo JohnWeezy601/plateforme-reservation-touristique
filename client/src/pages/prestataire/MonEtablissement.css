@@ -1,216 +1,546 @@
+/* =========================================================
+   PAGE MON ÉTABLISSEMENT
+   ========================================================= */
+
 .mon-etablissement {
     width: 100%;
-    min-height: 100%;
-    padding: 30px;
+    min-height: 100vh;
     box-sizing: border-box;
 }
 
 
-.etablissement-header {
-    margin-bottom: 30px;
-}
+/* =========================================================
+   EN-TÊTE
+   ========================================================= */
 
+.etablissement-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 28px;
+}
 
 .etablissement-header h1 {
-    margin: 0 0 8px;
-    font-size: 30px;
+    margin: 0;
+
     color: #1f2937;
+
+    font-size: 30px;
+    font-weight: 700;
 }
 
-
 .etablissement-header p {
-    margin: 0;
+    margin: 8px 0 0;
+
     color: #6b7280;
+
     font-size: 15px;
 }
 
 
-.etablissement-card {
-    background: white;
-    border-radius: 16px;
+/* =========================================================
+   MESSAGE DE CHARGEMENT
+   ========================================================= */
+
+.etablissement-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 180px;
+
     padding: 30px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    color: #6b7280;
+
+    font-size: 15px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 }
 
+
+/* =========================================================
+   MESSAGE D'ERREUR
+   ========================================================= */
+
+.etablissement-error {
+    padding: 20px 24px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    border-left: 5px solid #dc2626;
+
+    border-radius: 12px;
+
+    color: #991b1b;
+
+    box-shadow: 0 3px 12px rgba(220, 38, 38, 0.08);
+}
+
+.etablissement-error p {
+    margin: 0 0 15px;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.etablissement-error button {
+    padding: 9px 18px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #dc2626;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.etablissement-error button:hover {
+    background: #b91c1c;
+}
+
+
+/* =========================================================
+   CARTE ÉTABLISSEMENT
+   ========================================================= */
+
+.etablissement-card {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+}
+
+
+/* =========================================================
+   TITRE DE L'ÉTABLISSEMENT
+   ========================================================= */
 
 .etablissement-title {
     display: flex;
     align-items: center;
+
     gap: 18px;
+
     padding-bottom: 25px;
-    border-bottom: 1px solid #e5e7eb;
+
     margin-bottom: 25px;
+
+    border-bottom: 1px solid #e5e7eb;
 }
 
+
+/* =========================================================
+   ICÔNE
+   ========================================================= */
 
 .etablissement-icon {
-    width: 65px;
-    height: 65px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: #ecfdf5;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+
+    min-width: 64px;
+
     border-radius: 14px;
-    font-size: 32px;
+
+    background: #ecfdf5;
+
+    font-size: 30px;
 }
 
+
+/* =========================================================
+   NOM
+   ========================================================= */
 
 .etablissement-title h2 {
-    margin: 0 0 7px;
-    color: #1f2937;
-    font-size: 23px;
-}
+    margin: 0 0 8px;
 
+    color: #111827;
+
+    font-size: 23px;
+    font-weight: 700;
+}
 
 .etablissement-title span {
     display: inline-block;
-    padding: 5px 11px;
+
+    padding: 5px 12px;
+
     border-radius: 20px;
+
     background: #ecfdf5;
+
     color: #047857;
+
     font-size: 12px;
     font-weight: 600;
 }
 
 
+/* =========================================================
+   GRILLE DES INFORMATIONS
+   ========================================================= */
+
 .etablissement-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 22px;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+    width: 100%;
 }
 
+
+/* =========================================================
+   CHAMP
+   ========================================================= */
 
 .etablissement-field {
-    padding: 18px;
+    min-width: 0;
+
+    padding: 18px 20px;
+
+    box-sizing: border-box;
+
     background: #f9fafb;
+
+    border: 1px solid #e5e7eb;
+
     border-radius: 10px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
+.etablissement-field:hover {
+    border-color: #cbd5e1;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================================================
+   CHAMPS PLEINE LARGEUR
+   ========================================================= */
 
 .etablissement-field.full-width {
     grid-column: 1 / -1;
 }
 
 
+/* =========================================================
+   LABEL
+   ========================================================= */
+
 .etablissement-field label {
     display: block;
+
     margin-bottom: 8px;
+
     color: #6b7280;
-    font-size: 13px;
+
+    font-size: 12px;
     font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
 }
 
+
+/* =========================================================
+   VALEUR
+   ========================================================= */
 
 .etablissement-field p {
     margin: 0;
+
     color: #1f2937;
+
     font-size: 15px;
+    font-weight: 500;
+
     line-height: 1.6;
+
+    overflow-wrap: anywhere;
 }
 
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.etablissement-field.full-width:last-child p {
+    color: #4b5563;
+
+    font-weight: 400;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   PIED DE LA CARTE
+   ========================================================= */
 
 .etablissement-footer {
     display: flex;
     align-items: center;
+
     gap: 8px;
+
     margin-top: 25px;
+
     padding-top: 20px;
+
     border-top: 1px solid #e5e7eb;
-    color: #6b7280;
 }
 
+.etablissement-footer span {
+    color: #6b7280;
+
+    font-size: 14px;
+}
 
 .etablissement-footer strong {
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    background: #ecfdf5;
+
     color: #047857;
+
+    font-size: 13px;
 }
 
 
-.etablissement-message {
-    padding: 50px;
-    background: white;
-    border-radius: 14px;
-    text-align: center;
-    color: #6b7280;
-}
-
-
-.etablissement-error {
-    padding: 25px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 12px;
-    color: #b91c1c;
-}
-
-
-.etablissement-error button {
-    display: block;
-    margin-top: 15px;
-    padding: 9px 18px;
-    border: none;
-    border-radius: 7px;
-    background: #b91c1c;
-    color: white;
-    cursor: pointer;
-}
-
+/* =========================================================
+   AUCUN ÉTABLISSEMENT
+   ========================================================= */
 
 .etablissement-empty {
-    padding: 70px 30px;
-    background: white;
-    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 320px;
+
+    padding: 40px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
     text-align: center;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
 }
 
+.etablissement-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-.etablissement-empty > div {
-    font-size: 50px;
-    margin-bottom: 15px;
+    width: 75px;
+    height: 75px;
+
+    margin-bottom: 18px;
+
+    border-radius: 50%;
+
+    background: #f3f4f6;
+
+    font-size: 35px;
 }
-
 
 .etablissement-empty h2 {
-    margin: 0 0 10px;
-    color: #1f2937;
-}
+    margin: 0 0 8px;
 
+    color: #1f2937;
+
+    font-size: 20px;
+}
 
 .etablissement-empty p {
+    max-width: 450px;
+
     margin: 0;
+
     color: #6b7280;
+
+    font-size: 14px;
+
+    line-height: 1.6;
 }
 
 
-@media (max-width: 768px) {
+/* =========================================================
+   TABLETTE
+   ========================================================= */
 
-    .mon-etablissement {
-        padding: 20px;
-    }
-
+@media (max-width: 850px) {
 
     .etablissement-header h1 {
-        font-size: 25px;
+        font-size: 26px;
     }
-
 
     .etablissement-card {
-        padding: 20px;
+        padding: 24px;
     }
-
 
     .etablissement-grid {
         grid-template-columns: 1fr;
     }
 
-
     .etablissement-field.full-width {
         grid-column: auto;
     }
+}
 
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .mon-etablissement {
+        padding: 0;
+    }
+
+    .etablissement-header {
+        margin-bottom: 20px;
+    }
+
+    .etablissement-header h1 {
+        font-size: 23px;
+    }
+
+    .etablissement-header p {
+        font-size: 13px;
+    }
+
+    .etablissement-card {
+        padding: 18px;
+
+        border-radius: 12px;
+    }
+
+    .etablissement-title {
+        gap: 12px;
+
+        padding-bottom: 20px;
+
+        margin-bottom: 20px;
+    }
+
+    .etablissement-icon {
+        width: 50px;
+        height: 50px;
+
+        min-width: 50px;
+
+        border-radius: 10px;
+
+        font-size: 24px;
+    }
+
+    .etablissement-title h2 {
+        font-size: 18px;
+    }
+
+    .etablissement-title span {
+        font-size: 11px;
+    }
+
+    .etablissement-field {
+        padding: 15px;
+    }
+
+    .etablissement-field p {
+        font-size: 14px;
+    }
+
+    .etablissement-footer {
+        flex-wrap: wrap;
+    }
+
+    .etablissement-empty {
+        min-height: 280px;
+
+        padding: 25px 18px;
+    }
+}
+
+
+/* =========================================================
+   TRÈS PETITS ÉCRANS
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .etablissement-header h1 {
+        font-size: 21px;
+    }
+
+    .etablissement-card {
+        padding: 15px;
+    }
 
     .etablissement-title {
         align-items: flex-start;
     }
 
+    .etablissement-icon {
+        width: 45px;
+        height: 45px;
+
+        min-width: 45px;
+
+        font-size: 21px;
+    }
+
+    .etablissement-title h2 {
+        font-size: 16px;
+    }
+
+    .etablissement-field {
+        padding: 13px;
+    }
 }

@@ -2,105 +2,138 @@ import { useEffect, useState } from "react";
 import api from "../../api/api";
 import "./MonEtablissement.css";
 
-
 function MonEtablissement() {
 
-    const [etablissement, setEtablissement] =
-        useState(null);
-
-    const [chargement, setChargement] =
-        useState(true);
-
-    const [erreur, setErreur] =
-        useState("");
-
+    const [etablissement, setEtablissement] = useState(null);
+    const [chargement, setChargement] = useState(true);
+    const [erreur, setErreur] = useState("");
 
     useEffect(() => {
-
         chargerEtablissement();
-
     }, []);
-
 
     const chargerEtablissement = async () => {
 
         try {
 
             setChargement(true);
-
             setErreur("");
+            setEtablissement(null);
 
-
+            // Récupérer l'utilisateur connecté
             const utilisateurConnecte =
                 localStorage.getItem("utilisateur");
 
-
             if (!utilisateurConnecte) {
 
-                setErreur(
-                    "Utilisateur non connecté."
-                );
-
+                setErreur("Utilisateur non connecté.");
                 return;
 
             }
 
+            // Convertir les données JSON
+            let utilisateur;
 
-            const utilisateur =
-                JSON.parse(
-                    utilisateurConnecte
+            try {
+
+                utilisateur = JSON.parse(utilisateurConnecte);
+
+            } catch (error) {
+
+                console.error(
+                    "Erreur lecture utilisateur :",
+                    error
                 );
 
+                setErreur(
+                    "Les informations de l'utilisateur sont invalides."
+                );
 
+                return;
+            }
+
+            console.log(
+                "UTILISATEUR CONNECTÉ :",
+                utilisateur
+            );
+
+            // IMPORTANT :
+            // Le localStorage contient id_utilisateur
             const idUtilisateur =
-                utilisateur.id;
+                utilisateur.id_utilisateur;
 
+            console.log(
+                "ID UTILISATEUR :",
+                idUtilisateur
+            );
 
-            const response =
-                await api.get(
+            // Vérifier que l'ID existe
+            if (!idUtilisateur) {
 
-                    `/prestataires/utilisateur/${idUtilisateur}`
-
+                setErreur(
+                    "Identifiant utilisateur introuvable."
                 );
 
+                return;
+            }
 
-            setEtablissement(
+            // Vérifier le rôle
+            if (utilisateur.role !== "Prestataire") {
+
+                setErreur(
+                    "Cet espace est réservé aux prestataires."
+                );
+
+                return;
+            }
+
+            // Récupérer l'établissement
+            const response = await api.get(
+                `/prestataires/utilisateur/${idUtilisateur}`
+            );
+
+            console.log(
+                "ÉTABLISSEMENT RÉCUPÉRÉ :",
                 response.data
             );
 
-        }
+            setEtablissement(response.data);
 
-        catch (error) {
+        } catch (error) {
 
             console.error(
                 "Erreur récupération établissement :",
                 error
             );
 
+            if (error.response) {
+
+                console.error(
+                    "Statut erreur :",
+                    error.response.status
+                );
+
+                console.error(
+                    "Réponse serveur :",
+                    error.response.data
+                );
+            }
 
             setErreur(
-
                 error.response?.data?.message ||
-
                 "Impossible de récupérer les informations de votre établissement."
-
             );
 
-        }
-
-        finally {
+        } finally {
 
             setChargement(false);
 
         }
-
     };
-
 
     return (
 
         <div className="mon-etablissement">
-
 
             {/* =====================================================
                 EN-TÊTE
@@ -146,7 +179,9 @@ function MonEtablissement() {
 
                 <div className="etablissement-error">
 
-                    {erreur}
+                    <p>
+                        {erreur}
+                    </p>
 
                     <button
                         type="button"
@@ -161,7 +196,7 @@ function MonEtablissement() {
 
 
             {/* =====================================================
-                INFORMATIONS
+                INFORMATIONS DE L'ÉTABLISSEMENT
             ===================================================== */}
 
             {!chargement &&
@@ -170,6 +205,9 @@ function MonEtablissement() {
 
                 <div className="etablissement-card">
 
+                    {/* =================================================
+                        TITRE
+                    ================================================= */}
 
                     <div className="etablissement-title">
 
@@ -185,10 +223,8 @@ function MonEtablissement() {
                             </h2>
 
                             <span>
-
                                 {etablissement.statut ||
                                 "Statut non défini"}
-
                             </span>
 
                         </div>
@@ -196,8 +232,13 @@ function MonEtablissement() {
                     </div>
 
 
+                    {/* =================================================
+                        INFORMATIONS
+                    ================================================= */}
+
                     <div className="etablissement-grid">
 
+                        {/* Nom entreprise */}
 
                         <div className="etablissement-field">
 
@@ -206,12 +247,13 @@ function MonEtablissement() {
                             </label>
 
                             <p>
-                                {etablissement.nom_entreprise ||
-                                "-"}
+                                {etablissement.nom_entreprise || "-"}
                             </p>
 
                         </div>
 
+
+                        {/* Téléphone */}
 
                         <div className="etablissement-field">
 
@@ -220,12 +262,13 @@ function MonEtablissement() {
                             </label>
 
                             <p>
-                                {etablissement.telephone ||
-                                "-"}
+                                {etablissement.telephone || "-"}
                             </p>
 
                         </div>
 
+
+                        {/* Email */}
 
                         <div className="etablissement-field">
 
@@ -234,12 +277,13 @@ function MonEtablissement() {
                             </label>
 
                             <p>
-                                {etablissement.email ||
-                                "-"}
+                                {etablissement.email || "-"}
                             </p>
 
                         </div>
 
+
+                        {/* Ville */}
 
                         <div className="etablissement-field">
 
@@ -248,12 +292,13 @@ function MonEtablissement() {
                             </label>
 
                             <p>
-                                {etablissement.ville ||
-                                "-"}
+                                {etablissement.ville || "-"}
                             </p>
 
                         </div>
 
+
+                        {/* Adresse */}
 
                         <div className="etablissement-field full-width">
 
@@ -262,12 +307,13 @@ function MonEtablissement() {
                             </label>
 
                             <p>
-                                {etablissement.adresse ||
-                                "-"}
+                                {etablissement.adresse || "-"}
                             </p>
 
                         </div>
 
+
+                        {/* Description */}
 
                         <div className="etablissement-field full-width">
 
@@ -282,9 +328,12 @@ function MonEtablissement() {
 
                         </div>
 
-
                     </div>
 
+
+                    {/* =================================================
+                        STATUT
+                    ================================================= */}
 
                     <div className="etablissement-footer">
 
@@ -314,7 +363,7 @@ function MonEtablissement() {
 
                 <div className="etablissement-empty">
 
-                    <div>
+                    <div className="etablissement-empty-icon">
                         🏨
                     </div>
 
@@ -334,8 +383,6 @@ function MonEtablissement() {
         </div>
 
     );
-
 }
-
 
 export default MonEtablissement;
