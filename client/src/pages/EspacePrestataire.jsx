@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/api";
 import "./EspacePrestataire.css";
 
@@ -7,12 +8,25 @@ import {
     FaHotel,
     FaCalendarCheck,
     FaClock,
-    FaMoneyBillWave
+    FaMoneyBillWave,
+    FaPlus,
+    FaArrowRight,
+    FaMapMarkerAlt,
+    FaPhone,
+    FaEnvelope,
+    FaUser,
+    FaCheckCircle,
+    FaEdit,
+    FaList,
+    FaClipboardList
 } from "react-icons/fa";
 
 function EspacePrestataire() {
     const [utilisateur, setUtilisateur] = useState(null);
     const [prestataire, setPrestataire] = useState(null);
+
+    const [offres, setOffres] = useState([]);
+
     const [chargement, setChargement] = useState(true);
     const [erreur, setErreur] = useState("");
 
@@ -23,24 +37,16 @@ function EspacePrestataire() {
         revenus: 0
     });
 
-    // =====================================================
-    // RÉCUPÉRER L'UTILISATEUR CONNECTÉ
-    // =====================================================
-
     useEffect(() => {
         const utilisateurStocke =
             localStorage.getItem("utilisateur");
 
         if (!utilisateurStocke) {
-            console.error(
-                "Aucun utilisateur connecté"
-            );
+            console.error("Aucun utilisateur connecté");
 
-            setErreur(
-                "Aucun utilisateur connecté."
-            );
-
+            setErreur("Aucun utilisateur connecté.");
             setChargement(false);
+
             return;
         }
 
@@ -69,6 +75,7 @@ function EspacePrestataire() {
                 );
 
                 setChargement(false);
+
                 return;
             }
 
@@ -93,19 +100,9 @@ function EspacePrestataire() {
         }
     }, []);
 
-    // =====================================================
-    // CHARGER LE PRESTATAIRE ET SES STATISTIQUES
-    // =====================================================
-
-    const chargerPrestataire = async (
-        idUtilisateur
-    ) => {
+    const chargerPrestataire = async (idUtilisateur) => {
         try {
             setErreur("");
-
-            // ---------------------------------------------
-            // Récupération du prestataire
-            // ---------------------------------------------
 
             const res = await api.get(
                 `/prestataires/utilisateur/${idUtilisateur}`
@@ -132,9 +129,11 @@ function EspacePrestataire() {
                 idPrestataire
             );
 
-            // ---------------------------------------------
-            // Récupération des statistiques
-            // ---------------------------------------------
+            /*
+             * ==================================================
+             * STATISTIQUES
+             * ==================================================
+             */
 
             const statistiquesRes =
                 await api.get(
@@ -156,14 +155,54 @@ function EspacePrestataire() {
                 ),
 
                 reservationsEnAttente: Number(
-                    statistiquesRes.data
-                        .reservationsEnAttente || 0
+                    statistiquesRes.data.reservationsEnAttente || 0
                 ),
 
                 revenus: Number(
                     statistiquesRes.data.revenus || 0
                 )
             });
+
+            /*
+             * ==================================================
+             * OFFRES DU PRESTATAIRE
+             * ==================================================
+             */
+
+            try {
+                const offresRes = await api.get(
+                    `/offres/prestataire/${idPrestataire}`
+                );
+
+                console.log(
+                    "OFFRES DU PRESTATAIRE :",
+                    offresRes.data
+                );
+
+                if (Array.isArray(offresRes.data)) {
+                    setOffres(offresRes.data);
+                } else if (
+                    Array.isArray(offresRes.data?.offres)
+                ) {
+                    setOffres(
+                        offresRes.data.offres
+                    );
+                } else {
+                    setOffres([]);
+                }
+
+            } catch (offresError) {
+                console.warn(
+                    "Impossible de récupérer les offres :",
+                    offresError
+                );
+
+                /*
+                 * Les statistiques continuent de fonctionner
+                 * même si cette route n'existe pas encore.
+                 */
+                setOffres([]);
+            }
 
         } catch (error) {
             console.error(
@@ -191,36 +230,35 @@ function EspacePrestataire() {
         }
     };
 
-    // =====================================================
-    // CHARGEMENT
-    // =====================================================
+    /*
+     * =========================================================
+     * CHARGEMENT
+     * =========================================================
+     */
 
     if (chargement) {
         return (
             <div className="prestataire-page">
-
                 <div className="prestataire-loading">
-
                     <div className="loading-spinner"></div>
 
                     <p>
                         Chargement de votre espace...
                     </p>
-
                 </div>
-
             </div>
         );
     }
 
-    // =====================================================
-    // ERREUR
-    // =====================================================
+    /*
+     * =========================================================
+     * ERREUR
+     * =========================================================
+     */
 
     if (erreur && !prestataire) {
         return (
             <div className="prestataire-page">
-
                 <div className="prestataire-error">
 
                     <FaBuilding />
@@ -234,14 +272,31 @@ function EspacePrestataire() {
                     </p>
 
                 </div>
-
             </div>
         );
     }
 
-    // =====================================================
-    // INTERFACE PRINCIPALE
-    // =====================================================
+    /*
+     * =========================================================
+     * VARIABLES
+     * =========================================================
+     */
+
+    const nomEntreprise =
+        prestataire?.nom_entreprise ||
+        `${utilisateur?.prenom || ""} ${
+            utilisateur?.nom || ""
+        }`;
+
+    const statut =
+        prestataire?.statut || "En attente";
+
+    const statutClasse =
+        statut === "Validé"
+            ? "status-valid"
+            : statut === "Refusé"
+            ? "status-refused"
+            : "status-pending";
 
     return (
         <div className="prestataire-page">
@@ -252,38 +307,41 @@ function EspacePrestataire() {
 
             <div className="prestataire-header">
 
-                <div>
+                <div className="header-content">
 
-                    <h1>
-                        Bonjour{" "}
+                    <div className="header-icon">
+                        <FaBuilding />
+                    </div>
 
-                        <span>
-                            {prestataire?.nom_entreprise ||
-                                `${utilisateur?.prenom || ""} ${
-                                    utilisateur?.nom || ""
-                                }`}
-                        </span>
-                    </h1>
+                    <div>
 
-                    <p>
-                        Bienvenue dans votre espace prestataire.
-                    </p>
+                        <p className="header-small">
+                            Espace prestataire
+                        </p>
+
+                        <h1>
+                            Bonjour{" "}
+                            <span>
+                                {nomEntreprise}
+                            </span>
+                        </h1>
+
+                        <p className="header-description">
+                            Gérez votre établissement,
+                            vos offres et vos réservations
+                            depuis votre espace.
+                        </p>
+
+                    </div>
 
                 </div>
 
                 <div className="prestataire-status">
 
-                    <span
-                        className={
-                            prestataire?.statut === "Validé"
-                                ? "status-valid"
-                                : prestataire?.statut === "Refusé"
-                                ? "status-refused"
-                                : "status-pending"
-                        }
-                    >
-                        {prestataire?.statut ||
-                            "En attente"}
+                    <FaCheckCircle />
+
+                    <span className={statutClasse}>
+                        {statut}
                     </span>
 
                 </div>
@@ -291,7 +349,7 @@ function EspacePrestataire() {
             </div>
 
             {/* =================================================
-                MESSAGE D'ERREUR
+                MESSAGE D'AVERTISSEMENT
             ================================================= */}
 
             {erreur && (
@@ -306,9 +364,7 @@ function EspacePrestataire() {
 
             <div className="prestataire-statistiques">
 
-                {/* MES OFFRES */}
-
-                <div className="stat-card">
+                <div className="stat-card stat-offres">
 
                     <div className="stat-icon">
                         <FaHotel />
@@ -324,13 +380,15 @@ function EspacePrestataire() {
                             {statistiques.offres}
                         </strong>
 
+                        <span className="stat-description">
+                            Offre(s) publiée(s)
+                        </span>
+
                     </div>
 
                 </div>
 
-                {/* RÉSERVATIONS */}
-
-                <div className="stat-card">
+                <div className="stat-card stat-reservations">
 
                     <div className="stat-icon">
                         <FaCalendarCheck />
@@ -346,13 +404,15 @@ function EspacePrestataire() {
                             {statistiques.reservations}
                         </strong>
 
+                        <span className="stat-description">
+                            Réservation(s) reçue(s)
+                        </span>
+
                     </div>
 
                 </div>
 
-                {/* EN ATTENTE */}
-
-                <div className="stat-card">
+                <div className="stat-card stat-attente">
 
                     <div className="stat-icon">
                         <FaClock />
@@ -368,13 +428,15 @@ function EspacePrestataire() {
                             {statistiques.reservationsEnAttente}
                         </strong>
 
+                        <span className="stat-description">
+                            À traiter
+                        </span>
+
                     </div>
 
                 </div>
 
-                {/* REVENUS */}
-
-                <div className="stat-card">
+                <div className="stat-card stat-revenus">
 
                     <div className="stat-icon">
                         <FaMoneyBillWave />
@@ -389,9 +451,12 @@ function EspacePrestataire() {
                         <strong className="stat-value">
                             {statistiques.revenus.toLocaleString(
                                 "fr-FR"
-                            )}{" "}
-                            €
+                            )} €
                         </strong>
+
+                        <span className="stat-description">
+                            Paiements confirmés
+                        </span>
 
                     </div>
 
@@ -400,24 +465,334 @@ function EspacePrestataire() {
             </div>
 
             {/* =================================================
-                INFORMATIONS DE L'ENTREPRISE
+                ACTIONS RAPIDES
             ================================================= */}
 
-            <div className="prestataire-section">
+            <section className="prestataire-section actions-section">
 
-                <div className="section-title">
+                <div className="section-heading">
 
-                    <FaBuilding />
+                    <div className="section-title">
 
-                    <h2>
-                        Informations de mon entreprise
-                    </h2>
+                        <div className="section-title-icon">
+                            <FaClipboardList />
+                        </div>
+
+                        <div>
+                            <h2>
+                                Actions rapides
+                            </h2>
+
+                            <p>
+                                Accédez rapidement aux
+                                principales fonctionnalités.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="actions-grid">
+
+                    <Link
+                        to="/prestataire/offres"
+                        className="action-card"
+                    >
+
+                        <div className="action-icon">
+                            <FaHotel />
+                        </div>
+
+                        <div className="action-content">
+
+                            <strong>
+                                Mes offres
+                            </strong>
+
+                            <span>
+                                Gérer mes offres touristiques
+                            </span>
+
+                        </div>
+
+                        <FaArrowRight className="action-arrow" />
+
+                    </Link>
+
+                    <Link
+                        to="/prestataire/offres/ajouter"
+                        className="action-card action-primary"
+                    >
+
+                        <div className="action-icon">
+                            <FaPlus />
+                        </div>
+
+                        <div className="action-content">
+
+                            <strong>
+                                Ajouter une offre
+                            </strong>
+
+                            <span>
+                                Publier une nouvelle offre
+                            </span>
+
+                        </div>
+
+                        <FaArrowRight className="action-arrow" />
+
+                    </Link>
+
+                    <Link
+                        to="/prestataire/reservations"
+                        className="action-card"
+                    >
+
+                        <div className="action-icon">
+                            <FaCalendarCheck />
+                        </div>
+
+                        <div className="action-content">
+
+                            <strong>
+                                Mes réservations
+                            </strong>
+
+                            <span>
+                                Consulter les réservations
+                            </span>
+
+                        </div>
+
+                        <FaArrowRight className="action-arrow" />
+
+                    </Link>
+
+                    <Link
+                        to="/prestataire/profil"
+                        className="action-card"
+                    >
+
+                        <div className="action-icon">
+                            <FaEdit />
+                        </div>
+
+                        <div className="action-content">
+
+                            <strong>
+                                Mon établissement
+                            </strong>
+
+                            <span>
+                                Modifier mes informations
+                            </span>
+
+                        </div>
+
+                        <FaArrowRight className="action-arrow" />
+
+                    </Link>
+
+                </div>
+
+            </section>
+
+            {/* =================================================
+                MES OFFRES
+            ================================================= */}
+
+            <section className="prestataire-section">
+
+                <div className="section-heading">
+
+                    <div className="section-title">
+
+                        <div className="section-title-icon">
+                            <FaHotel />
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Mes offres
+                            </h2>
+
+                            <p>
+                                Aperçu de vos offres touristiques.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <Link
+                        to="/prestataire/offres"
+                        className="section-link"
+                    >
+                        Voir toutes
+                        <FaArrowRight />
+                    </Link>
+
+                </div>
+
+                {offres.length > 0 ? (
+
+                    <div className="offres-grid">
+
+                        {offres.slice(0, 3).map(
+                            (offre) => (
+
+                                <div
+                                    className="offre-card"
+                                    key={offre.id_offre}
+                                >
+
+                                    <div className="offre-image">
+
+                                        {offre.image ? (
+
+                                            <img
+                                                src={offre.image}
+                                                alt={
+                                                    offre.titre ||
+                                                    "Offre touristique"
+                                                }
+                                            />
+
+                                        ) : (
+
+                                            <div className="offre-image-placeholder">
+                                                <FaHotel />
+                                            </div>
+
+                                        )}
+
+                                        <span className="offre-status">
+                                            Disponible
+                                        </span>
+
+                                    </div>
+
+                                    <div className="offre-content">
+
+                                        <h3>
+                                            {offre.titre ||
+                                                "Offre sans titre"}
+                                        </h3>
+
+                                        <p className="offre-location">
+
+                                            <FaMapMarkerAlt />
+
+                                            {offre.ville ||
+                                                offre.nom_destination ||
+                                                offre.destination ||
+                                                "Destination touristique"}
+
+                                        </p>
+
+                                        <div className="offre-footer">
+
+                                            <strong>
+                                                {Number(
+                                                    offre.prix || 0
+                                                ).toLocaleString(
+                                                    "fr-FR"
+                                                )} €
+                                            </strong>
+
+                                            <Link
+                                                to={`/detail-offre/${offre.id_offre}`}
+                                                className="offre-button"
+                                            >
+                                                Voir
+                                                <FaArrowRight />
+                                            </Link>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            )
+                        )}
+
+                    </div>
+
+                ) : (
+
+                    <div className="empty-state">
+
+                        <div className="empty-icon">
+                            <FaHotel />
+                        </div>
+
+                        <h3>
+                            Aucune offre
+                        </h3>
+
+                        <p>
+                            Vous n'avez pas encore publié
+                            d'offre touristique.
+                        </p>
+
+                        <Link
+                            to="/prestataire/offres/ajouter"
+                            className="empty-button"
+                        >
+                            <FaPlus />
+                            Ajouter une offre
+                        </Link>
+
+                    </div>
+
+                )}
+
+            </section>
+
+            {/* =================================================
+                INFORMATIONS ENTREPRISE
+            ================================================= */}
+
+            <section className="prestataire-section">
+
+                <div className="section-heading">
+
+                    <div className="section-title">
+
+                        <div className="section-title-icon">
+                            <FaBuilding />
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Informations de mon entreprise
+                            </h2>
+
+                            <p>
+                                Informations publiques de votre
+                                établissement.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <Link
+                        to="/prestataire/profil"
+                        className="section-link"
+                    >
+                        Modifier
+                        <FaEdit />
+                    </Link>
 
                 </div>
 
                 <div className="prestataire-info-grid">
-
-                    {/* NOM ENTREPRISE */}
 
                     <div className="info-item">
 
@@ -432,8 +807,6 @@ function EspacePrestataire() {
 
                     </div>
 
-                    {/* VILLE */}
-
                     <div className="info-item">
 
                         <span className="info-label">
@@ -447,8 +820,6 @@ function EspacePrestataire() {
 
                     </div>
 
-                    {/* TÉLÉPHONE */}
-
                     <div className="info-item">
 
                         <span className="info-label">
@@ -461,8 +832,6 @@ function EspacePrestataire() {
                         </strong>
 
                     </div>
-
-                    {/* EMAIL */}
 
                     <div className="info-item">
 
@@ -478,8 +847,6 @@ function EspacePrestataire() {
 
                     </div>
 
-                    {/* ADRESSE */}
-
                     <div className="info-item info-full">
 
                         <span className="info-label">
@@ -492,8 +859,6 @@ function EspacePrestataire() {
                         </strong>
 
                     </div>
-
-                    {/* DESCRIPTION */}
 
                     <div className="info-item info-full">
 
@@ -508,44 +873,59 @@ function EspacePrestataire() {
 
                     </div>
 
-                    {/* STATUT */}
-
                     <div className="info-item">
 
                         <span className="info-label">
                             Statut
                         </span>
 
-                        <strong>
-                            {prestataire?.statut ||
-                                "En attente"}
-                        </strong>
+                        <div className="info-status">
+
+                            <FaCheckCircle />
+
+                            <strong>
+                                {statut}
+                            </strong>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
+            </section>
 
             {/* =================================================
-                INFORMATIONS DU COMPTE
+                INFORMATIONS COMPTE
             ================================================= */}
 
-            <div className="prestataire-section">
+            <section className="prestataire-section">
 
-                <div className="section-title">
+                <div className="section-heading">
 
-                    <FaBuilding />
+                    <div className="section-title">
 
-                    <h2>
-                        Informations du compte
-                    </h2>
+                        <div className="section-title-icon">
+                            <FaUser />
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Informations du compte
+                            </h2>
+
+                            <p>
+                                Informations de votre compte utilisateur.
+                            </p>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
                 <div className="prestataire-info-grid">
-
-                    {/* PRÉNOM */}
 
                     <div className="info-item">
 
@@ -561,8 +941,6 @@ function EspacePrestataire() {
 
                     </div>
 
-                    {/* NOM */}
-
                     <div className="info-item">
 
                         <span className="info-label">
@@ -576,8 +954,6 @@ function EspacePrestataire() {
                         </strong>
 
                     </div>
-
-                    {/* EMAIL COMPTE */}
 
                     <div className="info-item">
 
@@ -593,15 +969,13 @@ function EspacePrestataire() {
 
                     </div>
 
-                    {/* RÔLE */}
-
                     <div className="info-item">
 
                         <span className="info-label">
                             Rôle
                         </span>
 
-                        <strong>
+                        <strong className="role-badge">
                             {utilisateur?.role ||
                                 prestataire?.role ||
                                 "Prestataire"}
@@ -611,7 +985,7 @@ function EspacePrestataire() {
 
                 </div>
 
-            </div>
+            </section>
 
         </div>
     );
