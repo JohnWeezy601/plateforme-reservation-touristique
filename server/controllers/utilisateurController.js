@@ -1329,97 +1329,131 @@ exports.facebookLogin = async (req, res) => {
 
 // =====================================================
 // MODIFIER UTILISATEUR
+// PUT /api/utilisateurs/:id
 // =====================================================
 
 exports.updateUtilisateur = async (req, res) => {
 
-    const id =
-        req.params.id;
-
+    const id = req.params.id;
 
     const {
-
         nom,
-
         prenom,
-
         email,
-
-        telephone,
-
-        role
-
+        telephone
     } = req.body;
-
 
     try {
 
-        const rolesAutorises = [
+        // =====================================================
+        // VÉRIFIER UTILISATEUR
+        // =====================================================
 
-            "Administrateur",
+        const [utilisateurs] = await db.query(
+            `
+            SELECT
+                id_utilisateur,
+                role
+            FROM utilisateur
+            WHERE id_utilisateur=?
+            `,
+            [id]
+        );
 
-            "Touriste",
+        if (utilisateurs.length === 0) {
 
-            "Prestataire"
-
-        ];
-
-
-        if (!rolesAutorises.includes(role)) {
-
-            return res.status(400).json({
-
-                message:
-                    "Rôle invalide"
-
+            return res.status(404).json({
+                message: "Utilisateur introuvable"
             });
 
         }
 
+        // =====================================================
+        // VÉRIFIER EMAIL DÉJÀ UTILISÉ
+        // =====================================================
+
+        const [emailExiste] = await db.query(
+            `
+            SELECT
+                id_utilisateur
+            FROM utilisateur
+            WHERE email=?
+            AND id_utilisateur<>?
+            `,
+            [
+                email,
+                id
+            ]
+        );
+
+        if (emailExiste.length > 0) {
+
+            return res.status(400).json({
+                message: "Cet email est déjà utilisé par un autre utilisateur"
+            });
+
+        }
+
+        // =====================================================
+        // MODIFIER UTILISATEUR
+        // =====================================================
 
         await db.query(
-
             `
             UPDATE utilisateur
 
             SET
-
                 nom=?,
-
                 prenom=?,
-
                 email=?,
-
-                telephone=?,
-
-                role=?
+                telephone=?
 
             WHERE id_utilisateur=?
             `,
-
             [
-
                 nom,
-
                 prenom,
-
                 email,
-
                 telephone,
-
-                role,
-
                 id
-
             ]
-
         );
 
+        // =====================================================
+        // RÉCUPÉRER DONNÉES MISES À JOUR
+        // =====================================================
+
+        const [utilisateurMisAJour] =
+            await db.query(
+                `
+                SELECT
+                    id_utilisateur,
+                    nom,
+                    prenom,
+                    email,
+                    telephone,
+                    role,
+                    photo,
+                    date_inscription
+
+                FROM utilisateur
+
+                WHERE id_utilisateur=?
+                `,
+                [id]
+            );
+
+        // =====================================================
+        // RÉPONSE
+        // =====================================================
 
         res.json({
 
             message:
-                "Utilisateur modifié avec succès"
+                "Profil modifié avec succès",
+
+            utilisateur:
+                utilisateurMisAJour[0]
 
         });
 
@@ -1427,13 +1461,18 @@ exports.updateUtilisateur = async (req, res) => {
 
     catch (error) {
 
-        console.log(error);
-
+        console.error(
+            "❌ Erreur modification utilisateur :",
+            error
+        );
 
         res.status(500).json({
 
             message:
-                "Erreur modification utilisateur"
+                "Erreur modification utilisateur",
+
+            error:
+                error.message
 
         });
 
