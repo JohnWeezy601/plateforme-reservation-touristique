@@ -49,6 +49,8 @@ import VerificationRecu from "./pages/VerificationRecu";
 import EspacePrestataire from "./pages/EspacePrestataire";
 import EspacePrestataireLayout from "./components/EspacePrestataireLayout";
 import OffresPrestataire from "./pages/OffresPrestataire";
+import MesReservationsPrestataire from "./pages/prestataire/MesReservationsPrestataire";
+import MonEtablissement from "./pages/prestataire/MonEtablissement";
 
 function App() {
 
@@ -657,10 +659,25 @@ path="/mes-reservations"
         path="/espace-prestataire"
         element={<EspacePrestataire />}
     />
+
+    {/* Mes offres */}
     <Route
-    path="/prestataire/offres"
-    element={<OffresPrestataire />}
-/>
+        path="/espace-prestataire/offres"
+        element={<OffresPrestataire />}
+    />
+
+    {/* Mes réservations */}
+    <Route
+        path="/espace-prestataire/reservations"
+        element={<MesReservationsPrestataire />}
+    />
+
+    {/* Mon établissement */}
+    <Route
+        path="/espace-prestataire/etablissement"
+        element={<MonEtablissement />}
+    />
+
 
 </Route>
 

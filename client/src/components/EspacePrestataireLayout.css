@@ -1,48 +1,484 @@
 /* =========================================================
-   ESPACE PRESTATAIRE - LAYOUT GLOBAL
-========================================================= */
+   ESPACE PRESTATAIRE - LAYOUT
+   ========================================================= */
 
 .espace-prestataire {
+    display: flex;
     min-height: 100vh;
     width: 100%;
     background: #f5f7fb;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.prestataire-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 270px;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: linear-gradient(
+        180deg,
+        #0f766e 0%,
+        #115e59 100%
+    );
+
+    color: white;
+
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
+
+    z-index: 1000;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.prestataire-logo {
+    padding: 28px 22px 24px;
+    text-align: center;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.prestataire-logo h2 {
+    margin: 0;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    letter-spacing: 0.3px;
+}
+
+.prestataire-logo p {
+    margin: 7px 0 0;
+
+    font-size: 13px;
+
+    color: rgba(255, 255, 255, 0.75);
+}
+
+
+/* =========================================================
+   INFORMATIONS UTILISATEUR
+   ========================================================= */
+
+.prestataire-user {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 22px 20px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+
+/* =========================================================
+   AVATAR
+   ========================================================= */
+
+.prestataire-avatar {
+    width: 48px;
+    height: 48px;
+
+    min-width: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: white;
+
+    color: #0f766e;
+
+    font-size: 19px;
+    font-weight: 700;
+
+    overflow: hidden;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.prestataire-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   INFORMATIONS DU PROFIL
+   ========================================================= */
+
+.prestataire-user-info {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.prestataire-user-info strong {
+    font-size: 14px;
+    font-weight: 600;
+
+    color: white;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.prestataire-user-info span {
+    margin-top: 4px;
+
+    font-size: 12px;
+
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* =========================================================
+   MENU
+   ========================================================= */
+
+.prestataire-menu {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    padding: 22px 14px;
+
+    flex: 1;
+}
+
+
+/* =========================================================
+   LIENS DU MENU
+   ========================================================= */
+
+.prestataire-menu-link {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    width: 100%;
+
+    padding: 13px 16px;
+
     box-sizing: border-box;
+
+    color: rgba(255, 255, 255, 0.82);
+
+    text-decoration: none;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.2s ease;
+}
+
+
+/* Icônes */
+
+.prestataire-menu-link svg {
+    width: 18px;
+    min-width: 18px;
+
+    font-size: 17px;
+}
+
+
+/* Hover */
+
+.prestataire-menu-link:hover {
+    background: rgba(255, 255, 255, 0.13);
+
+    color: white;
+
+    transform: translateX(3px);
+}
+
+
+/* =========================================================
+   LIEN ACTIF
+   ========================================================= */
+
+/*
+   Pour avoir automatiquement un lien actif avec React Router,
+   tu peux plus tard remplacer Link par NavLink.
+*/
+
+.prestataire-menu-link.active {
+    background: rgba(255, 255, 255, 0.18);
+
+    color: white;
+
+    font-weight: 600;
+
+    box-shadow: inset 3px 0 0 white;
+}
+
+
+/* =========================================================
+   PARTIE BASSE SIDEBAR
+   ========================================================= */
+
+.prestataire-sidebar-bottom {
+    padding: 18px 14px 22px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+
+/* =========================================================
+   BOUTON DÉCONNEXION
+   ========================================================= */
+
+.prestataire-logout {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    width: 100%;
+
+    padding: 13px 16px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    color: rgba(255, 255, 255, 0.85);
+
+    font-family: inherit;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.2s ease;
+}
+
+.prestataire-logout svg {
+    width: 18px;
+    min-width: 18px;
+
+    font-size: 17px;
+}
+
+.prestataire-logout:hover {
+    background: rgba(255, 255, 255, 0.18);
+
+    color: white;
+
+    transform: translateX(3px);
 }
 
 
 /* =========================================================
    CONTENU PRINCIPAL
-========================================================= */
+   ========================================================= */
 
-.espace-prestataire > * {
+.prestataire-content {
+    width: calc(100% - 270px);
+
+    min-height: 100vh;
+
+    margin-left: 270px;
+
+    padding: 30px;
+
     box-sizing: border-box;
+
+    background: #f5f7fb;
 }
 
 
 /* =========================================================
-   RESPONSIVE TABLETTE
-========================================================= */
+   RESPONSIVE - TABLETTE
+   ========================================================= */
 
-@media (max-width: 992px) {
+@media (max-width: 900px) {
 
-    .espace-prestataire {
-        min-height: 100vh;
-        width: 100%;
+    .prestataire-sidebar {
+        width: 230px;
+    }
+
+    .prestataire-content {
+        width: calc(100% - 230px);
+
+        margin-left: 230px;
+
+        padding: 24px;
+    }
+
+    .prestataire-logo h2 {
+        font-size: 19px;
+    }
+
+    .prestataire-menu-link {
+        padding: 12px 13px;
+
+        font-size: 13px;
     }
 
 }
 
 
 /* =========================================================
-   RESPONSIVE MOBILE
-========================================================= */
+   RESPONSIVE - MOBILE
+   ========================================================= */
 
-@media (max-width: 768px) {
+@media (max-width: 650px) {
 
-    .espace-prestataire {
-        min-height: 100vh;
-        width: 100%;
-        overflow-x: hidden;
+    .prestataire-sidebar {
+        position: fixed;
+
+        width: 70px;
+
+        overflow: hidden;
+    }
+
+
+    /* Logo */
+
+    .prestataire-logo {
+        padding: 20px 8px;
+    }
+
+    .prestataire-logo h2 {
+        font-size: 0;
+    }
+
+    .prestataire-logo h2::before {
+        content: "🌴";
+
+        font-size: 25px;
+    }
+
+    .prestataire-logo p {
+        display: none;
+    }
+
+
+    /* Profil */
+
+    .prestataire-user {
+        justify-content: center;
+
+        padding: 18px 8px;
+    }
+
+    .prestataire-avatar {
+        width: 42px;
+        height: 42px;
+
+        min-width: 42px;
+    }
+
+    .prestataire-user-info {
+        display: none;
+    }
+
+
+    /* Menu */
+
+    .prestataire-menu {
+        padding: 18px 8px;
+    }
+
+    .prestataire-menu-link {
+        justify-content: center;
+
+        padding: 13px 8px;
+
+        gap: 0;
+    }
+
+    .prestataire-menu-link span {
+        display: none;
+    }
+
+    .prestataire-menu-link svg {
+        font-size: 18px;
+    }
+
+
+    /* Déconnexion */
+
+    .prestataire-sidebar-bottom {
+        padding: 14px 8px;
+    }
+
+    .prestataire-logout {
+        justify-content: center;
+
+        padding: 13px 8px;
+
+        gap: 0;
+    }
+
+    .prestataire-logout span {
+        display: none;
+    }
+
+
+    /* Contenu */
+
+    .prestataire-content {
+        width: calc(100% - 70px);
+
+        margin-left: 70px;
+
+        padding: 20px 15px;
+    }
+
+}
+
+
+/* =========================================================
+   TRÈS PETITS ÉCRANS
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .prestataire-sidebar {
+        width: 60px;
+    }
+
+    .prestataire-content {
+        width: calc(100% - 60px);
+
+        margin-left: 60px;
+
+        padding: 15px 10px;
     }
 
 }

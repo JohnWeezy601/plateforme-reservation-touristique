@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import "./EspacePrestataire.css";
 
@@ -12,19 +12,19 @@ import {
     FaPlus,
     FaArrowRight,
     FaMapMarkerAlt,
-    FaPhone,
-    FaEnvelope,
     FaUser,
     FaCheckCircle,
     FaEdit,
-    FaList,
-    FaClipboardList
+    FaClipboardList,
+    FaSignOutAlt
 } from "react-icons/fa";
 
 function EspacePrestataire() {
+
+    const navigate = useNavigate();
+
     const [utilisateur, setUtilisateur] = useState(null);
     const [prestataire, setPrestataire] = useState(null);
-
     const [offres, setOffres] = useState([]);
 
     const [chargement, setChargement] = useState(true);
@@ -38,11 +38,11 @@ function EspacePrestataire() {
     });
 
     useEffect(() => {
+
         const utilisateurStocke =
             localStorage.getItem("utilisateur");
 
         if (!utilisateurStocke) {
-            console.error("Aucun utilisateur connecté");
 
             setErreur("Aucun utilisateur connecté.");
             setChargement(false);
@@ -51,13 +51,9 @@ function EspacePrestataire() {
         }
 
         try {
+
             const utilisateurData =
                 JSON.parse(utilisateurStocke);
-
-            console.log(
-                "UTILISATEUR CONNECTÉ :",
-                utilisateurData
-            );
 
             setUtilisateur(utilisateurData);
 
@@ -66,9 +62,6 @@ function EspacePrestataire() {
                 utilisateurData.id_utilisateur;
 
             if (!idUtilisateur) {
-                console.error(
-                    "ID utilisateur introuvable"
-                );
 
                 setErreur(
                     "ID utilisateur introuvable."
@@ -79,14 +72,11 @@ function EspacePrestataire() {
                 return;
             }
 
-            console.log(
-                "ID UTILISATEUR :",
-                idUtilisateur
-            );
-
             chargerPrestataire(idUtilisateur);
 
-        } catch (error) {
+        }
+        catch (error) {
+
             console.error(
                 "Erreur lecture utilisateur :",
                 error
@@ -97,20 +87,20 @@ function EspacePrestataire() {
             );
 
             setChargement(false);
+
         }
+
     }, []);
 
+
     const chargerPrestataire = async (idUtilisateur) => {
+
         try {
+
             setErreur("");
 
             const res = await api.get(
                 `/prestataires/utilisateur/${idUtilisateur}`
-            );
-
-            console.log(
-                "PRESTATAIRE CONNECTÉ :",
-                res.data
             );
 
             setPrestataire(res.data);
@@ -119,20 +109,18 @@ function EspacePrestataire() {
                 res.data.id_prestataire;
 
             if (!idPrestataire) {
+
                 throw new Error(
                     "ID prestataire introuvable"
                 );
+
             }
 
-            console.log(
-                "ID PRESTATAIRE :",
-                idPrestataire
-            );
 
             /*
-             * ==================================================
+             * ================================
              * STATISTIQUES
-             * ==================================================
+             * ================================
              */
 
             const statistiquesRes =
@@ -140,12 +128,8 @@ function EspacePrestataire() {
                     `/prestataires/${idPrestataire}/statistiques`
                 );
 
-            console.log(
-                "STATISTIQUES PRESTATAIRE :",
-                statistiquesRes.data
-            );
-
             setStatistiques({
+
                 offres: Number(
                     statistiquesRes.data.offres || 0
                 ),
@@ -161,53 +145,64 @@ function EspacePrestataire() {
                 revenus: Number(
                     statistiquesRes.data.revenus || 0
                 )
+
             });
 
+
             /*
-             * ==================================================
-             * OFFRES DU PRESTATAIRE
-             * ==================================================
+             * ================================
+             * OFFRES
+             * ================================
              */
 
             try {
-                const offresRes = await api.get(
-                    `/offres/prestataire/${idPrestataire}`
-                );
 
-                console.log(
-                    "OFFRES DU PRESTATAIRE :",
-                    offresRes.data
-                );
+                const offresRes =
+                    await api.get(
+                        `/offres/prestataire/${idPrestataire}`
+                    );
 
                 if (Array.isArray(offresRes.data)) {
-                    setOffres(offresRes.data);
-                } else if (
-                    Array.isArray(offresRes.data?.offres)
+
+                    setOffres(
+                        offresRes.data
+                    );
+
+                }
+                else if (
+                    Array.isArray(
+                        offresRes.data?.offres
+                    )
                 ) {
+
                     setOffres(
                         offresRes.data.offres
                     );
-                } else {
+
+                }
+                else {
+
                     setOffres([]);
+
                 }
 
-            } catch (offresError) {
+            }
+            catch (offresError) {
+
                 console.warn(
                     "Impossible de récupérer les offres :",
                     offresError
                 );
 
-                /*
-                 * Les statistiques continuent de fonctionner
-                 * même si cette route n'existe pas encore.
-                 */
-
                 setOffres([]);
+
             }
 
-        } catch (error) {
+        }
+        catch (error) {
+
             console.error(
-                "Erreur récupération prestataire/statistiques :",
+                "Erreur récupération prestataire :",
                 error
             );
 
@@ -216,29 +211,61 @@ function EspacePrestataire() {
                 error.response?.data
             );
 
-            console.error(
-                "Code HTTP :",
-                error.response?.status
-            );
-
             setErreur(
                 error.response?.data?.message ||
                 "Impossible de récupérer les informations du prestataire."
             );
 
-        } finally {
-            setChargement(false);
         }
+        finally {
+
+            setChargement(false);
+
+        }
+
     };
 
+
     /*
-     * =========================================================
+     * ================================
+     * DÉCONNEXION
+     * ================================
+     */
+
+    const handleDeconnexion = () => {
+
+        const confirmation =
+            window.confirm(
+                "Voulez-vous vraiment vous déconnecter ?"
+            );
+
+        if (!confirmation) {
+            return;
+        }
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("utilisateur");
+
+        navigate(
+            "/login-client",
+            {
+                replace: true
+            }
+        );
+
+    };
+
+
+    /*
+     * ================================
      * CHARGEMENT
-     * =========================================================
+     * ================================
      */
 
     if (chargement) {
+
         return (
+
             <div className="prestataire-page">
 
                 <div className="prestataire-loading">
@@ -252,17 +279,22 @@ function EspacePrestataire() {
                 </div>
 
             </div>
+
         );
+
     }
 
+
     /*
-     * =========================================================
+     * ================================
      * ERREUR
-     * =========================================================
+     * ================================
      */
 
     if (erreur && !prestataire) {
+
         return (
+
             <div className="prestataire-page">
 
                 <div className="prestataire-error">
@@ -277,23 +309,32 @@ function EspacePrestataire() {
                         {erreur}
                     </p>
 
+                    <button
+                        className="logout-button error-logout"
+                        onClick={handleDeconnexion}
+                    >
+                        <FaSignOutAlt />
+                        Déconnexion
+                    </button>
+
                 </div>
 
             </div>
+
         );
+
     }
 
+
     /*
-     * =========================================================
+     * ================================
      * VARIABLES
-     * =========================================================
+     * ================================
      */
 
     const nomEntreprise =
         prestataire?.nom_entreprise ||
-        `${utilisateur?.prenom || ""} ${
-            utilisateur?.nom || ""
-        }`;
+        `${utilisateur?.prenom || ""} ${utilisateur?.nom || ""}`;
 
     const statut =
         prestataire?.statut || "En attente";
@@ -305,12 +346,87 @@ function EspacePrestataire() {
             ? "status-refused"
             : "status-pending";
 
+
     return (
+
         <div className="prestataire-page">
 
-            {/* =================================================
+            {/* =========================================
+                BARRE SUPÉRIEURE
+            ========================================= */}
+
+            <header className="prestataire-topbar">
+
+                <Link
+                    to="/espace-prestataire"
+                    className="prestataire-brand"
+                >
+
+                    <div className="brand-icon">
+                        <FaBuilding />
+                    </div>
+
+                    <div className="brand-text">
+
+                        <strong>
+                            Travel Explorer
+                        </strong>
+
+                        <span>
+                            Espace prestataire
+                        </span>
+
+                    </div>
+
+                </Link>
+
+
+                <div className="topbar-right">
+
+                    <div className="topbar-user">
+
+                        <div className="topbar-avatar">
+                            <FaUser />
+                        </div>
+
+                        <div className="topbar-user-info">
+
+                            <strong>
+                                {utilisateur?.prenom || ""}{" "}
+                                {utilisateur?.nom || ""}
+                            </strong>
+
+                            <span>
+                                Prestataire
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        className="logout-button"
+                        onClick={handleDeconnexion}
+                    >
+
+                        <FaSignOutAlt />
+
+                        <span>
+                            Déconnexion
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            {/* =========================================
                 EN-TÊTE
-            ================================================= */}
+            ========================================= */}
 
             <div className="prestataire-header">
 
@@ -323,7 +439,7 @@ function EspacePrestataire() {
                     <div>
 
                         <p className="header-small">
-                            Espace prestataire
+                            Tableau de bord
                         </p>
 
                         <h1>
@@ -343,6 +459,7 @@ function EspacePrestataire() {
 
                 </div>
 
+
                 <div className="prestataire-status">
 
                     <FaCheckCircle />
@@ -355,23 +472,25 @@ function EspacePrestataire() {
 
             </div>
 
-            {/* =================================================
-                MESSAGE D'AVERTISSEMENT
-            ================================================= */}
+
+            {/* =========================================
+                AVERTISSEMENT
+            ========================================= */}
 
             {erreur && (
+
                 <div className="prestataire-warning">
                     {erreur}
                 </div>
+
             )}
 
-            {/* =================================================
+
+            {/* =========================================
                 STATISTIQUES
-            ================================================= */}
+            ========================================= */}
 
             <div className="prestataire-statistiques">
-
-                {/* MES OFFRES */}
 
                 <Link
                     to="/prestataire/offres"
@@ -400,7 +519,6 @@ function EspacePrestataire() {
 
                 </Link>
 
-                {/* RÉSERVATIONS */}
 
                 <Link
                     to="/prestataire/reservations"
@@ -429,7 +547,6 @@ function EspacePrestataire() {
 
                 </Link>
 
-                {/* EN ATTENTE */}
 
                 <Link
                     to="/prestataire/reservations"
@@ -458,7 +575,6 @@ function EspacePrestataire() {
 
                 </Link>
 
-                {/* REVENUS */}
 
                 <div className="stat-card stat-revenus">
 
@@ -488,11 +604,12 @@ function EspacePrestataire() {
 
             </div>
 
-            {/* =================================================
-                ACTIONS RAPIDES
-            ================================================= */}
 
-            <section className="prestataire-section actions-section">
+            {/* =========================================
+                ACTIONS RAPIDES
+            ========================================= */}
+
+            <section className="prestataire-section">
 
                 <div className="section-heading">
 
@@ -509,8 +626,7 @@ function EspacePrestataire() {
                             </h2>
 
                             <p>
-                                Accédez rapidement aux
-                                principales fonctionnalités.
+                                Accédez rapidement aux principales fonctionnalités.
                             </p>
 
                         </div>
@@ -519,9 +635,8 @@ function EspacePrestataire() {
 
                 </div>
 
-                <div className="actions-grid">
 
-                    {/* MES OFFRES */}
+                <div className="actions-grid">
 
                     <Link
                         to="/prestataire/offres"
@@ -548,7 +663,6 @@ function EspacePrestataire() {
 
                     </Link>
 
-                    {/* AJOUTER UNE OFFRE */}
 
                     <Link
                         to="/prestataire/offres"
@@ -575,7 +689,6 @@ function EspacePrestataire() {
 
                     </Link>
 
-                    {/* MES RÉSERVATIONS */}
 
                     <Link
                         to="/prestataire/reservations"
@@ -602,7 +715,6 @@ function EspacePrestataire() {
 
                     </Link>
 
-                    {/* MON ÉTABLISSEMENT */}
 
                     <Link
                         to="/prestataire/profil"
@@ -633,9 +745,10 @@ function EspacePrestataire() {
 
             </section>
 
-            {/* =================================================
+
+            {/* =========================================
                 MES OFFRES
-            ================================================= */}
+            ========================================= */}
 
             <section className="prestataire-section">
 
@@ -661,6 +774,7 @@ function EspacePrestataire() {
 
                     </div>
 
+
                     <Link
                         to="/prestataire/offres"
                         className="section-link"
@@ -670,6 +784,7 @@ function EspacePrestataire() {
                     </Link>
 
                 </div>
+
 
                 {offres.length > 0 ? (
 
@@ -709,6 +824,7 @@ function EspacePrestataire() {
 
                                     </div>
 
+
                                     <div className="offre-content">
 
                                         <h3>
@@ -726,6 +842,7 @@ function EspacePrestataire() {
                                                 "Destination touristique"}
 
                                         </p>
+
 
                                         <div className="offre-footer">
 
@@ -787,9 +904,10 @@ function EspacePrestataire() {
 
             </section>
 
-            {/* =================================================
-                INFORMATIONS ENTREPRISE
-            ================================================= */}
+
+            {/* =========================================
+                INFORMATIONS ÉTABLISSEMENT
+            ========================================= */}
 
             <section className="prestataire-section">
 
@@ -804,17 +922,17 @@ function EspacePrestataire() {
                         <div>
 
                             <h2>
-                                Informations de mon entreprise
+                                Informations de mon établissement
                             </h2>
 
                             <p>
-                                Informations publiques de votre
-                                établissement.
+                                Informations publiques de votre établissement.
                             </p>
 
                         </div>
 
                     </div>
+
 
                     <Link
                         to="/prestataire/profil"
@@ -825,6 +943,7 @@ function EspacePrestataire() {
                     </Link>
 
                 </div>
+
 
                 <div className="prestataire-info-grid">
 
@@ -841,6 +960,7 @@ function EspacePrestataire() {
 
                     </div>
 
+
                     <div className="info-item">
 
                         <span className="info-label">
@@ -854,6 +974,7 @@ function EspacePrestataire() {
 
                     </div>
 
+
                     <div className="info-item">
 
                         <span className="info-label">
@@ -866,6 +987,7 @@ function EspacePrestataire() {
                         </strong>
 
                     </div>
+
 
                     <div className="info-item">
 
@@ -881,6 +1003,7 @@ function EspacePrestataire() {
 
                     </div>
 
+
                     <div className="info-item info-full">
 
                         <span className="info-label">
@@ -894,6 +1017,7 @@ function EspacePrestataire() {
 
                     </div>
 
+
                     <div className="info-item info-full">
 
                         <span className="info-label">
@@ -906,6 +1030,7 @@ function EspacePrestataire() {
                         </p>
 
                     </div>
+
 
                     <div className="info-item">
 
@@ -929,9 +1054,10 @@ function EspacePrestataire() {
 
             </section>
 
-            {/* =================================================
+
+            {/* =========================================
                 INFORMATIONS COMPTE
-            ================================================= */}
+            ========================================= */}
 
             <section className="prestataire-section">
 
@@ -959,6 +1085,7 @@ function EspacePrestataire() {
 
                 </div>
 
+
                 <div className="prestataire-info-grid">
 
                     <div className="info-item">
@@ -975,6 +1102,7 @@ function EspacePrestataire() {
 
                     </div>
 
+
                     <div className="info-item">
 
                         <span className="info-label">
@@ -989,6 +1117,7 @@ function EspacePrestataire() {
 
                     </div>
 
+
                     <div className="info-item">
 
                         <span className="info-label">
@@ -1002,6 +1131,7 @@ function EspacePrestataire() {
                         </strong>
 
                     </div>
+
 
                     <div className="info-item">
 
@@ -1022,7 +1152,9 @@ function EspacePrestataire() {
             </section>
 
         </div>
+
     );
+
 }
 
 export default EspacePrestataire;

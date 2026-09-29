@@ -1,0 +1,216 @@
+.mon-etablissement {
+    width: 100%;
+    min-height: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+
+.etablissement-header {
+    margin-bottom: 30px;
+}
+
+
+.etablissement-header h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    color: #1f2937;
+}
+
+
+.etablissement-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 15px;
+}
+
+
+.etablissement-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+.etablissement-title {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 25px;
+}
+
+
+.etablissement-icon {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ecfdf5;
+    border-radius: 14px;
+    font-size: 32px;
+}
+
+
+.etablissement-title h2 {
+    margin: 0 0 7px;
+    color: #1f2937;
+    font-size: 23px;
+}
+
+
+.etablissement-title span {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.etablissement-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+
+.etablissement-field {
+    padding: 18px;
+    background: #f9fafb;
+    border-radius: 10px;
+}
+
+
+.etablissement-field.full-width {
+    grid-column: 1 / -1;
+}
+
+
+.etablissement-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.etablissement-field p {
+    margin: 0;
+    color: #1f2937;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+
+.etablissement-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+}
+
+
+.etablissement-footer strong {
+    color: #047857;
+}
+
+
+.etablissement-message {
+    padding: 50px;
+    background: white;
+    border-radius: 14px;
+    text-align: center;
+    color: #6b7280;
+}
+
+
+.etablissement-error {
+    padding: 25px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    color: #b91c1c;
+}
+
+
+.etablissement-error button {
+    display: block;
+    margin-top: 15px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 7px;
+    background: #b91c1c;
+    color: white;
+    cursor: pointer;
+}
+
+
+.etablissement-empty {
+    padding: 70px 30px;
+    background: white;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+}
+
+
+.etablissement-empty > div {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+
+.etablissement-empty h2 {
+    margin: 0 0 10px;
+    color: #1f2937;
+}
+
+
+.etablissement-empty p {
+    margin: 0;
+    color: #6b7280;
+}
+
+
+@media (max-width: 768px) {
+
+    .mon-etablissement {
+        padding: 20px;
+    }
+
+
+    .etablissement-header h1 {
+        font-size: 25px;
+    }
+
+
+    .etablissement-card {
+        padding: 20px;
+    }
+
+
+    .etablissement-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .etablissement-field.full-width {
+        grid-column: auto;
+    }
+
+
+    .etablissement-title {
+        align-items: flex-start;
+    }
+
+}
