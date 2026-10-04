@@ -859,22 +859,23 @@ function Dashboard() {
 
                                           <td>
 
-                               <strong className="amount">
+                              <strong className="amount">
 
-                                {
-                                   Number(
-                                    reservation.montant ||
-                                    reservation.prix ||
-                                      0
-                                   ).toLocaleString("fr-FR", {
-                                     minimumFractionDigits: 2,
-                                     maximumFractionDigits: 2
-                                   })
-                                }
+    {
+        Number(
+            reservation.montant_total ||
+            reservation.montant ||
+            reservation.prix ||
+            0
+        ).toLocaleString("fr-FR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })
+    }
 
-                                 {" "}€
+    {" "}€
 
-                                        </strong>
+</strong>
 
                                    </td>
 
