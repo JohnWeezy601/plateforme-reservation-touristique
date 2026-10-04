@@ -260,60 +260,48 @@ LIMIT 5
 // =====================================
 
 const [dernieresReservations] = await db.query(
-
 `
 SELECT
 
+    r.id_reservation,
 
-r.id_reservation,
+    r.date_reservation,
 
+    r.statut,
 
-r.date_reservation,
+    COALESCE(p.montant, r.montant_total, 0) AS montant_total,
 
+    u.nom,
 
-r.statut,
+    u.prenom,
 
-
-r.montant_total,
-
-
-u.nom,
-
-
-u.prenom,
-
-
-o.titre
-
+    o.titre
 
 
 FROM reservation r
 
 
-
 JOIN utilisateur u
 
-ON r.id_utilisateur=u.id_utilisateur
-
+ON r.id_utilisateur = u.id_utilisateur
 
 
 JOIN offre o
 
-ON r.id_offre=o.id_offre
+ON r.id_offre = o.id_offre
 
+
+LEFT JOIN paiement p
+
+ON r.id_reservation = p.id_reservation
 
 
 ORDER BY r.id_reservation DESC
 
 
-
 LIMIT 5
-
-
 `
-
 );
-
 
 
 
