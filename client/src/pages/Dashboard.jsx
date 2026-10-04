@@ -23,10 +23,9 @@ import {
     FaChartLine,
     FaStar,
     FaBell,
-    FaArrowUp,
-    FaArrowDown,
     FaHotel,
-    FaMapMarkerAlt
+    FaMapMarkerAlt,
+    FaTags
 } from "react-icons/fa";
 
 import "./Dashboard.css";
@@ -47,6 +46,11 @@ function Dashboard() {
 
             const res = await api.get(
                 "/dashboard/statistiques"
+            );
+
+            console.log(
+                "Statistiques dashboard :",
+                res.data
             );
 
             setStats(res.data);
@@ -113,7 +117,10 @@ function Dashboard() {
 
     const revenus = Number(
         stats.revenus || 0
-    ).toLocaleString("fr-FR");
+    ).toLocaleString("fr-FR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
 
 
     // =====================================================
@@ -182,7 +189,7 @@ function Dashboard() {
 
 
             {/* =================================================
-                CARTES STATISTIQUES
+                CARTES STATISTIQUES PRINCIPALES
             ================================================= */}
 
             <div className="stats-grid">
@@ -327,7 +334,7 @@ function Dashboard() {
                         </strong>
 
                         <small>
-                           €
+                            €
                         </small>
 
                     </div>
@@ -349,6 +356,8 @@ function Dashboard() {
 
             <div className="mini-stats">
 
+
+                {/* PAIEMENTS */}
 
                 <div className="mini-stat">
 
@@ -372,6 +381,8 @@ function Dashboard() {
 
 
 
+                {/* PRESTATAIRES */}
+
                 <div className="mini-stat">
 
                     <div className="mini-icon green">
@@ -394,6 +405,66 @@ function Dashboard() {
 
 
 
+                {/* OFFRES */}
+
+                <div className="mini-stat">
+
+                    <div className="mini-icon orange">
+                        <FaHotel />
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Offres
+                        </span>
+
+                        <strong>
+                            {stats.totalOffres || 0}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                {/* CATEGORIES */}
+
+                <div className="mini-stat">
+
+                    <div className="mini-icon red">
+                        <FaTags />
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Catégories
+                        </span>
+
+                        <strong>
+                            {stats.totalCategories || 0}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            {/* =================================================
+                TROISIEME LIGNE
+            ================================================= */}
+
+            <div className="mini-stats">
+
+
+                {/* DESTINATIONS POPULAIRES */}
+
                 <div className="mini-stat">
 
                     <div className="mini-icon orange">
@@ -415,6 +486,8 @@ function Dashboard() {
                 </div>
 
 
+
+                {/* NOTIFICATIONS */}
 
                 <div className="mini-stat">
 
@@ -776,6 +849,8 @@ function Dashboard() {
                                             }
                                         >
 
+                                            {/* RESERVATION */}
+
                                             <td>
 
                                                 <div className="reservation-id">
@@ -797,28 +872,32 @@ function Dashboard() {
                                             </td>
 
 
+                                            {/* CLIENT */}
+
                                             <td>
 
                                                 <div className="client-info">
 
                                                     <div className="client-avatar">
+
                                                         {
                                                             (
                                                                 reservation.nom ||
-                                                                reservation.nom_client ||
                                                                 "C"
                                                             )
                                                                 .charAt(0)
                                                                 .toUpperCase()
                                                         }
+
                                                     </div>
 
                                                     <span>
+
                                                         {
-                                                            reservation.nom_client ||
                                                             reservation.nom ||
                                                             "Client"
                                                         }
+
                                                     </span>
 
                                                 </div>
@@ -826,13 +905,13 @@ function Dashboard() {
                                             </td>
 
 
+                                            {/* OFFRE */}
+
                                             <td>
 
                                                 <span className="offer-name">
 
                                                     {
-                                                        reservation.titre_offre ||
-                                                        reservation.offre ||
                                                         reservation.titre ||
                                                         "Offre touristique"
                                                     }
@@ -842,13 +921,14 @@ function Dashboard() {
                                             </td>
 
 
+                                            {/* DATE */}
+
                                             <td>
 
                                                 <span className="date-text">
 
                                                     {
                                                         reservation.date_reservation ||
-                                                        reservation.date ||
                                                         "-"
                                                     }
 
@@ -857,27 +937,35 @@ function Dashboard() {
                                             </td>
 
 
-                                          <td>
+                                            {/* MONTANT */}
 
-                              <strong className="amount">
+                                            <td>
 
-    {
-        Number(
-            reservation.montant_total ||
-            reservation.montant ||
-            reservation.prix ||
-            0
-        ).toLocaleString("fr-FR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })
-    }
+                                                <strong className="amount">
 
-    {" "}€
+                                                    {
+                                                        Number(
+                                                            reservation.montant_total ||
+                                                            reservation.montant ||
+                                                            reservation.prix ||
+                                                            0
+                                                        ).toLocaleString(
+                                                            "fr-FR",
+                                                            {
+                                                                minimumFractionDigits: 2,
+                                                                maximumFractionDigits: 2
+                                                            }
+                                                        )
+                                                    }
 
-</strong>
+                                                    {" "}€
 
-                                   </td>
+                                                </strong>
+
+                                            </td>
+
+
+                                            {/* STATUT */}
 
                                             <td>
 

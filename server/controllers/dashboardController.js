@@ -1,440 +1,327 @@
 const db = require("../db");
 
-
 // =====================================
 // STATISTIQUES DASHBOARD ADMIN
 // =====================================
 
-exports.getStatistiques = async(req,res)=>{
+exports.getStatistiques = async (req, res) => {
 
+    try {
 
-try{
+        // =====================================
+        // TOTAL UTILISATEURS
+        // =====================================
 
+        const [utilisateurs] = await db.query(`
+            SELECT COUNT(*) AS total
+            FROM utilisateur
+        `);
 
-// =====================================
-// TOTAL UTILISATEURS
-// =====================================
 
-const [utilisateurs] = await db.query(
+        // =====================================
+        // TOTAL DESTINATIONS
+        // =====================================
 
-`
-SELECT COUNT(*) AS total
-FROM utilisateur
-`
+        const [destinations] = await db.query(`
+            SELECT COUNT(*) AS total
+            FROM destination
+        `);
 
-);
 
+        // =====================================
+        // TOTAL OFFRES
+        // =====================================
 
+        const [offres] = await db.query(`
+            SELECT COUNT(*) AS total
+            FROM offre
+        `);
 
 
-// =====================================
-// TOTAL DESTINATIONS
-// =====================================
+        // =====================================
+        // TOTAL CATEGORIES
+        // =====================================
 
-const [destinations] = await db.query(
+        const [categories] = await db.query(`
+            SELECT COUNT(*) AS total
+            FROM categorie
+        `);
 
-`
-SELECT COUNT(*) AS total
-FROM destination
-`
 
-);
+        // =====================================
+        // TOTAL PRESTATAIRES
+        // =====================================
 
+        const [prestataires] = await db.query(`
+            SELECT COUNT(*) AS total
+            FROM prestataire
+        `);
 
 
+        // =====================================
+        // TOTAL RESERVATIONS
+        // =====================================
 
+        const [reservations] = await db.query(`
+            SELECT COUNT(*) AS total
+            FROM reservation
+        `);
 
-// =====================================
-// TOTAL RESERVATIONS
-// =====================================
 
-const [reservations] = await db.query(
+        // =====================================
+        // TOTAL PAIEMENTS
+        // =====================================
 
-`
-SELECT COUNT(*) AS total
-FROM reservation
-`
+        const [paiements] = await db.query(`
+            SELECT COUNT(*) AS total
+            FROM paiement
+        `);
 
-);
 
+        // =====================================
+        // CHIFFRE D'AFFAIRES
+        // =====================================
 
+        const [revenus] = await db.query(`
+            SELECT
+                COALESCE(
+                    SUM(montant_total),
+                    0
+                ) AS total
+            FROM reservation
+            WHERE statut = 'Confirmée'
+        `);
 
 
+        // =====================================
+        // RESERVATIONS PAR MOIS
+        // =====================================
 
+        const [reservationsMois] = await db.query(`
+            SELECT
 
-// =====================================
-// TOTAL PAIEMENTS
-// =====================================
+                MONTH(date_reservation) AS moisNumero,
 
-const [paiements] = await db.query(
+                MONTHNAME(date_reservation) AS mois,
 
-`
-SELECT COUNT(*) AS total
-FROM paiement
-`
+                COUNT(*) AS total
 
-);
+            FROM reservation
 
+            GROUP BY
+                MONTH(date_reservation),
+                MONTHNAME(date_reservation)
 
+            ORDER BY moisNumero ASC
+        `);
 
 
+        // =====================================
+        // REVENUS PAR MOIS
+        // =====================================
 
+        const [revenusMois] = await db.query(`
+            SELECT
 
-// =====================================
-// CHIFFRE AFFAIRE
-// =====================================
+                MONTH(date_reservation) AS moisNumero,
 
-const [revenus] = await db.query(
+                MONTHNAME(date_reservation) AS mois,
 
-`
-SELECT
+                COALESCE(
+                    SUM(montant_total),
+                    0
+                ) AS total
 
-COALESCE(
-SUM(montant_total),
-0
-) AS total
+            FROM reservation
 
-FROM reservation
+            WHERE statut = 'Confirmée'
 
-WHERE statut='Confirmée'
+            GROUP BY
+                MONTH(date_reservation),
+                MONTHNAME(date_reservation)
 
-`
+            ORDER BY moisNumero ASC
+        `);
 
-);
 
+        // =====================================
+        // DESTINATIONS POPULAIRES
+        // =====================================
 
+        const [destinationsPopulaires] = await db.query(`
+            SELECT
 
+                d.id_destination,
 
+                d.nom,
 
+                COUNT(r.id_reservation) AS total
 
+            FROM reservation r
 
+            JOIN offre o
+                ON r.id_offre = o.id_offre
 
-// =====================================
-// RESERVATIONS PAR MOIS
-// =====================================
+            JOIN destination d
+                ON o.id_destination = d.id_destination
 
-const [reservationsMois] = await db.query(
+            GROUP BY
+                d.id_destination,
+                d.nom
 
-`
-SELECT
+            ORDER BY total DESC
 
-MONTH(date_reservation) AS moisNumero,
+            LIMIT 5
+        `);
 
-MONTHNAME(date_reservation) AS mois,
 
-COUNT(*) AS total
+        // =====================================
+        // DERNIERES RESERVATIONS
+        // =====================================
 
+        const [dernieresReservations] = await db.query(`
+            SELECT
 
-FROM reservation
+                r.id_reservation,
 
+                r.date_reservation,
 
-GROUP BY
+                r.statut,
 
-MONTH(date_reservation),
+                COALESCE(
+                    p.montant,
+                    r.montant_total,
+                    0
+                ) AS montant_total,
 
-MONTHNAME(date_reservation)
+                u.nom,
 
+                u.prenom,
 
-ORDER BY moisNumero ASC
+                o.titre
 
-`
+            FROM reservation r
 
-);
+            JOIN utilisateur u
+                ON r.id_utilisateur = u.id_utilisateur
 
+            JOIN offre o
+                ON r.id_offre = o.id_offre
 
+            LEFT JOIN paiement p
+                ON r.id_reservation = p.id_reservation
 
+            ORDER BY
+                r.id_reservation DESC
 
+            LIMIT 5
+        `);
 
 
+        // =====================================
+        // NOTIFICATIONS RECENTES
+        // =====================================
 
+        const [notifications] = await db.query(`
+            SELECT
 
-// =====================================
-// REVENUS PAR MOIS
-// =====================================
+                titre,
 
-const [revenusMois] = await db.query(
+                message,
 
-`
-SELECT
+                date_notification
 
+            FROM notification
 
-MONTH(date_reservation) AS moisNumero,
+            WHERE id_utilisateur = 6
 
+            ORDER BY date_notification DESC
 
-MONTHNAME(date_reservation) AS mois,
+            LIMIT 5
+        `);
 
 
-COALESCE(
-SUM(montant_total),
-0
-) AS total
+        // =====================================
+        // REPONSE JSON
+        // =====================================
 
+        res.json({
 
+            // -----------------------------
+            // STATISTIQUES PRINCIPALES
+            // -----------------------------
 
-FROM reservation
+            totalUtilisateurs:
+                utilisateurs[0].total,
 
+            totalDestinations:
+                destinations[0].total,
 
-WHERE statut='Confirmée'
+            totalOffres:
+                offres[0].total,
 
+            totalCategories:
+                categories[0].total,
 
-GROUP BY
+            totalPrestataires:
+                prestataires[0].total,
 
-MONTH(date_reservation),
+            totalReservations:
+                reservations[0].total,
 
-MONTHNAME(date_reservation)
+            totalPaiements:
+                paiements[0].total,
 
+            // -----------------------------
+            // REVENUS
+            // -----------------------------
 
+            revenus:
+                revenus[0].total,
 
-ORDER BY moisNumero ASC
+            // -----------------------------
+            // GRAPHIQUES
+            // -----------------------------
 
-`
+            reservationsMois,
 
-);
+            revenusMois,
 
+            destinationsPopulaires,
 
+            // -----------------------------
+            // TABLEAU
+            // -----------------------------
 
+            dernieresReservations,
 
+            // -----------------------------
+            // NOTIFICATIONS
+            // -----------------------------
 
+            notifications
 
+        });
 
+    }
 
+    catch (error) {
 
+        console.log(
+            "Erreur statistiques dashboard :",
+            error
+        );
 
-// =====================================
-// DESTINATIONS POPULAIRES
-// =====================================
+        res.status(500).json({
 
-const [destinationsPopulaires] = await db.query(
+            message:
+                "Erreur récupération statistiques dashboard",
 
-`
-SELECT
+            error:
+                error.message
 
+        });
 
-d.nom,
-
-
-COUNT(r.id_reservation) AS total
-
-
-
-FROM reservation r
-
-
-
-JOIN offre o
-
-ON r.id_offre=o.id_offre
-
-
-
-JOIN destination d
-
-ON o.id_destination=d.id_destination
-
-
-
-GROUP BY d.id_destination
-
-
-
-ORDER BY total DESC
-
-
-
-LIMIT 5
-
-`
-
-);
-
-
-
-
-
-
-
-
-
-// =====================================
-// DERNIERES RESERVATIONS
-// =====================================
-
-const [dernieresReservations] = await db.query(
-`
-SELECT
-
-    r.id_reservation,
-
-    r.date_reservation,
-
-    r.statut,
-
-    COALESCE(p.montant, r.montant_total, 0) AS montant_total,
-
-    u.nom,
-
-    u.prenom,
-
-    o.titre
-
-
-FROM reservation r
-
-
-JOIN utilisateur u
-
-ON r.id_utilisateur = u.id_utilisateur
-
-
-JOIN offre o
-
-ON r.id_offre = o.id_offre
-
-
-LEFT JOIN paiement p
-
-ON r.id_reservation = p.id_reservation
-
-
-ORDER BY r.id_reservation DESC
-
-
-LIMIT 5
-`
-);
-
-
-
-
-
-
-
-
-// =====================================
-// NOTIFICATIONS RECENTES
-// =====================================
-
-const [notifications] = await db.query(
-
-`
-SELECT
-
-
-titre,
-
-message,
-
-date_notification
-
-
-
-FROM notification
-
-
-
-WHERE id_utilisateur=6
-
-
-
-ORDER BY date_notification DESC
-
-
-
-LIMIT 5
-
-
-`
-
-);
-
-
-
-
-
-
-
-
-
-
-// =====================================
-// REPONSE JSON
-// =====================================
-
-
-res.json({
-
-
-totalUtilisateurs:
-utilisateurs[0].total,
-
-
-
-totalDestinations:
-destinations[0].total,
-
-
-
-totalReservations:
-reservations[0].total,
-
-
-
-totalPaiements:
-paiements[0].total,
-
-
-
-revenus:
-revenus[0].total,
-
-
-
-reservationsMois,
-
-
-revenusMois,
-
-
-destinationsPopulaires,
-
-
-dernieresReservations,
-
-
-notifications
-
-
-
-});
-
-
-
-
-}
-
-catch(error){
-
-
-console.log(
-
-"Erreur statistiques dashboard :",
-
-error
-
-);
-
-
-
-res.status(500).json({
-
-message:"Erreur récupération statistiques dashboard",
-
-error:error.message
-
-});
-
-
-}
-
+    }
 
 };
