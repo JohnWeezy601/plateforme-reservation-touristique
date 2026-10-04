@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../api/api";
 
 import {
-    BarChart,
-    Bar,
+    LineChart,
+    Line,
     PieChart,
     Pie,
     Cell,
@@ -11,7 +11,6 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer
 } from "recharts";
 
@@ -358,6 +357,7 @@ function Dashboard() {
                     </div>
 
                     <div>
+
                         <span>
                             Paiements
                         </span>
@@ -365,6 +365,7 @@ function Dashboard() {
                         <strong>
                             {stats.totalPaiements || 0}
                         </strong>
+
                     </div>
 
                 </div>
@@ -378,6 +379,7 @@ function Dashboard() {
                     </div>
 
                     <div>
+
                         <span>
                             Prestataires
                         </span>
@@ -385,6 +387,7 @@ function Dashboard() {
                         <strong>
                             {stats.totalPrestataires || 0}
                         </strong>
+
                     </div>
 
                 </div>
@@ -398,6 +401,7 @@ function Dashboard() {
                     </div>
 
                     <div>
+
                         <span>
                             Destinations populaires
                         </span>
@@ -405,6 +409,7 @@ function Dashboard() {
                         <strong>
                             {destinationsPopulaires.length}
                         </strong>
+
                     </div>
 
                 </div>
@@ -418,6 +423,7 @@ function Dashboard() {
                     </div>
 
                     <div>
+
                         <span>
                             Notifications
                         </span>
@@ -425,6 +431,7 @@ function Dashboard() {
                         <strong>
                             {stats.notifications?.length || 0}
                         </strong>
+
                     </div>
 
                 </div>
@@ -476,7 +483,7 @@ function Dashboard() {
                             height={320}
                         >
 
-                            <BarChart
+                            <LineChart
                                 data={
                                     stats.reservationsMois || []
                                 }
@@ -507,6 +514,7 @@ function Dashboard() {
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
+                                    allowDecimals={false}
                                     tick={{
                                         fill: "#64748b",
                                         fontSize: 12
@@ -515,7 +523,8 @@ function Dashboard() {
 
                                 <Tooltip
                                     cursor={{
-                                        fill: "#f1f5f9"
+                                        stroke: "#cbd5e1",
+                                        strokeDasharray: "4 4"
                                     }}
                                     contentStyle={{
                                         border: "none",
@@ -525,20 +534,24 @@ function Dashboard() {
                                     }}
                                 />
 
-                                <Bar
+                                <Line
+                                    type="monotone"
                                     dataKey="total"
                                     name="Réservations"
-                                    fill="#2563eb"
-                                    radius={[
-                                        6,
-                                        6,
-                                        0,
-                                        0
-                                    ]}
-                                    barSize={34}
+                                    stroke="#2563eb"
+                                    strokeWidth={3}
+                                    dot={{
+                                        r: 4,
+                                        fill: "#2563eb",
+                                        stroke: "#ffffff",
+                                        strokeWidth: 2
+                                    }}
+                                    activeDot={{
+                                        r: 6
+                                    }}
                                 />
 
-                            </BarChart>
+                            </LineChart>
 
                         </ResponsiveContainer>
 
