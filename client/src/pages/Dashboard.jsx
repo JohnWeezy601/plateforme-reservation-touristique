@@ -327,7 +327,7 @@ function Dashboard() {
                         </strong>
 
                         <small>
-                            Ar
+                           €
                         </small>
 
                     </div>
@@ -857,26 +857,26 @@ function Dashboard() {
                                             </td>
 
 
-                                            <td>
+                                          <td>
 
-                                                <strong className="amount">
+                               <strong className="amount">
 
-                                                    {
-                                                        Number(
-                                                            reservation.montant ||
-                                                            reservation.prix ||
-                                                            0
-                                                        ).toLocaleString(
-                                                            "fr-FR"
-                                                        )
-                                                    }
+                                {
+                                   Number(
+                                    reservation.montant ||
+                                    reservation.prix ||
+                                      0
+                                   ).toLocaleString("fr-FR", {
+                                     minimumFractionDigits: 2,
+                                     maximumFractionDigits: 2
+                                   })
+                                }
 
-                                                    {" "}Ar
+                                 {" "}€
 
-                                                </strong>
+                                        </strong>
 
-                                            </td>
-
+                                   </td>
 
                                             <td>
 
