@@ -25,7 +25,8 @@ import {
     FaBell,
     FaHotel,
     FaMapMarkerAlt,
-    FaTags
+    FaTags,
+    FaArrowUp
 } from "react-icons/fa";
 
 import "./Dashboard.css";
