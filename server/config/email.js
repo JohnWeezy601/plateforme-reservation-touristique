@@ -21,20 +21,24 @@ const transporter = nodemailer.createTransport({
 
     requireTLS: true,
 
-    connectionTimeout: 15000,
-    greetingTimeout: 10000,
-    socketTimeout: 20000
+    connectionTimeout: 20000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000
 });
 
-// Vérification de la connexion
+// Vérification SMTP
 transporter.verify()
     .then(() => {
+        console.log("====================================");
         console.log("✅ CONNEXION SMTP BREVO RÉUSSIE");
+        console.log("====================================");
     })
     .catch((error) => {
-        console.error("❌ ERREUR SMTP :", error.message);
-        console.error("CODE :", error.code);
-        console.error("RESPONSE :", error.response);
+        console.error("❌ ERREUR CONNEXION SMTP BREVO");
+        console.error("Message :", error.message);
+        console.error("Code :", error.code);
+        console.error("Command :", error.command);
+        console.error("Response :", error.response);
     });
 
 module.exports = transporter;
