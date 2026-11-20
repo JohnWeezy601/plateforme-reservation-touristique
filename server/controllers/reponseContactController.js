@@ -1,165 +1,107 @@
 const db = require("../db");
-
 const envoyerEmailClient = require("../services/emailService");
 
 console.log("🔥 reponseContactController.js CHARGE");
-// =============================
-// ENVOYER UNE REPONSE CLIENT
-// =============================
 
-exports.envoyerReponse = async(req,res)=>{
-  console.log("====================================");
+// ========================================
+// ENVOYER UNE RÉPONSE À UN CLIENT
+// ========================================
+
+exports.envoyerReponse = async (req, res) => {
+    console.log("====================================");
     console.log("🚨 POST /api/reponses REÇU");
     console.log("BODY :", req.body);
     console.log("====================================");
 
+    try {
+        const { id_contact, message } = req.body;
 
-    const {
-        id_contact,
-        message
-    } = req.body;
-
-    
-
-
-    try{
-
-
-        // Vérification
-
-        if(!id_contact || !message){
-
-
+        // 1. Vérifier les données reçues
+        if (!id_contact || !message || !String(message).trim()) {
             return res.status(400).json({
-
-                message:"Données manquantes"
-
+                success: false,
+                message: "L'identifiant du contact et le message sont obligatoires."
             });
-
         }
 
-
-
-        // 1 - récupérer le contact
-
+        // 2. Récupérer le contact
         const [contacts] = await db.query(
-
-            "SELECT * FROM contact WHERE id_contact=?",
-
+            "SELECT * FROM contact WHERE id_contact = ?",
             [id_contact]
-
         );
 
-
-
-        if(contacts.length===0){
-
-
+        if (contacts.length === 0) {
             return res.status(404).json({
-
-                message:"Contact introuvable"
-
+                success: false,
+                message: "Contact introuvable."
             });
-
-
         }
-
-
 
         const contact = contacts[0];
 
-
-
         console.log("📧 EMAIL CLIENT :", contact.email);
 
-
-
-        // 2 - enregistrer la réponse
-
+        // 3. Enregistrer la réponse dans la base de données
         await db.query(
-
-            `
-            INSERT INTO reponse_contact
-            (
-                id_contact,
-                message
-            )
-            VALUES (?,?)
-            `,
-
-            [
-                id_contact,
-                message
-            ]
-
+            `INSERT INTO reponse_contact (id_contact, message)
+             VALUES (?, ?)`,
+            [id_contact, String(message).trim()]
         );
 
+        console.log("✅ Réponse enregistrée dans la base de données.");
 
-
-
-        // 3 - envoyer email au client
-
-        await envoyerEmailClient(
-
-            contact.email,
-
-            "Réponse à votre demande - Plateforme touristique",
-
-            message
-
-        );
-
-
-
-
-
-        // 4 - changer statut
-
+        // 4. Mettre à jour le statut du contact
         await db.query(
-
-            `
-            UPDATE contact
-            SET statut='Traité'
-            WHERE id_contact=?
-            `,
-
+            `UPDATE contact
+             SET statut = 'Traité'
+             WHERE id_contact = ?`,
             [id_contact]
-
         );
 
+        console.log("✅ Statut du contact mis à jour.");
 
-        res.json({
+        // 5. Envoyer l'e-mail sans bloquer l'enregistrement
+        let emailEnvoye = false;
 
-            success:true,
+        try {
+            if (contact.email) {
+                await envoyerEmailClient(
+                    contact.email,
+                    "Réponse à votre demande - Plateforme touristique",
+                    String(message).trim()
+                );
 
-            message:"Réponse envoyée avec succès"
+                emailEnvoye = true;
 
+                console.log("✅ E-mail envoyé au client.");
+            } else {
+                console.log("⚠️ Aucun e-mail disponible pour ce contact.");
+            }
+        } catch (emailError) {
+            console.error(
+                "⚠️ Échec de l'envoi de l'e-mail :",
+                emailError.message
+            );
+        }
+
+        // 6. Retourner le résultat
+        return res.status(200).json({
+            success: true,
+            emailEnvoye,
+            message: emailEnvoye
+                ? "Réponse enregistrée et e-mail envoyé avec succès."
+                : "Réponse enregistrée et contact traité, mais l'e-mail n'a pas pu être envoyé."
         });
 
+    } catch (error) {
+        console.error("❌ ERREUR RÉPONSE CONTACT :", error);
 
-
-    }
-
-    catch(error){
-
-
-        console.log(
-
-            "Erreur réponse contact :",
-
-            error
-
-        );
-
-
-        res.status(500).json({
-
-            message:"Erreur serveur"
-
+        return res.status(500).json({
+            success: false,
+            message: "Une erreur est survenue lors de l'enregistrement de la réponse.",
+            error: process.env.NODE_ENV === "development"
+                ? error.message
+                : undefined
         });
-
-
     }
-
-
 };
