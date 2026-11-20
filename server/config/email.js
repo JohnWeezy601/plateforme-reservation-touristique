@@ -9,9 +9,7 @@ console.log("EMAIL_PASS présent :", !!process.env.EMAIL_PASS);
 console.log("=========================================");
 
 const transporter = nodemailer.createTransport({
-
     host: process.env.EMAIL_HOST,
-
     port: Number(process.env.EMAIL_PORT),
 
     secure: false,
@@ -21,31 +19,22 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     },
 
-    tls: {
-        rejectUnauthorized: false
-    }
+    requireTLS: true,
 
+    connectionTimeout: 15000,
+    greetingTimeout: 10000,
+    socketTimeout: 20000
 });
 
-transporter.verify((error, success) => {
-
-    if (error) {
-
-        console.error("====================================");
-        console.error("❌ ERREUR CONNEXION SMTP BREVO");
-        console.error("Message :", error.message);
-        console.error("Code :", error.code);
-        console.error("Response :", error.response);
-        console.error("====================================");
-
-    } else {
-
-        console.log("====================================");
+// Vérification de la connexion
+transporter.verify()
+    .then(() => {
         console.log("✅ CONNEXION SMTP BREVO RÉUSSIE");
-        console.log("====================================");
-
-    }
-
-});
+    })
+    .catch((error) => {
+        console.error("❌ ERREUR SMTP :", error.message);
+        console.error("CODE :", error.code);
+        console.error("RESPONSE :", error.response);
+    });
 
 module.exports = transporter;
