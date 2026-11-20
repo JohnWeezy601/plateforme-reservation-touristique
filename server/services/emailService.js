@@ -1,6 +1,4 @@
-const transporter = require("../config/email");
 
-// Échapper les caractères HTML
 const escapeHTML = (text) => {
     return String(text)
         .replace(/&/g, "&amp;")
@@ -11,23 +9,30 @@ const escapeHTML = (text) => {
 };
 
 // ========================================
-// ENVOI EMAIL CLIENT
+// ENVOI EMAIL CLIENT VIA API BREVO
 // ========================================
 
 const envoyerEmailClient = async (email, sujet, message) => {
 
     console.log("====================================");
-    console.log("📨 PRÉPARATION EMAIL");
+    console.log("📨 PRÉPARATION EMAIL VIA API BREVO");
     console.log("DESTINATAIRE :", email);
     console.log("SUJET :", sujet);
-    console.log("CONTENU :", message);
     console.log("====================================");
 
     if (!email) {
         throw new Error("Adresse du destinataire manquante.");
     }
 
-    const contenu = String(message).trim();
+    if (!process.env.BREVO_API_KEY) {
+        throw new Error("BREVO_API_KEY est absente.");
+    }
+
+    if (!process.env.EMAIL_FROM) {
+        throw new Error("EMAIL_FROM est absente.");
+    }
+
+    const contenu = String(message || "").trim();
 
     if (!contenu) {
         throw new Error("Le contenu de l'e-mail est vide.");
@@ -38,88 +43,108 @@ const envoyerEmailClient = async (email, sujet, message) => {
 
     try {
 
-        console.log("⏳ Début de sendMail...");
+        console.log("⏳ Début de l'envoi via HTTPS...");
 
-        const info = await transporter.sendMail({
+        const response = await fetch(
+            "https://api.brevo.com/v3/smtp/email",
+            {
+                method: "POST",
+                headers: {
+                    "accept": "application/json",
+                    "api-key": process.env.BREVO_API_KEY,
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    sender: {
+                        name: "Plateforme touristique",
+                        email: process.env.EMAIL_FROM
+                    },
 
-            from: {
-                name: "Plateforme touristique",
-                address: process.env.EMAIL_FROM
-            },
+                    to: [
+                        { email: email }
+                    ],
 
-            to: email,
+                    subject: sujet,
 
-            subject: sujet,
+                    textContent: contenu,
 
-            text: contenu,
+                    htmlContent: `
+                        <div style="
+                            font-family: Arial, sans-serif;
+                            max-width: 600px;
+                            margin: auto;
+                            padding: 25px;
+                            color: #333;
+                        ">
 
-            html: `
-                <div style="
-                    font-family: Arial, sans-serif;
-                    max-width: 600px;
-                    margin: auto;
-                    padding: 25px;
-                    color: #333;
-                ">
+                            <h2 style="color: #087f5b;">
+                                Plateforme touristique
+                            </h2>
 
-                    <h2 style="color: #087f5b;">
-                        Plateforme touristique
-                    </h2>
+                            <p>Bonjour,</p>
 
-                    <p>Bonjour,</p>
+                            <p>
+                                Nous avons répondu à votre demande.
+                            </p>
 
-                    <p>
-                        Nous avons répondu à votre demande.
-                    </p>
+                            <div style="
+                                background: #f1f5f9;
+                                padding: 20px;
+                                border-left: 4px solid #087f5b;
+                                line-height: 1.7;
+                                overflow-wrap: anywhere;
+                            ">
+                                ${contenuHTML}
+                            </div>
 
-                    <div style="
-                        background: #f1f5f9;
-                        padding: 20px;
-                        border-left: 4px solid #087f5b;
-                        line-height: 1.7;
-                        overflow-wrap: anywhere;
-                    ">
-                        ${contenuHTML}
-                    </div>
+                            <p>Merci pour votre confiance.</p>
 
-                    <p>
-                        Merci pour votre confiance.
-                    </p>
+                            <p>
+                                Cordialement,<br>
+                                <strong>
+                                    L'équipe de la Plateforme touristique
+                                </strong>
+                            </p>
 
-                    <p>
-                        Cordialement,<br>
-                        <strong>
-                            L'équipe de la Plateforme touristique
-                        </strong>
-                    </p>
+                        </div>
+                    `
+                })
+            }
+        );
 
-                </div>
-            `
+        const responseText = await response.text();
 
-        });
+        let resultat = {};
 
-        console.log("====================================");
-        console.log("✅ EMAIL TRANSMIS AU SERVEUR SMTP");
-        console.log("Message ID :", info.messageId);
-        console.log("Acceptés :", info.accepted);
-        console.log("Refusés :", info.rejected);
-        console.log("Réponse SMTP :", info.response);
-        console.log("====================================");
-
-        if (!info.accepted || info.accepted.length === 0) {
-            throw new Error("Aucun destinataire accepté par SMTP.");
+        try {
+            resultat = responseText ? JSON.parse(responseText) : {};
+        } catch {
+            resultat = { message: responseText };
         }
 
-        return info;
+        if (!response.ok) {
+            console.error("❌ ERREUR API BREVO");
+            console.error("Statut HTTP :", response.status);
+            console.error("Réponse :", resultat);
+
+            throw new Error(
+                resultat.message ||
+                `Erreur API Brevo : HTTP ${response.status}`
+            );
+        }
+
+        console.log("====================================");
+        console.log("✅ EMAIL ACCEPTÉ PAR BREVO");
+        console.log("Message ID :", resultat.messageId);
+        console.log("====================================");
+
+        return resultat;
 
     } catch (error) {
 
         console.error("====================================");
-        console.error("❌ ERREUR ENVOI EMAIL");
+        console.error("❌ ERREUR ENVOI EMAIL BREVO");
         console.error("Message :", error.message);
-        console.error("Code :", error.code);
-        console.error("Command :", error.command);
-        console.error("Response :", error.response);
         console.error("====================================");
 
         throw error;
