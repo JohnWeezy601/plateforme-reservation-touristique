@@ -8,21 +8,22 @@ console.log("🔥 reponseContactController.js CHARGE");
 // ========================================
 
 exports.envoyerReponse = async (req, res) => {
-    console.log("====================================");
-    console.log("🚨 POST /api/reponses REÇU");
-    console.log("BODY :", req.body);
-    console.log("====================================");
-
     try {
         const { id_contact, message } = req.body;
 
-        // 1. Vérifier les données reçues
+        console.log("🚨 POST /api/reponses REÇU");
+        console.log("ID CONTACT :", id_contact);
+        console.log("MESSAGE :", message);
+
+        // 1. Vérifier les données
         if (!id_contact || !message || !String(message).trim()) {
             return res.status(400).json({
                 success: false,
-                message: "L'identifiant du contact et le message sont obligatoires."
+                message: "L'identifiant et le message sont obligatoires."
             });
         }
+
+        const contenu = String(message).trim();
 
         // 2. Récupérer le contact
         const [contacts] = await db.query(
@@ -39,18 +40,19 @@ exports.envoyerReponse = async (req, res) => {
 
         const contact = contacts[0];
 
-        console.log("📧 EMAIL CLIENT :", contact.email);
+        console.log("📧 DESTINATAIRE :", contact.email);
 
-        // 3. Enregistrer la réponse dans la base de données
+        // 3. Enregistrer la réponse
         await db.query(
-            `INSERT INTO reponse_contact (id_contact, message)
+            `INSERT INTO reponse_contact
+             (id_contact, message)
              VALUES (?, ?)`,
-            [id_contact, String(message).trim()]
+            [id_contact, contenu]
         );
 
-        console.log("✅ Réponse enregistrée dans la base de données.");
+        console.log("✅ Réponse enregistrée.");
 
-        // 4. Mettre à jour le statut du contact
+        // 4. Modifier le statut
         await db.query(
             `UPDATE contact
              SET statut = 'Traité'
@@ -58,50 +60,49 @@ exports.envoyerReponse = async (req, res) => {
             [id_contact]
         );
 
-        console.log("✅ Statut du contact mis à jour.");
+        console.log("✅ Contact marqué comme traité.");
 
-        // 5. Envoyer l'e-mail sans bloquer l'enregistrement
-        let emailEnvoye = false;
+        // 5. Répondre immédiatement au frontend
+        res.status(200).json({
+            success: true,
+            emailEnCours: Boolean(contact.email),
+            message: "Réponse enregistrée avec succès. Envoi de l'e-mail en cours."
+        });
 
-        try {
-            if (contact.email) {
-                await envoyerEmailClient(
+        // 6. Envoyer l'e-mail en arrière-plan
+        setImmediate(async () => {
+            try {
+                if (!contact.email) {
+                    console.log("⚠️ Aucun e-mail pour ce contact.");
+                    return;
+                }
+
+                const info = await envoyerEmailClient(
                     contact.email,
                     "Réponse à votre demande - Plateforme touristique",
-                    String(message).trim()
+                    contenu
                 );
 
-                emailEnvoye = true;
+                console.log("✅ EMAIL TRANSMIS AU SERVEUR SMTP");
+                console.log("DESTINATAIRE :", contact.email);
+                console.log("MESSAGE ID :", info.messageId);
 
-                console.log("✅ E-mail envoyé au client.");
-            } else {
-                console.log("⚠️ Aucun e-mail disponible pour ce contact.");
+            } catch (emailError) {
+                console.error("❌ ÉCHEC ENVOI EMAIL :", emailError);
             }
-        } catch (emailError) {
-            console.error(
-                "⚠️ Échec de l'envoi de l'e-mail :",
-                emailError.message
-            );
-        }
-
-        // 6. Retourner le résultat
-        return res.status(200).json({
-            success: true,
-            emailEnvoye,
-            message: emailEnvoye
-                ? "Réponse enregistrée et e-mail envoyé avec succès."
-                : "Réponse enregistrée et contact traité, mais l'e-mail n'a pas pu être envoyé."
         });
 
     } catch (error) {
         console.error("❌ ERREUR RÉPONSE CONTACT :", error);
 
-        return res.status(500).json({
-            success: false,
-            message: "Une erreur est survenue lors de l'enregistrement de la réponse.",
-            error: process.env.NODE_ENV === "development"
-                ? error.message
-                : undefined
-        });
+        if (!res.headersSent) {
+            return res.status(500).json({
+                success: false,
+                message: "Erreur lors de l'enregistrement de la réponse.",
+                error: process.env.NODE_ENV === "development"
+                    ? error.message
+                    : undefined
+            });
+        }
     }
 };
